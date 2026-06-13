@@ -79,25 +79,16 @@ export default function Admin() {
       ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       : null;
 
-    // Check if user has stats row
-    const { data: existing } = await supabase
-      .from("user_stats").select("user_id").eq("user_id", userId).maybeSingle();
+    // Use the admin RPC function to bypass RLS
+    const { error } = await supabase.rpc("admin_set_pro", {
+      target_user_id: userId,
+      new_is_pro: !current,
+      new_expires_at: expiresAt,
+    });
 
-    if (existing) {
-      // Just update pro fields, don't touch XP or streak
-      await supabase.from("user_stats")
-        .update({ is_pro: !current, pro_expires_at: expiresAt })
-        .eq("user_id", userId);
-    } else {
-      // New user - insert with defaults
-      await supabase.from("user_stats").insert({
-        user_id: userId,
-        is_pro: !current,
-        pro_expires_at: expiresAt,
-        total_xp: 0, streak: 0, exercises_completed: 0,
-        weekly_xp: [0,0,0,0,0,0,0],
-        last_activity_date: new Date().toISOString().split("T")[0],
-      });
+    if (error) {
+      console.error("Pro grant error:", error);
+      alert("حدث خطأ: " + error.message);
     }
     loadUsers();
   }

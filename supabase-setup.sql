@@ -99,3 +99,29 @@ create policy "Users can view own session" on public.user_sessions
 
 -- ── Add Pro expiry to user_stats ──
 alter table public.user_stats add column if not exists pro_expires_at timestamptz;
+
+-- ── Admin function to grant/revoke Pro (bypasses RLS) ──
+create or replace function admin_set_pro(
+  target_user_id uuid,
+  new_is_pro boolean,
+  new_expires_at timestamptz
+)
+returns void
+security definer
+language plpgsql
+as $$
+begin
+  insert into public.user_stats (
+    user_id, is_pro, pro_expires_at,
+    total_xp, streak, exercises_completed,
+    weekly_xp, last_activity_date
+  ) values (
+    target_user_id, new_is_pro, new_expires_at,
+    0, 0, 0, '{0,0,0,0,0,0,0}',
+    current_date
+  )
+  on conflict (user_id) do update
+    set is_pro = new_is_pro,
+        pro_expires_at = new_expires_at;
+end;
+$$;

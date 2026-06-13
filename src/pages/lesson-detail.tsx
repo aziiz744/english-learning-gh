@@ -305,9 +305,12 @@ export default function LessonDetail() {
   };
 
   const handleNext = () => {
-    if (totalItems === 0) return;
+    if (combinedQueue.length === 0) return;
     setShowCombo(false);
-    if (currentExerciseIndex < totalItems - 1) {
+
+    const isLastItem = currentExerciseIndex >= combinedQueue.length - 1;
+
+    if (!isLastItem) {
       setCurrentExerciseIndex(i => i + 1);
       setSelectedAnswer("");
       setFeedback(null);
@@ -317,14 +320,20 @@ export default function LessonDetail() {
         isReviewMode.current = true;
         setShowReviewBanner(true);
         setTimeout(() => setShowReviewBanner(false), 3000);
-        setCombinedQueue(prev => [...prev, ...wrongAnswers]);
+        // Add wrong answers to queue first, then move to next
+        setCombinedQueue(prev => {
+          const updated = [...prev, ...wrongAnswers];
+          return updated;
+        });
         setWrongAnswers([]);
-        setCurrentExerciseIndex(i => i + 1);
-        setSelectedAnswer("");
-        setFeedback(null);
+        setTimeout(() => {
+          setCurrentExerciseIndex(i => i + 1);
+          setSelectedAnswer("");
+          setFeedback(null);
+        }, 50);
         return;
       }
-      const finalScore = Math.round((score / totalItems) * 100);
+      const finalScore = Math.round((score / combinedQueue.length) * 100);
       finishLesson(finalScore);
     }
   };
