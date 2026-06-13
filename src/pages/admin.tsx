@@ -19,16 +19,17 @@ interface UserData {
 }
 
 export default function Admin() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [onlineCount, setOnlineCount] = useState(0);
 
   useEffect(() => {
+    if (authLoading) return; // wait for auth to finish
     if (!user?.isAdmin) { setLocation("/"); return; }
     loadUsers();
-  }, [user]);
+  }, [user, authLoading]);
 
   async function loadUsers() {
     setLoading(true);

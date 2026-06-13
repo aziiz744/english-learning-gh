@@ -50,27 +50,64 @@ const STORIES: Story[] = [
     text: "Most adults know that sleep is important, but few understand why. During sleep, the brain performs essential maintenance. It consolidates memories, moving information from short-term to long-term storage. It flushes out waste products that accumulate during waking hours. It regulates hormones that control hunger, stress, and growth. Without adequate sleep, cognitive performance declines rapidly. Studies show that after just one night of poor sleep, reaction time, decision-making, and emotional regulation all suffer significantly. Despite this, modern life treats sleep as optional. Many people wear their lack of sleep like a badge of productivity. The irony is that the less you sleep, the less productive you actually become. Protecting your sleep is not laziness. It is strategy." },
 ];
 
-function highlightWords(text: string, wordIndex: number) {
+async function translateWord(word: string): Promise<string> {
+  const clean = word.replace(/[^a-zA-Z]/g, "").toLowerCase();
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": (import.meta as any).env?.VITE_ANTHROPIC_KEY ?? "",
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 50,
+        messages: [{ role: "user", content: `ترجم الكلمة الإنجليزية التالية للعربية بكلمة أو كلمتين فقط بدون أي شرح: "${clean}"` }],
+      }),
+    });
+    const data = await res.json();
+    return data.content?.[0]?.text?.trim() ?? "...";
+  } catch { return "..."; }
+}
+
+function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
+  text: string; wordIndex: number;
+  onWordClick: (word: string, idx: number) => void;
+  tooltip: { idx: number; word: string; translation: string } | null;
+}) {
   const words = text.split(" ");
-  return words.map((word, i) => (
-    <span
-      key={i}
-      className={`transition-all duration-150 ${
-        i === wordIndex
-          ? "bg-primary text-primary-foreground px-0.5 rounded font-bold"
-          : i < wordIndex
-          ? "text-muted-foreground"
-          : "text-foreground"
-      }`}
-    >
-      {word}{" "}
-    </span>
-  ));
+  return (
+    <>
+      {words.map((word, i) => (
+        <span key={i} className="relative inline-block">
+          <span
+            onClick={() => onWordClick(word, i)}
+            className={`cursor-pointer transition-all duration-150 hover:text-primary underline-offset-2 hover:underline ${
+              i === wordIndex
+                ? "bg-primary text-primary-foreground px-0.5 rounded font-bold"
+                : i < wordIndex ? "text-muted-foreground" : "text-foreground"
+            }`}
+          >
+            {word}
+          </span>
+          {tooltip?.idx === i && (
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-card border border-border text-foreground text-xs px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 font-medium">
+              {tooltip.translation === "..." ? "⏳" : tooltip.translation}
+            </span>
+          )}
+          {" "}
+        </span>
+      ))}
+    </>
+  );
 }
 
 export default function Reading() {
   const [selected, setSelected] = useState<Story | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [tooltip, setTooltip] = useState<{ idx: number; word: string; translation: string } | null>(null);
   const [wordIndex, setWordIndex] = useState(-1);
   const [filter, setFilter] = useState<string>("الكل");
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -79,6 +116,15 @@ export default function Reading() {
   const categories = ["الكل", ...Array.from(new Set(STORIES.map(s => s.category)))];
 
   const filtered = filter === "الكل" ? STORIES : STORIES.filter(s => s.category === filter);
+
+  async function handleWordClick(word: string, idx: number) {
+    const clean = word.replace(/[^a-zA-Z]/g, "");
+    if (!clean) return;
+    setTooltip({ idx, word: clean, translation: "..." });
+    const translation = await translateWord(clean);
+    setTooltip({ idx, word: clean, translation });
+    setTimeout(() => setTooltip(null), 3000);
+  }
 
   function openStory(story: Story) {
     stopReading();
@@ -217,10 +263,18 @@ export default function Reading() {
                     </span>
                   </div>
 
-                  {/* Story Text with word highlighting */}
+                  {/* Story Text with word highlighting + click to translate */}
                   <div className="text-lg leading-9 font-serif tracking-wide">
-                    {wordIndex >= 0 ? highlightWords(selected.text, wordIndex) : selected.text}
+                    <ClickableText
+                      text={selected.text}
+                      wordIndex={wordIndex}
+                      onWordClick={handleWordClick}
+                      tooltip={tooltip}
+                    />
                   </div>
+                  <p className="text-xs text-muted-foreground mt-4 text-center">
+                    💡 اضغط على أي كلمة لترجمتها
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>

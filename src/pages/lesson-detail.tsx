@@ -146,6 +146,9 @@ export default function LessonDetail() {
   // Gamification state
   const [hearts, setHearts] = useState(challengeMode ? 1 : 3);
   const [isPro, setIsPro] = useState(false);
+  const lessonCompletedRef = useRef(false); // prevent double completion
+  const [wrongAnswers, setWrongAnswers] = useState<typeof combinedQueue>([]);
+  const isReviewMode = useRef(false);
   useEffect(() => {
     import("@/lib/supabase").then(({ supabase }) => {
       supabase.auth.getUser().then(({ data: { user } }) => {
@@ -202,6 +205,7 @@ export default function LessonDetail() {
   const currentMini = currentItem?.kind === "mini" ? currentItem.exercise : null;
   const totalItems = combinedQueue.length || 0;
   const progressPercent = totalItems > 0 ? (currentExerciseIndex / totalItems) * 100 : 0;
+  const [showReviewBanner, setShowReviewBanner] = useState(false);
 
   const handleStart = () => {
     if (combinedQueue.length > 0) setStep("exercises");
@@ -243,6 +247,10 @@ export default function LessonDetail() {
             setShowCombo(false);
             const newHearts = isPro ? hearts : hearts - 1;
             if (!isPro) setHearts(newHearts);
+            // Track wrong answers for review at end
+            if (currentItem && !isReviewMode.current) {
+              setWrongAnswers(prev => [...prev, currentItem]);
+            }
             setCardShake(true);
             setTimeout(() => setCardShake(false), 500);
             setMascotFor("wrong");
@@ -299,12 +307,26 @@ export default function LessonDetail() {
       setSelectedAnswer("");
       setFeedback(null);
     } else {
+      // If there are wrong answers and not in review mode, add them to the end
+      if (wrongAnswers.length > 0 && !isReviewMode.current) {
+        isReviewMode.current = true;
+        setShowReviewBanner(true);
+        setTimeout(() => setShowReviewBanner(false), 3000);
+        setCombinedQueue(prev => [...prev, ...wrongAnswers]);
+        setWrongAnswers([]);
+        setCurrentExerciseIndex(i => i + 1);
+        setSelectedAnswer("");
+        setFeedback(null);
+        return;
+      }
       const finalScore = Math.round((score / totalItems) * 100);
       finishLesson(finalScore);
     }
   };
 
   const finishLesson = (finalScore: number) => {
+    if (lessonCompletedRef.current) return; // already completed
+    lessonCompletedRef.current = true;
     if (challengeMode && finalScore >= 80) {
       localStorage.setItem(`challenge-${lessonId}`, "passed");
     }
@@ -328,6 +350,7 @@ export default function LessonDetail() {
   };
 
   const handleRetry = () => {
+    lessonCompletedRef.current = false;
     setHearts(challengeMode ? 1 : 3);
     setCombo(0);
     setCurrentExerciseIndex(0);
@@ -461,6 +484,11 @@ export default function LessonDetail() {
           <div className="flex-1 flex flex-col">
             {/* HUD */}
             <div className="mb-4 flex items-center justify-between gap-4">
+              {showReviewBanner && (
+                <div className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-lg animate-pulse">
+                  🔄 مراجعة الأسئلة التي أخطأت فيها
+                </div>
+              )}
               <Hearts count={hearts} isPro={isPro} />
 
               <div className="flex-1">
