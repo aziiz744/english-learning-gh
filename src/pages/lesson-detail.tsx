@@ -148,18 +148,19 @@ export default function LessonDetail() {
     }
   };
 
-  // Build the practice queue ENTIRELY from the local tiered bank, so every star
-  // attempt (and the challenge test) shows completely different questions with
-  // difficulty rising by tier. API exercises are not used in this queue.
+  // Build the practice queue ONCE when lesson loads — never rebuild mid-session.
+  // Stars are read at session-start only; updating stars in DB won't rebuild the queue.
+  const [queueBuilt, setQueueBuilt] = useState(false);
   useEffect(() => {
-    if (!lesson?.title) return;
+    if (!lesson?.title || queueBuilt) return;
     const TARGET = 10;
     // Attempt tier from stars: 0=first attempt, 1=after 1★, 2=after 2★, 3=challenge.
     const starsCount = Math.min(lesson.stars ?? 0, 2);
     const tier: 0 | 1 | 2 | 3 = challengeMode ? 3 : (starsCount as 0 | 1 | 2);
     const mini = getMiniExercisesForLesson(TARGET, tier, lesson.title);
     setCombinedQueue(mini.map((exercise) => ({ kind: "mini" as const, exercise })));
-  }, [lesson?.stars, lesson?.title, challengeMode]);
+    setQueueBuilt(true);
+  }, [lesson?.title, challengeMode, queueBuilt]);
 
   const currentItem = combinedQueue[currentExerciseIndex];
   const currentExercise = currentItem?.kind === "api" ? currentItem.exercise : null;
