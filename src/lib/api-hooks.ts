@@ -261,9 +261,13 @@ export function useCompleteLesson() {
       const xp = data.xpEarned ?? lesson?.xpReward ?? 50;
       if (user) {
         await _completeLesson(user.id, id, data.score, xp);
+        // Get updated stars from DB
+        const progress = await getLessonProgress(user.id);
+        const lessonProgress = (progress as any[]).find((p: any) => p.lesson_id === id);
+        const stars = lessonProgress?.stars ?? 1;
+        return { score: data.score, stars, xpEarned: xp };
       }
-      const stars = data.score >= 90 ? 3 : data.score >= 70 ? 2 : 1;
-      return { score: data.score, stars, xpEarned: xp };
+      return { score: data.score, stars: 1, xpEarned: xp };
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["lessons"] });
