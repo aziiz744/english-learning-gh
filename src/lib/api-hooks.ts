@@ -86,12 +86,12 @@ const LESSON_CATALOGUE: Omit<Lesson, "isUnlocked" | "completedAt" | "score" | "s
 
 const LEVEL_ORDER: LessonLevel[] = ["beginner", "elementary", "intermediate", "upper-intermediate", "advanced", "proficiency"];
 const LEVEL_LABELS: Record<LessonLevel, string> = {
-  "beginner": "المبتدئ A1",
-  "elementary": "الأساسي A2",
-  "intermediate": "المتوسط B1",
-  "upper-intermediate": "المتقدم B2",
-  "advanced": "المتمكن C1",
-  "proficiency": "الإتقان C2",
+  "beginner": "Beginner",
+  "elementary": "Elementary",
+  "intermediate": "Intermediate",
+  "upper-intermediate": "Upper Intermediate",
+  "advanced": "Advanced",
+  "proficiency": "Proficiency",
 };
 
 // ─────────────────────────────────────────────
