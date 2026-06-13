@@ -127,6 +127,7 @@ export default function LessonDetail() {
   const search = useSearch();
   const challengeMode = new URLSearchParams(search).get("challenge") === "1";
 
+  const { user, isLoading: authLoading } = useAuth();
   const { data: lesson, isLoading: lessonLoading } = useGetLesson(lessonId, {
     query: { enabled: !!lessonId, queryKey: getGetLessonQueryKey(lessonId) },
   });
@@ -230,12 +231,14 @@ export default function LessonDetail() {
 
             // Bonus XP for combo
             const bonusXp = newCombo >= 3 ? result.xpEarned * newCombo : result.xpEarned;
-            if (newCombo === 5) setMascotFor("combo5", 3500);
             xpFloatKey.current += 1;
             setShowXpFloat({ xp: bonusXp, key: xpFloatKey.current });
 
-            // Mascot + sound
-            if (newCombo >= 3) {
+            // Mascot + sound — combo5 takes priority
+            if (newCombo === 5) {
+              setMascotFor("combo5", 4000);
+              playCombo();
+            } else if (newCombo >= 3) {
               setMascotFor("combo");
               playCombo();
             } else {

@@ -22,6 +22,29 @@ export function useAuth(): AuthState {
     const u = await getCurrentUser();
     setUser(u);
     setIsLoading(false);
+    // Update online session
+    if (u) {
+      const { supabase } = await import("../lib/supabase");
+      await supabase.from("user_sessions").upsert({
+        user_id: u.id,
+        last_seen: new Date().toISOString(),
+      }, { onConflict: "user_id" });
+    }
+  }, []);
+
+  // Keep session alive every 2 minutes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const u = await getCurrentUser();
+      if (u) {
+        const { supabase } = await import("../lib/supabase");
+        await supabase.from("user_sessions").upsert({
+          user_id: u.id,
+          last_seen: new Date().toISOString(),
+        }, { onConflict: "user_id" });
+      }
+    }, 2 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

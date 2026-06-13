@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Mascot } from "@/components/mascot";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AiTutor } from "@/components/ai-tutor";
 
 const navigation = [
   { name: "الرئيسية",     href: "/",             icon: LayoutDashboard },
@@ -360,9 +359,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
-
-      {/* AI Tutor — floating, above mobile bottom nav */}
-      <AiTutor />
     </div>
   );
 }
