@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useGetLessons, useGetStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
-import { openLoginModal } from "@/components/login-modal";
+import { triggerLoginModal as openLoginModal } from "@/lib/modal-state";
 import { Layout } from "@/components/layout";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
