@@ -252,9 +252,16 @@ export default function LessonDetail() {
             setShowCombo(false);
             const newHearts = isPro ? hearts : hearts - 1;
             if (!isPro) setHearts(newHearts);
-            // Track wrong answers for review at end
-            if (currentItem && !isReviewMode.current) {
-              setWrongAnswers(prev => [...prev, currentItem]);
+            // Track wrong answers - add to review queue (will repeat until correct)
+            if (currentItem) {
+              setWrongAnswers(prev => {
+                // Avoid duplicates - only add if not already in list
+                const exists = prev.some(w => 
+                  w.kind === currentItem.kind && 
+                  (w.kind === "mini" ? w.exercise === currentItem.exercise : true)
+                );
+                return exists ? prev : [...prev, currentItem];
+              });
             }
             setCardShake(true);
             setTimeout(() => setCardShake(false), 500);
@@ -315,17 +322,17 @@ export default function LessonDetail() {
       setSelectedAnswer("");
       setFeedback(null);
     } else {
-      // If there are wrong answers and not in review mode, add them to the end
-      if (wrongAnswers.length > 0 && !isReviewMode.current) {
-        isReviewMode.current = true;
-        setShowReviewBanner(true);
-        setTimeout(() => setShowReviewBanner(false), 3000);
-        // Add wrong answers to queue first, then move to next
-        setCombinedQueue(prev => {
-          const updated = [...prev, ...wrongAnswers];
-          return updated;
-        });
-        setWrongAnswers([]);
+      // Add wrong answers to end for review
+      if (wrongAnswers.length > 0) {
+        if (!isReviewMode.current) {
+          isReviewMode.current = true;
+          setShowReviewBanner(true);
+          setTimeout(() => setShowReviewBanner(false), 3000);
+        }
+        // Add all wrong answers back to queue
+        const reviewQueue = [...wrongAnswers];
+        setWrongAnswers([]); // clear first
+        setCombinedQueue(prev => [...prev, ...reviewQueue]);
         setTimeout(() => {
           setCurrentExerciseIndex(i => i + 1);
           setSelectedAnswer("");
