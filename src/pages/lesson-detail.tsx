@@ -303,6 +303,17 @@ export default function LessonDetail() {
       setShowCombo(false);
       const newHearts = isPro ? hearts : hearts - 1;
       if (!isPro) setHearts(newHearts);
+      // Add wrong question to review list (avoid duplicates)
+      if (currentItem) {
+        setWrongAnswers(prev => {
+          const alreadyAdded = prev.some(w => 
+            w.kind === "mini" && currentItem.kind === "mini" && 
+            w.exercise.correctAnswer === currentItem.exercise.correctAnswer &&
+            w.exercise.arabic === currentItem.exercise.arabic
+          );
+          return alreadyAdded ? prev : [...prev, currentItem];
+        });
+      }
       setCardShake(true);
       setTimeout(() => setCardShake(false), 500);
       setMascotFor("wrong");

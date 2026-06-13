@@ -79,18 +79,22 @@ export default function Admin() {
       ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       : null;
 
-    // Use the admin RPC function to bypass RLS
-    const { error } = await supabase.rpc("admin_set_pro", {
-      target_user_id: userId,
-      new_is_pro: !current,
-      new_expires_at: expiresAt,
-    });
+    try {
+      const { data, error } = await supabase.rpc("admin_set_pro", {
+        target_user_id: userId,
+        new_is_pro: !current,
+        new_expires_at: expiresAt,
+      });
 
-    if (error) {
-      console.error("Pro grant error:", error);
-      alert("حدث خطأ: " + error.message);
+      if (error) throw error;
+      
+      // Wait a bit then reload
+      await new Promise(r => setTimeout(r, 500));
+      await loadUsers();
+    } catch (err: any) {
+      console.error("Pro grant error:", err);
+      alert("حدث خطأ: " + (err?.message ?? "تأكد من الصلاحيات"));
     }
-    loadUsers();
   }
 
   async function deleteUser(userId: string) {
