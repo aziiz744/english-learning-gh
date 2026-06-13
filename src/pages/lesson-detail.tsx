@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, useSearch } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { triggerLoginModal as openLoginModal } from "@/lib/modal-state";
 import {
   useGetLesson, useSubmitExercise, useCompleteLesson,
   getGetLessonQueryKey, getGetProgressQueryKey,
@@ -363,6 +365,24 @@ export default function LessonDetail() {
     setTotalXpEarned(0);
     setStep("exercises");
   };
+
+  // Auth guard
+  if (!authLoading && !user) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-5 p-6">
+          <div className="text-6xl">🔐</div>
+          <h2 className="text-2xl font-bold">سجّل دخولك أولاً</h2>
+          <p className="text-muted-foreground max-w-sm leading-relaxed">
+            لحفظ تقدمك ونجومك ومتابعة مستواك، تحتاج لتسجيل الدخول أولاً
+          </p>
+          <Button size="lg" className="gap-2 px-8" onClick={() => openLoginModal()}>
+            تسجيل الدخول
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
 
   if (lessonLoading) {
     return (
