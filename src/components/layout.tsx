@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Route, BookOpen, Trophy, Flame,
-  Shield, LogIn, LogOut, User, Menu, X, Crown,
+  Shield, LogIn, LogOut, User, Menu, X, Crown, GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
@@ -18,6 +18,7 @@ const navigation = [
   { name: "الدروس",       href: "/lessons",       icon: BookOpen },
   { name: "الإنجازات",    href: "/achievements",  icon: Trophy },
   { name: "القراءة",      href: "/reading",       icon: BookOpen },
+  { name: "القواعد",      href: "/grammar",       icon: GraduationCap },
 ];
 
 const TUTOR_TIPS = [

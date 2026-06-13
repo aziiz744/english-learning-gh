@@ -52,24 +52,16 @@ const STORIES: Story[] = [
 
 async function translateWord(word: string): Promise<string> {
   const clean = word.replace(/[^a-zA-Z]/g, "").toLowerCase();
+  if (!clean) return "";
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": (import.meta as any).env?.VITE_ANTHROPIC_KEY ?? "",
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 50,
-        messages: [{ role: "user", content: `ترجم الكلمة الإنجليزية التالية للعربية بكلمة أو كلمتين فقط بدون أي شرح: "${clean}"` }],
-      }),
-    });
+    const res = await fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|ar`
+    );
     const data = await res.json();
-    return data.content?.[0]?.text?.trim() ?? "...";
-  } catch { return "..."; }
+    const translation = data.responseData?.translatedText;
+    if (translation && translation !== clean) return translation;
+    return clean;
+  } catch { return clean; }
 }
 
 function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
@@ -77,30 +69,35 @@ function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
   onWordClick: (word: string, idx: number) => void;
   tooltip: { idx: number; word: string; translation: string } | null;
 }) {
-  const words = text.split(" ");
+  const words = text.split(/(\s+)/);
+  let wordCount = 0;
   return (
-    <>
-      {words.map((word, i) => (
-        <span key={i} className="relative inline-block">
-          <span
-            onClick={() => onWordClick(word, i)}
-            className={`cursor-pointer transition-all duration-150 hover:text-primary underline-offset-2 hover:underline ${
-              i === wordIndex
-                ? "bg-primary text-primary-foreground px-0.5 rounded font-bold"
-                : i < wordIndex ? "text-muted-foreground" : "text-foreground"
-            }`}
-          >
-            {word}
-          </span>
-          {tooltip?.idx === i && (
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-card border border-border text-foreground text-xs px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 font-medium">
-              {tooltip.translation === "..." ? "⏳" : tooltip.translation}
+    <span dir="ltr" style={{unicodeBidi: "plaintext"}}>
+      {words.map((token, i) => {
+        if (/^\s+$/.test(token)) return <span key={i}>{token}</span>;
+        const idx = wordCount++;
+        const clean = token.replace(/[^a-zA-Z]/g, "");
+        return (
+          <span key={i} className="relative inline">
+            <span
+              onClick={() => clean && onWordClick(token, idx)}
+              className={`transition-all duration-150 ${clean ? "cursor-pointer hover:text-primary underline-offset-2 hover:underline" : ""} ${
+                idx === wordIndex
+                  ? "bg-primary text-primary-foreground px-0.5 rounded font-bold"
+                  : idx < wordIndex ? "text-muted-foreground" : "text-foreground"
+              }`}
+            >
+              {token}
             </span>
-          )}
-          {" "}
-        </span>
-      ))}
-    </>
+            {tooltip?.idx === idx && clean && (
+              <span className="absolute bottom-full left-0 mb-1 bg-card border border-border text-foreground text-xs px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 font-medium" dir="rtl">
+                {tooltip.translation === "..." ? "⏳ جاري الترجمة..." : `🔤 ${tooltip.translation}`}
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </span>
   );
 }
 
@@ -179,6 +176,29 @@ export default function Reading() {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto p-4">
+        {/* Pro Gate */}
+        {isPro === false && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="max-w-md mx-auto text-center py-16 space-y-5">
+            <div className="text-6xl mb-4">👑</div>
+            <h2 className="text-2xl font-bold">ميزة Pro حصرية</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              قصص القراءة مع الصوت والترجمة الفورية متاحة لأعضاء Pro فقط.
+            </p>
+            <div className="bg-muted/40 border border-border rounded-2xl p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground mb-2">للحصول على ميزة Pro:</p>
+              <p>تواصل مع الإدارة عبر البريد الإلكتروني وسيتم تفعيل حسابك 🚀</p>
+            </div>
+          </motion.div>
+        )}
+
+        {isPro === null && (
+          <div className="flex justify-center py-20">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        {isPro === true && (
         <AnimatePresence mode="wait">
           {!selected ? (
             <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -264,7 +284,7 @@ export default function Reading() {
                   </div>
 
                   {/* Story Text with word highlighting + click to translate */}
-                  <div className="text-lg leading-9 font-serif tracking-wide">
+                  <div className="text-lg leading-9 font-serif tracking-wide" dir="ltr" style={{textAlign: "left"}}>
                     <ClickableText
                       text={selected.text}
                       wordIndex={wordIndex}
@@ -280,6 +300,7 @@ export default function Reading() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </div>
     </Layout>
   );

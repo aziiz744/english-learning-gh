@@ -800,6 +800,17 @@ export default function LessonDetail() {
                 <div className="text-muted-foreground text-sm">
                   أجبت بشكل صحيح على <span className="font-bold text-foreground">{score}</span> من {totalItems} تمرين
                 </div>
+                {!isPro && (
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 text-sm text-right">
+                    <div className="flex items-center gap-2 text-blue-400 font-bold mb-1">
+                      💙 هل تعلم؟
+                    </div>
+                    <p className="text-muted-foreground">
+                      بالحصول على ميزة <span className="text-blue-400 font-bold">Pro</span> ستحصل على قلوب لا نهائية 💙 وتقدر تكمل تدريبك بدون انقطاع!
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">تواصل مع الإدارة للتفعيل</p>
+                  </div>
+                )}
                 <Button size="lg" className="w-full py-5 text-base" onClick={handleRetry}>
                   حاول مرة أخرى 🔄
                 </Button>

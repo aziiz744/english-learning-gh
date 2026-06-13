@@ -14,6 +14,7 @@ import Achievements from "@/pages/achievements";
 import LevelTest from "@/pages/level-test";
 import Admin from "@/pages/admin";
 import Reading from "@/pages/reading";
+import Grammar from "@/pages/grammar";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/level-test/:level" component={LevelTest} />
       <Route path="/admin" component={Admin} />
       <Route path="/reading" component={Reading} />
+      <Route path="/grammar" component={Grammar} />
       <Route component={NotFound} />
     </Switch>
   );
