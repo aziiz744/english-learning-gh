@@ -80,20 +80,36 @@ export default function Admin() {
       : null;
 
     try {
-      const { data, error } = await supabase.rpc("admin_set_pro", {
+      // Try RPC first
+      const { error: rpcError } = await supabase.rpc("admin_set_pro", {
         target_user_id: userId,
         new_is_pro: !current,
         new_expires_at: expiresAt,
       });
 
-      if (error) throw error;
-      
-      // Wait a bit then reload
-      await new Promise(r => setTimeout(r, 500));
+      if (rpcError) {
+        // Fallback: direct upsert
+        const { error: upsertError } = await supabase
+          .from("user_stats")
+          .upsert({
+            user_id: userId,
+            is_pro: !current,
+            pro_expires_at: expiresAt,
+            total_xp: 0,
+            streak: 0,
+            exercises_completed: 0,
+            weekly_xp: [0,0,0,0,0,0,0],
+            last_activity_date: new Date().toISOString().split("T")[0],
+          }, { onConflict: "user_id" });
+
+        if (upsertError) throw upsertError;
+      }
+
+      await new Promise(r => setTimeout(r, 800));
       await loadUsers();
     } catch (err: any) {
       console.error("Pro grant error:", err);
-      alert("حدث خطأ: " + (err?.message ?? "تأكد من الصلاحيات"));
+      alert("حدث خطأ: " + (err?.message ?? "غير معروف"));
     }
   }
 

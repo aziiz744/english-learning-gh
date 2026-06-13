@@ -221,7 +221,7 @@ export function Mascot({ state, className }: { state: MascotState; className?: s
           <circle cx="77" cy="58" r="11" fill="none" stroke={skinDark} strokeWidth="0.8" />
 
           {/* Pupils */}
-          {state === "combo" ? (
+          {(state === "combo" || state === "combo5") ? (
             <>
               <text x="43" y="62" fontSize="13" textAnchor="middle" dominantBaseline="middle">⭐</text>
               <text x="77" y="62" fontSize="13" textAnchor="middle" dominantBaseline="middle">⭐</text>
