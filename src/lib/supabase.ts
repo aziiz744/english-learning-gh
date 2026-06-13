@@ -120,27 +120,30 @@ export async function signOut() {
 }
 
 // ── Stats helpers ──
-async function ensureStats(userId: string) {
+async function ensureStats(userId: string, email?: string) {
   const { data } = await supabase
     .from("user_stats")
     .select("*")
     .eq("user_id", userId)
-    .single();
+    .maybeSingle();
   if (!data) {
     await supabase.from("user_stats").insert({
       user_id: userId,
+      email: email ?? null,
       total_xp: 0,
       streak: 0,
       exercises_completed: 0,
       weekly_xp: [0, 0, 0, 0, 0, 0, 0],
       last_activity_date: new Date().toISOString().split("T")[0],
     });
+  } else if (email && !data.email) {
+    await supabase.from("user_stats").update({ email }).eq("user_id", userId);
   }
   return data;
 }
 
-export async function getStats(userId: string): Promise<UserStats> {
-  await ensureStats(userId);
+export async function getStats(userId: string, email?: string): Promise<UserStats> {
+  await ensureStats(userId, email);
 
   const { data: statsRow } = await supabase
     .from("user_stats")

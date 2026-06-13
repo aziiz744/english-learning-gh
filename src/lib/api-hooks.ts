@@ -287,7 +287,7 @@ export function useGetStats() {
     queryKey: ["stats", user?.id],
     queryFn: async () => {
       if (!user) return null;
-      return getStats(user.id);
+      return getStats(user.id, user.email ?? undefined);
     },
     enabled: !!user,
   });

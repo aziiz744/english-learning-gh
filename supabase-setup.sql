@@ -84,3 +84,6 @@ create policy "Users can manage own session" on public.user_sessions
   for all using (auth.uid() = user_id);
 create policy "Admins can view all sessions" on public.user_sessions
   for select using (true);
+
+-- ── Add email column to user_stats ──
+alter table public.user_stats add column if not exists email text;

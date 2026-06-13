@@ -34,31 +34,41 @@ export default function Admin() {
   async function loadUsers() {
     setLoading(true);
     try {
-      // Get all user stats
       const { data: stats } = await supabase.from("user_stats").select("*");
       const { data: progress } = await supabase.from("user_progress").select("user_id");
       const { data: sessions } = await supabase.from("user_sessions").select("*");
 
       // Count online (last 5 min)
       const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-      const online = sessions?.filter(s => s.last_seen > fiveMinAgo) ?? [];
+      const online = sessions?.filter((s: any) => s.last_seen > fiveMinAgo) ?? [];
       setOnlineCount(online.length);
 
-      // Build user list from stats
       const progressMap: Record<string, number> = {};
       progress?.forEach((p: any) => {
         progressMap[p.user_id] = (progressMap[p.user_id] ?? 0) + 1;
       });
 
-      const userList: UserData[] = (stats ?? []).map((s: any) => ({
-        id: s.user_id,
-        email: "مستخدم " + s.user_id.slice(0, 8),
-        created_at: s.updated_at ?? new Date().toISOString(),
-        last_sign_in_at: s.updated_at ?? new Date().toISOString(),
-        stats: s,
-        progress_count: progressMap[s.user_id] ?? 0,
-        is_online: online.some((o: any) => o.user_id === s.user_id),
-      }));
+      const statsMap: Record<string, any> = {};
+      (stats ?? []).forEach((s: any) => { statsMap[s.user_id] = s; });
+
+      // Get all users who have ever signed in via their sessions or stats
+      const allUserIds = Array.from(new Set([
+        ...(stats ?? []).map((s: any) => s.user_id),
+        ...(sessions ?? []).map((s: any) => s.user_id),
+      ]));
+
+      const userList: UserData[] = allUserIds.map((uid) => {
+        const s = statsMap[uid];
+        return {
+          id: uid,
+          email: s?.email ?? `مستخدم-${uid.slice(0, 8)}`,
+          created_at: s?.updated_at ?? new Date().toISOString(),
+          last_sign_in_at: s?.updated_at ?? new Date().toISOString(),
+          stats: s,
+          progress_count: progressMap[uid] ?? 0,
+          is_online: online.some((o: any) => o.user_id === uid),
+        };
+      });
 
       setUsers(userList);
     } catch (e) {
