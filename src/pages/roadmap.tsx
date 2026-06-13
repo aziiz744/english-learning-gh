@@ -170,7 +170,9 @@ function LessonStation({ lesson, side, meta, stationNum, delay }: {
           whileTap={lesson.isUnlocked ? { scale: 0.95 } : {}}
           className={cn(
             "w-16 h-16 rounded-full flex flex-col items-center justify-center border-3 relative shadow-md transition-all",
-            (isDone && stars === 3)
+            (challengePassed)
+              ? "bg-gradient-to-br from-yellow-300 to-amber-400 border-yellow-200 shadow-lg ring-2 ring-yellow-400/60"
+              : (isDone && stars === 3)
               ? "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300 shadow-lg"
               : isDone
               ? `bg-gradient-to-br ${meta.gradient} border-transparent shadow-lg`
@@ -180,7 +182,9 @@ function LessonStation({ lesson, side, meta, stationNum, delay }: {
           )}
           style={{
             borderColor: isCurrent ? meta.color : undefined,
-            boxShadow: (isDone && stars === 3)
+            boxShadow: challengePassed
+              ? "0 4px 32px rgba(234,179,8,0.8), 0 0 20px rgba(234,179,8,0.4)"
+              : (isDone && stars === 3)
               ? "0 4px 24px rgba(234,179,8,0.55)"
               : (isDone || isCurrent)
                 ? `0 4px 20px ${meta.color}40`
@@ -189,6 +193,11 @@ function LessonStation({ lesson, side, meta, stationNum, delay }: {
         >
           {isLocked ? (
             <Lock className="w-6 h-6 text-muted-foreground/40" />
+          ) : challengePassed ? (
+            <>
+              <Crown className="w-5 h-5 text-white drop-shadow animate-pulse" />
+              <span className="text-white/90 text-[10px] font-bold mt-0.5">👑</span>
+            </>
           ) : (isDone && stars === 3) ? (
             <>
               <Crown className="w-5 h-5 text-white drop-shadow" />
