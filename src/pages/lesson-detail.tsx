@@ -196,7 +196,8 @@ export default function LessonDetail() {
     const mini = getMiniExercisesForLesson(TARGET, tier, lesson.title);
     setCombinedQueue(mini.map((exercise) => ({
       kind: "mini" as const,
-      exercise: exercise.options && exercise.options.length > 0
+      // Only shuffle options for non-word_order exercises
+      exercise: exercise.options && exercise.options.length > 0 && exercise.type !== "word_order"
         ? { ...exercise, options: shuffleArray(exercise.options) }
         : exercise,
     })));
