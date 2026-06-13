@@ -51,22 +51,19 @@ export default function Admin() {
       const statsMap: Record<string, any> = {};
       (stats ?? []).forEach((s: any) => { statsMap[s.user_id] = s; });
 
-      // Get all users who have ever signed in via their sessions or stats
-      const allUserIds = Array.from(new Set([
-        ...(stats ?? []).map((s: any) => s.user_id),
-        ...(sessions ?? []).map((s: any) => s.user_id),
-      ]));
+      // Get ALL users from auth via SQL function
+      const { data: authUsers } = await supabase.rpc("get_all_users");
 
-      const userList: UserData[] = allUserIds.map((uid) => {
-        const s = statsMap[uid];
+      const userList: UserData[] = (authUsers ?? []).map((u: any) => {
+        const s = statsMap[u.id];
         return {
-          id: uid,
-          email: s?.email ?? `مستخدم-${uid.slice(0, 8)}`,
-          created_at: s?.updated_at ?? new Date().toISOString(),
-          last_sign_in_at: s?.updated_at ?? new Date().toISOString(),
+          id: u.id,
+          email: u.email ?? `مستخدم-${u.id.slice(0, 8)}`,
+          created_at: u.created_at,
+          last_sign_in_at: u.last_sign_in_at,
           stats: s,
-          progress_count: progressMap[uid] ?? 0,
-          is_online: online.some((o: any) => o.user_id === uid),
+          progress_count: progressMap[u.id] ?? 0,
+          is_online: online.some((o: any) => o.user_id === u.id),
         };
       });
 
@@ -78,7 +75,19 @@ export default function Admin() {
   }
 
   async function togglePro(userId: string, current: boolean) {
-    await supabase.from("user_stats").update({ is_pro: !current }).eq("user_id", userId);
+    // Try update first, if no row exists insert it
+    const { error } = await supabase.from("user_stats")
+      .update({ is_pro: !current }).eq("user_id", userId);
+    if (error || !current) {
+      // upsert to handle new users without stats
+      await supabase.from("user_stats").upsert({
+        user_id: userId,
+        is_pro: !current,
+        total_xp: 0, streak: 0, exercises_completed: 0,
+        weekly_xp: [0,0,0,0,0,0,0],
+        last_activity_date: new Date().toISOString().split("T")[0],
+      }, { onConflict: "user_id" });
+    }
     loadUsers();
   }
 
