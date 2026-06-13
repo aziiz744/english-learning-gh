@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LoginModal } from "@/components/login-modal";
+import { WelcomeModal } from "@/components/welcome-modal";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Roadmap from "@/pages/roadmap";
@@ -12,6 +13,7 @@ import LessonDetail from "@/pages/lesson-detail";
 import Achievements from "@/pages/achievements";
 import LevelTest from "@/pages/level-test";
 import Admin from "@/pages/admin";
+import Reading from "@/pages/reading";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,7 @@ function Router() {
       <Route path="/achievements" component={Achievements} />
       <Route path="/level-test/:level" component={LevelTest} />
       <Route path="/admin" component={Admin} />
+      <Route path="/reading" component={Reading} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -39,6 +42,7 @@ function App() {
           <Router />
         </WouterRouter>
         <LoginModal />
+        <WelcomeModal />
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

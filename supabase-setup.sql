@@ -68,3 +68,19 @@ create policy "Users can insert own tests" on public.level_tests
   for insert with check (auth.uid() = user_id);
 create policy "Users can update own tests" on public.level_tests
   for update using (auth.uid() = user_id);
+
+-- ── Add pro field to user_stats ──
+alter table public.user_stats add column if not exists is_pro boolean default false;
+
+-- ── Online tracking table ──
+create table if not exists public.user_sessions (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  last_seen timestamptz default now(),
+  unique(user_id)
+);
+alter table public.user_sessions enable row level security;
+create policy "Users can manage own session" on public.user_sessions
+  for all using (auth.uid() = user_id);
+create policy "Admins can view all sessions" on public.user_sessions
+  for select using (true);

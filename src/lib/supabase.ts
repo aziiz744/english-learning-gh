@@ -96,13 +96,14 @@ export interface RoadmapLevel {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
+  const ADMIN_EMAILS = ["azoozalgamde2@gmail.com"];
   return {
     id: user.id,
     email: user.email ?? null,
     firstName: user.user_metadata?.full_name?.split(" ")[0] ?? null,
     lastName: user.user_metadata?.full_name?.split(" ").slice(1).join(" ") ?? null,
     profileImageUrl: user.user_metadata?.avatar_url ?? null,
-    isAdmin: false,
+    isAdmin: ADMIN_EMAILS.includes(user.email ?? ""),
     isBanned: false,
   };
 }

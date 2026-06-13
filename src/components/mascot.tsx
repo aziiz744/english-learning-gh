@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, type Target, type Transition } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export type MascotState = "idle" | "thinking" | "correct" | "wrong" | "combo" | "complete";
+export type MascotState = "idle" | "thinking" | "correct" | "wrong" | "combo" | "combo5" | "complete";
 
 interface Config {
   mouth: string;
@@ -52,6 +52,13 @@ const STATES: Record<MascotState, Config> = {
     pupilScale: 1.25, leftPupilX: 43, rightPupilX: 77, pupilY: 58,
     bubble: "سلسلة رائعة! 🔥", bubbleColor: "bg-amber-500/10 border-amber-500/30 text-amber-400", armRaise: true,
   },
+  combo5: {
+    mouth:   "M 38 68 Q 60 90 82 68",
+    brow1:   "M 30 39 Q 43 34 56 39",
+    brow2:   "M 64 39 Q 77 34 90 39",
+    pupilScale: 1.35, leftPupilX: 43, rightPupilX: 77, pupilY: 56,
+    bubble: "5 إجابات صحيحة متتالية! أنت رائع! 🌟🔥", bubbleColor: "bg-yellow-500/20 border-yellow-400/50 text-yellow-300", armRaise: true,
+  },
   complete: {
     mouth:   "M 41 69 Q 60 87 79 69",
     brow1:   "M 31 41 Q 43 37 55 41",
@@ -68,6 +75,7 @@ const BODY_ANIMS: Record<MascotState, AnimDef> = {
   correct:  { y: [0, -22, -4, -16, 0],                        transition: { duration: 0.65, ease: "easeOut" } },
   wrong:    { x: [0, -10, 10, -8, 8, -4, 4, 0],              transition: { duration: 0.5,  ease: "easeOut" } },
   combo:    { y: [0, -18, 0, -12, 0], scale: [1, 1.08, 1, 1.05, 1], transition: { duration: 0.7 } },
+  combo5:   { y: [0, -30, -5, -25, 0, -15, 0], scale: [1, 1.15, 1, 1.1, 1], rotate: [-8, 8, -5, 5, 0], transition: { duration: 1.2 } },
   complete: { y: [0, -26, -8, -20, 0], rotate: [-5, 5, -3, 3, 0], scale: [1, 1.12, 1], transition: { duration: 0.85 } },
 };
 

@@ -30,6 +30,15 @@ type QueueItem =
   | { kind: "mini"; exercise: MiniExercise };
 
 /* ───────── Confetti ───────── */
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 const CONFETTI_COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#f97316"];
 
 function Confetti() {
@@ -81,7 +90,17 @@ function FloatingXP({ xp, onDone }: { xp: number; onDone: () => void }) {
 }
 
 /* ───────── Hearts ───────── */
-function Hearts({ count, max = 3 }: { count: number; max?: number }) {
+function Hearts({ count, max = 3, isPro = false }: { count: number; max?: number; isPro?: boolean }) {
+  if (isPro) return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <motion.div key={i} animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2, delay: i * 0.3 }}>
+          <Heart className="w-6 h-6 fill-blue-400 text-blue-400" />
+        </motion.div>
+      ))}
+      <span className="text-xs text-blue-400 font-bold mr-1">∞</span>
+    </div>
+  );
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: max }).map((_, i) => (
@@ -126,6 +145,17 @@ export default function LessonDetail() {
 
   // Gamification state
   const [hearts, setHearts] = useState(challengeMode ? 1 : 3);
+  const [isPro, setIsPro] = useState(false);
+  useEffect(() => {
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          supabase.from("user_stats").select("is_pro").eq("user_id", user.id).single()
+            .then(({ data }) => setIsPro(data?.is_pro ?? false));
+        }
+      });
+    });
+  }, []);
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
   const [showXpFloat, setShowXpFloat] = useState<{ xp: number; key: number } | null>(null);
@@ -158,7 +188,12 @@ export default function LessonDetail() {
     const starsCount = Math.min(lesson.stars ?? 0, 2);
     const tier: 0 | 1 | 2 | 3 = challengeMode ? 3 : (starsCount as 0 | 1 | 2);
     const mini = getMiniExercisesForLesson(TARGET, tier, lesson.title);
-    setCombinedQueue(mini.map((exercise) => ({ kind: "mini" as const, exercise })));
+    setCombinedQueue(mini.map((exercise) => ({
+      kind: "mini" as const,
+      exercise: exercise.options && exercise.options.length > 0
+        ? { ...exercise, options: shuffleArray(exercise.options) }
+        : exercise,
+    })));
     setQueueBuilt(true);
   }, [lesson?.title, challengeMode, queueBuilt]);
 
@@ -191,6 +226,7 @@ export default function LessonDetail() {
 
             // Bonus XP for combo
             const bonusXp = newCombo >= 3 ? result.xpEarned * newCombo : result.xpEarned;
+            if (newCombo === 5) setMascotFor("combo5", 3500);
             xpFloatKey.current += 1;
             setShowXpFloat({ xp: bonusXp, key: xpFloatKey.current });
 
@@ -205,8 +241,8 @@ export default function LessonDetail() {
           } else {
             setCombo(0);
             setShowCombo(false);
-            const newHearts = hearts - 1;
-            setHearts(newHearts);
+            const newHearts = isPro ? hearts : hearts - 1;
+            if (!isPro) setHearts(newHearts);
             setCardShake(true);
             setTimeout(() => setCardShake(false), 500);
             setMascotFor("wrong");
@@ -245,8 +281,8 @@ export default function LessonDetail() {
     } else {
       setCombo(0);
       setShowCombo(false);
-      const newHearts = hearts - 1;
-      setHearts(newHearts);
+      const newHearts = isPro ? hearts : hearts - 1;
+      if (!isPro) setHearts(newHearts);
       setCardShake(true);
       setTimeout(() => setCardShake(false), 500);
       setMascotFor("wrong");
@@ -425,7 +461,7 @@ export default function LessonDetail() {
           <div className="flex-1 flex flex-col">
             {/* HUD */}
             <div className="mb-4 flex items-center justify-between gap-4">
-              <Hearts count={hearts} />
+              <Hearts count={hearts} isPro={isPro} />
 
               <div className="flex-1">
                 <div className="flex justify-between text-xs font-medium text-muted-foreground mb-1.5">
@@ -834,7 +870,7 @@ export default function LessonDetail() {
 
                 <div className="flex items-center justify-center gap-2 mb-6 text-sm text-muted-foreground">
                   <span>القلوب المتبقية:</span>
-                  <Hearts count={hearts} max={challengeMode ? 1 : 3} />
+                  <Hearts count={hearts} max={challengeMode ? 1 : 3} isPro={isPro} />
                 </div>
 
                 <div className="space-y-3">

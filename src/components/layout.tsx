@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Route, BookOpen, Trophy, Flame,
-  Shield, LogIn, LogOut, User, Menu, X,
+  Shield, LogIn, LogOut, User, Menu, X, Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
@@ -17,6 +17,7 @@ const navigation = [
   { name: "خارطة التعلم", href: "/roadmap",       icon: Route },
   { name: "الدروس",       href: "/lessons",       icon: BookOpen },
   { name: "الإنجازات",    href: "/achievements",  icon: Trophy },
+  { name: "القراءة",      href: "/reading",       icon: BookOpen },
 ];
 
 const TUTOR_TIPS = [
@@ -194,6 +195,13 @@ function SidebarContent({
                   )}
                 </div>
               </div>
+              {user.isAdmin && (
+                <Link href="/admin">
+                  <Button variant="outline" size="sm" className="w-full gap-2 text-xs mb-1">
+                    <Crown className="w-3.5 h-3.5" /> لوحة الإدارة
+                  </Button>
+                </Link>
+              )}
               <Button variant="outline" size="sm" className="w-full gap-2 text-xs" onClick={logout}>
                 <LogOut className="w-3.5 h-3.5" />
                 تسجيل الخروج
