@@ -107,8 +107,19 @@ export default function Reading() {
   const [tooltip, setTooltip] = useState<{ idx: number; word: string; translation: string } | null>(null);
   const [wordIndex, setWordIndex] = useState(-1);
   const [filter, setFilter] = useState<string>("الكل");
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const wordsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) { setIsPro(false); return; }
+        const { data } = await supabase.from("user_stats").select("is_pro").eq("user_id", user.id).single();
+        setIsPro(data?.is_pro ?? false);
+      });
+    });
+  }, []);
 
   const categories = ["الكل", ...Array.from(new Set(STORIES.map(s => s.category)))];
 
