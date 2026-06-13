@@ -144,6 +144,15 @@ async function ensureStats(userId: string, email?: string) {
 
 export async function getStats(userId: string, email?: string): Promise<UserStats> {
   await ensureStats(userId, email);
+  // Auto-revoke expired Pro
+  const { data: statsCheck } = await supabase
+    .from("user_stats").select("is_pro, pro_expires_at").eq("user_id", userId).single();
+  if (statsCheck?.is_pro && statsCheck?.pro_expires_at) {
+    if (new Date(statsCheck.pro_expires_at) < new Date()) {
+      await supabase.from("user_stats")
+        .update({ is_pro: false, pro_expires_at: null }).eq("user_id", userId);
+    }
+  }
 
   const { data: statsRow } = await supabase
     .from("user_stats")

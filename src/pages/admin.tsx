@@ -75,19 +75,17 @@ export default function Admin() {
   }
 
   async function togglePro(userId: string, current: boolean) {
-    // Try update first, if no row exists insert it
-    const { error } = await supabase.from("user_stats")
-      .update({ is_pro: !current }).eq("user_id", userId);
-    if (error || !current) {
-      // upsert to handle new users without stats
-      await supabase.from("user_stats").upsert({
-        user_id: userId,
-        is_pro: !current,
-        total_xp: 0, streak: 0, exercises_completed: 0,
-        weekly_xp: [0,0,0,0,0,0,0],
-        last_activity_date: new Date().toISOString().split("T")[0],
-      }, { onConflict: "user_id" });
-    }
+    const expiresAt = !current
+      ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+    await supabase.from("user_stats").upsert({
+      user_id: userId,
+      is_pro: !current,
+      pro_expires_at: expiresAt,
+      total_xp: 0, streak: 0, exercises_completed: 0,
+      weekly_xp: [0,0,0,0,0,0,0],
+      last_activity_date: new Date().toISOString().split("T")[0],
+    }, { onConflict: "user_id" });
     loadUsers();
   }
 

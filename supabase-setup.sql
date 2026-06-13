@@ -87,3 +87,15 @@ create policy "Admins can view all sessions" on public.user_sessions
 
 -- ── Add email column to user_stats ──
 alter table public.user_stats add column if not exists email text;
+
+-- Fix user_sessions policies
+drop policy if exists "Users can manage own session" on public.user_sessions;
+create policy "Users can insert own session" on public.user_sessions
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own session" on public.user_sessions
+  for update using (auth.uid() = user_id);
+create policy "Users can view own session" on public.user_sessions
+  for select using (auth.uid() = user_id);
+
+-- ── Add Pro expiry to user_stats ──
+alter table public.user_stats add column if not exists pro_expires_at timestamptz;
