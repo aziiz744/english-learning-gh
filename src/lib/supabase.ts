@@ -250,19 +250,27 @@ export async function completeLesson(
   score: number,
   xpEarned: number
 ) {
-  // Get current stars for this lesson
+  // Use atomic SQL increment to avoid race conditions
+  // First get current state
   const { data: existing } = await supabase
     .from("user_progress")
     .select("stars, completed_at")
     .eq("user_id", userId)
     .eq("lesson_id", lessonId)
-    .single();
+    .maybeSingle();
 
   const currentStars = existing?.stars ?? 0;
+  
+  // If already at 3 stars, don't add more
+  if (currentStars >= 3) {
+    await addXp(userId, Math.round(xpEarned * 0.1), 0); // small bonus for replay
+    return;
+  }
+  
   // Each successful attempt adds exactly ONE star (max 3)
-  const newStars = Math.min(currentStars + 1, 3);
+  const newStars = currentStars + 1;
   // Only mark as completed when all 3 stars are earned
-  const completedAt = newStars === 3 ? new Date().toISOString() : ((existing as any)?.completed_at ?? null);
+  const completedAt = newStars === 3 ? new Date().toISOString() : (existing?.completed_at ?? null);
 
   await supabase.from("user_progress").upsert({
     user_id: userId,

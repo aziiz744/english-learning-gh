@@ -169,7 +169,7 @@ export default function LessonDetail() {
 
   const handleStart = () => {
     if (combinedQueue.length > 0) setStep("exercises");
-    else finishLesson(100);
+    else setStep("exercises"); // no-op if queue empty
   };
 
   const handleSubmitAnswer = () => {
