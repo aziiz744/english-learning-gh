@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { registerLoginModal } from "@/lib/modal-state";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-// Global modal open function
-let _setOpen: ((v: boolean) => void) | null = null;
-export function openLoginModal() { _setOpen?.(true); }
 
 export function LoginModal() {
   const [open, setOpen] = useState(false);
@@ -16,7 +13,9 @@ export function LoginModal() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => { _setOpen = setOpen; return () => { _setOpen = null; }; }, []);
+  useEffect(() => {
+    registerLoginModal(() => setOpen(true));
+  }, []);
 
   async function handleSend() {
     if (!email.trim()) return;

@@ -1,8 +1,6 @@
-/**
- * Supabase Email Auth (Magic Link / OTP)
- */
 import { useState, useEffect, useCallback } from "react";
 import { supabase, getCurrentUser, signOut } from "../lib/supabase";
+import { triggerLoginModal } from "../lib/modal-state";
 import type { AuthUser } from "../lib/supabase";
 
 export type { AuthUser };
@@ -14,10 +12,6 @@ interface AuthState {
   login: () => void;
   logout: () => void;
 }
-
-// Simple modal state
-let _openLoginModal: (() => void) | null = null;
-export function openLoginModal() { _openLoginModal?.(); }
 
 export function useAuth(): AuthState {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -39,7 +33,7 @@ export function useAuth(): AuthState {
   }, [fetchUser]);
 
   const login = useCallback(() => {
-    _openLoginModal?.();
+    triggerLoginModal();
   }, []);
 
   const logout = useCallback(async () => {
