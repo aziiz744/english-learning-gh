@@ -17,11 +17,28 @@ export default function ResetPassword() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Check if we have a valid session from the reset link
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setReady(true);
-      else setError("رابط غير صالح أو منتهي الصلاحية");
-    });
+    // Parse hash params from URL
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get("access_token");
+    const type = params.get("type");
+
+    if (accessToken && type === "recovery") {
+      // Set the session using the token
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: params.get("refresh_token") ?? "",
+      }).then(({ error: err }) => {
+        if (err) setError("رابط غير صالح أو منتهي الصلاحية");
+        else setReady(true);
+      });
+    } else {
+      // Try existing session
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) setReady(true);
+        else setError("رابط غير صالح أو منتهي الصلاحية. اطلب رابطاً جديداً.");
+      });
+    }
   }, []);
 
   async function handleReset() {
@@ -40,7 +57,7 @@ export default function ResetPassword() {
     if (err) setError("حدث خطأ: " + err.message);
     else {
       setDone(true);
-      setTimeout(() => setLocation("/"), 2000);
+      setTimeout(() => setLocation("/"), 2500);
     }
   }
 
@@ -52,19 +69,32 @@ export default function ResetPassword() {
         className="bg-card border border-border rounded-2xl w-full max-w-sm p-6 shadow-2xl"
       >
         <div className="text-center mb-6">
-          <Lock className="w-12 h-12 mx-auto text-primary mb-3" />
-          <h1 className="text-xl font-bold">تغيير كلمة المرور</h1>
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Lock className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-xl font-bold">تعيين كلمة مرور جديدة</h1>
           <p className="text-sm text-muted-foreground mt-1">أدخل كلمة المرور الجديدة</p>
         </div>
 
         {done ? (
-          <div className="text-center space-y-3">
-            <CheckCircle className="w-12 h-12 text-green-400 mx-auto" />
-            <p className="font-bold text-green-400">تم تغيير كلمة المرور!</p>
+          <div className="text-center space-y-3 py-4">
+            <CheckCircle className="w-14 h-14 text-green-400 mx-auto" />
+            <p className="font-bold text-lg">تم بنجاح! 🎉</p>
             <p className="text-sm text-muted-foreground">جاري تحويلك للصفحة الرئيسية...</p>
           </div>
+        ) : error && !ready ? (
+          <div className="text-center space-y-4">
+            <p className="text-red-400 text-sm bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20">
+              ⚠️ {error}
+            </p>
+            <Button variant="outline" className="w-full" onClick={() => setLocation("/")}>
+              العودة للرئيسية
+            </Button>
+          </div>
         ) : !ready ? (
-          <div className="text-center text-red-400 text-sm">{error || "جاري التحقق..."}</div>
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
         ) : (
           <div className="space-y-3">
             <div className="relative">
@@ -74,11 +104,11 @@ export default function ResetPassword() {
                 placeholder="كلمة المرور الجديدة"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="pr-10 pl-10"
+                className="pr-10 pl-10 text-left"
                 dir="ltr"
               />
               <button onClick={() => setShowPass(s => !s)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
@@ -91,15 +121,19 @@ export default function ResetPassword() {
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleReset()}
-                className="pr-10"
+                className="pr-10 text-left"
                 dir="ltr"
               />
             </div>
 
-            {error && <p className="text-sm text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{error}</p>}
+            {error && (
+              <p className="text-sm text-red-400 bg-red-500/10 px-3 py-2 rounded-lg border border-red-500/20">
+                ⚠️ {error}
+              </p>
+            )}
 
-            <Button onClick={handleReset} disabled={loading} className="w-full py-5">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "حفظ كلمة المرور"}
+            <Button onClick={handleReset} disabled={loading} className="w-full py-5 font-bold">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "حفظ كلمة المرور الجديدة"}
             </Button>
           </div>
         )}
