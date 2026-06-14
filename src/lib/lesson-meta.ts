@@ -342,6 +342,67 @@ const META: Record<string, LessonMeta> = {
   },
 };
 
+const ARABIC_NAMES: Record<string, { arabic: string; icon: string }> = {
+  "Food & Drink": { arabic: "الطعام والشراب", icon: "🍔" },
+  "Simple Questions": { arabic: "الأسئلة البسيطة", icon: "❓" },
+  "Basic Prepositions": { arabic: "حروف الجر", icon: "📍" },
+  "The Alphabet & Phonics": { arabic: "الأبجدية والأصوات", icon: "🔤" },
+  "Articles: A, An, The": { arabic: "أدوات التعريف", icon: "📌" },
+  "Past Simple Tense": { arabic: "الماضي البسيط", icon: "⏪" },
+  "Present Continuous": { arabic: "المضارع المستمر", icon: "⏩" },
+  "Countable & Uncountable": { arabic: "الأسماء العددية", icon: "🔢" },
+  "Comparative Adjectives": { arabic: "صفات المقارنة", icon: "⚖️" },
+  "Future: Will & Going To": { arabic: "المستقبل", icon: "🔮" },
+  "Modal Verbs: Can & Must": { arabic: "الأفعال المساعدة", icon: "🎯" },
+  "Talking About Places": { arabic: "وصف الأماكن", icon: "🗺️" },
+  "Shopping & Money": { arabic: "التسوق والمال", icon: "🛒" },
+  "Weather & Seasons": { arabic: "الطقس والفصول", icon: "🌤️" },
+  "Present Perfect": { arabic: "المضارع التام", icon: "✅" },
+  "Past Continuous": { arabic: "الماضي المستمر", icon: "⏮️" },
+  "Reported Speech": { arabic: "الكلام المنقول", icon: "💬" },
+  "Conditionals 1 & 2": { arabic: "جمل الشرط", icon: "🔀" },
+  "Passive Voice": { arabic: "المبني للمجهول", icon: "🔄" },
+  "Relative Clauses": { arabic: "الجمل الموصولة", icon: "🔗" },
+  "Vocabulary: Travel & Tourism": { arabic: "السفر والسياحة", icon: "✈️" },
+  "Reading: News Articles": { arabic: "قراءة الأخبار", icon: "📰" },
+  "Listening Skills": { arabic: "مهارات الاستماع", icon: "🎧" },
+  "Writing Paragraphs": { arabic: "كتابة الفقرات", icon: "✍️" },
+  "Advanced Conditionals": { arabic: "الشرط المتقدم", icon: "🔀" },
+  "Modals: Advanced Use": { arabic: "الأفعال المساعدة المتقدمة", icon: "💭" },
+  "Discourse Markers": { arabic: "أدوات الربط", icon: "🔗" },
+  "Idiomatic Expressions": { arabic: "التعابير الاصطلاحية", icon: "💡" },
+  "Formal vs Informal": { arabic: "الرسمي وغير الرسمي", icon: "🎭" },
+  "Reading: Academic Texts": { arabic: "النصوص الأكاديمية", icon: "📚" },
+  "Listening: Lectures": { arabic: "الاستماع للمحاضرات", icon: "🎓" },
+  "Business English": { arabic: "إنجليزية الأعمال", icon: "💼" },
+  "Essay Writing": { arabic: "كتابة المقال", icon: "📝" },
+  "Vocabulary: Academic Word List": { arabic: "المفردات الأكاديمية", icon: "📖" },
+  "Inversion & Emphasis": { arabic: "القلب والتوكيد", icon: "🔤" },
+  "Advanced Passive Structures": { arabic: "المبني للمجهول المتقدم", icon: "🔄" },
+  "Subjunctive Mood": { arabic: "المضارع الافتراضي", icon: "🤔" },
+  "Hedging & Vagueness": { arabic: "أسلوب التحوط", icon: "🌫️" },
+  "Cohesion & Coherence": { arabic: "التماسك والترابط", icon: "🧩" },
+  "Formal Academic Writing": { arabic: "الكتابة الأكاديمية", icon: "🎓" },
+  "Advanced Listening: Accents & Speed": { arabic: "الاستماع المتقدم", icon: "🎧" },
+  "Argumentation & Critical Thinking": { arabic: "الحجة والتفكير الناقد", icon: "🧠" },
+  "Advanced Vocabulary: Collocations": { arabic: "المتلازمات اللغوية", icon: "📚" },
+  "Reading: Complex Texts": { arabic: "النصوص المعقدة", icon: "📖" },
+  "Stylistic Devices & Rhetoric": { arabic: "الأساليب البلاغية", icon: "✨" },
+  "Literary Texts: Analysis & Appreciation": { arabic: "تحليل النصوص الأدبية", icon: "📜" },
+  "Nuanced Vocabulary: Register & Connotation": { arabic: "دقة المفردات", icon: "💎" },
+  "Advanced Conversation: Debate Skills": { arabic: "مهارات النقاش", icon: "🗣️" },
+  "The English of Innovation": { arabic: "لغة الابتكار", icon: "💡" },
+  "Numbers & Counting": { arabic: "الأرقام والعد", icon: "🔢" },
+  "Colors & Descriptions": { arabic: "الألوان والأوصاف", icon: "🎨" },
+  "My Daily Routine": { arabic: "روتيني اليومي", icon: "⏰" },
+  "Family Members": { arabic: "أفراد العائلة", icon: "👨‍👩‍👧‍👦" },
+  "The Verb \'To Be\'": { arabic: "فعل 'يكون'", icon: "📝" },
+  "Writing for Publication": { arabic: "الكتابة للنشر", icon: "✍️" },
+};
+
 export function getLessonMeta(title: string): LessonMeta {
-  return META[title] ?? { arabic: title, icon: "📚", objectives: [] };
+  const extra = ARABIC_NAMES[title];
+  if (META[title]) return META[title];
+  if (extra) return { ...extra, objectives: [] };
+  return { arabic: title, icon: "📚", objectives: [] };
 }

@@ -437,7 +437,7 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto h-full flex flex-col pt-2 pb-4">
+      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100vh - 120px)"}}>
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
@@ -582,9 +582,9 @@ export default function LessonDetail() {
             </AnimatePresence>
 
             {/* Exercise + Mascot row */}
-            <div className="flex gap-2 flex-1">
+            <div className="flex gap-2 flex-1 overflow-hidden">
               {/* Main exercise */}
-              <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col min-h-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentExerciseIndex}
@@ -629,7 +629,7 @@ export default function LessonDetail() {
                     )}
                   </CardHeader>
 
-                  <CardContent className="flex-1 p-3 md:p-6 flex flex-col justify-center">
+                  <CardContent className="flex-1 p-3 md:p-4 flex flex-col justify-center overflow-y-auto">
                     {/* ── Mini: Word Order ── */}
                     {currentMini?.type === "word_order" && (
                       <WordOrderExercise
@@ -718,8 +718,8 @@ export default function LessonDetail() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Feedback & action */}
-            <div className="mt-6 min-h-[100px]">
+            {/* Feedback & action - sticky at bottom */}
+            <div className="mt-2 flex-shrink-0">
               {feedback ? (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -733,15 +733,15 @@ export default function LessonDetail() {
                 >
                   {/* Top bar */}
                   <div className={cn(
-                    "px-5 py-3 flex items-center gap-3",
+                    "px-4 py-2 flex items-center gap-2",
                     feedback.isCorrect ? "bg-green-500/15" : "bg-red-500/15"
                   )}>
-                    <span className="text-2xl">
+                    <span className="text-xl">
                       {feedback.isCorrect
                         ? combo >= 3 ? "🔥" : combo >= 2 ? "⚡" : "✅"
                         : "❌"}
                     </span>
-                    <h4 className={cn("font-bold text-lg", feedback.isCorrect ? "text-green-400" : "text-red-400")}>
+                    <h4 className={cn("font-bold text-base", feedback.isCorrect ? "text-green-400" : "text-red-400")}>
                       {feedback.isCorrect
                         ? combo >= 3 ? `كومبو رائع! ×${combo} 🔥`
                           : combo >= 2 ? `تسلسل ممتاز! ×${combo} ⚡`
