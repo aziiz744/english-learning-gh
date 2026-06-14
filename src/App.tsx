@@ -16,6 +16,7 @@ import Admin from "@/pages/admin";
 import Reading from "@/pages/reading";
 import Grammar from "@/pages/grammar";
 import Pro from "@/pages/pro";
+import ResetPassword from "@/pages/reset-password";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/reading" component={Reading} />
       <Route path="/grammar" component={Grammar} />
       <Route path="/pro" component={Pro} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route component={NotFound} />
     </Switch>
   );
