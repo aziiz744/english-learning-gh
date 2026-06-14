@@ -437,7 +437,7 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100vh - 120px)"}}>
+      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100dvh - 56px)"}}>
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
@@ -534,34 +534,27 @@ export default function LessonDetail() {
         {step === "exercises" && currentItem && (
           <div className="flex-1 flex flex-col">
             {/* HUD */}
-            <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex-shrink-0 space-y-1.5 pb-2">
+              {/* Hearts + XP row */}
+              <div className="flex items-center justify-between gap-2">
+                <Hearts count={hearts} isPro={isPro} />
+                <div className="flex items-center gap-1 text-primary font-bold text-sm bg-primary/10 px-2 py-1 rounded-full">
+                  <Zap className="w-3.5 h-3.5" />
+                  {totalXpEarned} XP
+                </div>
+              </div>
+              {/* Progress bar row */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <Progress value={progressPercent} className="h-2.5" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium w-8 text-left">{Math.round(progressPercent)}%</span>
+              </div>
               {showReviewBanner && (
-                <div className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-lg animate-pulse">
+                <div className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-lg animate-pulse text-center">
                   🔄 مراجعة الأسئلة التي أخطأت فيها
                 </div>
               )}
-              <Hearts count={hearts} isPro={isPro} />
-
-              <div className="flex-1">
-                <div className="flex justify-between text-xs font-medium text-muted-foreground mb-1.5">
-                  <span className="flex items-center gap-1.5">
-                    {currentMini ? (
-                      currentMini.type === "word_order"
-                        ? <><Shuffle className="w-3 h-3 text-violet-400" /> ترتيب الكلمات</>
-                        : <><Languages className="w-3 h-3 text-cyan-400" /> ترجمة</>
-                    ) : (
-                      <>تمرين {currentExerciseIndex + 1} من {totalItems}</>
-                    )}
-                  </span>
-                  <span>{Math.round(progressPercent)}%</span>
-                </div>
-                <Progress value={progressPercent} className="h-3" />
-              </div>
-
-              <div className="flex items-center gap-1 text-primary font-bold text-sm bg-primary/10 px-3 py-1.5 rounded-full">
-                <Zap className="w-4 h-4" />
-                {totalXpEarned} XP
-              </div>
             </div>
 
             {/* Combo banner */}
@@ -718,8 +711,8 @@ export default function LessonDetail() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Feedback & action - sticky at bottom */}
-            <div className="mt-2 flex-shrink-0">
+            {/* Feedback & action - always visible at bottom */}
+            <div className="flex-shrink-0 mt-auto pt-2">
               {feedback ? (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -751,11 +744,11 @@ export default function LessonDetail() {
                   </div>
 
                   {/* Body */}
-                  <div className="px-4 py-3 flex flex-col gap-3">
+                  <div className="px-3 py-2 flex flex-col gap-2">
                     <div className="flex-1 space-y-2">
                       {/* Explanation */}
                       {feedback.explanation && (
-                        <p className={cn("text-sm leading-relaxed", feedback.isCorrect ? "text-green-400/80" : "text-foreground/80")}>
+                        <p className={cn("text-xs leading-relaxed hidden md:block", feedback.isCorrect ? "text-green-400/80" : "text-foreground/80")}>
                           {feedback.explanation}
                         </p>
                       )}
