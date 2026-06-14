@@ -51,15 +51,22 @@ const STORIES: Story[] = [
 ];
 
 async function translateWord(word: string): Promise<string> {
-  const clean = word.replace(/[^a-zA-Z]/g, "").toLowerCase();
-  if (!clean) return "";
+  const clean = word.replace(/[^a-zA-Z\']/g, "").toLowerCase();
+  if (!clean || clean.length < 2) return "";
   try {
+    // Use MyMemory with email for better quota and accuracy
     const res = await fetch(
-      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|ar`
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|ar&de=noreply@example.com`
     );
     const data = await res.json();
     const translation = data.responseData?.translatedText;
-    if (translation && translation !== clean) return translation;
+    // Reject if same as input or looks wrong
+    if (translation && 
+        translation.toLowerCase() !== clean && 
+        !translation.includes("MYMEMORY") &&
+        translation.length > 0) {
+      return translation;
+    }
     return clean;
   } catch { return clean; }
 }
@@ -83,8 +90,8 @@ function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
               onClick={() => clean && onWordClick(token, idx)}
               className={`transition-all duration-150 ${clean ? "cursor-pointer hover:text-primary underline-offset-2 hover:underline" : ""} ${
                 idx === wordIndex
-                  ? "bg-primary text-primary-foreground px-0.5 rounded font-bold"
-                  : idx < wordIndex ? "text-muted-foreground" : "text-foreground"
+                  ? "text-primary underline underline-offset-2 decoration-2"
+                  : idx < wordIndex ? "text-muted-foreground/60" : "text-foreground"
               }`}
             >
               {token}
@@ -104,6 +111,9 @@ function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
 export default function Reading() {
   const [selected, setSelected] = useState<Story | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState<"slow" | "normal">("normal");
+  const currentWordIndexRef = useRef(0);
+  const textWordsRef = useRef<string[]>([]);
   const [tooltip, setTooltip] = useState<{ idx: number; word: string; translation: string } | null>(null);
   const [wordIndex, setWordIndex] = useState(-1);
   const [filter, setFilter] = useState<string>("الكل");
@@ -141,28 +151,48 @@ export default function Reading() {
     setPlaying(false);
   }
 
-  function startReading() {
+  function startReading(fromWordIndex = 0) {
     if (!selected) return;
     window.speechSynthesis.cancel();
     const words = selected.text.split(" ");
     wordsRef.current = words;
+    textWordsRef.current = words;
 
-    const utterance = new SpeechSynthesisUtterance(selected.text);
+    // Start from specific word if seeking
+    const textFromWord = words.slice(fromWordIndex).join(" ");
+    const utterance = new SpeechSynthesisUtterance(textFromWord);
     utterance.lang = "en-US";
-    utterance.rate = 0.85;
+    utterance.rate = speed === "slow" ? 0.6 : 0.9;
 
-    let currentWord = 0;
+    let currentWord = fromWordIndex;
+    currentWordIndexRef.current = fromWordIndex;
     utterance.onboundary = (e) => {
       if (e.name === "word") {
         setWordIndex(currentWord);
+        currentWordIndexRef.current = currentWord;
         currentWord++;
       }
     };
-    utterance.onend = () => { setPlaying(false); setWordIndex(-1); };
+    utterance.onend = () => { setPlaying(false); setWordIndex(-1); currentWordIndexRef.current = 0; };
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
     setPlaying(true);
+  }
+
+  function seekBack() {
+    // Go back ~5 words
+    const newIdx = Math.max(0, currentWordIndexRef.current - 5);
+    stopReading();
+    setTimeout(() => startReading(newIdx), 100);
+  }
+
+  function seekForward() {
+    // Go forward ~5 words
+    const words = textWordsRef.current;
+    const newIdx = Math.min(words.length - 1, currentWordIndexRef.current + 5);
+    stopReading();
+    setTimeout(() => startReading(newIdx), 100);
   }
 
   function stopReading() {
@@ -173,7 +203,19 @@ export default function Reading() {
 
   function togglePlay() {
     if (playing) stopReading();
-    else startReading();
+    else startReading(0);
+  }
+
+  function changeSpeed(newSpeed: "slow" | "normal") {
+    setSpeed(newSpeed);
+    if (playing) {
+      const idx = currentWordIndexRef.current;
+      stopReading();
+      setTimeout(() => {
+        // need to update speed before restarting
+        startReading(idx);
+      }, 100);
+    }
   }
 
   useEffect(() => { return () => stopReading(); }, []);
@@ -283,15 +325,47 @@ export default function Reading() {
                   </div>
 
                   {/* Audio Control */}
-                  <div className="flex items-center gap-3 mb-6 p-3 bg-muted/40 rounded-xl border border-border/50">
-                    <Button onClick={togglePlay} size="sm" className="gap-2 rounded-full">
-                      {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      {playing ? "إيقاف" : "تشغيل الصوت"}
-                    </Button>
-                    <Volume2 className={`w-4 h-4 ${playing ? "text-primary animate-pulse" : "text-muted-foreground"}`} />
-                    <span className="text-xs text-muted-foreground">
-                      {playing ? "جاري القراءة..." : "اضغط للاستماع مع تتبع النص"}
-                    </span>
+                  <div className="mb-4 p-3 bg-muted/40 rounded-xl border border-border/50 space-y-3">
+                    {/* Play controls row */}
+                    <div className="flex items-center gap-2">
+                      {/* Seek back */}
+                      <button onClick={seekBack} disabled={!playing}
+                        className="p-2 rounded-full bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+                        </svg>
+                      </button>
+
+                      {/* Play/Pause */}
+                      <Button onClick={togglePlay} size="sm" className="gap-2 rounded-full flex-1">
+                        {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        {playing ? "إيقاف" : "تشغيل"}
+                      </Button>
+
+                      {/* Seek forward */}
+                      <button onClick={seekForward} disabled={!playing}
+                        className="p-2 rounded-full bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+                        </svg>
+                      </button>
+
+                      <Volume2 className={`w-4 h-4 flex-shrink-0 ${playing ? "text-primary animate-pulse" : "text-muted-foreground"}`} />
+                    </div>
+
+                    {/* Speed control */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">السرعة:</span>
+                      <button onClick={() => changeSpeed("slow")}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "slow" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>
+                        🐢 بطيء
+                      </button>
+                      <button onClick={() => changeSpeed("normal")}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "normal" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>
+                        🐇 عادي
+                      </button>
+                      {playing && <span className="text-xs text-primary mr-auto">جاري القراءة...</span>}
+                    </div>
                   </div>
 
                   {/* Story Text with word highlighting + click to translate */}
