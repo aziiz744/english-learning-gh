@@ -17,28 +17,49 @@ export default function ResetPassword() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Parse hash params from URL
+    // Listen for PASSWORD_RECOVERY event from Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setReady(true);
+        setError("");
+      } else if (event === "SIGNED_IN" && session) {
+        // Check if we came from a recovery link
+        const hash = window.location.hash;
+        if (hash.includes("type=recovery")) {
+          setReady(true);
+          setError("");
+        }
+      }
+    });
+
+    // Also check current session and hash
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    const accessToken = params.get("access_token");
     const type = params.get("type");
+    const accessToken = params.get("access_token");
 
-    if (accessToken && type === "recovery") {
-      // Set the session using the token
+    if (type === "recovery" && accessToken) {
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: params.get("refresh_token") ?? "",
-      }).then(({ error: err }) => {
-        if (err) setError("رابط غير صالح أو منتهي الصلاحية");
-        else setReady(true);
+      }).then(({ data, error: err }) => {
+        if (err) {
+          setError("رابط غير صالح أو منتهي الصلاحية");
+        } else if (data.session) {
+          setReady(true);
+        }
       });
     } else {
-      // Try existing session
+      // No token in URL - check if already in recovery session
       supabase.auth.getSession().then(({ data }) => {
-        if (data.session) setReady(true);
-        else setError("رابط غير صالح أو منتهي الصلاحية. اطلب رابطاً جديداً.");
+        if (!data.session) {
+          setError("رابط غير صالح أو منتهي الصلاحية");
+        }
+        // Don't set ready here - wait for PASSWORD_RECOVERY event
       });
     }
+
+    return () => subscription.unsubscribe();
   }, []);
 
   async function handleReset() {
@@ -57,6 +78,7 @@ export default function ResetPassword() {
     if (err) setError("حدث خطأ: " + err.message);
     else {
       setDone(true);
+      await supabase.auth.signOut();
       setTimeout(() => setLocation("/"), 2500);
     }
   }
@@ -80,7 +102,7 @@ export default function ResetPassword() {
           <div className="text-center space-y-3 py-4">
             <CheckCircle className="w-14 h-14 text-green-400 mx-auto" />
             <p className="font-bold text-lg">تم بنجاح! 🎉</p>
-            <p className="text-sm text-muted-foreground">جاري تحويلك للصفحة الرئيسية...</p>
+            <p className="text-sm text-muted-foreground">يمكنك الآن الدخول بكلمة المرور الجديدة</p>
           </div>
         ) : error && !ready ? (
           <div className="text-center space-y-4">
@@ -92,8 +114,9 @@ export default function ResetPassword() {
             </Button>
           </div>
         ) : !ready ? (
-          <div className="flex justify-center py-8">
+          <div className="flex flex-col items-center gap-3 py-8">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">جاري التحقق من الرابط...</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -106,6 +129,7 @@ export default function ResetPassword() {
                 onChange={e => setPassword(e.target.value)}
                 className="pr-10 pl-10 text-left"
                 dir="ltr"
+                autoFocus
               />
               <button onClick={() => setShowPass(s => !s)}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
