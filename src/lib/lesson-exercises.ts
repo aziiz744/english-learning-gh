@@ -74,6 +74,60 @@ export const FALLBACK: TieredBank = {
   ],
 };
 
+// ── Simple Questions Bank ────────────────────────────────
+const SIMPLE_QUESTIONS_BANK: TieredBank = {
+  t0: [
+    { id:"sq-t0-1", type:"word_order", sentence:"What is your name", correctAnswer:"What is your name", explanation:"What is your name? — سؤال عن الاسم", xp:12 },
+    { id:"sq-t0-2", type:"translate", arabic:"من أين أنت؟", options:["Where are you from?","Where you from?","From where you?","Where are from you?"], correctAnswer:"Where are you from?", explanation:"Where are you from? — سؤال عن البلد", xp:12 },
+    { id:"sq-t0-3", type:"word_order", sentence:"How old are you", correctAnswer:"How old are you", explanation:"How old are you? — سؤال عن العمر", xp:12 },
+    { id:"sq-t0-4", type:"translate", arabic:"ما هو عملك؟", options:["What do you do?","What you do?","What are you do?","What do you doing?"], correctAnswer:"What do you do?", explanation:"What do you do? — سؤال عن الوظيفة", xp:12 },
+    { id:"sq-t0-5", type:"word_order", sentence:"Where do you live", correctAnswer:"Where do you live", explanation:"Where do you live? — سؤال عن مكان السكن", xp:12 },
+    { id:"sq-t0-6", type:"translate", arabic:"هل تتكلم الإنجليزية؟", options:["Do you speak English?","Are you speak English?","Do you speaking English?","You speak English?"], correctAnswer:"Do you speak English?", explanation:"Do you + فعل — سؤال نعم/لا", xp:12 },
+    { id:"sq-t0-7", type:"word_order", sentence:"Who is your teacher", correctAnswer:"Who is your teacher", explanation:"Who is...? — سؤال عن شخص", xp:12 },
+    { id:"sq-t0-8", type:"translate", arabic:"كم عدد أفراد عائلتك؟", options:["How many people are in your family?","How much people in your family?","How many people is in your family?","How people are in your family?"], correctAnswer:"How many people are in your family?", explanation:"How many + جمع — سؤال عن الكمية", xp:13 },
+    { id:"sq-t0-9", type:"listen_select", listenSentence:"What is your favorite color?", options:["color","name","job","age"], correctAnswer:"color", explanation:"السؤال عن اللون المفضل — color", xp:12 },
+    { id:"sq-t0-10", type:"translate", arabic:"أين تعمل؟", options:["Where do you work?","Where you work?","Where are you work?","Where do you working?"], correctAnswer:"Where do you work?", explanation:"Where do you work? — سؤال عن مكان العمل", xp:12 },
+  ],
+  t1: [
+    { id:"sq-t1-1", type:"word_order", sentence:"What time does the school start", correctAnswer:"What time does the school start", explanation:"What time does...? — سؤال عن وقت بدء حدث", xp:14 },
+    { id:"sq-t1-2", type:"translate", arabic:"هل يحب أخوك القهوة؟", options:["Does your brother like coffee?","Do your brother like coffee?","Is your brother like coffee?","Does your brother likes coffee?"], correctAnswer:"Does your brother like coffee?", explanation:"Does + فاعل مفرد + فعل مجرد — سؤال نعم/لا", xp:14 },
+    { id:"sq-t1-3", type:"word_order", sentence:"Why do you study English", correctAnswer:"Why do you study English", explanation:"Why do you...? — سؤال عن السبب", xp:14 },
+    { id:"sq-t1-4", type:"translate", arabic:"من يدرّس اللغة الإنجليزية؟", options:["Who teaches English?","Who teach English?","Who is teaching English?","Who does teaches English?"], correctAnswer:"Who teaches English?", explanation:"Who + فعل مع s — السؤال عن الفاعل", xp:15 },
+    { id:"sq-t1-5", type:"word_order", sentence:"How often do you exercise", correctAnswer:"How often do you exercise", explanation:"How often do you...? — سؤال عن التكرار", xp:14 },
+    { id:"sq-t1-6", type:"translate", arabic:"ماذا تفعل في وقت الفراغ؟", options:["What do you do in your free time?","What you do in your free time?","What are you do in free time?","What do you doing free time?"], correctAnswer:"What do you do in your free time?", explanation:"What do you do...? — سؤال عن النشاط", xp:15 },
+    { id:"sq-t1-7", type:"listen_select", listenSentence:"How many brothers do you have?", options:["brothers","sisters","friends","children"], correctAnswer:"brothers", explanation:"السؤال عن عدد الإخوة — brothers", xp:14 },
+    { id:"sq-t1-8", type:"word_order", sentence:"Which sport do you prefer", correctAnswer:"Which sport do you prefer", explanation:"Which...do you...? — سؤال للاختيار", xp:14 },
+    { id:"sq-t1-9", type:"translate", arabic:"هل تعيش هنا منذ وقت طويل؟", options:["Have you lived here for a long time?","Do you live here for a long time?","Are you living here for a long time?","Did you live here for a long time?"], correctAnswer:"Have you lived here for a long time?", explanation:"Have you + تصريف ثالث — سؤال في المضارع التام", xp:15 },
+    { id:"sq-t1-10", type:"translate", arabic:"من الذي اتصل بك؟", options:["Who called you?","Who did call you?","Who was called you?","Who calling you?"], correctAnswer:"Who called you?", explanation:"Who + فعل ماضٍ — سؤال عن الفاعل في الماضي", xp:14 },
+  ],
+  t2: [
+    { id:"sq-t2-1", type:"word_order", sentence:"What would you do if you had more time", correctAnswer:"What would you do if you had more time", explanation:"What would you do if...? — سؤال افتراضي", xp:17 },
+    { id:"sq-t2-2", type:"translate", arabic:"لماذا لم تأتِ إلى الاجتماع؟", options:["Why didn't you come to the meeting?","Why you didn't come to the meeting?","Why did you not come the meeting?","Why didn't you came to the meeting?"], correctAnswer:"Why didn't you come to the meeting?", explanation:"Why didn't you + فعل مجرد — سؤال نفي ماضٍ", xp:18 },
+    { id:"sq-t2-3", type:"word_order", sentence:"How long have you been waiting here", correctAnswer:"How long have you been waiting here", explanation:"How long have you been...? — سؤال عن مدة استمرار فعل", xp:17 },
+    { id:"sq-t2-4", type:"translate", arabic:"هل كنت تعمل عندما اتصلت بك؟", options:["Were you working when I called?","Did you work when I called?","Are you working when I called?","Was you working when I called?"], correctAnswer:"Were you working when I called?", explanation:"Were you + ing — سؤال ماضٍ مستمر", xp:18 },
+    { id:"sq-t2-5", type:"listen_select", listenSentence:"How long have you been learning English?", options:["learning","speaking","teaching","studying"], correctAnswer:"learning", explanation:"السؤال عن مدة تعلم الإنجليزية — learning", xp:17 },
+    { id:"sq-t2-6", type:"word_order", sentence:"What kind of music do you enjoy listening to", correctAnswer:"What kind of music do you enjoy listening to", explanation:"What kind of...? — سؤال للتصنيف", xp:18 },
+    { id:"sq-t2-7", type:"translate", arabic:"هل تم إنجاز المشروع في الوقت المحدد؟", options:["Was the project completed on time?","Did the project complete on time?","Is the project completed on time?","Has the project completed on time?"], correctAnswer:"Was the project completed on time?", explanation:"Was + اسم + تصريف ثالث — سؤال مبني للمجهول", xp:18 },
+    { id:"sq-t2-8", type:"translate", arabic:"من أين حصلت على هذه المعلومات؟", options:["Where did you get this information?","Where you got this information?","From where did you got this information?","Where did you got this information?"], correctAnswer:"Where did you get this information?", explanation:"Where did you get...? — سؤال عن مصدر", xp:17 },
+    { id:"sq-t2-9", type:"word_order", sentence:"Which of these options would you choose", correctAnswer:"Which of these options would you choose", explanation:"Which of...would you...? — سؤال اختيار بين خيارات", xp:17 },
+    { id:"sq-t2-10", type:"translate", arabic:"كم من الوقت استغرق الأمر؟", options:["How long did it take?","How much time did it take?","How long it did take?","How long has it taken?"], correctAnswer:"How long did it take?", explanation:"How long did it take? — سؤال عن المدة الزمنية", xp:18 },
+  ],
+  t3: [
+    { id:"sq-t3-1", type:"word_order", sentence:"To what extent do you agree with this statement", correctAnswer:"To what extent do you agree with this statement", explanation:"To what extent...? — سؤال أكاديمي عن درجة الموافقة", xp:22 },
+    { id:"sq-t3-2", type:"translate", arabic:"ألا تعتقد أن هذا القرار كان خاطئاً؟", options:["Don't you think this decision was wrong?","Do you not think this decision was wrong?","Isn't you thinking this decision was wrong?","Don't you thought this decision was wrong?"], correctAnswer:"Don't you think this decision was wrong?", explanation:"Don't you think...? — سؤال سلبي للتأكيد", xp:23 },
+    { id:"sq-t3-3", type:"word_order", sentence:"Wouldn't it be better to reconsider the plan", correctAnswer:"Wouldn't it be better to reconsider the plan", explanation:"Wouldn't it be better to...? — سؤال اقتراحي راقٍ", xp:23 },
+    { id:"sq-t3-4", type:"translate", arabic:"هل يمكنك توضيح ما تقصده بالضبط؟", options:["Could you clarify exactly what you mean?","Can you clarify exactly what you mean?","Would you clarify exactly what do you mean?","Could you clarify exactly what do you mean?"], correctAnswer:"Could you clarify exactly what you mean?", explanation:"Could you...? — طلب مؤدب، embedded question بدون do", xp:24 },
+    { id:"sq-t3-5", type:"listen_select", listenSentence:"Under what circumstances would you change your decision?", options:["circumstances","conditions","situations","reasons"], correctAnswer:"circumstances", explanation:"سؤال عن الظروف — circumstances", xp:23 },
+    { id:"sq-t3-6", type:"word_order", sentence:"How might this policy affect future generations", correctAnswer:"How might this policy affect future generations", explanation:"How might...? — سؤال تحليلي باستخدام might", xp:23 },
+    { id:"sq-t3-7", type:"translate", arabic:"ماذا كان يمكن أن يحدث لو اتخذنا قراراً مختلفاً؟", options:["What might have happened if we had made a different decision?","What might happen if we made a different decision?","What could happen if we had made a different decision?","What might have happened if we made a different decision?"], correctAnswer:"What might have happened if we had made a different decision?", explanation:"What might have happened if...had...? — شرط ثالث", xp:25 },
+    { id:"sq-t3-8", type:"word_order", sentence:"In what ways has technology changed the way we communicate", correctAnswer:"In what ways has technology changed the way we communicate", explanation:"In what ways has...? — سؤال تحليلي عن التغيير", xp:24 },
+    { id:"sq-t3-9", type:"translate", arabic:"ما مدى تأثير هذا القرار على الاقتصاد؟", options:["To what extent has this decision affected the economy?","How much has this decision affected the economy?","To what extent did this decision affect the economy?","How far has this decision affected the economy?"], correctAnswer:"To what extent has this decision affected the economy?", explanation:"To what extent has...? — سؤال أكاديمي عن التأثير", xp:25 },
+    { id:"sq-t3-10", type:"translate", arabic:"ألم يكن من الأولى الاستشارة قبل اتخاذ القرار؟", options:["Shouldn't consultation have taken place before the decision?","Shouldn't consultation take place before the decision?","Should consultation have taken place before the decision?","Shouldn't have consultation taken place before the decision?"], correctAnswer:"Shouldn't consultation have taken place before the decision?", explanation:"Shouldn't + have + تصريف ثالث — انتقاد راقٍ للماضي", xp:25 },
+  ],
+};
+
+B["Simple Questions"] = SIMPLE_QUESTIONS_BANK;
+
 // ── Public API ────────────────────────────────
 function pickN<T>(arr: T[], n: number): T[] {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));

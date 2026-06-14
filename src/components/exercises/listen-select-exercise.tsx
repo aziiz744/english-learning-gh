@@ -1,5 +1,33 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+
+const translateCache: Record<string, string> = {};
+const COMMON: Record<string, string> = {
+  "i":"أنا","am":"أكون","is":"يكون","are":"يكونون","the":"الـ","a":"أ","an":"أ",
+  "late":"متأخر","for":"لـ","meeting":"اجتماع","from":"من","to":"إلى","in":"في",
+  "on":"على","at":"في","have":"يملك","has":"يملك","do":"يفعل","not":"لا",
+  "my":"لي","your":"لك","his":"له","her":"لها","we":"نحن","they":"هم",
+  "go":"يذهب","come":"يأتي","see":"يرى","know":"يعلم","think":"يفكر",
+  "want":"يريد","like":"يحب","love":"يحب","need":"يحتاج","work":"يعمل",
+  "good":"جيد","bad":"سيئ","big":"كبير","small":"صغير","happy":"سعيد",
+  "home":"منزل","school":"مدرسة","today":"اليوم","now":"الآن","here":"هنا",
+  "please":"من فضلك","sorry":"آسف","thank":"شكر","hello":"مرحباً","bye":"وداعاً",
+};
+
+async function translateWordInline(word: string): Promise<string> {
+  const clean = word.replace(/[^a-zA-Z]/g, "").toLowerCase();
+  if (!clean) return word;
+  if (translateCache[clean]) return translateCache[clean];
+  if (COMMON[clean]) { translateCache[clean] = COMMON[clean]; return COMMON[clean]; }
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|ar`);
+    const data = await res.json();
+    const t = data.responseData?.translatedText;
+    if (t && /[؀-ۿ]/.test(t)) { translateCache[clean] = t; return t; }
+  } catch {}
+  return word;
+}
 import { Volume2, VolumeX, Loader2, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +92,48 @@ function useSpeech(sentence: string) {
 function blankSentence(sentence: string, target: string): string {
   const regex = new RegExp(`\\b${target}\\b`, "i");
   return sentence.replace(regex, "______");
+}
+
+function ClickableWordsInline({ sentence }: { sentence: string }) {
+  const [tooltip, setTooltip] = useState<{word: string; translation: string; idx: number} | null>(null);
+
+  const handleClick = useCallback(async (word: string, idx: number) => {
+    const clean = word.replace(/[^a-zA-Z]/g, "");
+    if (!clean) return;
+    setTooltip({ word: clean, translation: "...", idx });
+    const t = await translateWordInline(clean);
+    setTooltip({ word: clean, translation: t, idx });
+    setTimeout(() => setTooltip(null), 2500);
+  }, []);
+
+  const parts = sentence.split(/(______|\s+)/);
+  let wordIdx = 0;
+  return (
+    <p className="text-lg font-semibold leading-relaxed" dir="ltr">
+      {parts.map((part, i) => {
+        if (!part) return null;
+        if (part === "______") return <span key={i} className="inline-block border-b-2 border-primary w-16 mx-1" />;
+        if (/^\s+$/.test(part)) return <span key={i}>{part}</span>;
+        const idx = wordIdx++;
+        const clean = part.replace(/[^a-zA-Z]/g, "");
+        return (
+          <span key={i} className="relative inline">
+            <span
+              onClick={() => clean && handleClick(part, idx)}
+              className={`${clean ? "cursor-pointer hover:text-primary underline-offset-2 hover:underline" : ""}`}
+            >
+              {part}
+            </span>
+            {tooltip?.idx === idx && clean && (
+              <span className="absolute bottom-full left-0 mb-1 bg-card border border-border text-foreground text-xs px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 font-medium" dir="rtl">
+                🔤 {tooltip.translation === "..." ? "⏳" : tooltip.translation}
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </p>
+  );
 }
 
 export function ListenSelectExercise({
@@ -175,29 +245,11 @@ export function ListenSelectExercise({
         )}
       </AnimatePresence>
 
-      {/* Sentence with blank */}
-      <div className="bg-muted/30 border border-border rounded-2xl px-5 py-4 text-center">
-        <p className="text-lg font-semibold leading-relaxed" dir="ltr">
-          {display.split("______").map((part, i, arr) => (
-            <span key={i}>
-              {part}
-              {i < arr.length - 1 && (
-                <span className={cn(
-                  "inline-block min-w-[80px] border-b-2 mx-1 text-center font-bold",
-                  feedback
-                    ? feedback.isCorrect
-                      ? "border-green-500 text-green-400"
-                      : "border-red-500 text-red-400"
-                    : "border-primary/60 text-primary"
-                )}>
-                  {feedback ? correctAnswer : selected ? selected : ""}
-                </span>
-              )}
-            </span>
-          ))}
-        </p>
+      {/* Sentence with blank - clickable words for translation */}
+      <div className="bg-muted/30 border border-border rounded-2xl px-5 py-4 text-center relative">
+        <p className="text-xs text-muted-foreground mb-2">💡 اضغط على أي كلمة لترجمتها</p>
+        <ClickableWordsInline sentence={display} />
       </div>
-
       {/* Options */}
       <div className="grid grid-cols-2 gap-3">
         {options.map((opt) => {
