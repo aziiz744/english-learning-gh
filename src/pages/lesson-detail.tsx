@@ -437,7 +437,7 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100svh - 130px)"}}>
+      <div className="max-w-3xl mx-auto flex flex-col overflow-hidden" style={{height: "calc(100svh - 130px)"}}>
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
@@ -575,9 +575,9 @@ export default function LessonDetail() {
             </AnimatePresence>
 
             {/* Exercise + Mascot row */}
-            <div className="flex gap-2 flex-1 min-h-0">
+            <div className="flex gap-2 min-h-0" style={{flex: "1 1 0"}}>
               {/* Main exercise */}
-              <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex flex-col min-h-0" style={{flex: "1 1 0"}}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentExerciseIndex}
@@ -587,7 +587,7 @@ export default function LessonDetail() {
                 transition={{ duration: 0.25 }}
                 className="flex-1 flex flex-col"
               >
-                <Card className={cn("flex-1 flex flex-col", cardShake && "shake")}>
+                <Card className={cn("flex flex-col min-h-0", cardShake && "shake")} style={{flex: "1 1 0"}}>
                   {/* Card header — differs for mini vs API */}
                   <CardHeader className={cn(
                     "pb-5 border-b border-border/50",
@@ -622,7 +622,7 @@ export default function LessonDetail() {
                     )}
                   </CardHeader>
 
-                  <CardContent className="p-3 flex flex-col justify-center overflow-y-auto" style={{maxHeight: "calc(100svh - 280px)"}}>
+                  <CardContent className="p-3 flex flex-col justify-start overflow-y-auto overscroll-contain" style={{flex: "1 1 0", minHeight: 0}}>
                     {/* ── Mini: Word Order ── */}
                     {currentMini?.type === "word_order" && (
                       <WordOrderExercise
@@ -713,10 +713,6 @@ export default function LessonDetail() {
 
             {/* Feedback & action - fixed above bottom nav */}
             <div className="flex-shrink-0 mt-auto">
-              {/* Mascot - visible on mobile above feedback */}
-              <div className="lg:hidden flex justify-start px-2 -mb-1">
-                <Mascot state={mascotState} className="w-14 h-20" />
-              </div>
               {feedback ? (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
