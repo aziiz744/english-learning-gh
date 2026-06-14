@@ -131,3 +131,7 @@ drop policy if exists "Users can view own session" on public.user_sessions;
 drop policy if exists "Admins can view all sessions" on public.user_sessions;
 create policy "Anyone can read sessions" on public.user_sessions
   for select using (true);
+
+-- ── Disable email confirmation requirement (allow immediate login after signup) ──
+-- Run this in Supabase Dashboard > Authentication > Settings
+-- Set "Enable email confirmations" to OFF
