@@ -116,12 +116,20 @@ export default function Admin() {
     }
   }
 
-  async function deleteUser(userId: string) {
-    if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
-    await supabase.from("user_progress").delete().eq("user_id", userId);
-    await supabase.from("user_stats").delete().eq("user_id", userId);
-    await supabase.from("user_sessions").delete().eq("user_id", userId);
-    loadUsers();
+  async function deleteUser(userId: string, email: string) {
+    if (!confirm(`هل أنت متأكد من حذف مستخدم ${email}؟
+سيتم حذف جميع بياناته نهائياً.`)) return;
+    
+    try {
+      const { error } = await supabase.rpc("admin_delete_user", {
+        target_user_id: userId,
+      });
+      if (error) throw error;
+      await loadUsers();
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      alert("حدث خطأ أثناء الحذف: " + (err?.message ?? "غير معروف"));
+    }
   }
 
   if (!user?.isAdmin) return null;
@@ -216,7 +224,7 @@ export default function Admin() {
                         size="sm"
                         variant="destructive"
                         className="gap-1 text-xs h-7"
-                        onClick={() => deleteUser(u.id)}
+                        onClick={() => deleteUser(u.id, u.email)}
                       >
                         <Trash2 className="w-3 h-3" />
                       </Button>
