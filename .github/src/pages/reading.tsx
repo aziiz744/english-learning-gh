@@ -50,18 +50,84 @@ const STORIES: Story[] = [
     text: "Most adults know that sleep is important, but few understand why. During sleep, the brain performs essential maintenance. It consolidates memories, moving information from short-term to long-term storage. It flushes out waste products that accumulate during waking hours. It regulates hormones that control hunger, stress, and growth. Without adequate sleep, cognitive performance declines rapidly. Studies show that after just one night of poor sleep, reaction time, decision-making, and emotional regulation all suffer significantly. Despite this, modern life treats sleep as optional. Many people wear their lack of sleep like a badge of productivity. The irony is that the less you sleep, the less productive you actually become. Protecting your sleep is not laziness. It is strategy." },
 ];
 
+// Translation cache
+const translationCache: Record<string, string> = {};
+
+// Common words dictionary for instant accurate translation
+const COMMON_WORDS: Record<string, string> = {
+  "the":"الـ","a":"أ","an":"أ","is":"يكون","are":"يكونون","was":"كان","were":"كانوا",
+  "have":"يملك","has":"يملك","had":"امتلك","do":"يفعل","does":"يفعل","did":"فعل",
+  "will":"سيـ","would":"سيكون","can":"يستطيع","could":"استطاع","should":"ينبغي",
+  "may":"ربما","might":"قد","must":"يجب","shall":"سـ","need":"يحتاج",
+  "i":"أنا","you":"أنت","he":"هو","she":"هي","it":"هو/هي","we":"نحن","they":"هم",
+  "my":"لي","your":"لك","his":"له","her":"لها","our":"لنا","their":"لهم",
+  "this":"هذا","that":"ذاك","these":"هؤلاء","those":"أولئك",
+  "and":"و","or":"أو","but":"لكن","not":"لا","no":"لا","yes":"نعم",
+  "in":"في","on":"على","at":"في/عند","to":"إلى","for":"لـ","of":"من/لـ",
+  "from":"من","with":"مع","by":"بواسطة","about":"حول","up":"فوق","down":"تحت",
+  "go":"يذهب","come":"يأتي","see":"يرى","know":"يعلم","think":"يفكر",
+  "say":"يقول","get":"يحصل","make":"يصنع","take":"يأخذ","give":"يعطي",
+  "look":"ينظر","want":"يريد","use":"يستخدم","find":"يجد","tell":"يخبر",
+  "ask":"يسأل","work":"يعمل","call":"يتصل","try":"يحاول","need":"يحتاج",
+  "feel":"يشعر","become":"يصبح","leave":"يغادر","put":"يضع","mean":"يعني",
+  "keep":"يحتفظ","let":"يدع","begin":"يبدأ","show":"يُظهر","hear":"يسمع",
+  "play":"يلعب","run":"يجري","move":"يتحرك","live":"يعيش","walk":"يمشي",
+  "good":"جيد","bad":"سيئ","big":"كبير","small":"صغير","new":"جديد",
+  "old":"قديم","great":"رائع","little":"صغير","large":"كبير","high":"عالي",
+  "long":"طويل","short":"قصير","different":"مختلف","same":"نفس","right":"صحيح",
+  "happy":"سعيد","sad":"حزين","angry":"غاضب","tired":"متعب","excited":"متحمس",
+  "beautiful":"جميل","ugly":"قبيح","fast":"سريع","slow":"بطيء","hot":"حار",
+  "cold":"بارد","easy":"سهل","hard":"صعب","important":"مهم","possible":"ممكن",
+  "day":"يوم","night":"ليل","time":"وقت","year":"سنة","month":"شهر","week":"أسبوع",
+  "home":"منزل","house":"بيت","school":"مدرسة","city":"مدينة","country":"بلد",
+  "world":"عالم","life":"حياة","family":"عائلة","friend":"صديق","people":"ناس",
+  "man":"رجل","woman":"امرأة","boy":"ولد","girl":"بنت","child":"طفل",
+  "dog":"كلب","cat":"قطة","bird":"طائر","fish":"سمكة","horse":"حصان",
+  "water":"ماء","food":"طعام","book":"كتاب","money":"مال","car":"سيارة",
+  "door":"باب","window":"نافذة","room":"غرفة","street":"شارع","road":"طريق",
+  "white":"أبيض","black":"أسود","red":"أحمر","blue":"أزرق","green":"أخضر",
+  "yellow":"أصفر","brown":"بني","color":"لون","name":"اسم","love":"حب",
+  "help":"مساعدة","work":"عمل","hand":"يد","eye":"عين","face":"وجه",
+  "head":"رأس","heart":"قلب","body":"جسد","sun":"شمس","moon":"قمر","sky":"سماء",
+  "again":"مرة أخرى","always":"دائماً","never":"أبداً","often":"كثيراً",
+  "very":"جداً","too":"أيضاً","also":"كذلك","just":"فقط","even":"حتى",
+  "still":"لا يزال","back":"رجوع","only":"فقط","well":"بشكل جيد",
+  "how":"كيف","what":"ماذا","when":"متى","where":"أين","why":"لماذا","who":"من",
+  "hello":"مرحباً","hi":"مرحباً","bye":"وداعاً","thanks":"شكراً","please":"من فضلك",
+  "sorry":"آسف","yes":"نعم","no":"لا","ok":"حسناً","wow":"رائع",
+};
+
 async function translateWord(word: string): Promise<string> {
   const clean = word.replace(/[^a-zA-Z]/g, "").toLowerCase();
-  if (!clean) return "";
+  if (!clean || clean.length < 2) return "";
+  
+  // Check cache
+  if (translationCache[clean]) return translationCache[clean];
+  
+  // Check common words dictionary first
+  if (COMMON_WORDS[clean]) {
+    translationCache[clean] = COMMON_WORDS[clean];
+    return COMMON_WORDS[clean];
+  }
+  
+  // Fallback to MyMemory API
   try {
     const res = await fetch(
-      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|ar`
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|ar&de=translation@app.com`
     );
     const data = await res.json();
-    const translation = data.responseData?.translatedText;
-    if (translation && translation !== clean) return translation;
-    return clean;
-  } catch { return clean; }
+    const t = data.responseData?.translatedText;
+    if (t && 
+        t.toLowerCase() !== clean && 
+        !t.includes("MYMEMORY") &&
+        /[؀-ۿ]/.test(t)) { // Must contain Arabic characters
+      translationCache[clean] = t;
+      return t;
+    }
+    return `(${clean})`;
+  } catch { 
+    return `(${clean})`; 
+  }
 }
 
 function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
@@ -83,8 +149,8 @@ function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
               onClick={() => clean && onWordClick(token, idx)}
               className={`transition-all duration-150 ${clean ? "cursor-pointer hover:text-primary underline-offset-2 hover:underline" : ""} ${
                 idx === wordIndex
-                  ? "bg-primary text-primary-foreground px-0.5 rounded font-bold"
-                  : idx < wordIndex ? "text-muted-foreground" : "text-foreground"
+                  ? "text-primary underline underline-offset-2 decoration-2"
+                  : idx < wordIndex ? "text-muted-foreground/60" : "text-foreground"
               }`}
             >
               {token}
@@ -104,6 +170,10 @@ function ClickableText({ text, wordIndex, onWordClick, tooltip }: {
 export default function Reading() {
   const [selected, setSelected] = useState<Story | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState<"slow" | "normal">("normal");
+  const speedRef = useRef<"slow" | "normal">("normal");
+  const currentWordIndexRef = useRef(0);
+  const textWordsRef = useRef<string[]>([]);
   const [tooltip, setTooltip] = useState<{ idx: number; word: string; translation: string } | null>(null);
   const [wordIndex, setWordIndex] = useState(-1);
   const [filter, setFilter] = useState<string>("الكل");
@@ -141,28 +211,48 @@ export default function Reading() {
     setPlaying(false);
   }
 
-  function startReading() {
+  function startReading(fromWordIndex = 0) {
     if (!selected) return;
     window.speechSynthesis.cancel();
     const words = selected.text.split(" ");
     wordsRef.current = words;
+    textWordsRef.current = words;
 
-    const utterance = new SpeechSynthesisUtterance(selected.text);
+    // Start from specific word if seeking
+    const textFromWord = words.slice(fromWordIndex).join(" ");
+    const utterance = new SpeechSynthesisUtterance(textFromWord);
     utterance.lang = "en-US";
-    utterance.rate = 0.85;
+    utterance.rate = speedRef.current === "slow" ? 0.55 : 0.9;
 
-    let currentWord = 0;
+    let currentWord = fromWordIndex;
+    currentWordIndexRef.current = fromWordIndex;
     utterance.onboundary = (e) => {
       if (e.name === "word") {
         setWordIndex(currentWord);
+        currentWordIndexRef.current = currentWord;
         currentWord++;
       }
     };
-    utterance.onend = () => { setPlaying(false); setWordIndex(-1); };
+    utterance.onend = () => { setPlaying(false); setWordIndex(-1); currentWordIndexRef.current = 0; };
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
     setPlaying(true);
+  }
+
+  function seekBack() {
+    // Go back ~5 words
+    const newIdx = Math.max(0, currentWordIndexRef.current - 5);
+    stopReading();
+    setTimeout(() => startReading(newIdx), 100);
+  }
+
+  function seekForward() {
+    // Go forward ~5 words
+    const words = textWordsRef.current;
+    const newIdx = Math.min(words.length - 1, currentWordIndexRef.current + 5);
+    stopReading();
+    setTimeout(() => startReading(newIdx), 100);
   }
 
   function stopReading() {
@@ -173,7 +263,17 @@ export default function Reading() {
 
   function togglePlay() {
     if (playing) stopReading();
-    else startReading();
+    else startReading(0);
+  }
+
+  function changeSpeed(newSpeed: "slow" | "normal") {
+    setSpeed(newSpeed);
+    speedRef.current = newSpeed;
+    if (playing) {
+      const idx = currentWordIndexRef.current;
+      stopReading();
+      setTimeout(() => startReading(idx), 150);
+    }
   }
 
   useEffect(() => { return () => stopReading(); }, []);
@@ -283,15 +383,49 @@ export default function Reading() {
                   </div>
 
                   {/* Audio Control */}
-                  <div className="flex items-center gap-3 mb-6 p-3 bg-muted/40 rounded-xl border border-border/50">
-                    <Button onClick={togglePlay} size="sm" className="gap-2 rounded-full">
-                      {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      {playing ? "إيقاف" : "تشغيل الصوت"}
-                    </Button>
-                    <Volume2 className={`w-4 h-4 ${playing ? "text-primary animate-pulse" : "text-muted-foreground"}`} />
-                    <span className="text-xs text-muted-foreground">
-                      {playing ? "جاري القراءة..." : "اضغط للاستماع مع تتبع النص"}
-                    </span>
+                  <div className="mb-4 p-3 bg-muted/40 rounded-xl border border-border/50 space-y-3">
+                    {/* Play controls row */}
+                    <div className="flex items-center gap-2">
+                      {/* Seek back */}
+                      <button onClick={seekBack} disabled={!playing}
+                        className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+                        </svg>
+                        <span className="text-[9px] text-muted-foreground">5 ث</span>
+                      </button>
+
+                      {/* Play/Pause */}
+                      <Button onClick={togglePlay} size="sm" className="gap-2 rounded-full flex-1">
+                        {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        {playing ? "إيقاف" : "تشغيل"}
+                      </Button>
+
+                      {/* Seek forward */}
+                      <button onClick={seekForward} disabled={!playing}
+                        className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+                        </svg>
+                        <span className="text-[9px] text-muted-foreground">5 ث</span>
+                      </button>
+
+                      <Volume2 className={`w-4 h-4 flex-shrink-0 ${playing ? "text-primary animate-pulse" : "text-muted-foreground"}`} />
+                    </div>
+
+                    {/* Speed control */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">السرعة:</span>
+                      <button onClick={() => changeSpeed("slow")}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "slow" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>
+                        🐢 بطيء
+                      </button>
+                      <button onClick={() => changeSpeed("normal")}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "normal" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>
+                        🐇 عادي
+                      </button>
+                      {playing && <span className="text-xs text-primary mr-auto">جاري القراءة...</span>}
+                    </div>
                   </div>
 
                   {/* Story Text with word highlighting + click to translate */}

@@ -63,9 +63,9 @@ export function WordOrderExercise({ question, correctAnswer, onAnswer, feedback 
         "min-h-14 border-2 rounded-xl p-3 flex flex-wrap gap-2 items-center transition-all",
         !feedback ? "border-primary/30 bg-primary/5" :
           feedback.isCorrect ? "border-emerald-500/50 bg-emerald-500/10" : "border-red-500/50 bg-red-500/10"
-      )}>
+      )} dir="ltr" style={{justifyContent: "flex-start"}}>
         {answer.length === 0 && (
-          <span className="text-muted-foreground/50 text-sm select-none">اضغط على الكلمات أدناه...</span>
+          <span className="text-muted-foreground/50 text-sm select-none" dir="rtl">اضغط على الكلمات أدناه...</span>
         )}
         <AnimatePresence>
           {answer.map((item, idx) => (

@@ -125,3 +125,31 @@ begin
         pro_expires_at = new_expires_at;
 end;
 $$;
+
+-- ── Fix sessions - allow admin to read all sessions ──
+drop policy if exists "Users can view own session" on public.user_sessions;
+drop policy if exists "Admins can view all sessions" on public.user_sessions;
+create policy "Anyone can read sessions" on public.user_sessions
+  for select using (true);
+
+-- ── Disable email confirmation requirement (allow immediate login after signup) ──
+-- Run this in Supabase Dashboard > Authentication > Settings
+-- Set "Enable email confirmations" to OFF
+
+-- ── Admin function to delete user completely ──
+create or replace function admin_delete_user(target_user_id uuid)
+returns void
+security definer
+set search_path = public
+language plpgsql
+as $$
+begin
+  -- Delete all user data
+  delete from public.user_progress where user_id = target_user_id;
+  delete from public.user_stats where user_id = target_user_id;
+  delete from public.user_sessions where user_id = target_user_id;
+  delete from public.level_tests where user_id = target_user_id;
+  -- Delete from auth
+  delete from auth.users where id = target_user_id;
+end;
+$$;

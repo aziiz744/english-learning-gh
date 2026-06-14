@@ -1,5 +1,7 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LoginModal } from "@/components/login-modal";
@@ -16,6 +18,7 @@ import Admin from "@/pages/admin";
 import Reading from "@/pages/reading";
 import Grammar from "@/pages/grammar";
 import Pro from "@/pages/pro";
+import ResetPassword from "@/pages/reset-password";
 
 const queryClient = new QueryClient();
 
@@ -33,12 +36,33 @@ function Router() {
       <Route path="/reading" component={Reading} />
       <Route path="/grammar" component={Grammar} />
       <Route path="/pro" component={Pro} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
 function App() {
+  const [isRecovery, setIsRecovery] = useState(false);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsRecovery(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (isRecovery) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <ResetPassword onDone={() => setIsRecovery(false)} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

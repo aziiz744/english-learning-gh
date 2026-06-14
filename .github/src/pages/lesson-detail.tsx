@@ -196,7 +196,8 @@ export default function LessonDetail() {
     const mini = getMiniExercisesForLesson(TARGET, tier, lesson.title);
     setCombinedQueue(mini.map((exercise) => ({
       kind: "mini" as const,
-      exercise: exercise.options && exercise.options.length > 0
+      // Only shuffle options for non-word_order exercises
+      exercise: exercise.options && exercise.options.length > 0 && exercise.type !== "word_order"
         ? { ...exercise, options: shuffleArray(exercise.options) }
         : exercise,
     })));
@@ -303,6 +304,17 @@ export default function LessonDetail() {
       setShowCombo(false);
       const newHearts = isPro ? hearts : hearts - 1;
       if (!isPro) setHearts(newHearts);
+      // Add wrong question to review list (avoid duplicates)
+      if (currentItem) {
+        setWrongAnswers(prev => {
+          const alreadyAdded = prev.some(w => 
+            w.kind === "mini" && currentItem.kind === "mini" && 
+            w.exercise.correctAnswer === currentItem.exercise.correctAnswer &&
+            w.exercise.arabic === currentItem.exercise.arabic
+          );
+          return alreadyAdded ? prev : [...prev, currentItem];
+        });
+      }
       setCardShake(true);
       setTimeout(() => setCardShake(false), 500);
       setMascotFor("wrong");
@@ -425,15 +437,15 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto h-full flex flex-col pt-4 pb-8">
+      <div className="max-w-3xl mx-auto flex flex-col overflow-hidden" style={{height: "calc(100svh - 130px)"}}>
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
           const lmeta = getLessonMeta(lesson.title);
           return (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex-1 flex flex-col">
-            <div className="mb-8">
-              <Button variant="ghost" onClick={() => setLocation("/lessons")} className="mb-4">
+            <div className="mb-3">
+              <Button variant="ghost" onClick={() => setLocation("/lessons")} className="mb-2 h-8 text-sm">
                 ← العودة للدروس
               </Button>
 
@@ -466,14 +478,14 @@ export default function LessonDetail() {
 
             {/* What you'll learn */}
             {lmeta.objectives.length > 0 && (
-              <div className="mb-5">
-                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+              <div className="mb-2">
+                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center">✓</span>
                   ما ستتعلمه في هذا الدرس
                 </h3>
-                <div className="grid sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-1.5">
                   {lmeta.objectives.map((obj, i) => (
-                    <div key={i} className="flex items-start gap-2.5 p-3 bg-muted/30 border border-border/50 rounded-xl text-sm">
+                    <div key={i} className="flex items-start gap-2 p-2 bg-muted/30 border border-border/50 rounded-lg text-sm">
                       <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                       <span className="leading-relaxed text-foreground/90">{obj}</span>
                     </div>
@@ -483,7 +495,7 @@ export default function LessonDetail() {
             )}
 
             {/* Game rules */}
-            <div className="mb-6 p-4 bg-muted/40 rounded-xl border border-border grid grid-cols-2 sm:flex sm:flex-wrap gap-3 text-sm">
+            <div className="mb-3 p-3 bg-muted/40 rounded-xl border border-border grid grid-cols-2 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4 fill-red-500 text-red-500 shrink-0" />
                 <span>لديك <strong>{challengeMode ? "قلب واحد" : "3 قلوب"}</strong></span>
@@ -522,34 +534,27 @@ export default function LessonDetail() {
         {step === "exercises" && currentItem && (
           <div className="flex-1 flex flex-col">
             {/* HUD */}
-            <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="flex-shrink-0 space-y-1.5 pb-2">
+              {/* Hearts + XP row */}
+              <div className="flex items-center justify-between gap-2">
+                <Hearts count={hearts} isPro={isPro} />
+                <div className="flex items-center gap-1 text-primary font-bold text-sm bg-primary/10 px-2 py-1 rounded-full">
+                  <Zap className="w-3.5 h-3.5" />
+                  {totalXpEarned} XP
+                </div>
+              </div>
+              {/* Progress bar row */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <Progress value={progressPercent} className="h-2.5" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium w-8 text-left">{Math.round(progressPercent)}%</span>
+              </div>
               {showReviewBanner && (
-                <div className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-lg animate-pulse">
+                <div className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-lg animate-pulse text-center">
                   🔄 مراجعة الأسئلة التي أخطأت فيها
                 </div>
               )}
-              <Hearts count={hearts} isPro={isPro} />
-
-              <div className="flex-1">
-                <div className="flex justify-between text-xs font-medium text-muted-foreground mb-1.5">
-                  <span className="flex items-center gap-1.5">
-                    {currentMini ? (
-                      currentMini.type === "word_order"
-                        ? <><Shuffle className="w-3 h-3 text-violet-400" /> ترتيب الكلمات</>
-                        : <><Languages className="w-3 h-3 text-cyan-400" /> ترجمة</>
-                    ) : (
-                      <>تمرين {currentExerciseIndex + 1} من {totalItems}</>
-                    )}
-                  </span>
-                  <span>{Math.round(progressPercent)}%</span>
-                </div>
-                <Progress value={progressPercent} className="h-3" />
-              </div>
-
-              <div className="flex items-center gap-1 text-primary font-bold text-sm bg-primary/10 px-3 py-1.5 rounded-full">
-                <Zap className="w-4 h-4" />
-                {totalXpEarned} XP
-              </div>
             </div>
 
             {/* Combo banner */}
@@ -561,7 +566,7 @@ export default function LessonDetail() {
                   exit={{ opacity: 0, y: -10, scale: 0.9 }}
                   className="mb-4 flex justify-center"
                 >
-                  <div className="combo-burst flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold px-4 py-2 rounded-full text-sm shadow-lg">
+                  <div className="combo-burst flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold px-3 py-1 rounded-full text-xs shadow-lg">
                     <Flame className="w-4 h-4 fire-glow" />
                     كومبو ×{combo}! نقاط مضاعفة!
                   </div>
@@ -570,9 +575,9 @@ export default function LessonDetail() {
             </AnimatePresence>
 
             {/* Exercise + Mascot row */}
-            <div className="flex gap-3 flex-1">
+            <div className="flex gap-2 min-h-0" style={{flex: "1 1 0"}}>
               {/* Main exercise */}
-              <div className="flex-1 flex flex-col">
+              <div className="flex flex-col min-h-0" style={{flex: "1 1 0"}}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentExerciseIndex}
@@ -582,7 +587,7 @@ export default function LessonDetail() {
                 transition={{ duration: 0.25 }}
                 className="flex-1 flex flex-col"
               >
-                <Card className={cn("flex-1 flex flex-col", cardShake && "shake")}>
+                <Card className={cn("flex flex-col min-h-0", cardShake && "shake")} style={{flex: "1 1 0"}}>
                   {/* Card header — differs for mini vs API */}
                   <CardHeader className={cn(
                     "pb-5 border-b border-border/50",
@@ -592,7 +597,7 @@ export default function LessonDetail() {
                     currentMini?.type === "picture_match"  ? "bg-emerald-500/5" : "bg-muted/20"
                   )}>
                     {currentMini ? (
-                      <CardTitle className="text-xl leading-relaxed font-bold flex items-center gap-2">
+                      <CardTitle className="text-lg leading-snug font-bold flex items-center gap-2">
                         {currentMini.type === "word_order"
                           ? <><Shuffle   className="w-5 h-5 text-violet-400" /> رتّب الكلمات لتكوّن جملة صحيحة</>
                           : currentMini.type === "translate"
@@ -617,7 +622,7 @@ export default function LessonDetail() {
                     )}
                   </CardHeader>
 
-                  <CardContent className="flex-1 p-6 flex flex-col justify-center">
+                  <CardContent className="p-3 flex flex-col justify-start overflow-y-auto overscroll-contain" style={{flex: "1 1 0", minHeight: 0}}>
                     {/* ── Mini: Word Order ── */}
                     {currentMini?.type === "word_order" && (
                       <WordOrderExercise
@@ -675,7 +680,7 @@ export default function LessonDetail() {
                               whileHover={!feedback ? { scale: 1.01 } : {}}
                               whileTap={!feedback ? { scale: 0.99 } : {}}
                               className={cn(
-                                "py-4 px-6 rounded-xl text-lg font-semibold transition-all w-full border-2",
+                                "py-2.5 px-4 rounded-xl text-base font-semibold transition-all w-full border-2",
                                 !feedback && !isSelected && "border-border hover:border-primary hover:bg-primary/5 cursor-pointer",
                                 !feedback && isSelected && "border-primary bg-primary/15 text-primary",
                                 feedback && isCorrectAnswer && "border-green-500 bg-green-500/15 text-green-400 correct-pulse",
@@ -706,8 +711,8 @@ export default function LessonDetail() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Feedback & action */}
-            <div className="mt-6 min-h-[100px]">
+            {/* Feedback & action - fixed above bottom nav */}
+            <div className="flex-shrink-0 mt-auto">
               {feedback ? (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -721,15 +726,15 @@ export default function LessonDetail() {
                 >
                   {/* Top bar */}
                   <div className={cn(
-                    "px-5 py-3 flex items-center gap-3",
+                    "px-4 py-2 flex items-center gap-2",
                     feedback.isCorrect ? "bg-green-500/15" : "bg-red-500/15"
                   )}>
-                    <span className="text-2xl">
+                    <span className="text-xl">
                       {feedback.isCorrect
                         ? combo >= 3 ? "🔥" : combo >= 2 ? "⚡" : "✅"
                         : "❌"}
                     </span>
-                    <h4 className={cn("font-bold text-lg", feedback.isCorrect ? "text-green-400" : "text-red-400")}>
+                    <h4 className={cn("font-bold text-base", feedback.isCorrect ? "text-green-400" : "text-red-400")}>
                       {feedback.isCorrect
                         ? combo >= 3 ? `كومبو رائع! ×${combo} 🔥`
                           : combo >= 2 ? `تسلسل ممتاز! ×${combo} ⚡`
@@ -739,11 +744,11 @@ export default function LessonDetail() {
                   </div>
 
                   {/* Body */}
-                  <div className="px-5 py-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div className="px-3 py-2 flex flex-col gap-2">
                     <div className="flex-1 space-y-2">
                       {/* Explanation */}
                       {feedback.explanation && (
-                        <p className={cn("text-sm leading-relaxed", feedback.isCorrect ? "text-green-400/80" : "text-foreground/80")}>
+                        <p className={cn("text-xs leading-relaxed hidden md:block", feedback.isCorrect ? "text-green-400/80" : "text-foreground/80")}>
                           {feedback.explanation}
                         </p>
                       )}
@@ -763,10 +768,10 @@ export default function LessonDetail() {
                     <Button
                       size="lg"
                       className={cn(
-                        "w-full sm:w-auto px-8 shrink-0",
+                        "w-full py-5 text-lg font-bold rounded-2xl shadow-lg",
                         feedback.isCorrect
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-muted hover:bg-muted/80 text-foreground border border-border"
+                          ? "bg-green-500 hover:bg-green-600 text-white"
+                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
                       )}
                       onClick={handleNext}
                     >
@@ -780,11 +785,11 @@ export default function LessonDetail() {
                   {(currentMini?.type === "translate" || !currentMini) && (
                     <Button
                       size="lg"
-                      className="px-10 py-6 text-lg shadow-sm"
+                      className="w-full py-4 text-base font-bold shadow-sm"
                       disabled={!selectedAnswer || submitExercise.isPending}
                       onClick={currentMini ? () => handleMiniAnswer(selectedAnswer) : handleSubmitAnswer}
                     >
-                      {submitExercise.isPending ? "..." : "تحقق من الإجابة"}
+                      {submitExercise.isPending ? "..." : "تحقق من الإجابة ✓"}
                     </Button>
                   )}
                   {currentMini?.type === "word_order" && (

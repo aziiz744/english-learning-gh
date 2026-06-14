@@ -26,9 +26,12 @@ export default function Admin() {
   const [onlineCount, setOnlineCount] = useState(0);
 
   useEffect(() => {
-    if (authLoading) return; // wait for auth to finish
+    if (authLoading) return;
     if (!user?.isAdmin) { setLocation("/"); return; }
     loadUsers();
+    // Auto-refresh every 30 seconds to update online status
+    const interval = setInterval(loadUsers, 30000);
+    return () => clearInterval(interval);
   }, [user, authLoading]);
 
   async function loadUsers() {
@@ -39,7 +42,7 @@ export default function Admin() {
       const { data: sessions } = await supabase.from("user_sessions").select("*");
 
       // Count online (last 5 min)
-      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const fiveMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
       const online = sessions?.filter((s: any) => s.last_seen > fiveMinAgo) ?? [];
       setOnlineCount(online.length);
 
@@ -79,26 +82,54 @@ export default function Admin() {
       ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       : null;
 
-    // Use the admin RPC function to bypass RLS
-    const { error } = await supabase.rpc("admin_set_pro", {
-      target_user_id: userId,
-      new_is_pro: !current,
-      new_expires_at: expiresAt,
-    });
+    try {
+      // Try RPC first
+      const { error: rpcError } = await supabase.rpc("admin_set_pro", {
+        target_user_id: userId,
+        new_is_pro: !current,
+        new_expires_at: expiresAt,
+      });
 
-    if (error) {
-      console.error("Pro grant error:", error);
-      alert("حدث خطأ: " + error.message);
+      if (rpcError) {
+        // Fallback: direct upsert
+        const { error: upsertError } = await supabase
+          .from("user_stats")
+          .upsert({
+            user_id: userId,
+            is_pro: !current,
+            pro_expires_at: expiresAt,
+            total_xp: 0,
+            streak: 0,
+            exercises_completed: 0,
+            weekly_xp: [0,0,0,0,0,0,0],
+            last_activity_date: new Date().toISOString().split("T")[0],
+          }, { onConflict: "user_id" });
+
+        if (upsertError) throw upsertError;
+      }
+
+      await new Promise(r => setTimeout(r, 800));
+      await loadUsers();
+    } catch (err: any) {
+      console.error("Pro grant error:", err);
+      alert("حدث خطأ: " + (err?.message ?? "غير معروف"));
     }
-    loadUsers();
   }
 
-  async function deleteUser(userId: string) {
-    if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
-    await supabase.from("user_progress").delete().eq("user_id", userId);
-    await supabase.from("user_stats").delete().eq("user_id", userId);
-    await supabase.from("user_sessions").delete().eq("user_id", userId);
-    loadUsers();
+  async function deleteUser(userId: string, email: string) {
+    if (!confirm(`هل أنت متأكد من حذف مستخدم ${email}؟
+سيتم حذف جميع بياناته نهائياً.`)) return;
+    
+    try {
+      const { error } = await supabase.rpc("admin_delete_user", {
+        target_user_id: userId,
+      });
+      if (error) throw error;
+      await loadUsers();
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      alert("حدث خطأ أثناء الحذف: " + (err?.message ?? "غير معروف"));
+    }
   }
 
   if (!user?.isAdmin) return null;
@@ -193,7 +224,7 @@ export default function Admin() {
                         size="sm"
                         variant="destructive"
                         className="gap-1 text-xs h-7"
-                        onClick={() => deleteUser(u.id)}
+                        onClick={() => deleteUser(u.id, u.email)}
                       >
                         <Trash2 className="w-3 h-3" />
                       </Button>

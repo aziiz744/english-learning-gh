@@ -1,4 +1,79 @@
 import { useState } from "react";
+
+// Map words to Unsplash search queries for relevant images
+const UNSPLASH_QUERIES: Record<string, string> = {
+  // Emotions
+  "surprised": "surprised face person",
+  "happy": "happy smiling person",
+  "sad": "sad person crying",
+  "angry": "angry person",
+  "scared": "scared frightened person",
+  "tired": "tired sleepy person",
+  "excited": "excited celebration person",
+  "bored": "bored person",
+  "confused": "confused person thinking",
+  "worried": "worried anxious person",
+  // Jobs
+  "doctor": "doctor hospital white coat",
+  "teacher": "teacher classroom school",
+  "police": "police officer uniform",
+  "worker": "construction worker",
+  "chef": "chef cooking kitchen",
+  "nurse": "nurse hospital",
+  "engineer": "engineer working",
+  "driver": "taxi driver car",
+  // Animals
+  "dog": "cute dog puppy",
+  "cat": "cute cat kitten",
+  "bird": "colorful bird",
+  "fish": "fish aquarium",
+  "horse": "horse running",
+  "cow": "cow farm",
+  "lion": "lion wild animal",
+  "elephant": "elephant wildlife",
+  // Actions
+  "running": "person running sport",
+  "swimming": "person swimming pool",
+  "reading": "person reading book",
+  "cooking": "person cooking kitchen",
+  "sleeping": "person sleeping bed",
+  "eating": "person eating food",
+  "dancing": "person dancing",
+  "singing": "person singing microphone",
+  // Places
+  "beach": "beach ocean sand",
+  "mountain": "mountain landscape",
+  "city": "city buildings skyline",
+  "park": "green park trees",
+  "school": "school building",
+  "hospital": "hospital building",
+  "restaurant": "restaurant food dining",
+  "market": "market shopping",
+  // Food
+  "pizza": "pizza food",
+  "burger": "hamburger food",
+  "salad": "salad vegetables",
+  "cake": "cake dessert",
+  "apple": "red apple fruit",
+  "banana": "banana fruit yellow",
+  "coffee": "coffee cup hot",
+  "water": "water glass drink",
+  // Objects
+  "car": "car vehicle road",
+  "bus": "bus public transport",
+  "phone": "smartphone mobile",
+  "computer": "laptop computer",
+  "book": "open book reading",
+  "bag": "bag handbag",
+  "chair": "chair furniture",
+  "table": "table furniture wood",
+};
+
+function getImageUrl(word: string): string {
+  const query = UNSPLASH_QUERIES[word.toLowerCase()] ?? word;
+  // Use Unsplash Source API - free, no key needed
+  return `https://source.unsplash.com/300x300/?${encodeURIComponent(query)}`;
+}
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -92,14 +167,21 @@ export function PictureMatchExercise({
                 </motion.div>
               )}
 
-              {/* Emoji */}
-              <span
-                className="text-5xl sm:text-6xl select-none leading-none"
-                role="img"
-                aria-label={label}
-              >
-                {emoji}
-              </span>
+              {/* Image */}
+              <div className="w-full aspect-square rounded-xl overflow-hidden bg-muted/50 flex items-center justify-center">
+                <img
+                  src={getImageUrl(label)}
+                  alt={label}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to emoji if image fails
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                    target.nextElementSibling?.classList.remove("hidden");
+                  }}
+                />
+                <span className="hidden text-5xl select-none">{emoji}</span>
+              </div>
 
               {/* Label (shown after feedback) */}
               <motion.span
