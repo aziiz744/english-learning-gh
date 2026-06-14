@@ -53,10 +53,16 @@ export default function ResetPassword({ onDone }: { onDone?: () => void } = {}) 
         </div>
 
         {done ? (
-          <div className="text-center space-y-3 py-4">
-            <CheckCircle className="w-14 h-14 text-green-400 mx-auto" />
-            <p className="font-bold text-lg">تم بنجاح! 🎉</p>
-            <p className="text-sm text-muted-foreground">يمكنك الآن الدخول بكلمة المرور الجديدة</p>
+          <div className="text-center space-y-4 py-4">
+            <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
+            <p className="font-bold text-xl">تم تغيير كلمة المرور! 🎉</p>
+            <p className="text-sm text-muted-foreground">كلمة مرورك الجديدة جاهزة — سجّل دخولك الآن</p>
+            <Button 
+              className="w-full py-5 font-bold mt-4" 
+              onClick={() => { if (onDone) onDone(); else setLocation("/"); }}
+            >
+              تسجيل الدخول
+            </Button>
           </div>
         ) : error && !ready ? (
           <div className="text-center space-y-4">
