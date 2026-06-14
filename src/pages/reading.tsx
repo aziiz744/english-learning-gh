@@ -112,6 +112,7 @@ export default function Reading() {
   const [selected, setSelected] = useState<Story | null>(null);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<"slow" | "normal">("normal");
+  const speedRef = useRef<"slow" | "normal">("normal");
   const currentWordIndexRef = useRef(0);
   const textWordsRef = useRef<string[]>([]);
   const [tooltip, setTooltip] = useState<{ idx: number; word: string; translation: string } | null>(null);
@@ -162,7 +163,7 @@ export default function Reading() {
     const textFromWord = words.slice(fromWordIndex).join(" ");
     const utterance = new SpeechSynthesisUtterance(textFromWord);
     utterance.lang = "en-US";
-    utterance.rate = speed === "slow" ? 0.6 : 0.9;
+    utterance.rate = speedRef.current === "slow" ? 0.55 : 0.9;
 
     let currentWord = fromWordIndex;
     currentWordIndexRef.current = fromWordIndex;
@@ -208,13 +209,11 @@ export default function Reading() {
 
   function changeSpeed(newSpeed: "slow" | "normal") {
     setSpeed(newSpeed);
+    speedRef.current = newSpeed;
     if (playing) {
       const idx = currentWordIndexRef.current;
       stopReading();
-      setTimeout(() => {
-        // need to update speed before restarting
-        startReading(idx);
-      }, 100);
+      setTimeout(() => startReading(idx), 150);
     }
   }
 
@@ -330,10 +329,11 @@ export default function Reading() {
                     <div className="flex items-center gap-2">
                       {/* Seek back */}
                       <button onClick={seekBack} disabled={!playing}
-                        className="p-2 rounded-full bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
+                        className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
                         </svg>
+                        <span className="text-[9px] text-muted-foreground">5 ث</span>
                       </button>
 
                       {/* Play/Pause */}
@@ -344,10 +344,11 @@ export default function Reading() {
 
                       {/* Seek forward */}
                       <button onClick={seekForward} disabled={!playing}
-                        className="p-2 rounded-full bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
+                        className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
                         </svg>
+                        <span className="text-[9px] text-muted-foreground">5 ث</span>
                       </button>
 
                       <Volume2 className={`w-4 h-4 flex-shrink-0 ${playing ? "text-primary animate-pulse" : "text-muted-foreground"}`} />
