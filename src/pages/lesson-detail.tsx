@@ -751,7 +751,7 @@ export default function LessonDetail() {
                   </div>
 
                   {/* Body */}
-                  <div className="px-5 py-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div className="px-4 py-3 flex flex-col gap-3">
                     <div className="flex-1 space-y-2">
                       {/* Explanation */}
                       {feedback.explanation && (
@@ -775,7 +775,7 @@ export default function LessonDetail() {
                     <Button
                       size="lg"
                       className={cn(
-                        "w-full sm:w-auto px-8 shrink-0",
+                        "w-full py-4 text-base font-bold",
                         feedback.isCorrect
                           ? "bg-green-600 hover:bg-green-700 text-white"
                           : "bg-muted hover:bg-muted/80 text-foreground border border-border"
@@ -792,11 +792,11 @@ export default function LessonDetail() {
                   {(currentMini?.type === "translate" || !currentMini) && (
                     <Button
                       size="lg"
-                      className="px-10 py-6 text-lg shadow-sm"
+                      className="w-full py-4 text-base font-bold shadow-sm"
                       disabled={!selectedAnswer || submitExercise.isPending}
                       onClick={currentMini ? () => handleMiniAnswer(selectedAnswer) : handleSubmitAnswer}
                     >
-                      {submitExercise.isPending ? "..." : "تحقق من الإجابة"}
+                      {submitExercise.isPending ? "..." : "تحقق من الإجابة ✓"}
                     </Button>
                   )}
                   {currentMini?.type === "word_order" && (

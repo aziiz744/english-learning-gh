@@ -26,9 +26,12 @@ export default function Admin() {
   const [onlineCount, setOnlineCount] = useState(0);
 
   useEffect(() => {
-    if (authLoading) return; // wait for auth to finish
+    if (authLoading) return;
     if (!user?.isAdmin) { setLocation("/"); return; }
     loadUsers();
+    // Auto-refresh every 30 seconds to update online status
+    const interval = setInterval(loadUsers, 30000);
+    return () => clearInterval(interval);
   }, [user, authLoading]);
 
   async function loadUsers() {
@@ -39,7 +42,7 @@ export default function Admin() {
       const { data: sessions } = await supabase.from("user_sessions").select("*");
 
       // Count online (last 5 min)
-      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const fiveMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
       const online = sessions?.filter((s: any) => s.last_seen > fiveMinAgo) ?? [];
       setOnlineCount(online.length);
 

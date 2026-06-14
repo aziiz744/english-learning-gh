@@ -125,3 +125,9 @@ begin
         pro_expires_at = new_expires_at;
 end;
 $$;
+
+-- ── Fix sessions - allow admin to read all sessions ──
+drop policy if exists "Users can view own session" on public.user_sessions;
+drop policy if exists "Admins can view all sessions" on public.user_sessions;
+create policy "Anyone can read sessions" on public.user_sessions
+  for select using (true);
