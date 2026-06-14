@@ -437,7 +437,7 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100dvh - 56px)"}}>
+      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100dvh - 120px)"}}>
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
@@ -575,7 +575,7 @@ export default function LessonDetail() {
             </AnimatePresence>
 
             {/* Exercise + Mascot row */}
-            <div className="flex gap-2 flex-1 overflow-hidden">
+            <div className="flex gap-2 flex-1 min-h-0">
               {/* Main exercise */}
               <div className="flex-1 flex flex-col min-h-0">
             <AnimatePresence mode="wait">
@@ -711,8 +711,8 @@ export default function LessonDetail() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Feedback & action - always visible at bottom */}
-            <div className="flex-shrink-0 mt-auto pt-2">
+            {/* Feedback & action - fixed above bottom nav */}
+            <div className="flex-shrink-0 mt-auto pt-2 pb-1">
               {feedback ? (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -768,10 +768,10 @@ export default function LessonDetail() {
                     <Button
                       size="lg"
                       className={cn(
-                        "w-full py-4 text-base font-bold",
+                        "w-full py-5 text-lg font-bold rounded-2xl shadow-lg",
                         feedback.isCorrect
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-muted hover:bg-muted/80 text-foreground border border-border"
+                          ? "bg-green-500 hover:bg-green-600 text-white"
+                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
                       )}
                       onClick={handleNext}
                     >
