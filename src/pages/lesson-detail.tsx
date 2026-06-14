@@ -437,7 +437,7 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100dvh - 120px)"}}>
+      <div className="max-w-3xl mx-auto flex flex-col" style={{height: "calc(100svh - 130px)"}}>
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
@@ -622,7 +622,7 @@ export default function LessonDetail() {
                     )}
                   </CardHeader>
 
-                  <CardContent className="flex-1 p-3 md:p-4 flex flex-col justify-center overflow-y-auto">
+                  <CardContent className="p-3 flex flex-col justify-center overflow-y-auto" style={{maxHeight: "calc(100svh - 280px)"}}>
                     {/* ── Mini: Word Order ── */}
                     {currentMini?.type === "word_order" && (
                       <WordOrderExercise
