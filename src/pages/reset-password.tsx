@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Lock, Loader2, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function ResetPassword() {
+export default function ResetPassword({ onDone }: { onDone?: () => void } = {}) {
   const [, setLocation] = useLocation();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -14,53 +14,7 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    // Listen for PASSWORD_RECOVERY event from Supabase
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-        setError("");
-      } else if (event === "SIGNED_IN" && session) {
-        // Check if we came from a recovery link
-        const hash = window.location.hash;
-        if (hash.includes("type=recovery")) {
-          setReady(true);
-          setError("");
-        }
-      }
-    });
-
-    // Also check current session and hash
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const type = params.get("type");
-    const accessToken = params.get("access_token");
-
-    if (type === "recovery" && accessToken) {
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: params.get("refresh_token") ?? "",
-      }).then(({ data, error: err }) => {
-        if (err) {
-          setError("رابط غير صالح أو منتهي الصلاحية");
-        } else if (data.session) {
-          setReady(true);
-        }
-      });
-    } else {
-      // No token in URL - check if already in recovery session
-      supabase.auth.getSession().then(({ data }) => {
-        if (!data.session) {
-          setError("رابط غير صالح أو منتهي الصلاحية");
-        }
-        // Don't set ready here - wait for PASSWORD_RECOVERY event
-      });
-    }
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const [ready, setReady] = useState(true); // Already in recovery session when rendered from App
 
   async function handleReset() {
     if (!password || password.length < 6) {
@@ -79,7 +33,7 @@ export default function ResetPassword() {
     else {
       setDone(true);
       await supabase.auth.signOut();
-      setTimeout(() => setLocation("/"), 2500);
+      setTimeout(() => { if (onDone) onDone(); else setLocation("/"); }, 2500);
     }
   }
 

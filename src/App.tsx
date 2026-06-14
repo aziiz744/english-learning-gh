@@ -1,6 +1,6 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -43,14 +43,26 @@ function Router() {
 }
 
 function App() {
-  // Handle password recovery redirect
+  const [isRecovery, setIsRecovery] = useState(false);
+
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        window.location.href = "/reset-password";
+        setIsRecovery(true);
       }
     });
+    return () => subscription.unsubscribe();
   }, []);
+
+  if (isRecovery) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <ResetPassword onDone={() => setIsRecovery(false)} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
