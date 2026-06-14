@@ -437,15 +437,15 @@ export default function LessonDetail() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto h-full flex flex-col pt-4 pb-8">
+      <div className="max-w-3xl mx-auto h-full flex flex-col pt-2 pb-4">
 
         {/* ── Intro ── */}
         {step === "intro" && (() => {
           const lmeta = getLessonMeta(lesson.title);
           return (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex-1 flex flex-col">
-            <div className="mb-8">
-              <Button variant="ghost" onClick={() => setLocation("/lessons")} className="mb-4">
+            <div className="mb-3">
+              <Button variant="ghost" onClick={() => setLocation("/lessons")} className="mb-2 h-8 text-sm">
                 ← العودة للدروس
               </Button>
 
@@ -478,14 +478,14 @@ export default function LessonDetail() {
 
             {/* What you'll learn */}
             {lmeta.objectives.length > 0 && (
-              <div className="mb-5">
-                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+              <div className="mb-2">
+                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center">✓</span>
                   ما ستتعلمه في هذا الدرس
                 </h3>
-                <div className="grid sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-1.5">
                   {lmeta.objectives.map((obj, i) => (
-                    <div key={i} className="flex items-start gap-2.5 p-3 bg-muted/30 border border-border/50 rounded-xl text-sm">
+                    <div key={i} className="flex items-start gap-2 p-2 bg-muted/30 border border-border/50 rounded-lg text-sm">
                       <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                       <span className="leading-relaxed text-foreground/90">{obj}</span>
                     </div>
@@ -495,7 +495,7 @@ export default function LessonDetail() {
             )}
 
             {/* Game rules */}
-            <div className="mb-6 p-4 bg-muted/40 rounded-xl border border-border grid grid-cols-2 sm:flex sm:flex-wrap gap-3 text-sm">
+            <div className="mb-3 p-3 bg-muted/40 rounded-xl border border-border grid grid-cols-2 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4 fill-red-500 text-red-500 shrink-0" />
                 <span>لديك <strong>{challengeMode ? "قلب واحد" : "3 قلوب"}</strong></span>
@@ -534,7 +534,7 @@ export default function LessonDetail() {
         {step === "exercises" && currentItem && (
           <div className="flex-1 flex flex-col">
             {/* HUD */}
-            <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="mb-2 flex items-center justify-between gap-2">
               {showReviewBanner && (
                 <div className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-lg animate-pulse">
                   🔄 مراجعة الأسئلة التي أخطأت فيها
@@ -573,7 +573,7 @@ export default function LessonDetail() {
                   exit={{ opacity: 0, y: -10, scale: 0.9 }}
                   className="mb-4 flex justify-center"
                 >
-                  <div className="combo-burst flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold px-4 py-2 rounded-full text-sm shadow-lg">
+                  <div className="combo-burst flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold px-3 py-1 rounded-full text-xs shadow-lg">
                     <Flame className="w-4 h-4 fire-glow" />
                     كومبو ×{combo}! نقاط مضاعفة!
                   </div>
@@ -582,7 +582,7 @@ export default function LessonDetail() {
             </AnimatePresence>
 
             {/* Exercise + Mascot row */}
-            <div className="flex gap-3 flex-1">
+            <div className="flex gap-2 flex-1">
               {/* Main exercise */}
               <div className="flex-1 flex flex-col">
             <AnimatePresence mode="wait">
@@ -604,7 +604,7 @@ export default function LessonDetail() {
                     currentMini?.type === "picture_match"  ? "bg-emerald-500/5" : "bg-muted/20"
                   )}>
                     {currentMini ? (
-                      <CardTitle className="text-xl leading-relaxed font-bold flex items-center gap-2">
+                      <CardTitle className="text-lg leading-snug font-bold flex items-center gap-2">
                         {currentMini.type === "word_order"
                           ? <><Shuffle   className="w-5 h-5 text-violet-400" /> رتّب الكلمات لتكوّن جملة صحيحة</>
                           : currentMini.type === "translate"
@@ -629,7 +629,7 @@ export default function LessonDetail() {
                     )}
                   </CardHeader>
 
-                  <CardContent className="flex-1 p-6 flex flex-col justify-center">
+                  <CardContent className="flex-1 p-3 md:p-6 flex flex-col justify-center">
                     {/* ── Mini: Word Order ── */}
                     {currentMini?.type === "word_order" && (
                       <WordOrderExercise
@@ -687,7 +687,7 @@ export default function LessonDetail() {
                               whileHover={!feedback ? { scale: 1.01 } : {}}
                               whileTap={!feedback ? { scale: 0.99 } : {}}
                               className={cn(
-                                "py-4 px-6 rounded-xl text-lg font-semibold transition-all w-full border-2",
+                                "py-2.5 px-4 rounded-xl text-base font-semibold transition-all w-full border-2",
                                 !feedback && !isSelected && "border-border hover:border-primary hover:bg-primary/5 cursor-pointer",
                                 !feedback && isSelected && "border-primary bg-primary/15 text-primary",
                                 feedback && isCorrectAnswer && "border-green-500 bg-green-500/15 text-green-400 correct-pulse",
