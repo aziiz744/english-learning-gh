@@ -712,7 +712,11 @@ export default function LessonDetail() {
             </AnimatePresence>
 
             {/* Feedback & action - fixed above bottom nav */}
-            <div className="flex-shrink-0 mt-auto pt-2 pb-1">
+            <div className="flex-shrink-0 mt-auto">
+              {/* Mascot - visible on mobile above feedback */}
+              <div className="lg:hidden flex justify-start px-2 -mb-1">
+                <Mascot state={mascotState} className="w-14 h-20" />
+              </div>
               {feedback ? (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
