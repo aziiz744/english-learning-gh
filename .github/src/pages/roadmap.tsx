@@ -66,13 +66,13 @@ const CHAPTERS: Chapter[] = [
 function FoxMascot() {
   return (
     <svg width="64" height="72" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#7c2d12" transform="rotate(-30 52 54)"/>
+      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#f97316" transform="rotate(-30 52 54)"/>
       <ellipse cx="54" cy="52" rx="5" ry="3" fill="#fef3c7" transform="rotate(-30 54 52)"/>
-      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#7c2d12"/>
+      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#f97316"/>
       <ellipse cx="32" cy="54" rx="8" ry="10" fill="#fef3c7"/>
-      <circle cx="32" cy="28" r="16" fill="#7c2d12"/>
-      <polygon points="16,16 10,2 22,10" fill="#7c2d12"/>
-      <polygon points="48,16 54,2 42,10" fill="#7c2d12"/>
+      <circle cx="32" cy="28" r="16" fill="#f97316"/>
+      <polygon points="16,16 10,2 22,10" fill="#f97316"/>
+      <polygon points="48,16 54,2 42,10" fill="#f97316"/>
       <polygon points="17,15 12,5 21,11" fill="#fca5a5"/>
       <polygon points="47,15 52,5 43,11" fill="#fca5a5"/>
       <ellipse cx="32" cy="32" rx="10" ry="8" fill="#fef3c7"/>
@@ -86,8 +86,8 @@ function FoxMascot() {
       <path d="M29 33 Q32 36 35 33" stroke="#1e1b4b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
       <ellipse cx="22" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
       <ellipse cx="42" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
-      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#7c2d12" transform="rotate(-10 20 60)"/>
-      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#7c2d12" transform="rotate(10 44 60)"/>
+      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#f97316" transform="rotate(-10 20 60)"/>
+      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#f97316" transform="rotate(10 44 60)"/>
     </svg>
   );
 }
