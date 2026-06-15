@@ -670,17 +670,28 @@ export default function Roadmap() {
                   <div ref={el => { sectionRefs.current[unit.id] = el; }}>
                     <motion.div
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                      className="flex items-center gap-3 mt-10 mb-4 px-2"
+                      style={{ position: "relative", display: "flex", alignItems: "center", margin: "16px 8px 32px" }}
                     >
-                      <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to left, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
+                      {/* Full line behind */}
+                      <div style={{
+                        position: "absolute", left: 0, right: 0, top: "50%",
+                        height: 1.5, background: `linear-gradient(to right, transparent, ${unit.color}80, transparent)`,
+                        transform: "translateY(-50%)",
+                      }}/>
+                      {/* Text with background so it sits ON TOP of line */}
+                      <div style={{ flex: 1 }}/>
                       <span style={{
+                        position: "relative",
+                        background: "hsl(var(--background))",
+                        padding: "0 12px",
                         color: unit.color, fontSize: 14, fontWeight: 900,
                         whiteSpace: "nowrap",
-                        textShadow: `0 0 16px ${unit.color}60`,
+                        textShadow: `0 0 20px ${unit.color}80`,
+                        letterSpacing: "0.02em",
                       }}>
                         {unit.sectionTitle}
                       </span>
-                      <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to right, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
+                      <div style={{ flex: 1 }}/>
                     </motion.div>
                   </div>
                 )}
@@ -709,7 +720,19 @@ export default function Roadmap() {
                     const lessonProgress = progress[lesson.id] ?? 0;
                     const allIdx = allLessons.findIndex(l => l.id === lesson.id);
                     const isCurrent = allIdx === currentIdx;
-                    const isLocked = allIdx > 0 && (progress[allLessons[allIdx - 1]?.id] ?? 0) < 4 && lessonProgress === 0;
+                    // Normal lock: previous lesson not done
+                    const normalLocked = allIdx > 0 && (progress[allLessons[allIdx - 1]?.id] ?? 0) < 4 && lessonProgress === 0;
+                    // Section lock: if this unit belongs to section 2+, lock unless prev section challenge done
+                    const thisSectionIdx = unit.sectionTitle
+                      ? chapter.units.findIndex(u => u.id === unit.id)
+                      : chapter.units.slice(0, unitIdx + 1).filter(u => !u.sectionTitle || u.id === unit.id).length - 1;
+                    const prevSectionChallenge = unit.sectionTitle
+                      ? chapter.units.slice(0, unitIdx).reverse().find(u => u.lessons.some(l => l.type === "challenge"))?.lessons.find(l => l.type === "challenge")?.id
+                      : undefined;
+                    const sectionLocked = prevSectionChallenge
+                      ? (progress[prevSectionChallenge] ?? 0) < 4
+                      : false;
+                    const isLocked = normalLocked || (sectionLocked && !isJumpStation && lessonProgress === 0);
                     const isTreasure = lesson.type === "treasure";
                     const SIZE = lesson.type === "challenge" ? 88 : isTreasure ? 72 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
@@ -842,6 +865,9 @@ export default function Roadmap() {
                               progress={effectiveLocked ? 0 : lessonProgress}
                               color={unit.color}
                               isCurrent={isCurrent}
+                              isFirstOfSection={isFirstOfSection}
+                              isJumpStation={isJumpStation}
+                              canJump={canJump}
                             />
                           )}
                         </motion.div>
