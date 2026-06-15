@@ -10,6 +10,7 @@ import { b1Banks } from "./lesson-banks/b1";
 import { b2Banks } from "./lesson-banks/b2";
 import { c1Banks } from "./lesson-banks/c1";
 import { c2Banks } from "./lesson-banks/c2";
+import { unit1DrinksBank } from "./lesson-banks/unit1-drinks";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -20,6 +21,7 @@ const B: Record<string, TieredBank> = {
   ...b2Banks,
   ...c1Banks,
   ...c2Banks,
+  ...unit1DrinksBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.

@@ -6,12 +6,13 @@ import { useAuth } from "@/hooks/use-auth";
 
 interface UnitLesson {
   id: string;
-  type: "lesson" | "treasure" | "challenge";
+  type: "lesson" | "treasure" | "challenge" | "practice";
   title: string;
   description: string;
   words?: string[];
+  vocab?: { word: string; arabic: string; emoji: string }[];
 }
-interface Unit { id: string; title: string; emoji: string; color: string; sectionTitle?: string; lessons: UnitLesson[]; }
+interface Unit { id: string; title: string; emoji: string; color: string; sectionTitle?: string; pathVariant?: string; lessons: UnitLesson[]; }
 interface Chapter { id: string; title: string; emoji: string; gradient: string; color: string; units: Unit[]; }
 
 // Section divider interface
@@ -20,24 +21,47 @@ interface Section { id: string; title: string; color: string; units: Unit[]; }
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner", title: "المبتدئ", emoji: "🌱",
-    gradient: "from-green-900 to-emerald-900", color: "#166534",
+    gradient: "from-emerald-600 to-green-700", color: "#22a55e",
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#166534",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
-          { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
-          { id: "drinks-2", type: "lesson",    title: "كلمات جديدة",      description: "ستراجع كلمات الدرس الأول وتتعلم كلمات جديدة مثل please وthank you.", words: ["please","thank you","yes","no","sorry"] },
-          { id: "drinks-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة ممتعة تشمل جميع كلمات الدرسين السابقين — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
-          { id: "drinks-3", type: "lesson",    title: "جمل كاملة",        description: "ستستخدم الكلمات في جمل كاملة مثل 'Would you like some tea?'", words: ["would","like","some","have","want"] },
-          { id: "drinks-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
+          { id: "drinks-1", type: "lesson", title: "الكلمات الأساسية", description: "تعلّم كلمات المشروبات الأساسية مع سماع نطقها.", words: ["tea","coffee","water","juice","milk","yes","no"],
+            vocab: [
+              { word:"tea",    arabic:"شاي",    emoji:"🍵" },
+              { word:"coffee", arabic:"قهوة",   emoji:"☕" },
+              { word:"water",  arabic:"ماء",    emoji:"💧" },
+              { word:"juice",  arabic:"عصير",   emoji:"🧃" },
+              { word:"milk",   arabic:"حليب",   emoji:"🥛" },
+              { word:"yes",    arabic:"نعم",    emoji:"✅" },
+              { word:"no",     arabic:"لا",     emoji:"❌" },
+            ]},
+          { id: "drinks-2", type: "lesson", title: "كلمات جديدة", description: "كلمات الأدب والتفاعل مع الآخرين عند الطلب.", words: ["please","thank you","sorry","more"],
+            vocab: [
+              { word:"please",    arabic:"من فضلك", emoji:"🙏" },
+              { word:"thank you", arabic:"شكراً",   emoji:"🙏" },
+              { word:"sorry",     arabic:"آسف",     emoji:"😔" },
+              { word:"more",      arabic:"المزيد",  emoji:"🔄" },
+            ]},
+          { id: "drinks-t", type: "treasure", title: "كنز المراجعة", description: "لعبة ممتعة تشمل جميع كلمات الدرسين — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
+          { id: "drinks-3", type: "lesson", title: "جمل كاملة", description: "استخدم الكلمات في جمل مثل Would you like some tea?", words: ["would","like","some","have","want"],
+            vocab: [
+              { word:"would", arabic:"سأودّ",  emoji:"🤔" },
+              { word:"like",  arabic:"أحب",    emoji:"💚" },
+              { word:"some",  arabic:"بعض",    emoji:"🔢" },
+              { word:"have",  arabic:"أملك",   emoji:"👐" },
+              { word:"want",  arabic:"أريد",   emoji:"🙋" },
+            ]},
+          { id: "drinks-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
         ],
       },
       // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
       {
-        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#4c1d95",
+        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#7c3aed",
         sectionTitle: "قدّم نفسك وعائلتك",
+        pathVariant: "zigzag",
         lessons: [
           { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
           { id: "intro-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
@@ -46,21 +70,116 @@ const CHAPTERS: Chapter[] = [
           { id: "intro-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني!", words: [] },
         ],
       },
-      // ── القسم 3: الأماكن والاتجاهات — وحدة واحدة فقط ──
+      // ── الوحدة 3: قل من أين أنت؟ ──
       {
-        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#7c2d12",
+        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a",
         sectionTitle: "قل من أين أنت؟",
         lessons: [
           { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
           { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
           { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
           { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
-          { id: "places-c", type: "challenge", title: "تحدي القسم",       description: "اختبار شامل للقسم الثالث!", words: [] },
+          { id: "places-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل للوحدة الثالثة!", words: [] },
+        ],
+      },
+      // ── الوحدة 4: تنقل في المطار — سماوي ──
+      {
+        id: "unit-airport", title: "تنقل في المطار", emoji: "✈️", color: "#0891b2",
+        sectionTitle: "تنقل في المطار",
+        lessons: [
+          { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
+          { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
+          { id: "airport-p", type: "practice",  title: "تمرين المطار",     description: "تمرين مكثف على كل كلمات وجمل المطار قبل الكنز!", words: [] },
+          { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
+          { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
+          { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 5: استخدم الصفات — أخضر ──
+      {
+        id: "unit-adjectives", title: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e",
+        sectionTitle: "استخدم الصفات لوصف الأسماء",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "adj-1", type: "lesson",    title: "الصفات الأساسية",   description: "تعلّم: big وsmall وfast وslow وold وnew.", words: ["big","small","fast","slow","old","new"] },
+          { id: "adj-2", type: "lesson",    title: "صف الأشياء",        description: "تعلّم كيف تصف الأشياء: The car is big. The house is old.", words: ["the","is","very","so","looks"] },
+          { id: "adj-p", type: "practice",  title: "تمرين الصفات",      description: "تمرين مكثف على الصفات قبل الكنز!", words: [] },
+          { id: "adj-t", type: "treasure",  title: "كنز المراجعة",      description: "راجع الصفات في لعبة ممتعة!", words: [] },
+          { id: "adj-3", type: "lesson",    title: "قارن بين الأشياء",  description: "تعلّم: bigger than وsmaller than وthe biggest.", words: ["bigger","smaller","than","the","most"] },
+          { id: "adj-c", type: "challenge", title: "تحدي الوحدة",       description: "اختبار شامل: صف واقارن بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 6: اطلب الطعام والمشروبات — وردي ──
+      {
+        id: "unit-food", title: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777",
+        sectionTitle: "اطلب الطعام والمشروبات",
+        lessons: [
+          { id: "food-1", type: "lesson",    title: "أسماء الأطعمة",     description: "تعلّم: rice وchicken وbread وsalad وsoup.", words: ["rice","chicken","bread","salad","soup"] },
+          { id: "food-2", type: "lesson",    title: "في المطعم",          description: "تعلّم: Can I have...? وI'd like... وThe bill please.", words: ["can","have","like","bill","please"] },
+          { id: "food-p", type: "practice",  title: "تمرين الطلب",        description: "تمرين مكثف على طلب الطعام قبل الكنز!", words: [] },
+          { id: "food-t", type: "treasure",  title: "كنز المراجعة",       description: "راجع كلمات الطعام في لعبة ممتعة!", words: [] },
+          { id: "food-3", type: "lesson",    title: "المشروبات والحلويات", description: "تعلّم: coffee وjuice وcake وice cream وdessert.", words: ["coffee","juice","cake","dessert","sweet"] },
+          { id: "food-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: اطلب وجبتك بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 7: استخدم الزمن المضارع للمهن — أخضر ──
+      {
+        id: "unit-present-jobs", title: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a",
+        sectionTitle: "استخدم الزمن المضارع للمهن",
+        lessons: [
+          { id: "pj-1", type: "lesson",    title: "أفعال المهن",         description: "تعلّم: teach وdrive وcook وbuild وwrite.", words: ["teach","drive","cook","build","write"] },
+          { id: "pj-2", type: "lesson",    title: "جمل المضارع",         description: "تعلّم: He teaches. She drives. They cook.", words: ["he","she","they","works","teaches"] },
+          { id: "pj-p", type: "practice",  title: "تمرين المهن",         description: "تمرين مكثف على أفعال المهن!", words: [] },
+          { id: "pj-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع المهن في لعبة ممتعة!", words: [] },
+          { id: "pj-3", type: "lesson",    title: "اسأل عن المهن",       description: "تعلّم: What do you do? وWhere do you work?", words: ["what","where","do","work","job"] },
+          { id: "pj-c", type: "challenge", title: "تحدي الوحدة",         description: "اختبار شامل: تحدث عن المهن!", words: [] },
+        ],
+      },
+      // ── الوحدة 8: استخدم الزمن المضارع — برتقالي فاتح ──
+      {
+        id: "unit-present", title: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c",
+        sectionTitle: "استخدم الزمن المضارع",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "pr-1", type: "lesson",    title: "أفعال يومية",         description: "تعلّم: eat وsleep وwalk وread وwatch.", words: ["eat","sleep","walk","read","watch"] },
+          { id: "pr-2", type: "lesson",    title: "روتينك اليومي",       description: "تعلّم: I wake up at 7. I eat breakfast.", words: ["wake","brush","go","come","play"] },
+          { id: "pr-p", type: "practice",  title: "تمرين المضارع",       description: "تمرين مكثف على الزمن المضارع!", words: [] },
+          { id: "pr-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع الأفعال اليومية!", words: [] },
+          { id: "pr-3", type: "lesson",    title: "الكلمات الزمنية",     description: "تعلّم: always وusually وsometimes وnever.", words: ["always","usually","sometimes","never","often"] },
+          { id: "pr-c", type: "challenge", title: "تحدي الوحدة",         description: "اختبار شامل: تحدث عن يومك!", words: [] },
+        ],
+      },
+      // ── الوحدة 9: تحدث عن الطقس — أحمر فاتح ──
+      {
+        id: "unit-weather", title: "تحدث عن الطقس", emoji: "🌤️", color: "#f87171",
+        sectionTitle: "تحدث عن الطقس",
+        lessons: [
+          { id: "wt-1", type: "lesson",    title: "كلمات الطقس",         description: "تعلّم: sunny وrainy وcloudy وwindy وsnowy.", words: ["sunny","rainy","cloudy","windy","cold"] },
+          { id: "wt-2", type: "lesson",    title: "صف الطقس",            description: "تعلّم: It's hot today. The weather is nice.", words: ["it's","today","weather","nice","hot"] },
+          { id: "wt-p", type: "practice",  title: "تمرين الطقس",         description: "تمرين مكثف على كلمات الطقس!", words: [] },
+          { id: "wt-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع كلمات الطقس!", words: [] },
+          { id: "wt-3", type: "lesson",    title: "الفصول الأربعة",      description: "تعلّم: spring وsummer وautumn وwinter.", words: ["spring","summer","autumn","winter","season"] },
+          { id: "wt-c", type: "challenge", title: "تحدي الوحدة",         description: "اختبار شامل: تحدث عن الطقس بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 10: تحدث عن حيواناتك الأليفة — بنفسجي فاتح ──
+      {
+        id: "unit-pets", title: "تحدث عن حيواناتك الأليفة", emoji: "🐾", color: "#a78bfa",
+        sectionTitle: "تحدث عن حيواناتك الأليفة",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "pet-1", type: "lesson",    title: "أسماء الحيوانات",    description: "تعلّم: cat وdog وbird وfish وrabbit.", words: ["cat","dog","bird","fish","rabbit"] },
+          { id: "pet-2", type: "lesson",    title: "صف حيوانك",          description: "تعلّم: My cat is fluffy. He is playful.", words: ["my","fluffy","playful","gentle","cute"] },
+          { id: "pet-p", type: "practice",  title: "تمرين الحيوانات",    description: "تمرين مكثف على الحيوانات!", words: [] },
+          { id: "pet-t", type: "treasure",  title: "كنز المراجعة",       description: "راجع كلمات الحيوانات!", words: [] },
+          { id: "pet-3", type: "lesson",    title: "العناية بالحيوان",   description: "تعلّم: feed وwalk وplay وgroom وvet.", words: ["feed","walk","play","groom","vet"] },
+          { id: "pet-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: تحدث عن حيوانك الأليف!", words: [] },
         ],
       },
     ],
   },
 ];
+
 
 // ─── Fox SVG Mascot ───────────────────────────────────────────────────────────
 function FoxMascot() {
@@ -175,6 +294,56 @@ function FloatingMascot({ color, chapterId }: { color: string; chapterId: string
           <RobotMascot />
         </motion.div>
       )}
+    </div>
+  );
+}
+
+// ─── Practice/Dumbbell Icon ──────────────────────────────────────────────────
+function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
+  const SIZE = 76;
+  const r = SIZE / 2;
+  const faceColor = locked ? "#2d3a4a" : color;
+  const darkColor = locked ? "#151f2b" : shadeColor(color, -50);
+  const gId = `practice-${color.replace("#","")}-${locked?"l":"u"}`;
+  return (
+    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
+      {!locked && (
+        <div style={{
+          position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+          width: SIZE * 0.8, height: SIZE * 0.25, borderRadius: "50%",
+          background: color, opacity: 0.2, filter: "blur(10px)", zIndex: 0,
+        }}/>
+      )}
+      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
+        <defs>
+          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
+            <stop offset="0%"  stopColor={locked ? "#3a4a5a" : lightenColor(faceColor)}/>
+            <stop offset="50%" stopColor={faceColor}/>
+            <stop offset="100%" stopColor={darkColor}/>
+          </radialGradient>
+        </defs>
+        {/* Circle background */}
+        <circle cx={r} cy={r} r={r-1} fill={darkColor} stroke={shadeColor(faceColor,-30)} strokeWidth={2}/>
+        <circle cx={r} cy={r} r={r-7} fill={`url(#${gId})`}/>
+        {/* Shine */}
+        <ellipse cx={r*0.68} cy={r*0.44} rx={r*0.3} ry={r*0.11}
+          fill="white" opacity={locked ? 0.04 : 0.15} transform={`rotate(-35 ${r} ${r})`}/>
+        {/* Dumbbell icon — centered */}
+        <g transform={`translate(${r-15}, ${r-10})`} opacity={locked ? 0.4 : 1}>
+          {/* Bar */}
+          <rect x="8" y="8" width="14" height="4" rx="2" fill="white"/>
+          {/* Left weight plate outer */}
+          <rect x="2" y="4" width="7" height="12" rx="3" fill="white"/>
+          {/* Left weight plate inner */}
+          <rect x="3.5" y="6" width="4" height="8" rx="2" fill={faceColor} opacity="0.5"/>
+          {/* Right weight plate outer */}
+          <rect x="21" y="4" width="7" height="12" rx="3" fill="white"/>
+          {/* Right weight plate inner */}
+          <rect x="22.5" y="6" width="4" height="8" rx="2" fill={faceColor} opacity="0.5"/>
+          {/* Hand grip hint */}
+          <rect x="13" y="6" width="4" height="8" rx="2" fill="white" opacity="0.3"/>
+        </g>
+      </svg>
     </div>
   );
 }
@@ -327,11 +496,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  const mainColor  = isGold ? "#eab308" : isActive ? color : "#2d3a4a";
-  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -50) : "#151f2b";
-  const faceLight  = isGold ? "#fef08a" : isActive ? lightenColor(color) : "#3a4a5a";
+  const mainColor  = isGold ? "#eab308" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
+  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
+  const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
   const starColor  = isGold ? "#eab308" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#eab308" : isActive ? color : "#1e2d3d";
+  const trackColor = isGold ? "#eab308" : isActive ? shadeColor(color, -20) : "#1e2d3d";
   const arcFilled  = isGold || isJumpStation
     ? `${circ} 0`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
@@ -346,7 +515,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
         width: SIZE * 0.85, height: SIZE * 0.3, borderRadius: "50%",
         background: mainColor,
-        opacity: isActive ? (isCurrent ? 0.3 : 0.15) : 0.06,
+        opacity: isJumpStation ? 0.2 : isActive ? (isCurrent ? 0.25 : 0.12) : 0.05,
         filter: "blur(12px)", zIndex: 0,
       }}/>
 
@@ -364,8 +533,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
       <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}>
         <defs>
           <radialGradient id={gId} cx="35%" cy="28%" r="75%">
-            <stop offset="0%"  stopColor={faceLight} stopOpacity="1"/>
-            <stop offset="45%" stopColor={mainColor}  stopOpacity="1"/>
+            <stop offset="0%"  stopColor={isJumpStation ? mainColor : faceLight} stopOpacity="1"/>
+            <stop offset="45%" stopColor={mainColor} stopOpacity="1"/>
             <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
           </radialGradient>
           <radialGradient id={`${gId}-bg`} cx="50%" cy="50%" r="50%">
@@ -473,7 +642,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClo
       {/* Title */}
       <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
       <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `النقطة ${lessonNum} · 4 دروس`}
+        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
       </p>
 
       {/* Start button */}
@@ -520,14 +689,24 @@ const CANVAS_W = 300;
 const STEP_Y   = 110;
 const SIDE_PAD = 65;
 
-function buildPath(count: number): { x: number; y: number }[] {
-  const cols = [
-    CANVAS_W / 2 + SIDE_PAD,
-    CANVAS_W / 2,
-    CANVAS_W / 2 - SIDE_PAD,
-    CANVAS_W / 2,
-    CANVAS_W / 2 + SIDE_PAD,
-  ];
+function buildPath(count: number, variant?: string): { x: number; y: number }[] {
+  // variant "zigzag" = تعرج أكثر حدة وعشوائية
+  const cols = variant === "zigzag"
+    ? [
+        CANVAS_W / 2 - SIDE_PAD,      // يبدأ يسار
+        CANVAS_W / 2 + SIDE_PAD + 10, // يمين أبعد
+        CANVAS_W / 2 - 10,            // وسط يسار
+        CANVAS_W / 2 + SIDE_PAD,      // يمين
+        CANVAS_W / 2 - SIDE_PAD + 5,  // يسار قريب
+        CANVAS_W / 2 + 20,            // وسط يمين
+      ]
+    : [
+        CANVAS_W / 2 + SIDE_PAD,
+        CANVAS_W / 2,
+        CANVAS_W / 2 - SIDE_PAD,
+        CANVAS_W / 2,
+        CANVAS_W / 2 + SIDE_PAD,
+      ];
   return Array.from({ length: count }, (_, i) => ({
     x: cols[i % cols.length],
     y: 60 + i * STEP_Y,
@@ -551,11 +730,133 @@ function getSections(chapter: Chapter): SectionInfo[] {
   return sections;
 }
 
+
+// ─── Guide Drawer — جمل الوحدة مع ترجمة وصوت ───────────────────────────────
+const UNIT_GUIDE_PHRASES: Record<string, { en: string; ar: string }[]> = {
+  "unit-drinks": [
+    { en: "Would you like some tea?",   ar: "هل تودّ بعض الشاي؟" },
+    { en: "Coffee or tea?",             ar: "قهوة أو شاي؟" },
+    { en: "Water, please.",             ar: "ماء، من فضلك." },
+    { en: "Yes please, thank you!",     ar: "نعم من فضلك، شكراً!" },
+    { en: "No thank you, I'm fine.",    ar: "لا شكراً، أنا بخير." },
+    { en: "Sorry, we have no juice.",   ar: "آسف، لا يوجد عصير." },
+    { en: "Would you like some more?",  ar: "هل تريد المزيد؟" },
+    { en: "I would like some milk.",    ar: "أودّ بعض الحليب." },
+  ],
+};
+
+function speakText(text: string) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function GuideDrawer({ section, chapter, onClose }: {
+  section: { title: string; color: string; unitId: string };
+  chapter: Chapter;
+  onClose: () => void;
+}) {
+  const unit = chapter.units.find(u => u.id === section.unitId) ?? chapter.units[0];
+  const phrases = UNIT_GUIDE_PHRASES[unit.id] ?? [];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 60 }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+        transition={{ type: "spring", stiffness: 280, damping: 30 }}
+        style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          background: "hsl(var(--card))",
+          borderRadius: "24px 24px 0 0",
+          padding: "20px 20px 44px",
+          maxHeight: "85vh", overflowY: "auto",
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle */}
+        <div style={{ width: 40, height: 4, background: "hsl(var(--border))", borderRadius: 2, margin: "0 auto 18px" }}/>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
+          <div>
+            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة 1</h2>
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 13, margin: 0, textAlign: "right" }}>
+              طالع الجمل الأساسية واستعرضها مع الترجمة
+            </p>
+          </div>
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%",
+            background: section.color + "20",
+            border: `2px solid ${section.color}40`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 32, flexShrink: 0, marginRight: 12,
+          }}>☕</div>
+        </div>
+
+        {/* Section label */}
+        <div style={{ textAlign: "right", margin: "16px 0 8px" }}>
+          <span style={{ color: section.color, fontSize: 12, fontWeight: 700 }}>الجمل الأساسية</span>
+          <div style={{ fontWeight: 900, fontSize: 18 }}>{section.title}</div>
+        </div>
+
+        <div style={{ height: 1, background: "hsl(var(--border))", margin: "12px 0 16px" }}/>
+
+        {/* Phrases */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {phrases.map((p, i) => (
+            <div key={i} style={{
+              background: "hsl(var(--background))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: 16, padding: "14px 16px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontWeight: 800, fontSize: 15, direction: "ltr", textAlign: "left", marginBottom: 4 }}>{p.en}</div>
+                <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", borderBottom: `1.5px dashed ${section.color}60`, paddingBottom: 2, display: "inline-block" }}>{p.ar}</div>
+              </div>
+              <button
+                onClick={() => speakText(p.en)}
+                style={{
+                  width: 40, height: 40, borderRadius: "50%",
+                  background: section.color + "15",
+                  border: `1.5px solid ${section.color}40`,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, marginLeft: 12,
+                }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill={section.color}>
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Close */}
+        <button onClick={onClose} style={{
+          width: "100%", padding: "14px", marginTop: 20,
+          background: section.color, border: "none", borderRadius: 16,
+          color: "white", fontWeight: 800, fontSize: 15, cursor: "pointer",
+          boxShadow: `0 4px 16px ${section.color}40`,
+        }}>
+          حسناً، جاهز للدرس! ✓
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter] = useState(0);
   const [progress] = useState<Record<string, number>>({});
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const chapter = CHAPTERS[activeChapter];
   const sections = getSections(chapter);
@@ -627,7 +928,7 @@ export default function Roadmap() {
 
             {/* Guidebook — left */}
             <button
-              onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
+              onClick={e => { e.stopPropagation(); setShowGuide(true); }}
               style={{
                 background: "rgba(255,255,255,0.22)",
                 border: "1.5px solid rgba(255,255,255,0.45)",
@@ -653,7 +954,7 @@ export default function Roadmap() {
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
           {chapter.units.map((unit, unitIdx) => {
-            const positions = buildPath(unit.lessons.length);
+            const positions = buildPath(unit.lessons.length, unit.pathVariant);
             const svgH = 60 + (unit.lessons.length - 1) * STEP_Y + 80;
             const lessonStations = unit.lessons.filter(l => l.type === "lesson");
             const unitNumbers = ["الأولى","الثانية","الثالثة","الرابعة"];
@@ -730,7 +1031,7 @@ export default function Roadmap() {
                       : false;
                     const isLocked = normalLocked || (sectionLocked && !isJumpStation && lessonProgress === 0);
                     const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
-                    const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : 76;
+                    const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : lesson.type === "practice" ? 76 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
                     // First station of each unit/section
                     const isFirstOfSection = idx === 0;
@@ -781,7 +1082,7 @@ export default function Roadmap() {
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  window.location.href = `/lessons/unit-drinks/${lesson.id}`;
+                                  window.location.href = `/unit-lesson/${lesson.id}`;
                                 }}
                               />
                             </div>
@@ -849,6 +1150,8 @@ export default function Roadmap() {
                             <TreasureIcon unlocked={lessonProgress >= 4}/>
                           ) : lesson.type === "challenge" ? (
                             <CrownIcon color={unit.color} locked={effectiveLocked && lessonProgress === 0}/>
+                          ) : lesson.type === "practice" ? (
+                            <PracticeIcon color={unit.color} locked={effectiveLocked && lessonProgress === 0}/>
                           ) : (
                             <StationCircle
                               type="lesson"
@@ -869,15 +1172,66 @@ export default function Roadmap() {
             );
           })}
 
-          {/* Coming soon */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-            className="text-center mt-16 space-y-2">
-            <div className="text-3xl">🔜</div>
-            <p className="text-sm text-muted-foreground">وحدات جديدة قادمة قريباً</p>
+          {/* Next chapter card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{
+              margin: "48px 16px 32px",
+              background: "hsl(var(--card))",
+              border: "1.5px solid hsl(var(--border))",
+              borderRadius: 20,
+              padding: "24px 20px",
+              textAlign: "center",
+            }}>
+            {/* التالي badge */}
+            <div style={{
+              display: "inline-block",
+              background: "hsl(var(--muted))",
+              color: "hsl(var(--muted-foreground))",
+              fontSize: 12, fontWeight: 700,
+              padding: "3px 14px", borderRadius: 20,
+              marginBottom: 14,
+            }}>التالي</div>
+
+            {/* العنوان مع قفل */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 22, fontWeight: 900, color: "hsl(var(--foreground))" }}>القسم 2</span>
+              <span style={{ fontSize: 20 }}>🔒</span>
+            </div>
+
+            {/* الوصف */}
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}>
+              تعلّم كلمات، وعبارات، ومبادئ نحوية للتعاملات البسيطة
+            </p>
+
+            {/* زر القفز */}
+            <button style={{
+              width: "100%", padding: "13px 0",
+              background: "transparent",
+              border: "1.5px solid hsl(var(--border))",
+              borderRadius: 14,
+              color: "#38bdf8",
+              fontWeight: 800, fontSize: 15,
+              cursor: "pointer",
+            }}>
+              القفز إلى هنا؟
+            </button>
           </motion.div>
-          <div className="h-16"/>
+          <div className="h-8"/>
         </motion.div>
       </div>
+
+      {/* Guide Drawer */}
+      <AnimatePresence>
+        {showGuide && (
+          <GuideDrawer
+            section={activeSection}
+            chapter={chapter}
+            onClose={() => setShowGuide(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Floating Mascot */}
       <FloatingMascot color={chapter.color} chapterId="beginner" />
