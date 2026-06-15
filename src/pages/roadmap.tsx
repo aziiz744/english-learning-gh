@@ -34,50 +34,28 @@ const CHAPTERS: Chapter[] = [
           { id: "drinks-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
         ],
       },
-      // ── القسم 2: قدّم نفسك وعائلتك ──
+      // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
       {
-        id: "unit-names", title: "اسمك ومن أين أنت", emoji: "🪪", color: "#8b5cf6",
+        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#8b5cf6",
         sectionTitle: "قدّم نفسك وعائلتك",
         lessons: [
-          { id: "names-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية وتسأل الآخرين عن أسمائهم.", words: ["name","I'm","my","what","your"] },
-          { id: "names-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك ومدينتك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
-          { id: "names-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته عن الأسماء والبلدان!", words: [] },
-          { id: "names-3", type: "lesson",    title: "الأرقام والعمر", description: "تعلّم أرقام 1-20 وكيف تقول عمرك.", words: ["how","old","years","I'm","age"] },
-          { id: "names-c", type: "challenge", title: "تحدي الوحدة",    description: "تحدٍّ شامل: قدّم نفسك كاملاً!", words: [] },
+          { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
+          { id: "intro-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
+          { id: "intro-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته!", words: [] },
+          { id: "intro-3", type: "lesson",    title: "عائلتك",         description: "تعلّم كلمات العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
+          { id: "intro-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني!", words: [] },
         ],
       },
+      // ── القسم 3: الأماكن والاتجاهات — وحدة واحدة فقط ──
       {
-        id: "unit-family", title: "تحدّث عن عائلتك", emoji: "👨‍👩‍👧", color: "#8b5cf6",
-        sectionTitle: "",
-        lessons: [
-          { id: "family-1", type: "lesson",    title: "أفراد العائلة",  description: "تعلّم كلمات العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
-          { id: "family-2", type: "lesson",    title: "صف عائلتك",      description: "تعلّم كيف تصف أفراد عائلتك.", words: ["have","big","small","he","she"] },
-          { id: "family-t", type: "treasure",  title: "كنز المراجعة",   description: "لعبة بكل كلمات العائلة!", words: [] },
-          { id: "family-3", type: "lesson",    title: "صفات العائلة",   description: "tall وshort وkind وfunny وsmart.", words: ["tall","short","kind","funny","smart"] },
-          { id: "family-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني كاملاً!", words: [] },
-        ],
-      },
-      // ── القسم 3: الأماكن والاتجاهات ──
-      {
-        id: "unit-places", title: "أسماء الأماكن", emoji: "🏙️", color: "#f97316",
+        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#f97316",
         sectionTitle: "تحدّث عن الأماكن والاتجاهات",
         lessons: [
-          { id: "places-1", type: "lesson",    title: "أماكن في المدينة",   description: "تعلّم أسماء الأماكن: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
-          { id: "places-2", type: "lesson",    title: "أين تقع؟",           description: "تعلّم كيف تصف موقع مكان: next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
-          { id: "places-t", type: "treasure",  title: "كنز المراجعة",       description: "لعبة ممتعة بكل كلمات الأماكن والمواقع!", words: [] },
-          { id: "places-3", type: "lesson",    title: "الاتجاهات",          description: "تعلّم كيف تشرح الطريق: turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
-          { id: "places-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: اسأل عن الطريق واشرحه بثقة!", words: [] },
-        ],
-      },
-      {
-        id: "unit-transport", title: "وسائل المواصلات", emoji: "🚌", color: "#f97316",
-        sectionTitle: "",
-        lessons: [
-          { id: "trans-1", type: "lesson",    title: "وسائل النقل",       description: "تعلّم كلمات: bus وcar وtaxi وtrain وplane.", words: ["bus","car","taxi","train","plane"] },
-          { id: "trans-2", type: "lesson",    title: "كيف تصل؟",          description: "تعلّم جمل: How do I get to...? وHow far is it?", words: ["how","get","far","take","ride"] },
-          { id: "trans-t", type: "treasure",  title: "كنز المراجعة",      description: "راجع وسائل النقل والاتجاهات في لعبة ممتعة!", words: [] },
-          { id: "trans-3", type: "lesson",    title: "جمل في المطار",      description: "تعلّم جمل عملية في المطار والمحطة.", words: ["ticket","platform","gate","depart","arrive"] },
-          { id: "trans-c", type: "challenge", title: "تحدي الوحدة",       description: "اختبار شامل: خطط لرحلة واشرح الطريق!", words: [] },
+          { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
+          { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
+          { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
+          { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
+          { id: "places-c", type: "challenge", title: "تحدي القسم",       description: "اختبار شامل للقسم الثالث!", words: [] },
         ],
       },
     ],
@@ -197,6 +175,57 @@ function FloatingMascot({ color, chapterId }: { color: string; chapterId: string
           <RobotMascot />
         </motion.div>
       )}
+    </div>
+  );
+}
+
+// ─── Crown icon for challenge stations ───────────────────────────────────────
+function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
+  const SIZE = 90;
+  const r = SIZE / 2;
+  const gold = locked ? "#4b5563" : color;
+  const light = locked ? "#6b7280" : lightenColor(color);
+  const dark  = locked ? "#1f2937" : shadeColor(color, -55);
+  const gId = `crown-${color.replace("#","")}-${locked?"l":"u"}`;
+  return (
+    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
+      {/* Glow */}
+      {!locked && (
+        <div style={{
+          position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+          width: SIZE * 0.85, height: SIZE * 0.28, borderRadius: "50%",
+          background: color, opacity: 0.35, filter: "blur(12px)", zIndex: 0,
+        }}/>
+      )}
+      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
+        <defs>
+          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
+            <stop offset="0%"  stopColor={light}/>
+            <stop offset="50%" stopColor={gold}/>
+            <stop offset="100%" stopColor={dark}/>
+          </radialGradient>
+        </defs>
+        {/* Outer ring */}
+        <circle cx={r} cy={r} r={r-1} fill={dark} stroke={shadeColor(gold,-30)} strokeWidth={2}/>
+        {/* Inner face */}
+        <circle cx={r} cy={r} r={r-7} fill={`url(#${gId})`}/>
+        {/* Shine */}
+        <ellipse cx={r*0.68} cy={r*0.44} rx={r*0.3} ry={r*0.11}
+          fill="white" opacity={locked ? 0.05 : 0.2} transform={`rotate(-35 ${r} ${r})`}/>
+        {/* Crown icon */}
+        <g transform={`translate(${r-18}, ${r-14})`}>
+          <path d="M3 22 L33 22 L30 10 L22 17 L18 6 L14 17 L6 10 Z"
+            fill={locked ? "#4b5563" : "white"} opacity={locked ? 0.5 : 1}/>
+          <rect x="3" y="22" width="30" height="5" rx="2"
+            fill={locked ? "#374151" : "rgba(255,255,255,0.7)"}/>
+          {/* Crown gems */}
+          {!locked && <>
+            <circle cx="18" cy="8" r="2.5" fill="#fef08a"/>
+            <circle cx="7" cy="12" r="2" fill="#fef08a"/>
+            <circle cx="29" cy="12" r="2" fill="#fef08a"/>
+          </>}
+        </g>
+      </svg>
     </div>
   );
 }
@@ -698,8 +727,8 @@ export default function Roadmap() {
                       ? (progress[prevSectionChallenge] ?? 0) < 4
                       : false;
                     const isLocked = normalLocked || (sectionLocked && !isJumpStation && lessonProgress === 0);
-                    const isTreasure = lesson.type === "treasure";
-                    const SIZE = lesson.type === "challenge" ? 88 : isTreasure ? 72 : 76;
+                    const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
+                    const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
                     // First station of each unit/section
                     const isFirstOfSection = idx === 0;
@@ -814,19 +843,13 @@ export default function Roadmap() {
                             }
                           }}
                           style={{ cursor: effectiveLocked ? "default" : "pointer" }}>
-                          {isTreasure ? (
-                            <div style={{ opacity: effectiveLocked ? 0.4 : 1, position: "relative" }}>
-                              <div style={{
-                                position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
-                                width: 60, height: 10, borderRadius: "50%",
-                                background: "radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)",
-                                filter: "blur(4px)",
-                              }}/>
-                              <TreasureIcon unlocked={lessonProgress >= 4}/>
-                            </div>
+                          {lesson.type === "treasure" ? (
+                            <TreasureIcon unlocked={lessonProgress >= 4}/>
+                          ) : lesson.type === "challenge" ? (
+                            <CrownIcon color={unit.color} locked={effectiveLocked && lessonProgress === 0}/>
                           ) : (
                             <StationCircle
-                              type={lesson.type}
+                              type="lesson"
                               progress={effectiveLocked ? 0 : lessonProgress}
                               color={unit.color}
                               isCurrent={isCurrent}
