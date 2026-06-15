@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,52 +22,74 @@ const CHAPTERS: Chapter[] = [
       {
         id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22c55e",
         lessons: [
-          { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم الكلمات الأساسية للمشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
-          { id: "drinks-2", type: "lesson",    title: "كلمات جديدة",      description: "ستراجع كلمات الدرس الأول وتتعلم كلمات جديدة مثل please وthank you — الكلمات الجديدة بلون مميز.", words: ["please","thank you","yes","no","sorry"] },
+          { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
+          { id: "drinks-2", type: "lesson",    title: "كلمات جديدة",      description: "ستراجع كلمات الدرس الأول وتتعلم كلمات جديدة مثل please وthank you.", words: ["please","thank you","yes","no","sorry"] },
           { id: "drinks-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة ممتعة تشمل جميع كلمات الدرسين السابقين — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
-          { id: "drinks-3", type: "lesson",    title: "جمل كاملة",        description: "ستستخدم الكلمات في جمل كاملة مثل 'Would you like some tea?' وتدرّب على الترتيب الصحيح.", words: ["would","like","some","have","want"] },
-          { id: "drinks-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات. اجتزه لتكتمل دائرتك الذهبية!", words: [] },
+          { id: "drinks-3", type: "lesson",    title: "جمل كاملة",        description: "ستستخدم الكلمات في جمل كاملة مثل 'Would you like some tea?'", words: ["would","like","some","have","want"] },
+          { id: "drinks-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
         ],
       },
     ],
   },
 ];
 
-// ─── Mascot ───────────────────────────────────────────────────────────────────
-// placeholder SVG — يُستبدل بشخصية الموقع لاحقاً
-function Mascot() {
+// ─── Floating Mascot (emoji — مؤقت) ──────────────────────────────────────────
+function FloatingMascot({ color }: { color: string }) {
   return (
-    <motion.div
-      animate={{ y: [0, -6, 0] }}
-      transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-      style={{ width: 56, height: 56, flexShrink: 0 }}
-    >
-      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
-        {/* Body */}
-        <ellipse cx="28" cy="36" rx="14" ry="16" fill="#6366f1"/>
-        {/* Head */}
-        <circle cx="28" cy="20" r="13" fill="#818cf8"/>
-        {/* Eyes */}
-        <circle cx="23" cy="19" r="3.5" fill="white"/>
-        <circle cx="33" cy="19" r="3.5" fill="white"/>
-        <circle cx="23.8" cy="19.8" r="1.8" fill="#1e1b4b"/>
-        <circle cx="33.8" cy="19.8" r="1.8" fill="#1e1b4b"/>
-        {/* Shine */}
-        <circle cx="24.5" cy="18.5" r="0.8" fill="white" opacity="0.9"/>
-        <circle cx="34.5" cy="18.5" r="0.8" fill="white" opacity="0.9"/>
-        {/* Smile */}
-        <path d="M23 24 Q28 28 33 24" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
-        {/* Ears / antenna */}
-        <circle cx="16" cy="11" r="3.5" fill="#a5b4fc"/>
-        <circle cx="40" cy="11" r="3.5" fill="#a5b4fc"/>
-        {/* Arms */}
-        <ellipse cx="14" cy="36" rx="4" ry="7" fill="#6366f1" transform="rotate(-15 14 36)"/>
-        <ellipse cx="42" cy="36" rx="4" ry="7" fill="#6366f1" transform="rotate(15 42 36)"/>
-        {/* Chest badge */}
-        <rect x="22" y="32" width="12" height="10" rx="3" fill="#4f46e5" opacity="0.6"/>
-        <text x="28" y="40" textAnchor="middle" fontSize="6" fill="#c7d2fe" fontWeight="bold">EN</text>
-      </svg>
-    </motion.div>
+    <div style={{
+      position: "fixed",
+      bottom: 100,
+      left: 16,
+      zIndex: 40,
+      pointerEvents: "none",
+    }}>
+      {/* Glow */}
+      <motion.div
+        animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+        transition={{ repeat: Infinity, duration: 2.5 }}
+        style={{
+          position: "absolute", inset: -10, borderRadius: "50%",
+          background: color, filter: "blur(12px)",
+        }}
+      />
+      {/* Body bounce */}
+      <motion.div
+        animate={{ y: [0, -10, 0], rotate: [-4, 4, -4] }}
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        style={{ fontSize: 52, lineHeight: 1, display: "block", filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
+      >
+        🤖
+      </motion.div>
+      {/* Eyes blink */}
+      <motion.div
+        animate={{ scaleY: [1, 0.05, 1] }}
+        transition={{ repeat: Infinity, duration: 3.5, times: [0, 0.5, 1] }}
+        style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", fontSize: 10 }}
+      >
+      </motion.div>
+      {/* Speech bubble */}
+      <motion.div
+        animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -8] }}
+        transition={{ repeat: Infinity, duration: 4, times: [0, 0.2, 0.8, 1] }}
+        style={{
+          position: "absolute", bottom: 62, left: "50%", transform: "translateX(-50%)",
+          background: "white", color: "#1e293b",
+          fontSize: 11, fontWeight: 700,
+          padding: "4px 10px", borderRadius: 12,
+          whiteSpace: "nowrap",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        }}
+      >
+        هيا نتعلم! 🎉
+        <div style={{
+          position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
+          width: 0, height: 0,
+          borderLeft: "6px solid transparent",
+          borderRight: "6px solid transparent",
+          borderTop: "6px solid white",
+        }}/>
+      </motion.div>
+    </div>
   );
 }
 
@@ -114,7 +136,6 @@ function StationCircle({ type, progress, color, isCurrent }: {
   const isGold = progress >= 4;
   const hasStart = progress > 0;
 
-  const ringColor  = isGold ? "#eab308" : hasStart ? color : "#4b5563";
   const bgFill     = hasStart ? (isGold ? "#1c1600" : "#0d2010") : "#1e293b";
   const starColor  = isGold ? "#eab308" : hasStart ? "#ffffff" : "#4b5563";
   const strokeFill = isGold ? "#eab308" : hasStart ? color : "#374151";
@@ -126,8 +147,7 @@ function StationCircle({ type, progress, color, isCurrent }: {
   return (
     <div style={{ position: "relative", width: SIZE, height: SIZE }}>
       <div style={{
-        position: "absolute", bottom: -8, left: "50%",
-        transform: "translateX(-50%)",
+        position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
         width: SIZE * 0.7, height: 12, borderRadius: "50%",
         background: "radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)",
         filter: "blur(4px)", zIndex: 0,
@@ -143,8 +163,7 @@ function StationCircle({ type, progress, color, isCurrent }: {
       )}
       <svg width={SIZE} height={SIZE} style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}>
         <circle cx={cx} cy={cy} r={r} fill={bgFill} stroke="#374151" strokeWidth={3.5}/>
-        <motion.circle
-          cx={cx} cy={cy} r={r} fill="none"
+        <motion.circle cx={cx} cy={cy} r={r} fill="none"
           stroke={strokeFill} strokeWidth={strokeW} strokeLinecap="round"
           strokeDasharray={filledDash}
           initial={{ strokeDasharray: `0 ${circ}` }}
@@ -159,7 +178,7 @@ function StationCircle({ type, progress, color, isCurrent }: {
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
         <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 24 24" fill={starColor}
-          style={{ filter: isGold ? "drop-shadow(0 0 5px #eab30890)" : "none", transition: "fill 0.4s, filter 0.4s" }}>
+          style={{ filter: isGold ? "drop-shadow(0 0 5px #eab30890)" : "none", transition: "fill 0.4s" }}>
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
         </svg>
       </div>
@@ -167,7 +186,65 @@ function StationCircle({ type, progress, color, isCurrent }: {
   );
 }
 
-// ─── SVG path connector between stations ─────────────────────────────────────
+// ─── Duolingo-style popup card ────────────────────────────────────────────────
+function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClose, onStart }: {
+  lesson: UnitLesson; color: string; unitTitle: string;
+  lessonNum: number; totalLessons: number;
+  onClose: () => void; onStart: () => void;
+}) {
+  const darkColor = color + "dd";
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.85, y: 10 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
+      style={{
+        background: color,
+        borderRadius: 20,
+        padding: "16px 18px 14px",
+        width: 220,
+        boxShadow: `0 8px 32px ${color}60, 0 2px 8px rgba(0,0,0,0.3)`,
+        position: "relative",
+      }}
+      onClick={e => e.stopPropagation()}
+    >
+      {/* Arrow down */}
+      <div style={{
+        position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)",
+        width: 0, height: 0,
+        borderLeft: "10px solid transparent",
+        borderRight: "10px solid transparent",
+        borderTop: `10px solid ${color}`,
+      }}/>
+
+      {/* Title */}
+      <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
+      <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
+        {lesson.type === "treasure" ? "كنز المراجعة" : lesson.type === "challenge" ? "تحدي الوحدة" : `الدرس ${lessonNum} من ${totalLessons}`}
+      </p>
+
+      {/* Start button */}
+      <button onClick={onStart}
+        style={{
+          display: "block", width: "100%",
+          background: "white", color: "#1e293b",
+          fontWeight: 800, fontSize: 14,
+          padding: "10px 0", borderRadius: 14,
+          border: "none", cursor: "pointer",
+          boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
+          transition: "transform 0.1s, box-shadow 0.1s",
+        }}
+        onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
+        onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
+      >
+        ابدأ +10 XP
+      </button>
+    </motion.div>
+  );
+}
+
+// ─── SVG path connector ───────────────────────────────────────────────────────
 function PathConnector({ fromX, fromY, toX, toY, color, done }: {
   fromX: number; fromY: number; toX: number; toY: number; color: string; done: boolean;
 }) {
@@ -175,12 +252,9 @@ function PathConnector({ fromX, fromY, toX, toY, color, done }: {
   const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
   return (
     <g>
-      {/* background track */}
-      <path d={d} stroke="#374151" strokeWidth={5} fill="none" strokeLinecap="round" strokeDasharray="8 6"/>
-      {/* filled */}
+      <path d={d} stroke="#2d3748" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 7"/>
       {done && (
-        <motion.path
-          d={d} stroke={color} strokeWidth={5} fill="none" strokeLinecap="round"
+        <motion.path d={d} stroke={color} strokeWidth={6} fill="none" strokeLinecap="round"
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         />
@@ -189,69 +263,18 @@ function PathConnector({ fromX, fromY, toX, toY, color, done }: {
   );
 }
 
-// ─── Guide modal ──────────────────────────────────────────────────────────────
-function GuideModal({ lesson, color, onClose, onStart }: {
-  lesson: UnitLesson; color: string; onClose: () => void; onStart: () => void;
-}) {
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.65)" }} onClick={onClose}>
-      <motion.div
-        initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 60, opacity: 0 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-        className="bg-card border border-border rounded-3xl p-6 w-full max-w-sm space-y-4"
-        onClick={e => e.stopPropagation()}>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">{lesson.type === "treasure" ? "💎" : lesson.type === "challenge" ? "🏆" : "📖"}</span>
-          <div>
-            <h2 className="font-bold text-base">{lesson.title}</h2>
-            <p className="text-xs text-muted-foreground">{lesson.type === "treasure" ? "كنز" : lesson.type === "challenge" ? "تحدي الوحدة" : "درس"}</p>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed">{lesson.description}</p>
-        {lesson.words && lesson.words.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-semibold">كلمات ستتعلمها:</p>
-            <div className="flex flex-wrap gap-2">
-              {lesson.words.map(w => (
-                <span key={w} style={{ backgroundColor: color + "20", color }}
-                  className="text-xs font-bold px-3 py-1 rounded-full" dir="ltr">{w}</span>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="flex gap-3 pt-1">
-          <button onClick={onClose}
-            className="flex-1 py-3 rounded-2xl border border-border text-sm font-semibold text-muted-foreground hover:bg-muted transition-all">
-            لاحقاً
-          </button>
-          <button onClick={onStart}
-            style={{ background: color }}
-            className="flex-1 py-3 rounded-2xl text-white text-sm font-bold hover:opacity-90 transition-all">
-            ابدأ الآن ←
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ─── S-curve positions for N stations ────────────────────────────────────────
-// Returns array of {x, y} in local SVG coords.
-// The canvas width = CANVAS_W, each station spaced STEP_Y apart vertically.
+// ─── S-curve positions ────────────────────────────────────────────────────────
 const CANVAS_W = 300;
 const STEP_Y   = 110;
-const SIDE_PAD = 60; // how far left/right from center
+const SIDE_PAD = 65;
 
 function buildPath(count: number): { x: number; y: number }[] {
-  // Zig-zag: alternating left/right/center columns
   const cols = [
-    CANVAS_W / 2 + SIDE_PAD,   // right
-    CANVAS_W / 2,               // center
-    CANVAS_W / 2 - SIDE_PAD,   // left
-    CANVAS_W / 2,               // center
-    CANVAS_W / 2 + SIDE_PAD,   // right (repeat)
+    CANVAS_W / 2 + SIDE_PAD,
+    CANVAS_W / 2,
+    CANVAS_W / 2 - SIDE_PAD,
+    CANVAS_W / 2,
+    CANVAS_W / 2 + SIDE_PAD,
   ];
   return Array.from({ length: count }, (_, i) => ({
     x: cols[i % cols.length],
@@ -262,17 +285,19 @@ function buildPath(count: number): { x: number; y: number }[] {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter, setActiveChapter] = useState(0);
-  const { user } = useAuth();
   const [progress] = useState<Record<string, number>>({});
-  const [guide, setGuide] = useState<{ lesson: UnitLesson; color: string } | null>(null);
+  const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
   const chapter = CHAPTERS[activeChapter];
 
   const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
+  // Close popup on outside click
+  const handleBackdropClick = () => setActivePopup(null);
+
   return (
     <Layout>
-      <div className="animate-in fade-in duration-500 pb-8">
+      <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
 
         {/* Header */}
         <div className="text-center mb-6">
@@ -284,7 +309,7 @@ export default function Roadmap() {
         {/* Chapter tabs */}
         <div className="flex gap-2 justify-center mb-8 flex-wrap">
           {CHAPTERS.map((ch, i) => (
-            <motion.button key={ch.id} onClick={() => setActiveChapter(i)} whileTap={{ scale: 0.95 }}
+            <motion.button key={ch.id} onClick={e => { e.stopPropagation(); setActiveChapter(i); }} whileTap={{ scale: 0.95 }}
               className={cn(
                 "flex items-center gap-2 px-5 py-2.5 rounded-2xl border transition-all text-sm font-bold",
                 activeChapter === i
@@ -298,11 +323,12 @@ export default function Roadmap() {
 
         {/* Map */}
         <motion.div key={activeChapter} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          style={{ maxWidth: 380, margin: "0 auto" }}>
+          style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
           {chapter.units.map(unit => {
             const positions = buildPath(unit.lessons.length);
             const svgH = 60 + (unit.lessons.length - 1) * STEP_Y + 80;
+            const lessonStations = unit.lessons.filter(l => l.type === "lesson");
 
             return (
               <div key={unit.id}>
@@ -315,29 +341,35 @@ export default function Roadmap() {
                       <div className="font-bold text-sm">الوحدة الأولى</div>
                       <div className="text-white/80 text-xs">{unit.title}</div>
                     </div>
+                    {/* Guidebook button — في الـ header */}
+                    <button
+                      onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
+                      style={{
+                        marginRight: 8,
+                        background: "rgba(255,255,255,0.2)",
+                        border: "2px solid rgba(255,255,255,0.4)",
+                        borderRadius: 10, padding: "4px 10px",
+                        color: "white", fontWeight: 700, fontSize: 12,
+                        cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+                      }}>
+                      📖 الدليل
+                    </button>
                   </div>
                 </motion.div>
 
-                {/* SVG canvas for path + stations */}
+                {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
 
-                  {/* SVG connectors */}
-                  <svg
-                    width={CANVAS_W} height={svgH}
+                  {/* Connectors */}
+                  <svg width={CANVAS_W} height={svgH}
                     style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
                     {positions.map((pos, idx) => {
                       if (idx === 0) return null;
                       const prev = positions[idx - 1];
-                      const prevLesson = unit.lessons[idx - 1];
-                      const done = (progress[prevLesson.id] ?? 0) >= 4;
-                      return (
-                        <PathConnector
-                          key={`conn-${idx}`}
-                          fromX={prev.x} fromY={prev.y}
-                          toX={pos.x}   toY={pos.y}
-                          color={unit.color} done={done}
-                        />
-                      );
+                      const done = (progress[unit.lessons[idx - 1].id] ?? 0) >= 4;
+                      return <PathConnector key={`c${idx}`}
+                        fromX={prev.x} fromY={prev.y} toX={pos.x} toY={pos.y}
+                        color={unit.color} done={done} />;
                     })}
                   </svg>
 
@@ -350,10 +382,10 @@ export default function Roadmap() {
                     const isLocked = allIdx > 0 && (progress[allLessons[allIdx - 1]?.id] ?? 0) < 4 && lessonProgress === 0;
                     const isTreasure = lesson.type === "treasure";
                     const SIZE = lesson.type === "challenge" ? 88 : isTreasure ? 72 : 76;
+                    const isPopupOpen = activePopup?.lessonId === lesson.id;
 
-                    // mascot side: alternate with path zigzag
-                    // show mascot only next to current station
-                    const mascotSide = x > CANVAS_W / 2 ? "left" : "right"; // opposite of station side
+                    // lesson number (only count type=lesson)
+                    const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
 
                     return (
                       <div key={lesson.id} style={{
@@ -365,12 +397,39 @@ export default function Roadmap() {
                         flexDirection: "column",
                         alignItems: "center",
                       }}>
+                        {/* Popup above station */}
+                        <AnimatePresence>
+                          {isPopupOpen && (
+                            <div style={{
+                              position: "absolute",
+                              bottom: SIZE + 16,
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              zIndex: 50,
+                            }}
+                              onClick={e => e.stopPropagation()}>
+                              <StationPopup
+                                lesson={lesson}
+                                color={unit.color}
+                                unitTitle={unit.title}
+                                lessonNum={lessonNum}
+                                totalLessons={lessonStations.length}
+                                onClose={() => setActivePopup(null)}
+                                onStart={() => {
+                                  setActivePopup(null);
+                                  window.location.href = `/lessons/unit-drinks/${lesson.id}`;
+                                }}
+                              />
+                            </div>
+                          )}
+                        </AnimatePresence>
+
                         {/* "ابدأ" badge */}
-                        {isCurrent && (
+                        {isCurrent && !isPopupOpen && (
                           <motion.div
                             animate={{ y: [0, -6, 0] }}
                             transition={{ repeat: Infinity, duration: 1.3, ease: "easeInOut" }}
-                            style={{ position: "absolute", top: -46, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            style={{ position: "absolute", top: -46, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
                             <div style={{
                               background: unit.color, color: "#fff",
                               fontSize: 13, fontWeight: 800,
@@ -387,18 +446,6 @@ export default function Roadmap() {
                           </motion.div>
                         )}
 
-                        {/* Mascot — beside current station */}
-                        {isCurrent && (
-                          <div style={{
-                            position: "absolute",
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            [mascotSide === "left" ? "right" : "left"]: SIZE + 8,
-                          }}>
-                            <Mascot />
-                          </div>
-                        )}
-
                         {/* Station */}
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
@@ -406,13 +453,17 @@ export default function Roadmap() {
                           transition={{ delay: idx * 0.08, type: "spring", stiffness: 200 }}
                           whileHover={!isLocked ? { scale: 1.07 } : {}}
                           whileTap={!isLocked ? { scale: 0.94 } : {}}
-                          onClick={() => !isLocked && setGuide({ lesson, color: unit.color })}
+                          onClick={e => {
+                            e.stopPropagation();
+                            if (!isLocked) {
+                              setActivePopup(isPopupOpen ? null : { lessonId: lesson.id, x, y });
+                            }
+                          }}
                           style={{ cursor: isLocked ? "default" : "pointer" }}>
                           {isTreasure ? (
-                            <div style={{ position: "relative", opacity: isLocked ? 0.4 : 1 }}>
+                            <div style={{ opacity: isLocked ? 0.4 : 1, position: "relative" }}>
                               <div style={{
-                                position: "absolute", bottom: -8, left: "50%",
-                                transform: "translateX(-50%)",
+                                position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
                                 width: 60, height: 10, borderRadius: "50%",
                                 background: "radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)",
                                 filter: "blur(4px)",
@@ -446,20 +497,8 @@ export default function Roadmap() {
         </motion.div>
       </div>
 
-      {/* Guide modal */}
-      <AnimatePresence>
-        {guide && (
-          <GuideModal
-            lesson={guide.lesson}
-            color={guide.color}
-            onClose={() => setGuide(null)}
-            onStart={() => {
-              setGuide(null);
-              window.location.href = `/lessons/unit-drinks/${guide.lesson.id}`;
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Floating Mascot */}
+      <FloatingMascot color={chapter.color} />
     </Layout>
   );
 }
