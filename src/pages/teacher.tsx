@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Mic, MicOff, Volume2, VolumeX, Loader2, Bot, User, RefreshCw } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, Loader2, User, RefreshCw, PhoneOff, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { triggerLoginModal } from "@/lib/modal-state";
@@ -9,168 +9,204 @@ interface Message {
   id: number;
   role: "user" | "assistant";
   content: string;
-  timestamp: Date;
 }
 
-const SYSTEM_PROMPT = `You are Mr. Adam, a warm, patient, and highly experienced English language teacher with 20 years of teaching experience. You specialize in teaching Arabic speakers.
+type CallState = "idle" | "teacher-speaking" | "listening" | "processing";
 
-Your personality:
-- Friendly, encouraging, and supportive
-- You celebrate small wins and correct mistakes gently
-- You adapt your language level to the student
-- You mix teaching with natural conversation
+const SYSTEM_PROMPT = `You are Mr. Adam, a warm, patient, and experienced English teacher specializing in teaching Arabic speakers.
 
-Your teaching style:
-- When the student makes a grammar mistake, you naturally correct it by repeating the correct form in your reply (without being harsh)
-- You give short, practical explanations
-- You encourage the student to speak more
-- You ask follow-up questions to keep the conversation going
-- You suggest vocabulary or phrases when relevant
-- If the student writes in Arabic, kindly encourage them to try in English but help them
-
-Rules:
-- Keep responses conversational and not too long (2-5 sentences usually)
-- Always end with a question or encouragement to keep the conversation going
-- Occasionally give a mini tip or vocabulary word naturally in the conversation
-- Never be robotic — be human and warm
-
-Start the conversation as if welcoming a new student to your class.`;
+Your style:
+- Friendly, encouraging, short responses (2-4 sentences max)
+- Gently correct grammar mistakes by naturally using the correct form in your reply
+- Always end with a question to keep conversation going
+- Adapt to the student's level
+- If student writes Arabic, kindly encourage English but still help
+- Be natural and human, not robotic`;
 
 export default function TeacherPage() {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
-  const [recording, setRecording] = useState(false);
+  const [callState, setCallState] = useState<CallState>("idle");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [started, setStarted] = useState(false);
+  const [transcript, setTranscript] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const msgIdRef = useRef(0);
+  const callStateRef = useRef<CallState>("idle");
+  const isActiveRef = useRef(false);
+
+  callStateRef.current = callState;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const speak = useCallback((text: string) => {
-    if (!voiceEnabled || !window.speechSynthesis) return;
+  // Speak text then auto-open mic
+  const speak = useCallback((text: string, thenListen: boolean = true) => {
+    if (!voiceEnabled || !window.speechSynthesis) {
+      if (thenListen) startListening();
+      return;
+    }
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "en-US";
-    utter.rate = 0.9;
+    utter.rate = 0.88;
     utter.pitch = 1.05;
-    // Pick a good English voice
     const voices = window.speechSynthesis.getVoices();
     const preferred = voices.find(v =>
-      v.lang.startsWith("en") && (v.name.includes("Daniel") || v.name.includes("Google") || v.name.includes("Samantha"))
-    ) || voices.find(v => v.lang.startsWith("en"));
+      v.lang.startsWith("en") && (v.name.includes("Daniel") || v.name.includes("Google US") || v.name.includes("Samantha") || v.name.includes("Alex"))
+    ) || voices.find(v => v.lang.startsWith("en-US")) || voices.find(v => v.lang.startsWith("en"));
     if (preferred) utter.voice = preferred;
-    utter.onstart = () => setSpeaking(true);
-    utter.onend = () => setSpeaking(false);
-    utter.onerror = () => setSpeaking(false);
-    synthRef.current = utter;
+    setCallState("teacher-speaking");
+    utter.onend = () => {
+      if (isActiveRef.current && thenListen) {
+        setTimeout(() => startListening(), 400);
+      } else {
+        setCallState("idle");
+      }
+    };
+    utter.onerror = () => {
+      if (isActiveRef.current && thenListen) startListening();
+      else setCallState("idle");
+    };
     window.speechSynthesis.speak(utter);
   }, [voiceEnabled]);
 
-  const stopSpeaking = () => {
-    window.speechSynthesis?.cancel();
-    setSpeaking(false);
-  };
-
-  const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || loading) return;
-    const userMsg: Message = { id: ++msgIdRef.current, role: "user", content: text.trim(), timestamp: new Date() };
-    setMessages(prev => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }));
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 400,
-          system: SYSTEM_PROMPT,
-          messages: history,
-        }),
-      });
-      const data = await res.json();
-      const reply = data.content?.find((b: any) => b.type === "text")?.text || "Sorry, I didn't catch that. Could you try again?";
-      const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply, timestamp: new Date() };
-      setMessages(prev => [...prev, assistantMsg]);
-      speak(reply);
-    } catch {
-      const errMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: "Sorry, something went wrong. Please try again!", timestamp: new Date() };
-      setMessages(prev => [...prev, errMsg]);
-    } finally {
-      setLoading(false);
-    }
-  }, [messages, loading, speak]);
-
-  const startConversation = async () => {
-    if (!user) { triggerLoginModal(); return; }
-    setStarted(true);
-    setLoading(true);
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 200,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: "Hello, I want to practice English with you." }],
-        }),
-      });
-      const data = await res.json();
-      const reply = data.content?.find((b: any) => b.type === "text")?.text || "Hello! Welcome to our English class! I'm so happy you're here. What's your name, and how long have you been learning English?";
-      const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply, timestamp: new Date() };
-      setMessages([assistantMsg]);
-      speak(reply);
-    } catch {
-      const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: "Hello! I'm Mr. Adam, your English teacher. I'm so glad you're here to practice! What's your name?", timestamp: new Date() };
-      setMessages([assistantMsg]);
-      speak(assistantMsg.content);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleRecording = () => {
+  const startListening = useCallback(() => {
+    if (!isActiveRef.current) return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) { alert("متصفحك لا يدعم التعرف على الصوت. استخدم Chrome."); return; }
+    if (!SR) return;
 
-    if (recording) {
-      recognitionRef.current?.stop();
-      setRecording(false);
-      return;
-    }
-
+    recognitionRef.current?.abort();
     const recognition = new SR();
     recognition.lang = "en-US";
     recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => setCallState("listening");
+
     recognition.onresult = (e: SpeechRecognitionEvent) => {
-      const transcript = e.results[0][0].transcript;
-      setInput(transcript);
-      setRecording(false);
+      let interim = "";
+      let final = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      setTranscript(final || interim);
     };
-    recognition.onerror = () => setRecording(false);
-    recognition.onend = () => setRecording(false);
+
+    recognition.onend = () => {
+      if (!isActiveRef.current) return;
+      const t = transcript;
+      if (t.trim()) {
+        setTranscript("");
+        sendMessage(t.trim());
+      } else {
+        // Nothing said, listen again
+        setTimeout(() => { if (isActiveRef.current) startListening(); }, 500);
+      }
+    };
+
+    recognition.onerror = (e: SpeechRecognitionErrorEvent) => {
+      if (e.error === "no-speech" || e.error === "aborted") {
+        if (isActiveRef.current) setTimeout(() => startListening(), 500);
+      }
+    };
+
     recognitionRef.current = recognition;
-    recognition.start();
-    setRecording(true);
+    try { recognition.start(); } catch {}
+  }, [transcript]);
+
+  const sendMessage = useCallback(async (text: string) => {
+    if (!text.trim() || !isActiveRef.current) return;
+    setCallState("processing");
+    setTranscript("");
+    recognitionRef.current?.abort();
+
+    const userMsg: Message = { id: ++msgIdRef.current, role: "user", content: text };
+    setMessages(prev => {
+      const newMsgs = [...prev, userMsg];
+      // Call API with updated messages
+      callAPI(newMsgs);
+      return newMsgs;
+    });
+  }, []);
+
+  const callAPI = useCallback(async (currentMessages: Message[]) => {
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 300,
+          system: SYSTEM_PROMPT,
+          messages: currentMessages.map(m => ({ role: m.role, content: m.content })),
+        }),
+      });
+      const data = await res.json();
+      const reply = data.content?.find((b: any) => b.type === "text")?.text;
+      if (reply) {
+        const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
+        setMessages(prev => [...prev, assistantMsg]);
+        speak(reply, true);
+      } else {
+        if (isActiveRef.current) startListening();
+      }
+    } catch {
+      const errMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: "Sorry, I had a connection issue. Please say that again!" };
+      setMessages(prev => [...prev, errMsg]);
+      speak(errMsg.content, true);
+    }
+  }, [speak, startListening]);
+
+  const startCall = async () => {
+    if (!user) { triggerLoginModal(); return; }
+    isActiveRef.current = true;
+    setStarted(true);
+    setMessages([]);
+    setCallState("processing");
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 150,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: "user", content: "Start the class. Greet me warmly and ask my name." }],
+        }),
+      });
+      const data = await res.json();
+      const reply = data.content?.find((b: any) => b.type === "text")?.text
+        || "Hello! Welcome to our English class! I'm Mr. Adam. What's your name?";
+      const msg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
+      setMessages([msg]);
+      speak(reply, true);
+    } catch {
+      const msg: Message = { id: ++msgIdRef.current, role: "assistant", content: "Hello! I'm Mr. Adam, your English teacher. What's your name?" };
+      setMessages([msg]);
+      speak(msg.content, true);
+    }
   };
 
-  const resetChat = () => {
+  const endCall = () => {
+    isActiveRef.current = false;
+    recognitionRef.current?.abort();
     window.speechSynthesis?.cancel();
-    setSpeaking(false);
-    setMessages([]);
+    setCallState("idle");
     setStarted(false);
+    setMessages([]);
+    setTranscript("");
+  };
+
+  const stateLabel: Record<CallState, string> = {
+    "idle": "",
+    "teacher-speaking": "🔊 Mr. Adam يتحدث...",
+    "listening": "🎙️ يستمع إليك...",
+    "processing": "⏳ يفكر...",
   };
 
   if (!started) {
@@ -183,17 +219,27 @@ export default function TeacherPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Mr. Adam — معلمك الخاص</h1>
           <p className="text-muted-foreground max-w-sm">
-            تحدّث مع معلم AI ذكي يتجاوب معك، يصحح أخطاءك بلطف، ويساعدك على ممارسة الإنجليزية بثقة
+            مثل مكالمة هاتفية — المعلم يتكلم، ثم يفتح الميك تلقائياً لك، وهكذا
           </p>
         </div>
-        <div className="flex gap-3 flex-wrap justify-center text-sm text-muted-foreground">
-          <span className="bg-muted px-3 py-1.5 rounded-full">🎙️ تحدث بصوتك</span>
-          <span className="bg-muted px-3 py-1.5 rounded-full">⌨️ أو اكتب</span>
-          <span className="bg-muted px-3 py-1.5 rounded-full">🔊 يرد بصوت</span>
+        <div className="grid grid-cols-3 gap-3 text-sm text-center max-w-xs">
+          <div className="bg-muted rounded-xl p-3 space-y-1">
+            <div className="text-2xl">🎙️</div>
+            <p className="text-xs text-muted-foreground">ميك تلقائي</p>
+          </div>
+          <div className="bg-muted rounded-xl p-3 space-y-1">
+            <div className="text-2xl">🔊</div>
+            <p className="text-xs text-muted-foreground">يرد بصوت</p>
+          </div>
+          <div className="bg-muted rounded-xl p-3 space-y-1">
+            <div className="text-2xl">✍️</div>
+            <p className="text-xs text-muted-foreground">يصحح بلطف</p>
+          </div>
         </div>
-        <Button onClick={startConversation} size="lg" className="px-8 py-6 text-lg font-bold rounded-2xl">
-          ابدأ المحادثة
+        <Button onClick={startCall} size="lg" className="px-10 py-6 text-lg font-bold rounded-2xl gap-3">
+          <Phone className="w-5 h-5" /> ابدأ المحادثة
         </Button>
+        <p className="text-xs text-muted-foreground">يعمل بشكل أفضل على Chrome</p>
       </div>
     );
   }
@@ -203,26 +249,25 @@ export default function TeacherPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-2xl">👨‍🏫</div>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl relative
+            ${callState === "teacher-speaking" ? "ring-2 ring-green-400 ring-offset-2 ring-offset-background" : "bg-primary/10"}`}>
+            👨‍🏫
+            {callState === "teacher-speaking" && (
+              <span className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+            )}
+          </div>
           <div>
             <p className="font-bold text-sm">Mr. Adam</p>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              {speaking ? <><span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />يتحدث...</> : "معلم الإنجليزية"}
-            </p>
+            <p className="text-xs text-primary animate-pulse min-h-4">{stateLabel[callState]}</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => { setVoiceEnabled(v => !v); stopSpeaking(); }}
+          <Button variant="ghost" size="icon" onClick={() => setVoiceEnabled(v => !v)}
             className={voiceEnabled ? "text-primary" : "text-muted-foreground"}>
             {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </Button>
-          {speaking && (
-            <Button variant="ghost" size="icon" onClick={stopSpeaking}>
-              <VolumeX className="w-4 h-4 text-red-400" />
-            </Button>
-          )}
-          <Button variant="ghost" size="icon" onClick={resetChat}>
-            <RefreshCw className="w-4 h-4" />
+          <Button variant="destructive" size="sm" onClick={endCall} className="gap-1 rounded-xl">
+            <PhoneOff className="w-4 h-4" /> إنهاء
           </Button>
         </div>
       </div>
@@ -235,12 +280,10 @@ export default function TeacherPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-              {/* Avatar */}
               <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-base
                 ${msg.role === "assistant" ? "bg-primary/10" : "bg-muted"}`}>
                 {msg.role === "assistant" ? "👨‍🏫" : <User className="w-4 h-4" />}
               </div>
-              {/* Bubble */}
               <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed
                 ${msg.role === "assistant"
                   ? "bg-card border border-border rounded-tl-sm"
@@ -252,14 +295,14 @@ export default function TeacherPage() {
           ))}
         </AnimatePresence>
 
-        {loading && (
+        {callState === "processing" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-base">👨‍🏫</div>
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">👨‍🏫</div>
             <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex gap-1 items-center">
-                <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{animationDelay:"0ms"}} />
-                <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{animationDelay:"150ms"}} />
-                <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{animationDelay:"300ms"}} />
+                {[0, 150, 300].map(d => (
+                  <span key={d} className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{animationDelay:`${d}ms`}} />
+                ))}
               </div>
             </div>
           </motion.div>
@@ -267,40 +310,42 @@ export default function TeacherPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="shrink-0 p-4 border-t border-border">
-        <div className="flex gap-2 items-end">
-          {/* Mic button */}
-          <Button variant="outline" size="icon"
-            onClick={toggleRecording}
-            className={`shrink-0 h-11 w-11 rounded-xl ${recording ? "border-red-500 text-red-500 bg-red-500/10 animate-pulse" : ""}`}>
-            {recording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </Button>
-
-          {/* Text input */}
-          <div className="flex-1 relative">
-            <textarea
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
-              }}
-              placeholder={recording ? "🎙️ يستمع..." : "اكتب بالإنجليزي أو تحدث..."}
-              rows={1}
-              dir="ltr"
-              className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:dir-rtl"
-              style={{ minHeight: "44px", maxHeight: "120px" }}
-            />
+      {/* Live transcript + mic status */}
+      <div className="shrink-0 px-4 pb-4 border-t border-border pt-3 space-y-3">
+        {/* Mic visual */}
+        <div className="flex items-center justify-center gap-3">
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all
+            ${callState === "listening"
+              ? "bg-red-500/20 border-2 border-red-500 animate-pulse"
+              : callState === "teacher-speaking"
+              ? "bg-green-500/10 border-2 border-green-500/30"
+              : "bg-muted border-2 border-border"}`}>
+            {callState === "listening"
+              ? <Mic className="w-6 h-6 text-red-400" />
+              : callState === "teacher-speaking"
+              ? <Volume2 className="w-6 h-6 text-green-400" />
+              : <MicOff className="w-6 h-6 text-muted-foreground" />}
           </div>
-
-          {/* Send button */}
-          <Button onClick={() => sendMessage(input)} disabled={!input.trim() || loading}
-            size="icon" className="shrink-0 h-11 w-11 rounded-xl">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </Button>
+          <div className="flex-1 min-h-10">
+            {transcript && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="text-sm text-muted-foreground bg-muted/50 rounded-xl px-3 py-2" dir="ltr">
+                {transcript}
+              </motion.p>
+            )}
+            {!transcript && callState === "listening" && (
+              <p className="text-xs text-muted-foreground">تحدث الآن... الميك مفتوح</p>
+            )}
+            {!transcript && callState === "teacher-speaking" && (
+              <p className="text-xs text-muted-foreground">انتظر حتى ينتهي Mr. Adam من الكلام</p>
+            )}
+            {!transcript && callState === "processing" && (
+              <p className="text-xs text-muted-foreground">يعالج ردك...</p>
+            )}
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          Enter للإرسال • Shift+Enter لسطر جديد • 🎙️ للتحدث بالصوت
+        <p className="text-xs text-muted-foreground text-center">
+          الميك يفتح تلقائياً بعد ما ينتهي Mr. Adam 🎙️
         </p>
       </div>
     </div>
