@@ -31,64 +31,157 @@ const CHAPTERS: Chapter[] = [
       },
     ],
   },
+  {
+    id: "introduce", title: "قدّم نفسك", emoji: "👋",
+    gradient: "from-violet-500 to-purple-600", color: "#8b5cf6",
+    units: [
+      {
+        id: "unit-names", title: "اسمك ومن أين أنت", emoji: "🪪", color: "#8b5cf6",
+        lessons: [
+          { id: "names-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية وتسأل الآخرين عن أسمائهم.", words: ["name","I'm","my","what","your"] },
+          { id: "names-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك ومدينتك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
+          { id: "names-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته عن الأسماء والبلدان — العب واربح نقاطاً مضاعفة!", words: [] },
+          { id: "names-3", type: "lesson",    title: "الأرقام والعمر", description: "تعلّم أرقام 1-20 وكيف تقول عمرك وتسأل عن عمر الآخرين.", words: ["how","old","years","I'm","age"] },
+          { id: "names-c", type: "challenge", title: "تحدي الوحدة",    description: "تحدٍّ شامل: قدّم نفسك كاملاً — اسمك، بلدك، عمرك!", words: [] },
+        ],
+      },
+      {
+        id: "unit-family", title: "تحدّث عن عائلتك", emoji: "👨‍👩‍👧", color: "#a855f7",
+        lessons: [
+          { id: "family-1", type: "lesson",    title: "أفراد العائلة",  description: "تعلّم كلمات أفراد العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
+          { id: "family-2", type: "lesson",    title: "صف عائلتك",      description: "تعلّم كيف تصف أفراد عائلتك وتقول عددهم.", words: ["have","big","small","he","she"] },
+          { id: "family-t", type: "treasure",  title: "كنز المراجعة",   description: "لعبة ممتعة بكل كلمات العائلة — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
+          { id: "family-3", type: "lesson",    title: "صفات العائلة",   description: "تعلّم صفات تصف بها عائلتك: tall وshort وkind وfunny.", words: ["tall","short","kind","funny","smart"] },
+          { id: "family-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: تحدّث عن عائلتك بثقة كاملة!", words: [] },
+        ],
+      },
+      {
+        id: "unit-job", title: "عملك وهواياتك", emoji: "💼", color: "#7c3aed",
+        lessons: [
+          { id: "job-1", type: "lesson",    title: "المهن والأعمال",      description: "تعلّم أسماء المهن الشائعة: teacher وdoctor وengineer.", words: ["teacher","doctor","engineer","work","job"] },
+          { id: "job-2", type: "lesson",    title: "هواياتك",             description: "تعلّم كيف تتكلم عن هواياتك: I like وI love وI enjoy.", words: ["like","love","enjoy","hobby","play"] },
+          { id: "job-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع المهن والهوايات في لعبة ممتعة!", words: [] },
+          { id: "job-3", type: "lesson",    title: "جمل التعارف الكاملة", description: "ادمج كل ما تعلمته في جمل تعارف كاملة ومتكاملة.", words: ["nice","meet","pleased","glad","hello"] },
+          { id: "job-c", type: "challenge", title: "تحدي الوحدة",         description: "قدّم نفسك كاملاً: اسمك، عائلتك، عملك، وهوايتك!", words: [] },
+        ],
+      },
+    ],
+  },
 ];
 
-// ─── Floating Mascot (emoji — مؤقت) ──────────────────────────────────────────
-function FloatingMascot({ color }: { color: string }) {
+// ─── Fox SVG Mascot ───────────────────────────────────────────────────────────
+function FoxMascot() {
   return (
-    <div style={{
-      position: "fixed",
-      bottom: 100,
-      left: 16,
-      zIndex: 40,
-      pointerEvents: "none",
-    }}>
-      {/* Glow */}
+    <svg width="64" height="72" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#f97316" transform="rotate(-30 52 54)"/>
+      <ellipse cx="54" cy="52" rx="5" ry="3" fill="#fef3c7" transform="rotate(-30 54 52)"/>
+      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#f97316"/>
+      <ellipse cx="32" cy="54" rx="8" ry="10" fill="#fef3c7"/>
+      <circle cx="32" cy="28" r="16" fill="#f97316"/>
+      <polygon points="16,16 10,2 22,10" fill="#f97316"/>
+      <polygon points="48,16 54,2 42,10" fill="#f97316"/>
+      <polygon points="17,15 12,5 21,11" fill="#fca5a5"/>
+      <polygon points="47,15 52,5 43,11" fill="#fca5a5"/>
+      <ellipse cx="32" cy="32" rx="10" ry="8" fill="#fef3c7"/>
+      <circle cx="26" cy="25" r="4" fill="white"/>
+      <circle cx="38" cy="25" r="4" fill="white"/>
+      <circle cx="27" cy="26" r="2.2" fill="#1e1b4b"/>
+      <circle cx="39" cy="26" r="2.2" fill="#1e1b4b"/>
+      <circle cx="27.8" cy="25" r="0.9" fill="white"/>
+      <circle cx="39.8" cy="25" r="0.9" fill="white"/>
+      <ellipse cx="32" cy="31" rx="2.5" ry="1.8" fill="#1e1b4b"/>
+      <path d="M29 33 Q32 36 35 33" stroke="#1e1b4b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+      <ellipse cx="22" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
+      <ellipse cx="42" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
+      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#f97316" transform="rotate(-10 20 60)"/>
+      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#f97316" transform="rotate(10 44 60)"/>
+    </svg>
+  );
+}
+
+// ─── Robot SVG Mascot ─────────────────────────────────────────────────────────
+function RobotMascot() {
+  return (
+    <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+      <ellipse cx="28" cy="36" rx="14" ry="16" fill="#6366f1"/>
+      <circle cx="28" cy="20" r="13" fill="#818cf8"/>
+      <circle cx="23" cy="19" r="3.5" fill="white"/>
+      <circle cx="33" cy="19" r="3.5" fill="white"/>
+      <circle cx="23.8" cy="19.8" r="1.8" fill="#1e1b4b"/>
+      <circle cx="33.8" cy="19.8" r="1.8" fill="#1e1b4b"/>
+      <circle cx="24.5" cy="18.5" r="0.8" fill="white" opacity="0.9"/>
+      <circle cx="34.5" cy="18.5" r="0.8" fill="white" opacity="0.9"/>
+      <path d="M23 24 Q28 28 33 24" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+      <circle cx="16" cy="11" r="3.5" fill="#a5b4fc"/>
+      <circle cx="40" cy="11" r="3.5" fill="#a5b4fc"/>
+      <ellipse cx="14" cy="36" rx="4" ry="7" fill="#6366f1" transform="rotate(-15 14 36)"/>
+      <ellipse cx="42" cy="36" rx="4" ry="7" fill="#6366f1" transform="rotate(15 42 36)"/>
+      <rect x="22" y="32" width="12" height="10" rx="3" fill="#4f46e5" opacity="0.6"/>
+      <text x="28" y="40" textAnchor="middle" fontSize="6" fill="#c7d2fe" fontWeight="bold">EN</text>
+    </svg>
+  );
+}
+
+// ─── Floating Mascot — يتغير حسب القسم ──────────────────────────────────────
+function FloatingMascot({ color, chapterId }: { color: string; chapterId: string }) {
+  const isFox = chapterId === "introduce";
+  const msg = isFox ? "هيا نتعارف! 🦊" : "هيا نتعلم! 🎉";
+
+  return (
+    <div style={{ position: "fixed", bottom: 100, left: 16, zIndex: 40, pointerEvents: "none" }}>
       <motion.div
-        animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+        animate={{ scale: [1, 1.4, 1], opacity: [0.25, 0, 0.25] }}
         transition={{ repeat: Infinity, duration: 2.5 }}
-        style={{
-          position: "absolute", inset: -10, borderRadius: "50%",
-          background: color, filter: "blur(12px)",
-        }}
+        style={{ position: "absolute", inset: -12, borderRadius: "50%", background: color, filter: "blur(14px)" }}
       />
-      {/* Body bounce */}
       <motion.div
-        animate={{ y: [0, -10, 0], rotate: [-4, 4, -4] }}
-        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-        style={{ fontSize: 52, lineHeight: 1, display: "block", filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
-      >
-        🤖
-      </motion.div>
-      {/* Eyes blink */}
-      <motion.div
-        animate={{ scaleY: [1, 0.05, 1] }}
-        transition={{ repeat: Infinity, duration: 3.5, times: [0, 0.5, 1] }}
-        style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", fontSize: 10 }}
-      >
-      </motion.div>
-      {/* Speech bubble */}
-      <motion.div
-        animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -8] }}
-        transition={{ repeat: Infinity, duration: 4, times: [0, 0.2, 0.8, 1] }}
+        animate={{ opacity: [0, 1, 1, 0], y: [8, 0, 0, -6] }}
+        transition={{ repeat: Infinity, duration: 4, times: [0, 0.15, 0.85, 1] }}
         style={{
-          position: "absolute", bottom: 62, left: "50%", transform: "translateX(-50%)",
+          position: "absolute", bottom: isFox ? 80 : 66,
+          left: "50%", transform: "translateX(-50%)",
           background: "white", color: "#1e293b",
           fontSize: 11, fontWeight: 700,
-          padding: "4px 10px", borderRadius: 12,
-          whiteSpace: "nowrap",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+          padding: "5px 12px", borderRadius: 14,
+          whiteSpace: "nowrap", boxShadow: "0 3px 10px rgba(0,0,0,0.25)",
         }}
       >
-        هيا نتعلم! 🎉
+        {msg}
         <div style={{
           position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
           width: 0, height: 0,
-          borderLeft: "6px solid transparent",
-          borderRight: "6px solid transparent",
+          borderLeft: "6px solid transparent", borderRight: "6px solid transparent",
           borderTop: "6px solid white",
         }}/>
       </motion.div>
+
+      {isFox ? (
+        <motion.div
+          animate={{ y: [0, -10, 0], rotate: [-5, 5, -5] }}
+          transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+          style={{ filter: "drop-shadow(0 8px 16px rgba(249,115,22,0.45))" }}
+        >
+          <motion.div style={{ position: "relative" }}>
+            <FoxMascot />
+            <motion.span
+              animate={{ opacity: [0,1,0], y: [-5,-22,-32], x: [0,8,4] }}
+              transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
+              style={{ position: "absolute", top: 0, right: -4, fontSize: 13 }}>✨</motion.span>
+            <motion.span
+              animate={{ opacity: [0,1,0], y: [-5,-18,-28], x: [0,-6,-2] }}
+              transition={{ repeat: Infinity, duration: 2.4, delay: 1.2 }}
+              style={{ position: "absolute", top: 8, left: -4, fontSize: 11 }}>⭐</motion.span>
+          </motion.div>
+        </motion.div>
+      ) : (
+        <motion.div
+          animate={{ y: [0, -10, 0], rotate: [-4, 4, -4] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          style={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
+        >
+          <RobotMascot />
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -454,10 +547,12 @@ export default function Roadmap() {
         <motion.div key={activeChapter} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
-          {chapter.units.map(unit => {
+          {chapter.units.map((unit, unitIdx) => {
             const positions = buildPath(unit.lessons.length);
             const svgH = 60 + (unit.lessons.length - 1) * STEP_Y + 80;
             const lessonStations = unit.lessons.filter(l => l.type === "lesson");
+            const unitNumbers = ["الأولى","الثانية","الثالثة","الرابعة"];
+            const unitLabel = unitNumbers[unitIdx] ?? `${unitIdx + 1}`;
 
             return (
               <div key={unit.id}>
@@ -467,7 +562,7 @@ export default function Roadmap() {
                   <div className={cn("flex items-center gap-3 px-5 py-3 rounded-2xl text-white shadow-lg bg-gradient-to-r", chapter.gradient)}>
                     <span className="text-2xl">{unit.emoji}</span>
                     <div className="text-right">
-                      <div className="font-bold text-sm">الوحدة الأولى</div>
+                      <div className="font-bold text-sm">الوحدة {unitLabel}</div>
                       <div className="text-white/80 text-xs">{unit.title}</div>
                     </div>
                     {/* Guidebook button — في الـ header */}
@@ -627,7 +722,7 @@ export default function Roadmap() {
       </div>
 
       {/* Floating Mascot */}
-      <FloatingMascot color={chapter.color} />
+      <FloatingMascot color={chapter.color} chapterId={chapter.id} />
     </Layout>
   );
 }
