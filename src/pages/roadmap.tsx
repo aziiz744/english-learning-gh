@@ -99,6 +99,60 @@ const CHAPTERS: Chapter[] = [
           { id: "food-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: اطلب وجبتك بثقة!", words: [] },
         ],
       },
+      // ── الوحدة 7: استخدم الزمن المضارع للمهن — أخضر ──
+      {
+        id: "unit-present-jobs", title: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a",
+        sectionTitle: "استخدم الزمن المضارع للمهن",
+        lessons: [
+          { id: "pj-1", type: "lesson",    title: "أفعال المهن",         description: "تعلّم: teach وdrive وcook وbuild وwrite.", words: ["teach","drive","cook","build","write"] },
+          { id: "pj-2", type: "lesson",    title: "جمل المضارع",         description: "تعلّم: He teaches. She drives. They cook.", words: ["he","she","they","works","teaches"] },
+          { id: "pj-p", type: "practice",  title: "تمرين المهن",         description: "تمرين مكثف على أفعال المهن!", words: [] },
+          { id: "pj-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع المهن في لعبة ممتعة!", words: [] },
+          { id: "pj-3", type: "lesson",    title: "اسأل عن المهن",       description: "تعلّم: What do you do? وWhere do you work?", words: ["what","where","do","work","job"] },
+          { id: "pj-c", type: "challenge", title: "تحدي الوحدة",         description: "اختبار شامل: تحدث عن المهن!", words: [] },
+        ],
+      },
+      // ── الوحدة 8: استخدم الزمن المضارع — برتقالي فاتح ──
+      {
+        id: "unit-present", title: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c",
+        sectionTitle: "استخدم الزمن المضارع",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "pr-1", type: "lesson",    title: "أفعال يومية",         description: "تعلّم: eat وsleep وwalk وread وwatch.", words: ["eat","sleep","walk","read","watch"] },
+          { id: "pr-2", type: "lesson",    title: "روتينك اليومي",       description: "تعلّم: I wake up at 7. I eat breakfast.", words: ["wake","brush","go","come","play"] },
+          { id: "pr-p", type: "practice",  title: "تمرين المضارع",       description: "تمرين مكثف على الزمن المضارع!", words: [] },
+          { id: "pr-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع الأفعال اليومية!", words: [] },
+          { id: "pr-3", type: "lesson",    title: "الكلمات الزمنية",     description: "تعلّم: always وusually وsometimes وnever.", words: ["always","usually","sometimes","never","often"] },
+          { id: "pr-c", type: "challenge", title: "تحدي الوحدة",         description: "اختبار شامل: تحدث عن يومك!", words: [] },
+        ],
+      },
+      // ── الوحدة 9: تحدث عن الطقس — أحمر فاتح ──
+      {
+        id: "unit-weather", title: "تحدث عن الطقس", emoji: "🌤️", color: "#f87171",
+        sectionTitle: "تحدث عن الطقس",
+        lessons: [
+          { id: "wt-1", type: "lesson",    title: "كلمات الطقس",         description: "تعلّم: sunny وrainy وcloudy وwindy وsnowy.", words: ["sunny","rainy","cloudy","windy","cold"] },
+          { id: "wt-2", type: "lesson",    title: "صف الطقس",            description: "تعلّم: It's hot today. The weather is nice.", words: ["it's","today","weather","nice","hot"] },
+          { id: "wt-p", type: "practice",  title: "تمرين الطقس",         description: "تمرين مكثف على كلمات الطقس!", words: [] },
+          { id: "wt-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع كلمات الطقس!", words: [] },
+          { id: "wt-3", type: "lesson",    title: "الفصول الأربعة",      description: "تعلّم: spring وsummer وautumn وwinter.", words: ["spring","summer","autumn","winter","season"] },
+          { id: "wt-c", type: "challenge", title: "تحدي الوحدة",         description: "اختبار شامل: تحدث عن الطقس بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 10: تحدث عن حيواناتك الأليفة — بنفسجي فاتح ──
+      {
+        id: "unit-pets", title: "تحدث عن حيواناتك الأليفة", emoji: "🐾", color: "#a78bfa",
+        sectionTitle: "تحدث عن حيواناتك الأليفة",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "pet-1", type: "lesson",    title: "أسماء الحيوانات",    description: "تعلّم: cat وdog وbird وfish وrabbit.", words: ["cat","dog","bird","fish","rabbit"] },
+          { id: "pet-2", type: "lesson",    title: "صف حيوانك",          description: "تعلّم: My cat is fluffy. He is playful.", words: ["my","fluffy","playful","gentle","cute"] },
+          { id: "pet-p", type: "practice",  title: "تمرين الحيوانات",    description: "تمرين مكثف على الحيوانات!", words: [] },
+          { id: "pet-t", type: "treasure",  title: "كنز المراجعة",       description: "راجع كلمات الحيوانات!", words: [] },
+          { id: "pet-3", type: "lesson",    title: "العناية بالحيوان",   description: "تعلّم: feed وwalk وplay وgroom وvet.", words: ["feed","walk","play","groom","vet"] },
+          { id: "pet-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: تحدث عن حيوانك الأليف!", words: [] },
+        ],
+      },
     ],
   },
 ];
@@ -973,13 +1027,53 @@ export default function Roadmap() {
             );
           })}
 
-          {/* Coming soon */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-            className="text-center mt-16 space-y-2">
-            <div className="text-3xl">🔜</div>
-            <p className="text-sm text-muted-foreground">وحدات جديدة قادمة قريباً</p>
+          {/* Next chapter card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{
+              margin: "48px 16px 32px",
+              background: "hsl(var(--card))",
+              border: "1.5px solid hsl(var(--border))",
+              borderRadius: 20,
+              padding: "24px 20px",
+              textAlign: "center",
+            }}>
+            {/* التالي badge */}
+            <div style={{
+              display: "inline-block",
+              background: "hsl(var(--muted))",
+              color: "hsl(var(--muted-foreground))",
+              fontSize: 12, fontWeight: 700,
+              padding: "3px 14px", borderRadius: 20,
+              marginBottom: 14,
+            }}>التالي</div>
+
+            {/* العنوان مع قفل */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 22, fontWeight: 900, color: "hsl(var(--foreground))" }}>القسم 2</span>
+              <span style={{ fontSize: 20 }}>🔒</span>
+            </div>
+
+            {/* الوصف */}
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}>
+              تعلّم كلمات، وعبارات، ومبادئ نحوية للتعاملات البسيطة
+            </p>
+
+            {/* زر القفز */}
+            <button style={{
+              width: "100%", padding: "13px 0",
+              background: "transparent",
+              border: "1.5px solid hsl(var(--border))",
+              borderRadius: 14,
+              color: "#38bdf8",
+              fontWeight: 800, fontSize: 15,
+              cursor: "pointer",
+            }}>
+              القفز إلى هنا؟
+            </button>
           </motion.div>
-          <div className="h-16"/>
+          <div className="h-8"/>
         </motion.div>
       </div>
 
