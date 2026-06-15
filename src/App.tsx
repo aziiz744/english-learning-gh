@@ -20,6 +20,7 @@ import Grammar from "@/pages/grammar";
 import Pro from "@/pages/pro";
 import ResetPassword from "@/pages/reset-password";
 import TeacherPage from "@/pages/teacher";
+import AdminStats from "@/pages/admin-stats";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/pro" component={Pro} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/teacher" component={TeacherPage} />
+      <Route path="/admin-stats" component={AdminStats} />
       <Route component={NotFound} />
     </Switch>
   );

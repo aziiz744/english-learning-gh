@@ -321,6 +321,22 @@ export default function TeacherPage() {
 
   const userAvatar = userGender === "female" ? "👩‍🎓" : "👨‍🎓";
 
+  // ── Auth gate ──
+  if (!user) return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
+      <div className="w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl">👨‍🏫</div>
+      <div className="space-y-2">
+        <h1 className="text-xl font-bold">سجّل دخولك أولاً</h1>
+        <p className="text-muted-foreground text-sm max-w-xs">تحتاج لتسجيل الدخول للتحدث مع المعلم</p>
+      </div>
+      <Button onClick={() => { import("@/lib/modal-state").then(m => m.triggerLoginModal()); }}
+        className="px-8 py-5 font-bold rounded-2xl gap-2">
+        <span>🔑</span> تسجيل الدخول
+      </Button>
+      <button onClick={() => setLocation("/")} className="text-sm text-muted-foreground hover:text-foreground">العودة للرئيسية</button>
+    </div>
+  );
+
   // ── Pro gate ──
   if (isPro === null) return (
     <div className="flex items-center justify-center h-[60vh]">
