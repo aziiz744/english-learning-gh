@@ -20,11 +20,11 @@ interface Section { id: string; title: string; color: string; units: Unit[]; }
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner", title: "المبتدئ", emoji: "🌱",
-    gradient: "from-green-900 to-emerald-900", color: "#166534",
+    gradient: "from-emerald-600 to-green-700", color: "#22a55e",
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#166534",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
@@ -36,7 +36,7 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
       {
-        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#4c1d95",
+        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#7c3aed",
         sectionTitle: "قدّم نفسك وعائلتك",
         lessons: [
           { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
@@ -46,16 +46,28 @@ const CHAPTERS: Chapter[] = [
           { id: "intro-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني!", words: [] },
         ],
       },
-      // ── القسم 3: الأماكن والاتجاهات — وحدة واحدة فقط ──
+      // ── الوحدة 3: قل من أين أنت؟ ──
       {
-        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#7c2d12",
+        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a",
         sectionTitle: "قل من أين أنت؟",
         lessons: [
           { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
           { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
           { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
           { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
-          { id: "places-c", type: "challenge", title: "تحدي القسم",       description: "اختبار شامل للقسم الثالث!", words: [] },
+          { id: "places-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل للوحدة الثالثة!", words: [] },
+        ],
+      },
+      // ── الوحدة 4: تنقل في المطار — سماوي ──
+      {
+        id: "unit-airport", title: "تنقل في المطار", emoji: "✈️", color: "#0891b2",
+        sectionTitle: "تنقل في المطار",
+        lessons: [
+          { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
+          { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
+          { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
+          { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
+          { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
         ],
       },
     ],
