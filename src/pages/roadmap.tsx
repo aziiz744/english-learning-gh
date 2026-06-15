@@ -293,12 +293,14 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
 }
 
 // ─── Station circle — floating button style (مثل الصورة) ─────────────────────
-function StationCircle({ type, progress, color, isCurrent, isFirstOfSection }: {
+function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJumpStation, canJump }: {
   type: "lesson" | "challenge";
   progress: number;
   color: string;
   isCurrent: boolean;
   isFirstOfSection?: boolean;
+  isJumpStation?: boolean;
+  canJump?: boolean;
 }) {
   const SIZE     = type === "challenge" ? 88 : 74;
   const LIFT     = 6;   // how many px the button "floats" above its shadow
@@ -405,12 +407,20 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection }: {
           transform={`rotate(-30, ${r}, ${r})`}
         />
 
-        {/* Star */}
+        {/* Icon: arrows if jump station (not done), star otherwise */}
         <g transform={`translate(${r - SIZE * 0.2}, ${r - SIZE * 0.2})`}>
-          <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill={starColor}
-            style={{ filter: isGold ? "drop-shadow(0 0 6px #eab30870)" : "none" }}>
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
+          {isJumpStation && !isGold ? (
+            <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill="white"
+              style={{ opacity: canJump ? 1 : 0.5 }}>
+              <path d="M3 6 L10 12 L3 18 Z"/>
+              <path d="M11 6 L18 12 L11 18 Z"/>
+            </svg>
+          ) : (
+            <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill={starColor}
+              style={{ filter: isGold ? "drop-shadow(0 0 6px #eab30870)" : "none" }}>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          )}
         </g>
       </svg>
     </div>
@@ -600,14 +610,24 @@ export default function Roadmap() {
         >
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            background: `linear-gradient(135deg, ${activeSection.color}, ${activeSection.color}dd)`,
+            background: `linear-gradient(135deg, ${activeSection.color}, ${activeSection.color}cc)`,
             borderRadius: 16,
-            padding: "10px 14px",
+            padding: "11px 16px",
             boxShadow: `0 4px 18px ${activeSection.color}45`,
             maxWidth: 340,
             margin: "0 auto",
           }}>
-            {/* Guidebook */}
+            {/* Arrow right side */}
+            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 20, flexShrink: 0 }}>←</div>
+
+            {/* Title — center */}
+            <div style={{ textAlign: "center", flex: 1, padding: "0 10px" }}>
+              <div style={{ color: "white", fontWeight: 900, fontSize: 17, lineHeight: 1.2 }}>
+                {activeSection.title}
+              </div>
+            </div>
+
+            {/* Guidebook — left */}
             <button
               onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
               style={{
@@ -620,19 +640,6 @@ export default function Roadmap() {
               }}>
               📖 الدليل
             </button>
-
-            {/* Title */}
-            <div style={{ textAlign: "center", flex: 1, padding: "0 8px" }}>
-              <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, marginBottom: 2, fontWeight: 600 }}>
-                القسم {activeSectionIdx + 1}
-              </div>
-              <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.15 }}>
-                {activeSection.title}
-              </div>
-            </div>
-
-            {/* Arrow */}
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 20, flexShrink: 0 }}>←</div>
           </div>
         </motion.div>
 
@@ -787,8 +794,21 @@ export default function Roadmap() {
                     const isTreasure = lesson.type === "treasure";
                     const SIZE = lesson.type === "challenge" ? 88 : isTreasure ? 72 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
-                    // First station of each unit section shows colored (active color) even if not started
+                    // First station of each unit/section
                     const isFirstOfSection = idx === 0;
+                    // Is this the jump station? First station of a section that has sectionTitle
+                    const isJumpStation = isFirstOfSection && !!unit.sectionTitle;
+                    // Can the user jump? Previous section challenge done
+                    const prevChallengeId = isJumpStation
+                      ? chapter.units.slice(0, unitIdx).reverse()
+                          .find(u => u.lessons.some(l => l.type === "challenge"))
+                          ?.lessons.find(l => l.type === "challenge")?.id
+                      : undefined;
+                    const canJump = isJumpStation
+                      ? (prevChallengeId ? (progress[prevChallengeId] ?? 0) >= 4 : false)
+                      : false;
+                    // Jump station is unlocked if canJump (even if locked normally)
+                    const effectiveLocked = isJumpStation ? false : isLocked;
 
                     // lesson number (only count type=lesson)
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
@@ -830,8 +850,29 @@ export default function Roadmap() {
                           )}
                         </AnimatePresence>
 
+                        {/* Jump tooltip above jump station */}
+                        {isJumpStation && !isGold && !isPopupOpen && (
+                          <motion.div
+                            animate={{ y: [0, -5, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+                            style={{ position: "absolute", top: -52, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none", zIndex: 10 }}>
+                            <div style={{
+                              background: "hsl(var(--card))",
+                              border: `1.5px solid ${unit.color}60`,
+                              color: canJump ? unit.color : "hsl(var(--muted-foreground))",
+                              fontSize: 12, fontWeight: 800,
+                              padding: "4px 14px", borderRadius: 12,
+                              whiteSpace: "nowrap",
+                              boxShadow: canJump ? `0 2px 10px ${unit.color}30` : "none",
+                            }}>
+                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل القسم السابق"}
+                            </div>
+                            <div style={{ width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:`7px solid hsl(var(--border))` }}/>
+                          </motion.div>
+                        )}
+
                         {/* "ابدأ" badge */}
-                        {isCurrent && !isPopupOpen && (
+                        {isCurrent && !isPopupOpen && !isJumpStation && (
                           <motion.div
                             animate={{ y: [0, -6, 0] }}
                             transition={{ repeat: Infinity, duration: 1.3, ease: "easeInOut" }}
@@ -857,17 +898,17 @@ export default function Roadmap() {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: idx * 0.08, type: "spring", stiffness: 200 }}
-                          whileHover={!isLocked ? { scale: 1.07 } : {}}
-                          whileTap={!isLocked ? { scale: 0.94 } : {}}
+                          whileHover={!effectiveLocked ? { scale: 1.07 } : {}}
+                          whileTap={!effectiveLocked ? { scale: 0.94 } : {}}
                           onClick={e => {
                             e.stopPropagation();
-                            if (!isLocked) {
+                            if (!effectiveLocked) {
                               setActivePopup(isPopupOpen ? null : { lessonId: lesson.id, x, y });
                             }
                           }}
-                          style={{ cursor: isLocked ? "default" : "pointer" }}>
+                          style={{ cursor: effectiveLocked ? "default" : "pointer" }}>
                           {isTreasure ? (
-                            <div style={{ opacity: isLocked ? 0.4 : 1, position: "relative" }}>
+                            <div style={{ opacity: effectiveLocked ? 0.4 : 1, position: "relative" }}>
                               <div style={{
                                 position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
                                 width: 60, height: 10, borderRadius: "50%",
@@ -879,7 +920,7 @@ export default function Roadmap() {
                           ) : (
                             <StationCircle
                               type={lesson.type}
-                              progress={isLocked ? 0 : lessonProgress}
+                              progress={effectiveLocked ? 0 : lessonProgress}
                               color={unit.color}
                               isCurrent={isCurrent}
                             />
