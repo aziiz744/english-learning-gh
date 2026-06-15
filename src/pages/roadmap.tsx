@@ -587,50 +587,51 @@ export default function Roadmap() {
         {/* ── Sticky section header ── */}
         <motion.div
           key={activeSection.id}
-          initial={{ opacity: 0.6, y: -4 }}
+          initial={{ opacity: 0.7, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.25 }}
           style={{
             position: "sticky", top: 0, zIndex: 30,
-            padding: "10px 16px 10px",
+            padding: "8px 20px",
             background: "hsl(var(--background))",
-            borderBottom: `2px solid ${activeSection.color}30`,
+            borderBottom: `1.5px solid ${activeSection.color}25`,
           }}
         >
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            background: activeSection.color,
-            backgroundImage: `linear-gradient(135deg, ${activeSection.color}ff, ${activeSection.color}cc)`,
-            borderRadius: 18,
-            padding: "10px 16px",
-            boxShadow: `0 4px 20px ${activeSection.color}40`,
+            background: `linear-gradient(135deg, ${activeSection.color}, ${activeSection.color}dd)`,
+            borderRadius: 16,
+            padding: "10px 14px",
+            boxShadow: `0 4px 18px ${activeSection.color}45`,
+            maxWidth: 340,
+            margin: "0 auto",
           }}>
             {/* Guidebook */}
             <button
               onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
               style={{
-                background: "rgba(255,255,255,0.2)",
-                border: "2px solid rgba(255,255,255,0.4)",
-                borderRadius: 10, padding: "5px 12px",
-                color: "white", fontWeight: 700, fontSize: 12,
-                cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
-                flexShrink: 0,
+                background: "rgba(255,255,255,0.22)",
+                border: "1.5px solid rgba(255,255,255,0.45)",
+                borderRadius: 10, padding: "5px 11px",
+                color: "white", fontWeight: 800, fontSize: 13,
+                cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+                flexShrink: 0, whiteSpace: "nowrap",
               }}>
               📖 الدليل
             </button>
 
             {/* Title */}
-            <div style={{ textAlign: "center", flex: 1 }}>
-              <div style={{ color: "white", fontSize: 12, opacity: 0.8, marginBottom: 1 }}>
+            <div style={{ textAlign: "center", flex: 1, padding: "0 8px" }}>
+              <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, marginBottom: 2, fontWeight: 600 }}>
                 القسم {activeSectionIdx + 1}
               </div>
-              <div style={{ color: "white", fontWeight: 800, fontSize: 14, lineHeight: 1.2 }}>
+              <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.15 }}>
                 {activeSection.title}
               </div>
             </div>
 
-            {/* Arrow back */}
-            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 18, flexShrink: 0, paddingLeft: 4 }}>←</div>
+            {/* Arrow */}
+            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 20, flexShrink: 0 }}>←</div>
           </div>
         </motion.div>
 
@@ -654,24 +655,97 @@ export default function Roadmap() {
 
             return (
               <div key={unit.id} ref={unitIdx === 0 ? (el => { sectionRefs.current["s0"] = el; }) : undefined}>
-                {/* Section divider — يظهر فقط إذا كان للوحدة عنوان قسم */}
-                {unit.sectionTitle && (
-                  <motion.div
-                    ref={el => { sectionRefs.current[unit.id] = el; }}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="flex items-center gap-3 my-8 px-4"
-                  >
-                    <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to left, ${unit.color}60, transparent)`, borderRadius: 2 }}/>
-                    <span style={{
-                      color: unit.color, fontSize: 13, fontWeight: 800,
-                      whiteSpace: "nowrap", letterSpacing: "0.01em",
-                      textShadow: `0 0 20px ${unit.color}50`,
-                    }}>
-                      {unit.sectionTitle}
-                    </span>
-                    <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to right, ${unit.color}60, transparent)`, borderRadius: 2 }}/>
-                  </motion.div>
-                )}
+                {/* Section divider + Jump button */}
+                {unit.sectionTitle && (() => {
+                  // Check if previous section's last challenge is done
+                  const prevChallengeId = chapter.units
+                    .slice(0, unitIdx)
+                    .reverse()
+                    .find(u => u.lessons.some(l => l.type === "challenge"))
+                    ?.lessons.find(l => l.type === "challenge")?.id;
+                  const canJump = prevChallengeId ? (progress[prevChallengeId] ?? 0) >= 4 : false;
+                  return (
+                    <div ref={el => { sectionRefs.current[unit.id] = el; }}>
+                      {/* Divider line */}
+                      <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="flex items-center gap-3 mt-10 mb-4 px-2"
+                      >
+                        <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to left, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
+                        <span style={{
+                          color: unit.color, fontSize: 14, fontWeight: 900,
+                          whiteSpace: "nowrap",
+                          textShadow: `0 0 16px ${unit.color}60`,
+                        }}>
+                          {unit.sectionTitle}
+                        </span>
+                        <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to right, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
+                      </motion.div>
+
+                      {/* Jump button */}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 20, gap: 6 }}>
+                        {/* Tooltip */}
+                        <motion.div
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                          style={{
+                            background: "hsl(var(--card))",
+                            border: "1.5px solid hsl(var(--border))",
+                            borderRadius: 12, padding: "5px 14px",
+                            fontSize: 13, fontWeight: 700,
+                            color: canJump ? unit.color : "hsl(var(--muted-foreground))",
+                            whiteSpace: "nowrap",
+                          }}>
+                          {canJump ? "القفز إلى هنا؟" : "🔒 أكمل القسم السابق أولاً"}
+                        </motion.div>
+                        {/* Arrow down */}
+                        <div style={{ width: 0, height: 0,
+                          borderLeft: "7px solid transparent", borderRight: "7px solid transparent",
+                          borderTop: `8px solid hsl(var(--border))`,
+                        }}/>
+                        {/* Circle button */}
+                        <motion.button
+                          whileHover={canJump ? { scale: 1.08 } : {}}
+                          whileTap={canJump ? { scale: 0.93 } : {}}
+                          onClick={e => {
+                            e.stopPropagation();
+                            if (!canJump) return;
+                            // scroll to first lesson of this section
+                            const firstLesson = unit.lessons.find(l => l.type === "lesson");
+                            if (firstLesson) window.location.href = `/lessons/${unit.id}/${firstLesson.id}`;
+                          }}
+                          style={{
+                            width: 64, height: 64, borderRadius: "50%",
+                            background: canJump
+                              ? `linear-gradient(135deg, ${unit.color}, ${unit.color}bb)`
+                              : "#374151",
+                            border: "none", cursor: canJump ? "pointer" : "not-allowed",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            boxShadow: canJump
+                              ? `0 6px 0 ${unit.color}55, 0 8px 20px ${unit.color}40`
+                              : "0 4px 0 #1a2030",
+                            position: "relative",
+                          }}>
+                          {/* Glow */}
+                          {canJump && (
+                            <motion.div
+                              animate={{ scale: [1,1.5,1], opacity: [0.3,0,0.3] }}
+                              transition={{ repeat: Infinity, duration: 2 }}
+                              style={{
+                                position: "absolute", inset: -6, borderRadius: "50%",
+                                background: unit.color, filter: "blur(10px)",
+                              }}
+                            />
+                          )}
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                            <path d="M5 4l15 8-15 8V4z"/>
+                            <path d="M19 4v16" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                          </svg>
+                        </motion.button>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Unit header */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
