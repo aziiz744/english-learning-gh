@@ -11,7 +11,7 @@ interface UnitLesson {
   description: string;
   words?: string[];
 }
-interface Unit { id: string; title: string; emoji: string; color: string; sectionTitle?: string; lessons: UnitLesson[]; }
+interface Unit { id: string; title: string; emoji: string; color: string; sectionTitle?: string; pathVariant?: string; lessons: UnitLesson[]; }
 interface Chapter { id: string; title: string; emoji: string; gradient: string; color: string; units: Unit[]; }
 
 // Section divider interface
@@ -69,6 +69,20 @@ const CHAPTERS: Chapter[] = [
           { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
           { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
           { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 5: استخدم الصفات — أخضر ──
+      {
+        id: "unit-adjectives", title: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e",
+        sectionTitle: "استخدم الصفات لوصف الأسماء",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "adj-1", type: "lesson",    title: "الصفات الأساسية",   description: "تعلّم: big وsmall وfast وslow وold وnew.", words: ["big","small","fast","slow","old","new"] },
+          { id: "adj-2", type: "lesson",    title: "صف الأشياء",        description: "تعلّم كيف تصف الأشياء: The car is big. The house is old.", words: ["the","is","very","so","looks"] },
+          { id: "adj-p", type: "practice",  title: "تمرين الصفات",      description: "تمرين مكثف على الصفات قبل الكنز!", words: [] },
+          { id: "adj-t", type: "treasure",  title: "كنز المراجعة",      description: "راجع الصفات في لعبة ممتعة!", words: [] },
+          { id: "adj-3", type: "lesson",    title: "قارن بين الأشياء",  description: "تعلّم: bigger than وsmaller than وthe biggest.", words: ["bigger","smaller","than","the","most"] },
+          { id: "adj-c", type: "challenge", title: "تحدي الوحدة",       description: "اختبار شامل: صف واقارن بثقة!", words: [] },
         ],
       },
     ],
@@ -536,7 +550,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClo
       {/* Title */}
       <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
       <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `النقطة ${lessonNum} · 4 دروس`}
+        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
       </p>
 
       {/* Start button */}
@@ -583,14 +597,24 @@ const CANVAS_W = 300;
 const STEP_Y   = 110;
 const SIDE_PAD = 65;
 
-function buildPath(count: number): { x: number; y: number }[] {
-  const cols = [
-    CANVAS_W / 2 + SIDE_PAD,
-    CANVAS_W / 2,
-    CANVAS_W / 2 - SIDE_PAD,
-    CANVAS_W / 2,
-    CANVAS_W / 2 + SIDE_PAD,
-  ];
+function buildPath(count: number, variant?: string): { x: number; y: number }[] {
+  // variant "zigzag" = تعرج أكثر حدة وعشوائية
+  const cols = variant === "zigzag"
+    ? [
+        CANVAS_W / 2 - SIDE_PAD,      // يبدأ يسار
+        CANVAS_W / 2 + SIDE_PAD + 10, // يمين أبعد
+        CANVAS_W / 2 - 10,            // وسط يسار
+        CANVAS_W / 2 + SIDE_PAD,      // يمين
+        CANVAS_W / 2 - SIDE_PAD + 5,  // يسار قريب
+        CANVAS_W / 2 + 20,            // وسط يمين
+      ]
+    : [
+        CANVAS_W / 2 + SIDE_PAD,
+        CANVAS_W / 2,
+        CANVAS_W / 2 - SIDE_PAD,
+        CANVAS_W / 2,
+        CANVAS_W / 2 + SIDE_PAD,
+      ];
   return Array.from({ length: count }, (_, i) => ({
     x: cols[i % cols.length],
     y: 60 + i * STEP_Y,
@@ -716,7 +740,7 @@ export default function Roadmap() {
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
           {chapter.units.map((unit, unitIdx) => {
-            const positions = buildPath(unit.lessons.length);
+            const positions = buildPath(unit.lessons.length, unit.pathVariant);
             const svgH = 60 + (unit.lessons.length - 1) * STEP_Y + 80;
             const lessonStations = unit.lessons.filter(l => l.type === "lesson");
             const unitNumbers = ["الأولى","الثانية","الثالثة","الرابعة"];
