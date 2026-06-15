@@ -1,22 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout";
-import { Lock, Crown, Trophy, Gem } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
-// ── Unit structure ──
+// ── Types ──
 interface UnitLesson {
   id: string;
   type: "lesson" | "treasure" | "challenge";
   title: string;
-  icon: string;
+  description: string; // guide shown before entering
+  words?: string[];    // vocabulary hint
 }
 
 interface Unit {
   id: string;
   title: string;
   emoji: string;
+  color: string;
   lessons: UnitLesson[];
 }
 
@@ -24,148 +27,308 @@ interface Chapter {
   id: string;
   title: string;
   emoji: string;
-  color: string;
   gradient: string;
+  color: string;
   units: Unit[];
 }
 
-// ── A1 Chapter — Unit 1 only for now ──
+// ── Data ──
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner",
     title: "المبتدئ",
     emoji: "🌱",
-    color: "#22c55e",
     gradient: "from-emerald-500 to-green-600",
+    color: "#22c55e",
     units: [
       {
-        id: "unit-1-drinks",
+        id: "unit-drinks",
         title: "قدّم واقبل المشروبات",
         emoji: "☕",
+        color: "#22c55e",
         lessons: [
-          { id: "drinks-1", type: "lesson",   title: "الكلمات الأساسية",  icon: "📖" },
-          { id: "drinks-2", type: "lesson",   title: "كلمات جديدة",       icon: "✨" },
-          { id: "drinks-t", type: "treasure", title: "كنز المراجعة",      icon: "💎" },
-          { id: "drinks-3", type: "lesson",   title: "جمل كاملة",         icon: "💬" },
-          { id: "drinks-c", type: "challenge",title: "تحدي الوحدة",       icon: "👑" },
+          {
+            id: "drinks-1",
+            type: "lesson",
+            title: "الكلمات الأساسية",
+            description: "ستتعلم في هذا الدرس الكلمات الأساسية للمشروبات مثل tea وcoffee وwater وjuice — مع سماع نطقها واختيار المعنى الصحيح.",
+            words: ["tea", "coffee", "water", "juice", "milk"],
+          },
+          {
+            id: "drinks-2",
+            type: "lesson",
+            title: "كلمات جديدة",
+            description: "ستراجع كلمات الدرس الأول وتتعلم كلمات جديدة مثل please وthank you وyes وno — وستلاحظ الكلمات الجديدة بلون مميز.",
+            words: ["please", "thank you", "yes", "no", "sorry"],
+          },
+          {
+            id: "drinks-t",
+            type: "treasure",
+            title: "كنز المراجعة",
+            description: "لعبة ممتعة تشمل جميع كلمات الدرسين السابقين — اجتزها واكسب نقاطاً مضاعفة! تُفتح بعد إكمال الدرسين الأول والثاني.",
+            words: [],
+          },
+          {
+            id: "drinks-3",
+            type: "lesson",
+            title: "جمل كاملة",
+            description: "الآن ستستخدم الكلمات في جمل كاملة مثل 'Would you like some tea?' و'Yes please, thank you!' — وستدرّب على الترتيب الصحيح للكلمات.",
+            words: ["would", "like", "some", "have", "want"],
+          },
+          {
+            id: "drinks-c",
+            type: "challenge",
+            title: "تحدي الوحدة",
+            description: "اختبار شامل لكل ما تعلمته في هذه الوحدة — الكلمات والجمل والحوارات. اجتزه بنجاح لتكتمل دائرتك الذهبية وتنتقل للوحدة التالية!",
+            words: [],
+          },
         ],
       },
     ],
   },
 ];
 
-// ── Mock progress (will connect to Supabase later) ──
-// 0 = locked, 1-4 = lessons completed (quarter each)
-function useUnitProgress(unitId: string): Record<string, number> {
-  // TODO: fetch from Supabase user_progress
-  return {};
-}
-
-// ── Golden ring progress circle ──
-function ProgressCircle({
-  progress, // 0-4 (quarters)
-  size = 64,
-  icon,
-  locked,
-  isActive,
-  color,
-  type,
+// ── Progress circle (arc) ──
+function StationCircle({
+  type, progress, color, isActive, isCurrent,
 }: {
-  progress: number;
-  size?: number;
-  icon: string;
-  locked: boolean;
-  isActive: boolean;
-  color: string;
   type: "lesson" | "treasure" | "challenge";
+  progress: number; // 0..4
+  color: string;
+  isActive: boolean;
+  isCurrent: boolean;
 }) {
-  const r = (size - 8) / 2;
-  const circumference = 2 * Math.PI * r;
+  const size = type === "challenge" ? 72 : type === "treasure" ? 68 : 60;
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 5;
+  const circ = 2 * Math.PI * r;
   const filled = Math.min(progress / 4, 1);
-  const strokeDash = circumference * filled;
+  const strokeDash = circ * filled;
+  const isComplete = progress >= 4;
+  const isGold = isComplete;
 
-  const bgColor = locked
-    ? "#1f2937"
-    : type === "challenge"
-    ? "#92400e"
-    : type === "treasure"
-    ? "#1e3a2f"
-    : "#1e293b";
-
-  const iconDisplay = locked ? "🔒" : progress >= 4 && type === "challenge" ? "👑" : icon;
+  const ringColor = isGold ? "#eab308" : color;
+  const bgFill = type === "treasure" ? "#0f3626" : type === "challenge" ? "#1c1407" : "#1e293b";
+  const iconEl =
+    type === "treasure" ? "🪙" :
+    type === "challenge" ? (isComplete ? "👑" : "🏆") :
+    isComplete ? "⭐" : "⭐";
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      {/* Glow for active */}
-      {isActive && (
+      {isCurrent && (
         <motion.div
           className="absolute inset-0 rounded-full"
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: color, opacity: 0.25 }}
           animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
           transition={{ repeat: Infinity, duration: 2 }}
         />
       )}
-
-      <svg width={size} height={size} className="absolute inset-0 -rotate-90">
+      <svg width={size} height={size} className="absolute inset-0 -rotate-90" style={{ overflow: "visible" }}>
         {/* Background ring */}
-        <circle
-          cx={size / 2} cy={size / 2} r={r}
-          fill={bgColor}
-          stroke={locked ? "#374151" : "#374151"}
-          strokeWidth={4}
-        />
-        {/* Gold progress arc */}
-        {!locked && progress > 0 && (
+        <circle cx={cx} cy={cy} r={r} fill={bgFill} stroke="#374151" strokeWidth={4} />
+        {/* Progress arc */}
+        {progress > 0 && (
           <motion.circle
-            cx={size / 2} cy={size / 2} r={r}
+            cx={cx} cy={cy} r={r}
             fill="none"
-            stroke={type === "challenge" ? "#f59e0b" : type === "treasure" ? "#10b981" : "#eab308"}
+            stroke={ringColor}
             strokeWidth={4}
             strokeLinecap="round"
-            strokeDasharray={`${strokeDash} ${circumference}`}
-            initial={{ strokeDasharray: `0 ${circumference}` }}
-            animate={{ strokeDasharray: `${strokeDash} ${circumference}` }}
+            strokeDasharray={`${strokeDash} ${circ}`}
+            initial={{ strokeDasharray: `0 ${circ}` }}
+            animate={{ strokeDasharray: `${strokeDash} ${circ}` }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           />
         )}
       </svg>
-
-      {/* Icon center */}
+      {/* Icon */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className={cn("text-2xl select-none", locked && "opacity-40")}>
-          {iconDisplay}
+        <span className={cn("select-none", type === "challenge" ? "text-2xl" : "text-xl", progress === 0 && "opacity-25")}>
+          {progress === 0 ? "🔒" : iconEl}
         </span>
       </div>
     </div>
   );
 }
 
-// ── Connector path ──
-function Connector({ fromSide, toSide, color, animated }: {
-  fromSide: "left" | "right" | "center";
-  toSide: "left" | "right" | "center";
-  color: string;
-  animated: boolean;
+// ── Guide modal ──
+function GuideModal({ lesson, onClose, onStart }: {
+  lesson: UnitLesson;
+  onClose: () => void;
+  onStart: () => void;
 }) {
-  const W = 280;
-  const H = 60;
-  const cx = W / 2;
-  const sideX = (s: string) => s === "left" ? cx - 56 : s === "right" ? cx + 56 : cx;
-  const x1 = sideX(fromSide);
-  const x2 = sideX(toSide);
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.6)" }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 60, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 280, damping: 28 }}
+        className="bg-card border border-border rounded-3xl p-6 w-full max-w-sm space-y-4"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-3xl">
+            {lesson.type === "treasure" ? "💎" : lesson.type === "challenge" ? "🏆" : "📖"}
+          </div>
+          <div>
+            <h2 className="font-bold text-base">{lesson.title}</h2>
+            <p className="text-xs text-muted-foreground">
+              {lesson.type === "treasure" ? "كنز" : lesson.type === "challenge" ? "تحدي الوحدة" : "درس"}
+            </p>
+          </div>
+        </div>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">{lesson.description}</p>
+
+        {lesson.words && lesson.words.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-foreground">كلمات ستتعلمها:</p>
+            <div className="flex flex-wrap gap-2">
+              {lesson.words.map(w => (
+                <span key={w} className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full" dir="ltr">{w}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3 pt-1">
+          <button onClick={onClose}
+            className="flex-1 py-2.5 rounded-2xl border border-border text-sm font-semibold text-muted-foreground hover:bg-muted transition-all">
+            لاحقاً
+          </button>
+          <button onClick={onStart}
+            className="flex-1 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-all">
+            ابدأ الآن →
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Station node ──
+function Station({
+  lesson, side, progress, color, delay, isCurrentStation, unitId,
+}: {
+  lesson: UnitLesson;
+  side: "right" | "left" | "center";
+  progress: number;
+  color: string;
+  delay: number;
+  isCurrentStation: boolean;
+  unitId: string;
+}) {
+  const [showGuide, setShowGuide] = useState(false);
+  const isLocked = progress === 0;
+  const size = lesson.type === "challenge" ? 72 : lesson.type === "treasure" ? 68 : 60;
+
+  const handleClick = () => {
+    if (!isLocked) setShowGuide(true);
+  };
+
+  const stationEl = (
+    <div className="flex flex-col items-center gap-0" style={{ position: "relative" }}>
+      {/* "ابدأ" bounce label for current station */}
+      {isCurrentStation && (
+        <motion.div
+          animate={{ y: [0, -6, 0] }}
+          transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+          className="text-xs font-bold text-primary mb-1 select-none"
+        >
+          ابدأ
+        </motion.div>
+      )}
+      <motion.div
+        whileHover={!isLocked ? { scale: 1.08 } : {}}
+        whileTap={!isLocked ? { scale: 0.94 } : {}}
+        onClick={handleClick}
+        style={{ cursor: isLocked ? "default" : "pointer" }}
+      >
+        <StationCircle
+          type={lesson.type}
+          progress={progress}
+          color={color}
+          isActive={progress > 0 && progress < 4}
+          isCurrent={isCurrentStation}
+        />
+      </motion.div>
+    </div>
+  );
 
   return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, duration: 0.4 }}
+        className="flex items-center justify-center relative z-10"
+        style={{ minHeight: size + 28 }}
+      >
+        {side === "right" ? (
+          <div className="flex items-center w-full max-w-[280px]">
+            <div className="flex-1" />
+            <div className="flex-none mx-4">{stationEl}</div>
+            <div className="flex-1" />
+          </div>
+        ) : side === "left" ? (
+          <div className="flex items-center w-full max-w-[280px]">
+            <div className="flex-1" />
+            <div className="flex-none mx-4">{stationEl}</div>
+            <div className="flex-1" />
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">{stationEl}</div>
+        )}
+      </motion.div>
+
+      <AnimatePresence>
+        {showGuide && (
+          <GuideModal
+            lesson={lesson}
+            onClose={() => setShowGuide(false)}
+            onStart={() => {
+              setShowGuide(false);
+              window.location.href = `/lessons/${unitId}/${lesson.id}`;
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ── Arc connector (stations ARE the path) ──
+function ArcPath({
+  from, to, color,
+}: {
+  from: "right" | "left" | "center";
+  to: "right" | "left" | "center";
+  color: string;
+}) {
+  const W = 280;
+  const H = 56;
+  const midX = W / 2;
+  const offset = 56;
+  const xOf = (s: string) => s === "center" ? midX : s === "right" ? midX + offset : midX - offset;
+  const x1 = xOf(from);
+  const x2 = xOf(to);
+  return (
     <div className="relative -my-1 pointer-events-none flex justify-center" style={{ height: H }}>
-      <svg width={W} height={H} className="overflow-visible">
-        <path d={`M ${x1} 0 C ${x1} ${H/2}, ${x2} ${H/2}, ${x2} ${H}`}
-          stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.2" />
-        <motion.path
-          d={`M ${x1} 0 C ${x1} ${H/2}, ${x2} ${H/2}, ${x2} ${H}`}
-          stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round"
-          strokeDasharray="6 5"
-          initial={animated ? { pathLength: 0, opacity: 0 } : { pathLength: 1, opacity: 0.6 }}
-          animate={{ pathLength: 1, opacity: 0.6 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+      <svg width={W} height={H} style={{ overflow: "visible" }}>
+        <path
+          d={`M ${x1} 0 Q ${(x1 + x2) / 2} ${H * 1.1} ${x2} ${H}`}
+          stroke={color} strokeWidth="2.5" fill="none"
+          strokeLinecap="round" strokeDasharray="5 5" opacity="0.35"
         />
       </svg>
     </div>
@@ -173,17 +336,10 @@ function Connector({ fromSide, toSide, color, animated }: {
 }
 
 // ── Unit header ──
-function UnitHeader({ unit, color, gradient }: { unit: Unit; color: string; gradient: string }) {
+function UnitHeader({ unit, gradient }: { unit: Unit; gradient: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex justify-center my-6"
-    >
-      <div className={cn(
-        "flex items-center gap-3 px-5 py-3 rounded-2xl border-0 text-white shadow-lg",
-        `bg-gradient-to-r ${gradient}`
-      )}>
+    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center my-7">
+      <div className={cn("flex items-center gap-3 px-5 py-3 rounded-2xl text-white shadow-lg bg-gradient-to-r", gradient)}>
         <span className="text-2xl">{unit.emoji}</span>
         <div className="text-right">
           <div className="font-bold text-sm">الوحدة الأولى</div>
@@ -194,90 +350,26 @@ function UnitHeader({ unit, color, gradient }: { unit: Unit; color: string; grad
   );
 }
 
-// ── Lesson station ──
-function LessonStation({
-  lesson, side, progress, color, delay, unitId,
-}: {
-  lesson: UnitLesson;
-  side: "left" | "right" | "center";
-  progress: number;
-  color: string;
-  delay: number;
-  unitId: string;
-}) {
-  const isLocked = progress === 0;
-  const isActive = progress > 0 && progress < 4;
-  const isDone = progress >= 4;
-  const size = lesson.type === "challenge" ? 72 : lesson.type === "treasure" ? 68 : 64;
-
-  const circle = (
-    <div className="flex flex-col items-center gap-1">
-      <Link href={!isLocked ? `/lessons/${unitId}/${lesson.id}` : "#"}>
-        <motion.div
-          whileHover={!isLocked ? { scale: 1.08 } : {}}
-          whileTap={!isLocked ? { scale: 0.95 } : {}}
-        >
-          <ProgressCircle
-            progress={progress}
-            size={size}
-            icon={lesson.icon}
-            locked={isLocked}
-            isActive={isActive}
-            color={color}
-            type={lesson.type}
-          />
-        </motion.div>
-      </Link>
-    </div>
-  );
-
-  const label = (
-    <div className={cn(
-      "text-xs max-w-[80px] leading-snug text-center font-medium",
-      isLocked ? "text-muted-foreground/30" : isDone ? "text-foreground/60" : "text-foreground"
-    )}>
-      {lesson.title}
-    </div>
-  );
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-      className="flex items-center justify-center gap-3 relative z-10"
-      style={{ minHeight: size + 24 }}
-    >
-      {side === "right" ? (
-        <>
-          <div className="flex-1 flex justify-end">{label}</div>
-          <div className="flex-none">{circle}</div>
-          <div className="flex-1" />
-        </>
-      ) : side === "left" ? (
-        <>
-          <div className="flex-1" />
-          <div className="flex-none">{circle}</div>
-          <div className="flex-1 flex justify-start">{label}</div>
-        </>
-      ) : (
-        <>
-          <div className="flex-1 flex justify-end">{label}</div>
-          <div className="flex-none">{circle}</div>
-          <div className="flex-1" />
-        </>
-      )}
-    </motion.div>
-  );
-}
-
 // ── Main ──
 export default function Roadmap() {
   const [activeChapter, setActiveChapter] = useState(0);
+  const { user } = useAuth();
+  const [progress, setProgress] = useState<Record<string, number>>({});
   const chapter = CHAPTERS[activeChapter];
 
-  // Layout pattern for stations
-  const sides: ("right" | "left" | "center")[] = ["right", "left", "center", "right", "center"];
+  // TODO: fetch real progress from Supabase
+  useEffect(() => {
+    if (!user) return;
+    // setProgress(...)
+  }, [user]);
+
+  // Layout pattern for 5 stations
+  const SIDES: ("right" | "left" | "center")[] = ["center", "right", "center", "left", "center"];
+
+  // Find first locked station = current
+  const getAllLessons = () => chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
+  const allLessons = getAllLessons();
+  const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   return (
     <Layout>
@@ -293,19 +385,14 @@ export default function Roadmap() {
         {/* Chapter tabs */}
         <div className="flex gap-2 justify-center mb-8 flex-wrap">
           {CHAPTERS.map((ch, i) => (
-            <motion.button
-              key={ch.id}
-              onClick={() => setActiveChapter(i)}
-              whileTap={{ scale: 0.95 }}
+            <motion.button key={ch.id} onClick={() => setActiveChapter(i)} whileTap={{ scale: 0.95 }}
               className={cn(
                 "flex items-center gap-2 px-5 py-2.5 rounded-2xl border transition-all text-sm font-bold",
                 activeChapter === i
                   ? `bg-gradient-to-r ${ch.gradient} text-white border-transparent shadow-lg`
                   : "bg-card border-border text-muted-foreground hover:border-primary/30"
-              )}
-            >
-              <span>{ch.emoji}</span>
-              <span>{ch.title}</span>
+              )}>
+              <span>{ch.emoji}</span><span>{ch.title}</span>
             </motion.button>
           ))}
         </div>
@@ -318,34 +405,30 @@ export default function Roadmap() {
           className="max-w-xs mx-auto"
         >
           {chapter.units.map(unit => {
-            // TODO: get real progress from Supabase
-            const progress: Record<string, number> = {};
-
+            let globalIdx = 0;
             return (
               <div key={unit.id}>
-                <UnitHeader unit={unit} color={chapter.color} gradient={chapter.gradient} />
-
+                <UnitHeader unit={unit} gradient={chapter.gradient} />
                 {unit.lessons.map((lesson, idx) => {
                   const lessonProgress = progress[lesson.id] ?? 0;
-                  const side = sides[idx] ?? "right";
-                  const prevSide = idx > 0 ? (sides[idx - 1] ?? "right") : null;
+                  const side = SIDES[idx] ?? "center";
+                  const prevSide = idx > 0 ? (SIDES[idx - 1] ?? "center") : null;
+                  const gi = globalIdx++;
+                  const allIdx = allLessons.findIndex(l => l.id === lesson.id && l.unitId === unit.id);
+                  const isCurrent = allIdx === currentIdx;
 
                   return (
                     <div key={lesson.id}>
                       {idx > 0 && prevSide && (
-                        <Connector
-                          fromSide={prevSide}
-                          toSide={side}
-                          color={chapter.color}
-                          animated={lessonProgress > 0}
-                        />
+                        <ArcPath from={prevSide} to={side} color={unit.color} />
                       )}
-                      <LessonStation
+                      <Station
                         lesson={lesson}
                         side={side}
                         progress={lessonProgress}
-                        color={chapter.color}
+                        color={unit.color}
                         delay={idx * 0.07}
+                        isCurrentStation={isCurrent}
                         unitId={unit.id}
                       />
                     </div>
@@ -355,13 +438,8 @@ export default function Roadmap() {
             );
           })}
 
-          {/* Coming soon */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-center mt-10 space-y-2"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+            className="text-center mt-10 space-y-2">
             <div className="text-3xl">🔜</div>
             <p className="text-sm text-muted-foreground font-medium">وحدات جديدة قادمة قريباً</p>
           </motion.div>
