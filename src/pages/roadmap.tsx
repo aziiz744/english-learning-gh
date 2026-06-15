@@ -307,7 +307,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const r        = SIZE / 2;
   const circ     = 2 * Math.PI * (r - 6);
   const isGold   = progress >= 4;
-  const hasStart = progress > 0 || !!isFirstOfSection;
+  // jump station OR started → show colored
+  const hasStart = progress > 0 || !!isFirstOfSection || !!isJumpStation;
 
   // Main face color
   const faceColor  = isGold ? "#eab308" : hasStart ? color       : "#374151";
@@ -316,7 +317,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const starColor  = isGold ? "#eab308" : hasStart ? "#ffffff"   : "#4b5563";
   const arcColor   = isGold ? "#eab308" : hasStart ? color       : "#2d3748";
   const arcW       = hasStart ? 5.5 : 4;
-  const arcDash    = isGold ? `${circ} 0` : hasStart ? `${circ * Math.min(progress/4,1)} ${circ}` : `0 ${circ}`;
+  // jump station: full arc (looks completely filled)
+  const arcDash    = isGold ? `${circ} 0` : isJumpStation && !isGold ? `${circ} 0` : hasStart ? `${circ * Math.min(progress/4,1)} ${circ}` : `0 ${circ}`;
 
   // Gradient IDs (unique per size)
   const gId = `sc-${SIZE}-${isGold ? "g" : hasStart ? "a" : "i"}`;
@@ -407,13 +409,13 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           transform={`rotate(-30, ${r}, ${r})`}
         />
 
-        {/* Icon: arrows if jump station (not done), star otherwise */}
-        <g transform={`translate(${r - SIZE * 0.2}, ${r - SIZE * 0.2})`}>
+        {/* Icon: double arrows if jump station not done, star otherwise */}
+        <g transform={`translate(${r - SIZE * 0.22}, ${r - SIZE * 0.22})`}>
           {isJumpStation && !isGold ? (
-            <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill="white"
-              style={{ opacity: canJump ? 1 : 0.5 }}>
-              <path d="M3 6 L10 12 L3 18 Z"/>
-              <path d="M11 6 L18 12 L11 18 Z"/>
+            <svg width={SIZE * 0.44} height={SIZE * 0.44} viewBox="0 0 28 28" fill="white">
+              {/* Two clean arrows — no bar */}
+              <path d="M2 5 L12 14 L2 23 Z"/>
+              <path d="M13 5 L23 14 L13 23 Z"/>
             </svg>
           ) : (
             <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill={starColor}
@@ -683,19 +685,7 @@ export default function Roadmap() {
                   </div>
                 )}
 
-                {/* Unit header */}
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-center mb-8">
-                  <div className={cn("flex items-center gap-3 px-5 py-3 rounded-2xl text-white shadow-lg bg-gradient-to-r", chapter.gradient)}
-                    style={unit.color !== chapter.color ? { background: `linear-gradient(135deg, ${unit.color}dd, ${unit.color}aa)` } : {}}>
-                    <span className="text-2xl">{unit.emoji}</span>
-                    <div className="text-right">
-                      <div className="font-bold text-sm">الوحدة {unitLabel}</div>
-                      <div className="text-white/80 text-xs">{unit.title}</div>
-                    </div>
 
-                  </div>
-                </motion.div>
 
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
