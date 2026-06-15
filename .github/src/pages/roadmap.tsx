@@ -20,11 +20,11 @@ interface Section { id: string; title: string; color: string; units: Unit[]; }
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner", title: "المبتدئ", emoji: "🌱",
-    gradient: "from-emerald-500 to-green-600", color: "#22c55e",
+    gradient: "from-emerald-700 to-green-800", color: "#16a34a",
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22c55e",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#16a34a",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
@@ -36,7 +36,7 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
       {
-        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#8b5cf6",
+        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#6d28d9",
         sectionTitle: "قدّم نفسك وعائلتك",
         lessons: [
           { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
@@ -48,8 +48,8 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 3: الأماكن والاتجاهات — وحدة واحدة فقط ──
       {
-        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#f97316",
-        sectionTitle: "تحدّث عن الأماكن والاتجاهات",
+        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#c2410c",
+        sectionTitle: "قل من أين أنت؟",
         lessons: [
           { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
           { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
@@ -66,13 +66,13 @@ const CHAPTERS: Chapter[] = [
 function FoxMascot() {
   return (
     <svg width="64" height="72" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#f97316" transform="rotate(-30 52 54)"/>
+      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#c2410c" transform="rotate(-30 52 54)"/>
       <ellipse cx="54" cy="52" rx="5" ry="3" fill="#fef3c7" transform="rotate(-30 54 52)"/>
-      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#f97316"/>
+      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#c2410c"/>
       <ellipse cx="32" cy="54" rx="8" ry="10" fill="#fef3c7"/>
-      <circle cx="32" cy="28" r="16" fill="#f97316"/>
-      <polygon points="16,16 10,2 22,10" fill="#f97316"/>
-      <polygon points="48,16 54,2 42,10" fill="#f97316"/>
+      <circle cx="32" cy="28" r="16" fill="#c2410c"/>
+      <polygon points="16,16 10,2 22,10" fill="#c2410c"/>
+      <polygon points="48,16 54,2 42,10" fill="#c2410c"/>
       <polygon points="17,15 12,5 21,11" fill="#fca5a5"/>
       <polygon points="47,15 52,5 43,11" fill="#fca5a5"/>
       <ellipse cx="32" cy="32" rx="10" ry="8" fill="#fef3c7"/>
@@ -86,8 +86,8 @@ function FoxMascot() {
       <path d="M29 33 Q32 36 35 33" stroke="#1e1b4b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
       <ellipse cx="22" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
       <ellipse cx="42" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
-      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#f97316" transform="rotate(-10 20 60)"/>
-      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#f97316" transform="rotate(10 44 60)"/>
+      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#c2410c" transform="rotate(-10 20 60)"/>
+      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#c2410c" transform="rotate(10 44 60)"/>
     </svg>
   );
 }
@@ -473,7 +473,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClo
       {/* Title */}
       <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
       <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-        {lesson.type === "treasure" ? "كنز المراجعة" : lesson.type === "challenge" ? "تحدي الوحدة" : `الدرس ${lessonNum} من ${totalLessons}`}
+        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `النقطة ${lessonNum} · 4 دروس`}
       </p>
 
       {/* Start button */}
@@ -539,10 +539,12 @@ function buildPath(count: number): { x: number; y: number }[] {
 interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; }
 function getSections(chapter: Chapter): SectionInfo[] {
   const sections: SectionInfo[] = [];
-  // First section uses chapter color
-  sections.push({ id: "s0", title: "قدّم واقبل المشروبات", color: chapter.color, gradient: chapter.gradient, unitId: chapter.units[0]?.id ?? "" });
   chapter.units.forEach(u => {
-    if (u.sectionTitle) {
+    // كل وحدة لها sectionTitle (أو أول وحدة) = بداية وحدة جديدة
+    if (!u.sectionTitle && sections.length === 0) {
+      // الوحدة الأولى
+      sections.push({ id: "s0", title: u.title, color: u.color, gradient: chapter.gradient, unitId: u.id });
+    } else if (u.sectionTitle) {
       sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id });
     }
   });
@@ -801,7 +803,7 @@ export default function Roadmap() {
                               whiteSpace: "nowrap",
                               boxShadow: canJump ? `0 2px 10px ${unit.color}30` : "none",
                             }}>
-                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل القسم السابق"}
+                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل الوحدة السابقة"}
                             </div>
                             <div style={{ width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:`7px solid hsl(var(--border))` }}/>
                           </motion.div>
@@ -844,20 +846,12 @@ export default function Roadmap() {
                           }}
                           style={{ cursor: effectiveLocked ? "default" : "pointer" }}>
                           {lesson.type === "treasure" ? (
-                            <div style={{ opacity: effectiveLocked ? 0.4 : 1, position: "relative" }}>
-                              <div style={{
-                                position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
-                                width: 60, height: 10, borderRadius: "50%",
-                                background: "radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)",
-                                filter: "blur(4px)",
-                              }}/>
-                              <TreasureIcon unlocked={lessonProgress >= 4}/>
-                            </div>
+                            <TreasureIcon unlocked={lessonProgress >= 4}/>
                           ) : lesson.type === "challenge" ? (
-                            <CrownIcon color={unit.color} locked={effectiveLocked}/>
+                            <CrownIcon color={unit.color} locked={effectiveLocked && lessonProgress === 0}/>
                           ) : (
                             <StationCircle
-                              type={lesson.type}
+                              type="lesson"
                               progress={effectiveLocked ? 0 : lessonProgress}
                               color={unit.color}
                               isCurrent={isCurrent}
