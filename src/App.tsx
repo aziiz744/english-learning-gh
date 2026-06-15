@@ -12,6 +12,7 @@ import Roadmap from "@/pages/roadmap";
 import Chapter from "@/pages/chapter";
 import Lessons from "@/pages/lessons";
 import LessonDetail from "@/pages/lesson-detail";
+import UnitLesson from "@/pages/unit-lesson";
 import Achievements from "@/pages/achievements";
 import LevelTest from "@/pages/level-test";
 import Admin from "@/pages/admin";
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/chapter/:level" component={Chapter} />
       <Route path="/lessons" component={Lessons} />
       <Route path="/lessons/:id" component={LessonDetail} />
+      <Route path="/u/:id" component={UnitLesson} />
       <Route path="/achievements" component={Achievements} />
       <Route path="/level-test/:level" component={LevelTest} />
       <Route path="/admin" component={Admin} />

@@ -1082,7 +1082,7 @@ export default function Roadmap() {
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  window.location.href = `/lessons/${lesson.id}`;
+                                  window.location.href = `/u/${lesson.id}`;
                                 }}
                               />
                             </div>
