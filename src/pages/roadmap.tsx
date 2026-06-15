@@ -11,16 +11,21 @@ interface UnitLesson {
   description: string;
   words?: string[];
 }
-interface Unit { id: string; title: string; emoji: string; color: string; lessons: UnitLesson[]; }
+interface Unit { id: string; title: string; emoji: string; color: string; sectionTitle?: string; lessons: UnitLesson[]; }
 interface Chapter { id: string; title: string; emoji: string; gradient: string; color: string; units: Unit[]; }
+
+// Section divider interface
+interface Section { id: string; title: string; color: string; units: Unit[]; }
 
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner", title: "المبتدئ", emoji: "🌱",
     gradient: "from-emerald-500 to-green-600", color: "#22c55e",
     units: [
+      // ── القسم 1: قدّم واقبل المشروبات ──
       {
         id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22c55e",
+        sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
           { id: "drinks-2", type: "lesson",    title: "كلمات جديدة",      description: "ستراجع كلمات الدرس الأول وتتعلم كلمات جديدة مثل please وthank you.", words: ["please","thank you","yes","no","sorry"] },
@@ -29,14 +34,10 @@ const CHAPTERS: Chapter[] = [
           { id: "drinks-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
         ],
       },
-    ],
-  },
-  {
-    id: "introduce", title: "قدّم نفسك", emoji: "👋",
-    gradient: "from-violet-500 to-purple-600", color: "#8b5cf6",
-    units: [
+      // ── القسم 2: قدّم نفسك وعائلتك ──
       {
         id: "unit-names", title: "اسمك ومن أين أنت", emoji: "🪪", color: "#8b5cf6",
+        sectionTitle: "قدّم نفسك وعائلتك",
         lessons: [
           { id: "names-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية وتسأل الآخرين عن أسمائهم.", words: ["name","I'm","my","what","your"] },
           { id: "names-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك ومدينتك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
@@ -46,7 +47,8 @@ const CHAPTERS: Chapter[] = [
         ],
       },
       {
-        id: "unit-family", title: "تحدّث عن عائلتك", emoji: "👨‍👩‍👧", color: "#a855f7",
+        id: "unit-family", title: "تحدّث عن عائلتك", emoji: "👨‍👩‍👧", color: "#8b5cf6",
+        sectionTitle: "",
         lessons: [
           { id: "family-1", type: "lesson",    title: "أفراد العائلة",  description: "تعلّم كلمات أفراد العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
           { id: "family-2", type: "lesson",    title: "صف عائلتك",      description: "تعلّم كيف تصف أفراد عائلتك وتقول عددهم.", words: ["have","big","small","he","she"] },
@@ -56,7 +58,8 @@ const CHAPTERS: Chapter[] = [
         ],
       },
       {
-        id: "unit-job", title: "عملك وهواياتك", emoji: "💼", color: "#7c3aed",
+        id: "unit-job", title: "عملك وهواياتك", emoji: "💼", color: "#8b5cf6",
+        sectionTitle: "",
         lessons: [
           { id: "job-1", type: "lesson",    title: "المهن والأعمال",      description: "تعلّم أسماء المهن الشائعة: teacher وdoctor وengineer.", words: ["teacher","doctor","engineer","work","job"] },
           { id: "job-2", type: "lesson",    title: "هواياتك",             description: "تعلّم كيف تتكلم عن هواياتك: I like وI love وI enjoy.", words: ["like","love","enjoy","hobby","play"] },
@@ -528,19 +531,11 @@ export default function Roadmap() {
           <p className="text-muted-foreground mt-1 text-sm">طريقك من الصفر حتى إتقان الإنجليزية</p>
         </div>
 
-        {/* Chapter tabs */}
-        <div className="flex gap-2 justify-center mb-8 flex-wrap">
-          {CHAPTERS.map((ch, i) => (
-            <motion.button key={ch.id} onClick={e => { e.stopPropagation(); setActiveChapter(i); }} whileTap={{ scale: 0.95 }}
-              className={cn(
-                "flex items-center gap-2 px-5 py-2.5 rounded-2xl border transition-all text-sm font-bold",
-                activeChapter === i
-                  ? `bg-gradient-to-r ${ch.gradient} text-white border-transparent shadow-lg`
-                  : "bg-card border-border text-muted-foreground hover:border-primary/30"
-              )}>
-              <span>{ch.emoji}</span><span>{ch.title}</span>
-            </motion.button>
-          ))}
+        {/* Chapter badge */}
+        <div className="flex justify-center mb-8">
+          <div className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white text-sm font-bold bg-gradient-to-r ${chapter.gradient} shadow-lg`}>
+            <span>{chapter.emoji}</span><span>{chapter.title}</span>
+          </div>
         </div>
 
         {/* Map */}
@@ -556,10 +551,29 @@ export default function Roadmap() {
 
             return (
               <div key={unit.id}>
+                {/* Section divider — يظهر فقط إذا كان للوحدة عنوان قسم */}
+                {unit.sectionTitle && (
+                  <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    className="flex items-center gap-3 my-8 px-4"
+                  >
+                    <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to left, ${unit.color}60, transparent)`, borderRadius: 2 }}/>
+                    <span style={{
+                      color: unit.color, fontSize: 13, fontWeight: 800,
+                      whiteSpace: "nowrap", letterSpacing: "0.01em",
+                      textShadow: `0 0 20px ${unit.color}50`,
+                    }}>
+                      {unit.sectionTitle}
+                    </span>
+                    <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to right, ${unit.color}60, transparent)`, borderRadius: 2 }}/>
+                  </motion.div>
+                )}
+
                 {/* Unit header */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                   className="flex justify-center mb-8">
-                  <div className={cn("flex items-center gap-3 px-5 py-3 rounded-2xl text-white shadow-lg bg-gradient-to-r", chapter.gradient)}>
+                  <div className={cn("flex items-center gap-3 px-5 py-3 rounded-2xl text-white shadow-lg bg-gradient-to-r", chapter.gradient)}
+                    style={unit.color !== chapter.color ? { background: `linear-gradient(135deg, ${unit.color}dd, ${unit.color}aa)` } : {}}>
                     <span className="text-2xl">{unit.emoji}</span>
                     <div className="text-right">
                       <div className="font-bold text-sm">الوحدة {unitLabel}</div>
@@ -722,7 +736,7 @@ export default function Roadmap() {
       </div>
 
       {/* Floating Mascot */}
-      <FloatingMascot color={chapter.color} chapterId={chapter.id} />
+      <FloatingMascot color={chapter.color} chapterId="beginner" />
     </Layout>
   );
 }
