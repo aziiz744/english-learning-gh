@@ -5,7 +5,6 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Users, TrendingUp, BookOpen, Crown, Activity, Clock, Target, Zap, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Layout } from "@/components/layout";
 
 interface StatsData {
   totalUsers: number;
@@ -38,67 +37,47 @@ export default function AdminStats() {
   async function load() {
     setLoading(true);
     try {
-      // Use RPC to bypass RLS — admin only functions
-      const [
-        { data: allUsers },
-        { data: stats },
-        { data: progress },
-        { data: sessions },
-      ] = await Promise.all([
-        supabase.rpc("get_all_users"),
-        supabase.from("user_stats").select("*"),
-        supabase.from("user_progress").select("user_id, lesson_id"),
-        supabase.from("user_sessions").select("user_id, last_seen"),
-      ]);
+      // All stats
+      const { data: stats } = await supabase.from("user_stats").select("*");
+      // All progress
+      const { data: progress } = await supabase.from("user_progress").select("user_id, lesson_id, completed_at");
+      // All sessions (online)
+      const { data: sessions } = await supabase.from("user_sessions").select("user_id, last_seen");
 
       const now = new Date();
       const todayStr = now.toDateString();
       const last7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      // Total users from auth (real count)
-      const totalUsers = (allUsers as any[])?.length ?? stats?.length ?? 0;
-      const proUsers = stats?.filter((s: any) => s.is_pro).length ?? 0;
+      const totalUsers = stats?.length ?? 0;
+      const proUsers = stats?.filter(s => s.is_pro).length ?? 0;
 
-      // Active users from sessions
-      const uniqueActiveToday = new Set(
-        sessions?.filter((s: any) => new Date(s.last_seen).toDateString() === todayStr).map((s: any) => s.user_id)
-      );
-      const uniqueActiveLast7 = new Set(
-        sessions?.filter((s: any) => new Date(s.last_seen) >= last7).map((s: any) => s.user_id)
-      );
-      const activeToday = uniqueActiveToday.size;
-      const activeLast7 = uniqueActiveLast7.size;
+      // Active users
+      const activeToday = sessions?.filter(s => new Date(s.last_seen).toDateString() === todayStr).length ?? 0;
+      const activeLast7 = sessions?.filter(s => new Date(s.last_seen) >= last7).length ?? 0;
 
-      // Lesson completions (unique per user)
+      // Lesson completions (unique)
       const progressSet = new Map<string, Set<string>>();
-      (progress as any[])?.forEach((p: any) => {
+      progress?.forEach(p => {
         if (!progressSet.has(p.user_id)) progressSet.set(p.user_id, new Set());
         progressSet.get(p.user_id)!.add(p.lesson_id);
       });
       const totalLessonsCompleted = Array.from(progressSet.values()).reduce((sum, s) => sum + s.size, 0);
 
-      // XP totals
-      const totalXpAwarded = (stats as any[])?.reduce((sum: number, s: any) => sum + (s.total_xp ?? 0), 0) ?? 0;
-      const usersWithStats = stats?.length ?? 1;
-      const avgXpPerUser = usersWithStats > 0 ? Math.round(totalXpAwarded / usersWithStats) : 0;
-      const avgLessonsPerUser = usersWithStats > 0 ? Math.round(totalLessonsCompleted / usersWithStats) : 0;
+      // XP
+      const totalXpAwarded = stats?.reduce((sum, s) => sum + (s.total_xp ?? 0), 0) ?? 0;
+      const avgXpPerUser = totalUsers > 0 ? Math.round(totalXpAwarded / totalUsers) : 0;
+      const avgLessonsPerUser = totalUsers > 0 ? Math.round(totalLessonsCompleted / totalUsers) : 0;
 
       // Top 5 users by XP
-      const topUsers = ([...(stats as any[] ?? [])])
-        .sort((a: any, b: any) => (b.total_xp ?? 0) - (a.total_xp ?? 0))
+      const topUsers = (stats ?? [])
+        .sort((a, b) => (b.total_xp ?? 0) - (a.total_xp ?? 0))
         .slice(0, 5)
-        .map((s: any) => ({
-          email: s.email ?? "مجهول",
-          total_xp: s.total_xp ?? 0,
-          streak: s.streak ?? 0,
-          is_pro: s.is_pro,
-          exercises_completed: s.exercises_completed ?? 0,
-        }));
+        .map(s => ({ email: s.email ?? "مجهول", total_xp: s.total_xp ?? 0, streak: s.streak ?? 0, is_pro: s.is_pro, exercises_completed: s.exercises_completed ?? 0 }));
 
       setData({ totalUsers, proUsers, activeToday, activeLast7, totalLessonsCompleted, totalXpAwarded, avgXpPerUser, avgLessonsPerUser, topUsers, dailySignups: [] });
       setLastUpdate(new Date());
     } catch (e) {
-      console.error("Stats load error:", e);
+      console.error(e);
     } finally {
       setLoading(false);
     }
@@ -123,8 +102,7 @@ export default function AdminStats() {
   ] : [];
 
   return (
-    <Layout>
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto" dir="rtl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -204,6 +182,5 @@ export default function AdminStats() {
         </>
       )}
     </div>
-    </Layout>
   );
 }
