@@ -8,6 +8,7 @@ interface WordOrderExerciseProps {
   correctAnswer: string;
   onAnswer: (answer: string) => void;
   feedback: { isCorrect: boolean; correctAnswer: string } | null;
+  arabicPrompt?: string;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -19,7 +20,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function WordOrderExercise({ question, correctAnswer, onAnswer, feedback }: WordOrderExerciseProps) {
+export function WordOrderExercise({ question, correctAnswer, onAnswer, feedback, arabicPrompt }: WordOrderExerciseProps) {
   const words = correctAnswer.trim().split(/\s+/);
   const [bank, setBank] = useState<{ word: string; id: number }[]>(() =>
     shuffle(words.map((w, i) => ({ word: w, id: i })))
@@ -53,6 +54,13 @@ export function WordOrderExercise({ question, correctAnswer, onAnswer, feedback 
 
   return (
     <div className="space-y-6">
+      {/* Arabic translation */}
+      {arabicPrompt && (
+        <div className="bg-muted/30 border border-border/50 rounded-xl px-4 py-3 text-center">
+          <p className="text-xs text-muted-foreground mb-1">الجملة بالعربي</p>
+          <p className="text-base font-semibold text-foreground" dir="rtl">{arabicPrompt}</p>
+        </div>
+      )}
       {/* Instructions */}
       <p className="text-sm text-muted-foreground text-right">
         رتّب الكلمات لتكوّن الجملة الصحيحة — اضغط على الكلمة لإضافتها
