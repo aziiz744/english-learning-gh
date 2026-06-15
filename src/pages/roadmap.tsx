@@ -38,6 +38,7 @@ const CHAPTERS: Chapter[] = [
       {
         id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#7c3aed",
         sectionTitle: "قدّم نفسك وعائلتك",
+        pathVariant: "zigzag",
         lessons: [
           { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
           { id: "intro-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
@@ -85,9 +86,23 @@ const CHAPTERS: Chapter[] = [
           { id: "adj-c", type: "challenge", title: "تحدي الوحدة",       description: "اختبار شامل: صف واقارن بثقة!", words: [] },
         ],
       },
+      // ── الوحدة 6: اطلب الطعام والمشروبات — وردي ──
+      {
+        id: "unit-food", title: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777",
+        sectionTitle: "اطلب الطعام والمشروبات",
+        lessons: [
+          { id: "food-1", type: "lesson",    title: "أسماء الأطعمة",     description: "تعلّم: rice وchicken وbread وsalad وsoup.", words: ["rice","chicken","bread","salad","soup"] },
+          { id: "food-2", type: "lesson",    title: "في المطعم",          description: "تعلّم: Can I have...? وI'd like... وThe bill please.", words: ["can","have","like","bill","please"] },
+          { id: "food-p", type: "practice",  title: "تمرين الطلب",        description: "تمرين مكثف على طلب الطعام قبل الكنز!", words: [] },
+          { id: "food-t", type: "treasure",  title: "كنز المراجعة",       description: "راجع كلمات الطعام في لعبة ممتعة!", words: [] },
+          { id: "food-3", type: "lesson",    title: "المشروبات والحلويات", description: "تعلّم: coffee وjuice وcake وice cream وdessert.", words: ["coffee","juice","cake","dessert","sweet"] },
+          { id: "food-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: اطلب وجبتك بثقة!", words: [] },
+        ],
+      },
     ],
   },
 ];
+
 
 // ─── Fox SVG Mascot ───────────────────────────────────────────────────────────
 function FoxMascot() {
