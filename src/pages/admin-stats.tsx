@@ -20,20 +20,19 @@ interface StatsData {
 }
 
 export default function AdminStats() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
   useEffect(() => {
-    // Wait for auth to load before checking
-    if (user === undefined) return; // still loading
-    if (user === null || !user?.isAdmin) { setLocation("/"); return; }
+    if (authLoading) return; // wait for auth
+    if (!user?.isAdmin) { setLocation("/"); return; }
     load();
     const interval = setInterval(load, 60000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, authLoading]);
 
   async function load() {
     setLoading(true);
@@ -84,11 +83,12 @@ export default function AdminStats() {
     }
   }
 
-  if (!user || !user?.isAdmin) return (
+  if (authLoading) return (
     <div className="flex items-center justify-center h-[60vh]">
       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
     </div>
   );
+  if (!user?.isAdmin) return null;
 
   const cards = data ? [
     { icon: Users,    label: "إجمالي المستخدمين",  value: data.totalUsers,              color: "text-blue-400",   bg: "bg-blue-500/10" },
