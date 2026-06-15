@@ -166,23 +166,16 @@ export default function TeacherPage() {
       // Call API
       (async () => {
         try {
-          const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          const res = await fetch("/api/chat", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${import.meta.env.VITE_GROQ_KEY ?? ""}`,
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              model: "llama-3.1-8b-instant",
-              max_tokens: 300,
-              messages: [
-                { role: "system", content: SYSTEM_PROMPT },
-                ...newMsgs.map(m => ({ role: m.role, content: m.content })),
-              ],
+              system: SYSTEM_PROMPT,
+              messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
             }),
           });
           const data = await res.json();
-          const reply = data.choices?.[0]?.message?.content;
+          const reply = data.reply;
           if (reply && isActiveRef.current) {
             const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
             setMessages(p => [...p, assistantMsg]);
@@ -210,23 +203,16 @@ export default function TeacherPage() {
     setCallState("processing");
 
     try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_KEY ?? ""}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
-          max_tokens: 150,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: "Start the class. Greet me warmly and ask my name. Keep it short." },
-          ],
+          system: SYSTEM_PROMPT,
+          messages: [{ role: "user", content: "Start the class. Greet me warmly and ask my name. Keep it short." }],
         }),
       });
       const data = await res.json();
-      const reply = data.choices?.[0]?.message?.content
+      const reply = data.reply
         || "Hello! I'm Mr. Adam, your English teacher. What's your name?";
       const msg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
       setMessages([msg]);
