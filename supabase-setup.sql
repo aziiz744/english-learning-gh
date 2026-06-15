@@ -153,3 +153,6 @@ begin
   delete from auth.users where id = target_user_id;
 end;
 $$;
+
+-- Add gender column to user_stats
+alter table public.user_stats add column if not exists gender text default 'male';
