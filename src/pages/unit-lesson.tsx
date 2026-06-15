@@ -7,6 +7,7 @@ import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { Heart } from "lucide-react";
+import { useSound } from "@/hooks/useSound";
 import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
@@ -53,8 +54,10 @@ function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
 function WordBtn({ word, color }: { word: string; color: string }) {
   return (
     <span
-      onClick={() => speak(word)}
+      onMouseEnter={() => speak(word)}
+      onTouchStart={() => speak(word)}
       style={{ borderBottom: `2px dotted ${color}`, cursor: "pointer", fontWeight: 800, direction: "ltr", display: "inline-block" }}
+      title="مرّر للاستماع"
     >{word}</span>
   );
 }
@@ -151,7 +154,7 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
                 display:"flex", alignItems:"center", justifyContent:"space-between",
               }}>
               <span>{o}</span>
-              <span onClick={e=>{e.stopPropagation();speak(o);}} style={{ opacity:0.6, fontSize:18 }}>🔊</span>
+              <span onMouseEnter={()=>speak(o)} onClick={e=>{e.stopPropagation();speak(o);}} style={{ opacity:0.6, fontSize:18 }}>🔊</span>
             </motion.button>
           );
         })}
@@ -228,7 +231,7 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
                 display:"flex", flexDirection:"column", alignItems:"center", gap:10,
                 background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
                 border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <span style={{ fontSize:48 }}>{o.emoji}</span>
+              <span onMouseEnter={()=>speak(o.label)} style={{ fontSize:48 }}>{o.emoji}</span>
               <span style={{ fontSize:13, fontWeight:700, direction:"ltr", borderBottom:`2px dotted ${color}60`, paddingBottom:2 }}>{o.label}</span>
             </motion.button>
           );
@@ -291,6 +294,7 @@ export default function UnitLesson() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const meta = id ? LESSON_MAP[id] : undefined;
+  const { playCorrect, playWrong, playComplete } = useSound();
 
   const [isPro, setIsPro] = useState(false);
   const [exercises, setExercises] = useState<ExObj[]>([]);
@@ -327,15 +331,19 @@ export default function UnitLesson() {
     setTotal(t => t + 1);
     if (ok) {
       setScore(s => s + 1);
-      // Remove from queue
       setQueue(q => {
         const newQ = q.slice(1);
-        if (newQ.length === 0) setPhase("finish");
-        else setCurrent(0);
+        if (newQ.length === 0) {
+          playComplete();
+          setPhase("finish");
+        } else {
+          playCorrect();
+          setCurrent(0);
+        }
         return newQ;
       });
     } else {
-      // Wrong — lose heart and push question to end
+      playWrong();
       if (!isPro) {
         const newH = hearts - 1;
         setHearts(newH);
@@ -343,7 +351,7 @@ export default function UnitLesson() {
       }
       setQueue(q => {
         const wrong = q[0];
-        const newQ = [...q.slice(1), wrong]; // push to end
+        const newQ = [...q.slice(1), wrong];
         return newQ;
       });
       setCurrent(0);
