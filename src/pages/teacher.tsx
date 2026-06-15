@@ -115,33 +115,57 @@ export default function TeacherPage() {
   function stopMic() {
     if (watchdogRef.current) { clearInterval(watchdogRef.current); watchdogRef.current = null; }
     if (silenceTimer.current) { clearTimeout(silenceTimer.current); silenceTimer.current = null; }
+    try { recRef.current?.stop(); } catch {}
     try { recRef.current?.abort(); } catch {}
     recRef.current = null;
   }
 
   function startMic() {
     if (!isActive.current) return;
+    stopMic();
+    setCS("listening");
+
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) return;
-    stopMic();
+
+    // Watchdog loop — restarts mic every 3s if no recognition is active
+    watchdogRef.current = setInterval(() => {
+      if (!isActive.current || callStateRef.current !== "listening") {
+        clearInterval(watchdogRef.current!);
+        watchdogRef.current = null;
+        return;
+      }
+      // If recognition died, restart it
+      if (!recRef.current) {
+        launchRec(SR);
+      }
+    }, 3000);
+
+    launchRec(SR);
+  }
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  function launchRec(SR: any) {
+    if (!isActive.current) return;
+    try { recRef.current?.abort(); } catch {}
+    recRef.current = null;
 
     const rec = new SR();
     rec.lang = "en-US";
-    rec.continuous = false;
+    rec.continuous = !isMobile; // desktop=continuous, mobile=false (more stable)
     rec.interimResults = true;
     recRef.current = rec;
 
-    rec.onstart = () => setCS("listening");
-
     rec.onresult = (e: SpeechRecognitionEvent) => {
-      lastActivityRef.current = Date.now();
       let fin = "", int = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) fin += e.results[i][0].transcript + " ";
         else int += e.results[i][0].transcript;
       }
       if (fin) pendingText.current += fin;
-      setTranscript((pendingText.current + int).trim());
+      const display = (pendingText.current + int).trim();
+      setTranscript(display);
 
       if (silenceTimer.current) clearTimeout(silenceTimer.current);
       if (pendingText.current.trim()) {
@@ -158,33 +182,34 @@ export default function TeacherPage() {
     };
 
     rec.onend = () => {
-      if (!isActive.current) return;
-      // If no pending text, restart mic immediately
-      if (!pendingText.current.trim() && callStateRef.current === "listening") {
-        setTimeout(() => { if (isActive.current) startMic(); }, 150);
+      recRef.current = null;
+      // Watchdog will restart within 3s — but also restart immediately if no pending
+      if (!isActive.current || callStateRef.current !== "listening") return;
+      if (!pendingText.current.trim()) {
+        setTimeout(() => {
+          if (isActive.current && callStateRef.current === "listening" && !recRef.current) {
+            launchRec(SR);
+          }
+        }, 200);
       }
     };
 
     rec.onerror = (e: SpeechRecognitionErrorEvent) => {
+      recRef.current = null;
       if (!isActive.current || e.error === "aborted" || e.error === "not-allowed") return;
-      setTimeout(() => { if (isActive.current) startMic(); }, 300);
+      setTimeout(() => {
+        if (isActive.current && callStateRef.current === "listening" && !recRef.current) {
+          launchRec(SR);
+        }
+      }, 300);
     };
 
-    try { rec.start(); } catch { setTimeout(() => { if (isActive.current) startMic(); }, 500); }
-
-    // Watchdog: if still listening and no activity for 4s, restart mic
-    if (watchdogRef.current) clearInterval(watchdogRef.current);
-    lastActivityRef.current = Date.now();
-    watchdogRef.current = setInterval(() => {
-      if (!isActive.current) { clearInterval(watchdogRef.current!); return; }
-      if (callStateRef.current === "listening") {
-        const idle = Date.now() - lastActivityRef.current;
-        if (idle > 4000 && !pendingText.current.trim()) {
-          // Mic went silent too long — restart it
-          startMic();
-        }
-      }
-    }, 2000);
+    try { rec.start(); } catch {
+      recRef.current = null;
+      setTimeout(() => {
+        if (isActive.current && callStateRef.current === "listening") launchRec(SR);
+      }, 500);
+    }
   }
 
   function speakReply(text: string) {
