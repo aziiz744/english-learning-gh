@@ -13,6 +13,7 @@ export function LoginModal() {
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState<"male" | "female">("male");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -70,11 +71,20 @@ export function LoginModal() {
         close();
       }
     } else {
-      const { error: err } = await supabase.auth.signUp({
+      const { data: signUpData, error: err } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: { emailRedirectTo: `${window.location.origin}/reset-password` },
       });
+      if (!err && signUpData?.user) {
+        // Save gender to user_stats
+        await supabase.from("user_stats").upsert({
+          user_id: signUpData.user.id,
+          email: email.trim(),
+          gender,
+          total_xp: 0, streak: 0, exercises_completed: 0,
+        });
+      }
       setLoading(false);
       if (err) {
         if (err.message.includes("already registered")) setError("هذا الإيميل مسجل مسبقاً");
@@ -154,6 +164,25 @@ export function LoginModal() {
                     autoComplete="email"
                   />
                 </div>
+
+                {/* Gender selector - only in register */}
+                {mode === "register" && (
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-muted-foreground text-right">الجنس</p>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setGender("male")}
+                        className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-center gap-2
+                          ${gender === "male" ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}>
+                        👨‍🎓 ذكر
+                      </button>
+                      <button type="button" onClick={() => setGender("female")}
+                        className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-center gap-2
+                          ${gender === "female" ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}>
+                        👩‍🎓 أنثى
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Password field - not shown in forgot mode */}
                 {mode !== "forgot" && (
