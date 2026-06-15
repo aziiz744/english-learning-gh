@@ -21,6 +21,11 @@ const TEACHERS: Teacher[] = [
 const BASE = `You teach English to Arabic speakers.
 Rules: short replies (2-4 sentences), gently correct mistakes, end with a question, encourage English if they write Arabic.`;
 
+async function getToken(): Promise<string> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? "";
+}
+
 export default function TeacherPage() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
@@ -244,9 +249,10 @@ export default function TeacherPage() {
     setMessages(newMsgs);
 
     try {
+      const token = await getToken();
       const res = await fetch("/api/chat", {
         method:"POST",
-        headers:{ "Content-Type":"application/json" },
+        headers:{ "Content-Type":"application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({
           system: `${BASE}\n\n${teacherRef.current.system}`,
           messages: newMsgs.map(m => ({ role:m.role, content:m.content })),
@@ -284,9 +290,10 @@ export default function TeacherPage() {
 
     const t = teacherRef.current;
     try {
+      const token = await getToken();
       const res = await fetch("/api/chat", {
         method:"POST",
-        headers:{ "Content-Type":"application/json" },
+        headers:{ "Content-Type":"application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({
           system: `${BASE}\n\n${t.system}`,
           messages:[{ role:"user", content:"Greet me warmly as a new student. Keep it to 1-2 sentences and ask my name." }],
