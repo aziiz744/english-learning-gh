@@ -663,96 +663,25 @@ export default function Roadmap() {
 
             return (
               <div key={unit.id} ref={unitIdx === 0 ? (el => { sectionRefs.current["s0"] = el; }) : undefined}>
-                {/* Section divider + Jump button */}
-                {unit.sectionTitle && (() => {
-                  // Check if previous section's last challenge is done
-                  const prevChallengeId = chapter.units
-                    .slice(0, unitIdx)
-                    .reverse()
-                    .find(u => u.lessons.some(l => l.type === "challenge"))
-                    ?.lessons.find(l => l.type === "challenge")?.id;
-                  const canJump = prevChallengeId ? (progress[prevChallengeId] ?? 0) >= 4 : false;
-                  return (
-                    <div ref={el => { sectionRefs.current[unit.id] = el; }}>
-                      {/* Divider line */}
-                      <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="flex items-center gap-3 mt-10 mb-4 px-2"
-                      >
-                        <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to left, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
-                        <span style={{
-                          color: unit.color, fontSize: 14, fontWeight: 900,
-                          whiteSpace: "nowrap",
-                          textShadow: `0 0 16px ${unit.color}60`,
-                        }}>
-                          {unit.sectionTitle}
-                        </span>
-                        <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to right, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
-                      </motion.div>
-
-                      {/* Jump button */}
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 20, gap: 6 }}>
-                        {/* Tooltip */}
-                        <motion.div
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                          style={{
-                            background: "hsl(var(--card))",
-                            border: "1.5px solid hsl(var(--border))",
-                            borderRadius: 12, padding: "5px 14px",
-                            fontSize: 13, fontWeight: 700,
-                            color: canJump ? unit.color : "hsl(var(--muted-foreground))",
-                            whiteSpace: "nowrap",
-                          }}>
-                          {canJump ? "القفز إلى هنا؟" : "🔒 أكمل القسم السابق أولاً"}
-                        </motion.div>
-                        {/* Arrow down */}
-                        <div style={{ width: 0, height: 0,
-                          borderLeft: "7px solid transparent", borderRight: "7px solid transparent",
-                          borderTop: `8px solid hsl(var(--border))`,
-                        }}/>
-                        {/* Circle button — double arrow like Duolingo */}
-                        <motion.button
-                          whileHover={canJump ? { scale: 1.08 } : {}}
-                          whileTap={canJump ? { scale: 0.94 } : {}}
-                          onClick={e => {
-                            e.stopPropagation();
-                            if (!canJump) return;
-                            const firstLesson = unit.lessons.find(l => l.type === "lesson");
-                            if (firstLesson) window.location.href = `/lessons/${unit.id}/${firstLesson.id}`;
-                          }}
-                          style={{
-                            width: 68, height: 68, borderRadius: "50%",
-                            background: canJump ? unit.color : "#374151",
-                            border: "none", cursor: canJump ? "pointer" : "not-allowed",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            boxShadow: canJump
-                              ? `0 7px 0 ${shadeColor(unit.color, -55)}, 0 10px 24px ${unit.color}50`
-                              : "0 5px 0 #1a2030",
-                            position: "relative",
-                          }}>
-                          {/* Colored glow halo */}
-                          {canJump && (
-                            <motion.div
-                              animate={{ scale: [1,1.6,1], opacity: [0.35,0,0.35] }}
-                              transition={{ repeat: Infinity, duration: 2.2 }}
-                              style={{
-                                position: "absolute", inset: -8, borderRadius: "50%",
-                                background: unit.color, filter: "blur(12px)", zIndex: 0,
-                              }}
-                            />
-                          )}
-                          {/* Double forward arrows ⏭ */}
-                          <svg width="32" height="32" viewBox="0 0 32 32" fill="white" style={{ zIndex: 1 }}>
-                            <path d="M4 8 L14 16 L4 24 Z"/>
-                            <path d="M14 8 L24 16 L14 24 Z"/>
-                            <rect x="24" y="8" width="3.5" height="16" rx="1.5" fill="white"/>
-                          </svg>
-                        </motion.button>
-                      </div>
-                    </div>
-                  );
-                })()}
+                {/* Section divider line */}
+                {unit.sectionTitle && (
+                  <div ref={el => { sectionRefs.current[unit.id] = el; }}>
+                    <motion.div
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                      className="flex items-center gap-3 mt-10 mb-4 px-2"
+                    >
+                      <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to left, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
+                      <span style={{
+                        color: unit.color, fontSize: 14, fontWeight: 900,
+                        whiteSpace: "nowrap",
+                        textShadow: `0 0 16px ${unit.color}60`,
+                      }}>
+                        {unit.sectionTitle}
+                      </span>
+                      <div style={{ flex: 1, height: 1.5, background: `linear-gradient(to right, ${unit.color}70, transparent)`, borderRadius: 2 }}/>
+                    </motion.div>
+                  </div>
+                )}
 
                 {/* Unit header */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
@@ -851,7 +780,7 @@ export default function Roadmap() {
                         </AnimatePresence>
 
                         {/* Jump tooltip above jump station */}
-                        {isJumpStation && !isGold && !isPopupOpen && (
+                        {isJumpStation && lessonProgress < 4 && !isPopupOpen && (
                           <motion.div
                             animate={{ y: [0, -5, 0] }}
                             transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
