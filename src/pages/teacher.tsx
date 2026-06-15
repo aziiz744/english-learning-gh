@@ -331,6 +331,10 @@ export default function TeacherPage() {
   // ── Auth gate ──
   if (!user) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
+      <button onClick={() => setLocation("/")}
+        className="self-start flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
+        ← الرئيسية
+      </button>
       <div className="w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl">👨‍🏫</div>
       <div className="space-y-2">
         <h1 className="text-xl font-bold">سجّل دخولك أولاً</h1>
@@ -340,7 +344,6 @@ export default function TeacherPage() {
         className="px-8 py-5 font-bold rounded-2xl gap-2">
         <span>🔑</span> تسجيل الدخول
       </Button>
-      <button onClick={() => setLocation("/")} className="text-sm text-muted-foreground hover:text-foreground">العودة للرئيسية</button>
     </div>
   );
 
@@ -353,19 +356,26 @@ export default function TeacherPage() {
 
   if (!isPro) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
+      <button onClick={() => setLocation("/")}
+        className="self-start flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
+        ← الرئيسية
+      </button>
       <div className="w-20 h-20 rounded-full bg-yellow-500/10 border-2 border-yellow-500/30 flex items-center justify-center">
         <Lock className="w-9 h-9 text-yellow-400" />
       </div>
       <h1 className="text-xl font-bold">ميزة حصرية لأعضاء Pro</h1>
       <p className="text-muted-foreground text-sm max-w-xs">التحدث مع المعلم متاح فقط لأعضاء Pro</p>
       <Button onClick={() => setLocation("/pro")} className="px-8 py-5 font-bold rounded-2xl">🌟 اشترك في Pro</Button>
-      <button onClick={() => setLocation("/")} className="text-sm text-muted-foreground hover:text-foreground">العودة للرئيسية</button>
     </div>
   );
 
   // ── Pre-call ──
   if (!started) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
+      <button onClick={() => setLocation("/")}
+        className="self-start flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        ← الرئيسية
+      </button>
       <h1 className="text-xl font-bold">اختر معلمك</h1>
 
       <div className="flex gap-3 flex-wrap justify-center">
