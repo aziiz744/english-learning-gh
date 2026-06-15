@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, Volume2, VolumeX, Loader2, User, RefreshCw, PhoneOff, Phone } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, User, PhoneOff, Phone, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { triggerLoginModal } from "@/lib/modal-state";
+import { useLocation } from "wouter";
 
 interface Message {
   id: number;
@@ -25,54 +26,55 @@ Your style:
 
 export default function TeacherPage() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [callState, setCallState] = useState<CallState>("idle");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [started, setStarted] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const transcriptRef = useRef("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const msgIdRef = useRef(0);
-  const callStateRef = useRef<CallState>("idle");
   const isActiveRef = useRef(false);
+  const voicesLoadedRef = useRef(false);
 
-  callStateRef.current = callState;
+  // Check pro status
+  useEffect(() => {
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) { setIsPro(false); return; }
+        const { data } = await supabase.from("user_stats").select("is_pro").eq("user_id", user.id).single();
+        setIsPro(data?.is_pro ?? false);
+      });
+    });
+  }, [user]);
+
+  // Pre-load voices
+  useEffect(() => {
+    const load = () => { window.speechSynthesis.getVoices(); voicesLoadedRef.current = true; };
+    load();
+    window.speechSynthesis.onvoiceschanged = load;
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Speak text then auto-open mic
-  const speak = useCallback((text: string, thenListen: boolean = true) => {
-    if (!voiceEnabled || !window.speechSynthesis) {
-      if (thenListen) startListening();
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "en-US";
-    utter.rate = 0.88;
-    utter.pitch = 1.05;
+  const getVoice = useCallback(() => {
     const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v =>
-      v.lang.startsWith("en") && (v.name.includes("Daniel") || v.name.includes("Google US") || v.name.includes("Samantha") || v.name.includes("Alex"))
-    ) || voices.find(v => v.lang.startsWith("en-US")) || voices.find(v => v.lang.startsWith("en"));
-    if (preferred) utter.voice = preferred;
-    setCallState("teacher-speaking");
-    utter.onend = () => {
-      if (isActiveRef.current && thenListen) {
-        setTimeout(() => startListening(), 400);
-      } else {
-        setCallState("idle");
-      }
-    };
-    utter.onerror = () => {
-      if (isActiveRef.current && thenListen) startListening();
-      else setCallState("idle");
-    };
-    window.speechSynthesis.speak(utter);
-  }, [voiceEnabled]);
+    // Pick one good consistent voice and stick with it
+    return (
+      voices.find(v => v.name === "Daniel" && v.lang.startsWith("en")) ||
+      voices.find(v => v.name.includes("Google US English")) ||
+      voices.find(v => v.name === "Samantha") ||
+      voices.find(v => v.lang === "en-US" && !v.name.includes("Google")) ||
+      voices.find(v => v.lang.startsWith("en-US")) ||
+      voices.find(v => v.lang.startsWith("en")) ||
+      null
+    );
+  }, []);
 
   const startListening = useCallback(() => {
     if (!isActiveRef.current) return;
@@ -88,8 +90,7 @@ export default function TeacherPage() {
     recognition.onstart = () => setCallState("listening");
 
     recognition.onresult = (e: SpeechRecognitionEvent) => {
-      let interim = "";
-      let final = "";
+      let interim = "", final = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) final += e.results[i][0].transcript;
         else interim += e.results[i][0].transcript;
@@ -121,47 +122,79 @@ export default function TeacherPage() {
     try { recognition.start(); } catch {}
   }, []);
 
+  const speak = useCallback((text: string, thenListen: boolean = true) => {
+    window.speechSynthesis.cancel();
+
+    if (!voiceEnabled) {
+      setCallState("idle");
+      if (thenListen) setTimeout(() => startListening(), 300);
+      return;
+    }
+
+    setCallState("teacher-speaking");
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "en-US";
+    utter.rate = 0.88;
+    utter.pitch = 1.0;
+
+    const voice = getVoice();
+    if (voice) utter.voice = voice;
+
+    utter.onend = () => {
+      if (!isActiveRef.current) { setCallState("idle"); return; }
+      if (thenListen) setTimeout(() => startListening(), 400);
+      else setCallState("idle");
+    };
+    utter.onerror = () => {
+      if (isActiveRef.current && thenListen) startListening();
+      else setCallState("idle");
+    };
+
+    window.speechSynthesis.speak(utter);
+  }, [voiceEnabled, getVoice, startListening]);
+
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || !isActiveRef.current) return;
     setCallState("processing");
-    setTranscript("");
     recognitionRef.current?.abort();
 
     const userMsg: Message = { id: ++msgIdRef.current, role: "user", content: text };
+
     setMessages(prev => {
       const newMsgs = [...prev, userMsg];
-      // Call API with updated messages
-      callAPI(newMsgs);
+
+      // Call API
+      (async () => {
+        try {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-6",
+              max_tokens: 300,
+              system: SYSTEM_PROMPT,
+              messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
+            }),
+          });
+          const data = await res.json();
+          const reply = data.content?.find((b: any) => b.type === "text")?.text;
+          if (reply && isActiveRef.current) {
+            const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
+            setMessages(p => [...p, assistantMsg]);
+            speak(reply, true);
+          } else if (isActiveRef.current) {
+            startListening();
+          }
+        } catch {
+          if (!isActiveRef.current) return;
+          const errMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: "Sorry, I had a connection issue. Please say that again!" };
+          setMessages(p => [...p, errMsg]);
+          speak(errMsg.content, true);
+        }
+      })();
+
       return newMsgs;
     });
-  }, []);
-
-  const callAPI = useCallback(async (currentMessages: Message[]) => {
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 300,
-          system: SYSTEM_PROMPT,
-          messages: currentMessages.map(m => ({ role: m.role, content: m.content })),
-        }),
-      });
-      const data = await res.json();
-      const reply = data.content?.find((b: any) => b.type === "text")?.text;
-      if (reply) {
-        const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
-        setMessages(prev => [...prev, assistantMsg]);
-        speak(reply, true);
-      } else {
-        if (isActiveRef.current) startListening();
-      }
-    } catch {
-      const errMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: "Sorry, I had a connection issue. Please say that again!" };
-      setMessages(prev => [...prev, errMsg]);
-      speak(errMsg.content, true);
-    }
   }, [speak, startListening]);
 
   const startCall = async () => {
@@ -179,12 +212,12 @@ export default function TeacherPage() {
           model: "claude-sonnet-4-6",
           max_tokens: 150,
           system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: "Start the class. Greet me warmly and ask my name." }],
+          messages: [{ role: "user", content: "Start the class. Greet me warmly and ask my name. Keep it short." }],
         }),
       });
       const data = await res.json();
       const reply = data.content?.find((b: any) => b.type === "text")?.text
-        || "Hello! Welcome to our English class! I'm Mr. Adam. What's your name?";
+        || "Hello! I'm Mr. Adam, your English teacher. What's your name?";
       const msg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
       setMessages([msg]);
       speak(reply, true);
@@ -203,6 +236,8 @@ export default function TeacherPage() {
     setStarted(false);
     setMessages([]);
     setTranscript("");
+    transcriptRef.current = "";
+    setLocation("/");
   };
 
   const stateLabel: Record<CallState, string> = {
@@ -211,6 +246,33 @@ export default function TeacherPage() {
     "listening": "🎙️ يستمع إليك...",
     "processing": "⏳ يفكر...",
   };
+
+  // Pro gate
+  if (isPro === null) {
+    return <div className="flex items-center justify-center h-[60vh]"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
+  }
+
+  if (isPro === false) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
+        <div className="w-20 h-20 rounded-full bg-yellow-500/10 border-2 border-yellow-500/30 flex items-center justify-center">
+          <Lock className="w-9 h-9 text-yellow-400" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-xl font-bold">ميزة حصرية لأعضاء Pro</h1>
+          <p className="text-muted-foreground text-sm max-w-xs">
+            التحدث مع المعلم متاح فقط لأعضاء Pro. اشترك الآن وتحدث مع Mr. Adam بلا حدود!
+          </p>
+        </div>
+        <Button onClick={() => setLocation("/pro")} className="px-8 py-5 font-bold rounded-2xl">
+          🌟 اشترك في Pro
+        </Button>
+        <button onClick={() => setLocation("/")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          العودة للرئيسية
+        </button>
+      </div>
+    );
+  }
 
   if (!started) {
     return (
@@ -221,14 +283,14 @@ export default function TeacherPage() {
         </motion.div>
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Mr. Adam — معلمك الخاص</h1>
-          <p className="text-muted-foreground max-w-sm">
-            مثل مكالمة هاتفية — المعلم يتكلم، ثم يفتح الميك تلقائياً لك، وهكذا
+          <p className="text-muted-foreground max-w-sm text-sm">
+            مثل مكالمة هاتفية — المعلم يتكلم، ثم يفتح المايك تلقائياً لك، وهكذا
           </p>
         </div>
         <div className="grid grid-cols-3 gap-3 text-sm text-center max-w-xs">
           <div className="bg-muted rounded-xl p-3 space-y-1">
             <div className="text-2xl">🎙️</div>
-            <p className="text-xs text-muted-foreground">ميك تلقائي</p>
+            <p className="text-xs text-muted-foreground">مايك تلقائي</p>
           </div>
           <div className="bg-muted rounded-xl p-3 space-y-1">
             <div className="text-2xl">🔊</div>
@@ -265,7 +327,7 @@ export default function TeacherPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setVoiceEnabled(v => !v)}
+          <Button variant="ghost" size="icon" onClick={() => { setVoiceEnabled(v => !v); window.speechSynthesis?.cancel(); }}
             className={voiceEnabled ? "text-primary" : "text-muted-foreground"}>
             {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </Button>
@@ -313,9 +375,8 @@ export default function TeacherPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Live transcript + mic status */}
+      {/* Mic status */}
       <div className="shrink-0 px-4 pb-4 border-t border-border pt-3 space-y-3">
-        {/* Mic visual */}
         <div className="flex items-center justify-center gap-3">
           <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all
             ${callState === "listening"
@@ -329,7 +390,7 @@ export default function TeacherPage() {
               ? <Volume2 className="w-6 h-6 text-green-400" />
               : <MicOff className="w-6 h-6 text-muted-foreground" />}
           </div>
-          <div className="flex-1 min-h-10">
+          <div className="flex-1">
             {transcript && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="text-sm text-muted-foreground bg-muted/50 rounded-xl px-3 py-2" dir="ltr">
@@ -337,10 +398,10 @@ export default function TeacherPage() {
               </motion.p>
             )}
             {!transcript && callState === "listening" && (
-              <p className="text-xs text-muted-foreground">تحدث الآن... الميك مفتوح</p>
+              <p className="text-sm text-red-400">تحدث الآن... المايك مفتوح 🎙️</p>
             )}
             {!transcript && callState === "teacher-speaking" && (
-              <p className="text-xs text-muted-foreground">انتظر حتى ينتهي Mr. Adam من الكلام</p>
+              <p className="text-xs text-muted-foreground">انتظر حتى ينتهي Mr. Adam</p>
             )}
             {!transcript && callState === "processing" && (
               <p className="text-xs text-muted-foreground">يعالج ردك...</p>
@@ -348,7 +409,7 @@ export default function TeacherPage() {
           </div>
         </div>
         <p className="text-xs text-muted-foreground text-center">
-          الميك يفتح تلقائياً بعد ما ينتهي Mr. Adam 🎙️
+          المايك يفتح تلقائياً بعد ما ينتهي Mr. Adam 🎙️
         </p>
       </div>
     </div>

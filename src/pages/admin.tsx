@@ -38,7 +38,7 @@ export default function Admin() {
     setLoading(true);
     try {
       const { data: stats } = await supabase.from("user_stats").select("*");
-      const { data: progress } = await supabase.from("user_progress").select("user_id");
+      const { data: progress } = await supabase.from("user_progress").select("user_id, lesson_id, stars");
       const { data: sessions } = await supabase.from("user_sessions").select("*");
 
       // Count online (last 5 min)
@@ -47,8 +47,13 @@ export default function Admin() {
       setOnlineCount(online.length);
 
       const progressMap: Record<string, number> = {};
+      const progressSet: Record<string, Set<string>> = {};
       progress?.forEach((p: any) => {
-        progressMap[p.user_id] = (progressMap[p.user_id] ?? 0) + 1;
+        if (!progressSet[p.user_id]) progressSet[p.user_id] = new Set();
+        progressSet[p.user_id].add(p.lesson_id);
+      });
+      Object.keys(progressSet).forEach(uid => {
+        progressMap[uid] = progressSet[uid].size;
       });
 
       const statsMap: Record<string, any> = {};
@@ -205,7 +210,7 @@ export default function Admin() {
                         </div>
                         <div className="text-xs text-muted-foreground flex gap-3 mt-0.5">
                           <span>⚡ {u.stats?.total_xp ?? 0} XP</span>
-                          <span>📚 {u.progress_count} درس</span>
+                          <span>📚 {u.progress_count} درس مكتمل</span>
                           <span>🔥 {u.stats?.streak ?? 0} يوم</span>
                         </div>
                       </div>
