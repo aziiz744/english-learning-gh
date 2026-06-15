@@ -156,3 +156,15 @@ $$;
 
 -- Add gender column to user_stats
 alter table public.user_stats add column if not exists gender text default 'male';
+
+-- Chat history table (lightweight - stores last 3 conversations per user)
+create table if not exists public.chat_history (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  teacher_id text not null,
+  messages jsonb not null default '[]',
+  updated_at timestamptz default now()
+);
+
+alter table public.chat_history enable row level security;
+create policy "Users manage own chats" on public.chat_history for all using (auth.uid() = user_id);

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { triggerLoginModal } from "@/lib/modal-state";
 import { useLocation } from "wouter";
+import { supabase } from "@/lib/supabase";
 
 interface Message {
   id: number;
@@ -76,6 +77,10 @@ export default function TeacherPage() {
   const [userGender, setUserGender] = useState<"male" | "female">("male");
   const [selectedTeacher, setSelectedTeacher] = useState<TeacherProfile>(TEACHERS[0]);
   const [showTeacherPicker, setShowTeacherPicker] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>("");
+  const [showVoicePicker, setShowVoicePicker] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const transcriptRef = useRef("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -95,11 +100,30 @@ export default function TeacherPage() {
     });
   }, [user]);
 
-  // Pre-load voices
+  // Pre-load voices + populate picker
   useEffect(() => {
-    window.speechSynthesis?.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+      setAvailableVoices(voices);
+    };
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
   }, []);
+
+  // Load last chat history
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("chat_history")
+      .select("messages, teacher_id")
+      .eq("user_id", user.id)
+      .eq("teacher_id", selectedTeacher.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.messages && Array.isArray(data.messages) && data.messages.length > 0) {
+          // Don't auto-load, just show option
+        }
+      });
+  }, [user, selectedTeacher.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -108,6 +132,12 @@ export default function TeacherPage() {
   const getVoice = useCallback((teacher: TeacherProfile) => {
     const voices = window.speechSynthesis.getVoices();
     if (!voices.length) return null;
+
+    // User manually selected a voice — use it
+    if (selectedVoiceName) {
+      const manual = voices.find(v => v.name === selectedVoiceName);
+      if (manual) return manual;
+    }
 
     if (teacher.gender === "female") {
       // Female voice keywords
@@ -400,9 +430,27 @@ export default function TeacherPage() {
           </div>
         </div>
 
+        {/* Voice picker */}
+        {availableVoices.length > 0 && (
+          <div className="w-full max-w-xs space-y-1.5">
+            <p className="text-xs text-muted-foreground text-center">اختر صوت المعلم (اختياري)</p>
+            <select
+              value={selectedVoiceName}
+              onChange={e => setSelectedVoiceName(e.target.value)}
+              className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            >
+              <option value="">🤖 تلقائي (حسب المعلم)</option>
+              {availableVoices.map(v => (
+                <option key={v.name} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <Button onClick={startCall} size="lg" className="px-10 py-6 text-lg font-bold rounded-2xl gap-3">
           <Phone className="w-5 h-5" /> ابدأ المحادثة
         </Button>
+        {lastSaved && <p className="text-xs text-green-400">✓ محفوظة {lastSaved.toLocaleTimeString("ar")}</p>}
         <p className="text-xs text-muted-foreground">يعمل بشكل أفضل على Chrome</p>
       </div>
     );

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { Crown, Heart, BookOpen, Zap, Clock, Bell, CheckCircle, XCircle } from "lucide-react";
+import { Crown, Heart, BookOpen, Zap, Clock, Bell, CheckCircle, XCircle, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ProData {
@@ -17,6 +17,7 @@ const BENEFITS = [
   { icon: Heart, title: "قلوب لا نهائية 💙", desc: "تدرّب بلا انقطاع — لا خوف من نفاد القلوب أبداً", pro: true },
   { icon: BookOpen, title: "قصص القراءة المتقدمة", desc: "وصول كامل لمكتبة القصص مع الصوت والترجمة الفورية", pro: true },
   { icon: Zap, title: "مراجعة الأخطاء", desc: "الأسئلة التي أخطأت فيها تعود في نهاية التمرين للمراجعة", pro: true },
+  { icon: MessageCircle, title: "تحدّث مع معلم AI 👨‍🏫", desc: "محادثة صوتية مع معلم ذكي يصحح أخطاءك ويحسّن مستواك", pro: true },
   { icon: Crown, title: "شارة Pro المميزة", desc: "شارة ذهبية تميزك في لوحة الإنجازات", pro: true },
   { icon: Heart, title: "قلوب محدودة (3 فقط)", desc: "القلوب الافتراضية للحسابات العادية", pro: false },
   { icon: BookOpen, title: "القصص مقفولة", desc: "مكتبة القراءة غير متاحة بدون Pro", pro: false },
