@@ -109,23 +109,29 @@ export default function TeacherPage() {
     const voices = window.speechSynthesis.getVoices();
     if (!voices.length) return null;
 
-    // Try to find preferred voice name first
-    const byName = voices.find(v => v.name === teacher.voicePrefs.name && v.lang.startsWith("en"));
-    if (byName) return byName;
-
-    // Try by gender keywords
-    const genderKeywords = teacher.voicePrefs.gender === "male"
-      ? ["Daniel", "Alex", "Fred", "Bruce", "Junior", "Ralph"]
-      : ["Samantha", "Victoria", "Allison", "Ava", "Susan", "Zoe", "Karen"];
-
-    for (const kw of genderKeywords) {
-      const found = voices.find(v => v.name.includes(kw) && v.lang.startsWith("en"));
-      if (found) return found;
+    if (teacher.gender === "female") {
+      // Female voice keywords
+      const femaleNames = ["Samantha","Victoria","Allison","Ava","Susan","Zoe","Karen","Moira","Tessa","Fiona","Vicki"];
+      for (const kw of femaleNames) {
+        const v = voices.find(v => v.name.includes(kw) && v.lang.startsWith("en"));
+        if (v) return v;
+      }
+      // Any female-tagged voice
+      const anyFemale = voices.find(v => v.lang.startsWith("en") && !["Daniel","Alex","Fred","Bruce","Junior","Ralph","Tom","Lee"].some(m => v.name.includes(m)));
+      if (anyFemale) return anyFemale;
+    } else {
+      // Male voice keywords
+      const maleNames = ["Daniel","Alex","Fred","Bruce","Junior","Ralph","Tom","Lee","David","Mark","James","Bob"];
+      for (const kw of maleNames) {
+        const v = voices.find(v => v.name.includes(kw) && v.lang.startsWith("en"));
+        if (v) return v;
+      }
     }
-
-    // Fallback
     return voices.find(v => v.lang.startsWith("en-US")) || voices.find(v => v.lang.startsWith("en")) || null;
   }, []);
+
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const SILENCE_DELAY = 2000; // 2 seconds silence = send
 
   const startListening = useCallback(() => {
     if (!isActiveRef.current) return;
@@ -133,10 +139,11 @@ export default function TeacherPage() {
     if (!SR) return;
 
     recognitionRef.current?.abort();
+    if (silenceTimerRef.current) { clearTimeout(silenceTimerRef.current); silenceTimerRef.current = null; }
 
     const recognition = new SR();
     recognition.lang = "en-US";
-    recognition.continuous = false;
+    recognition.continuous = true;   // Keep mic open
     recognition.interimResults = true;
 
     recognition.onstart = () => {
@@ -147,25 +154,39 @@ export default function TeacherPage() {
     recognition.onresult = (e: SpeechRecognitionEvent) => {
       let interim = "", final = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += e.results[i][0].transcript + " ";
         else interim += e.results[i][0].transcript;
       }
-      const t = final || interim;
-      setTranscript(t);
-      transcriptRef.current = t;
+
+      // Accumulate transcript
+      if (final) {
+        transcriptRef.current += final;
+      }
+      setTranscript((transcriptRef.current + interim).trim());
+
+      // Reset silence timer on any speech
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
+      // Send after 2 seconds of silence
+      if (transcriptRef.current.trim()) {
+        silenceTimerRef.current = setTimeout(() => {
+          const t = transcriptRef.current.trim();
+          if (t && isActiveRef.current) {
+            transcriptRef.current = "";
+            setTranscript("");
+            recognitionRef.current?.abort();
+            sendMessage(t);
+          }
+        }, SILENCE_DELAY);
+      }
     };
 
     recognition.onend = () => {
       if (!isActiveRef.current) return;
-      const t = transcriptRef.current.trim();
-      transcriptRef.current = "";
-      setTranscript("");
-      if (t) {
-        sendMessage(t);
-      } else {
-        // Auto restart — max 20 retries before showing idle
+      // Restart if no text was captured and still active
+      if (!transcriptRef.current.trim()) {
         listeningRetryRef.current += 1;
-        if (listeningRetryRef.current < 20) {
+        if (listeningRetryRef.current < 30) {
           setTimeout(() => { if (isActiveRef.current) startListening(); }, 300);
         } else {
           setCallState("idle");
@@ -176,17 +197,7 @@ export default function TeacherPage() {
     recognition.onerror = (e: SpeechRecognitionErrorEvent) => {
       if (!isActiveRef.current) return;
       if (e.error === "aborted") return;
-      if (e.error === "no-speech") {
-        listeningRetryRef.current += 1;
-        if (listeningRetryRef.current < 20) {
-          setTimeout(() => { if (isActiveRef.current) startListening(); }, 300);
-        } else {
-          setCallState("idle");
-        }
-        return;
-      }
-      // Other errors — retry once
-      setTimeout(() => { if (isActiveRef.current) startListening(); }, 1000);
+      setTimeout(() => { if (isActiveRef.current) startListening(); }, 500);
     };
 
     recognitionRef.current = recognition;
@@ -207,8 +218,8 @@ export default function TeacherPage() {
 
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "en-US";
-    utter.rate = 0.88;
-    utter.pitch = teacher.gender === "female" ? 1.2 : 0.95;
+    utter.pitch = teacher.gender === "female" ? 1.35 : 0.85;
+    utter.rate = teacher.gender === "female" ? 0.92 : 0.85;
 
     // Retry getting voice (voices may not be loaded yet)
     const trySetVoice = () => {
