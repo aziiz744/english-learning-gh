@@ -173,131 +173,122 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
   );
 }
 
-// ─── Station circle (3D cylinder effect) ─────────────────────────────────────
+// ─── Station circle — floating button style (مثل الصورة) ─────────────────────
 function StationCircle({ type, progress, color, isCurrent }: {
   type: "lesson" | "challenge";
   progress: number;
   color: string;
   isCurrent: boolean;
 }) {
-  const SIZE     = type === "challenge" ? 92 : 78;
-  const THICK    = 10; // cylinder depth
-  const cx       = SIZE / 2;
-  const cy       = SIZE / 2;
-  const r        = SIZE / 2 - 7;
-  const circ     = 2 * Math.PI * r;
+  const SIZE     = type === "challenge" ? 88 : 74;
+  const LIFT     = 6;   // how many px the button "floats" above its shadow
+  const r        = SIZE / 2;
+  const circ     = 2 * Math.PI * (r - 6);
   const isGold   = progress >= 4;
   const hasStart = progress > 0;
 
-  // Colors
-  const baseColor  = isGold ? "#eab308" : hasStart ? color : "#374151";
-  const darkColor  = isGold ? "#78350f" : hasStart ? shadeColor(color, -40) : "#1e293b";
-  const bgFill     = hasStart ? (isGold ? "#1a1200" : "#0a1a0a") : "#1e293b";
-  const starColor  = isGold ? "#eab308" : hasStart ? "#ffffff" : "#4b5563";
-  const strokeFill = isGold ? "#eab308" : hasStart ? color : "#2d3748";
-  const strokeW    = hasStart ? 5.5 : 4;
-  const filledDash = isGold
-    ? `${circ} 0`
-    : hasStart ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
+  // Main face color
+  const faceColor  = isGold ? "#eab308" : hasStart ? color       : "#374151";
+  const shadowColor= isGold ? "#78350f" : hasStart ? shadeColor(color, -55) : "#1a1a2e";
+  const bgFill     = isGold ? "#1a1200" : hasStart ? "#0a180a"   : "#1c2333";
+  const starColor  = isGold ? "#eab308" : hasStart ? "#ffffff"   : "#4b5563";
+  const arcColor   = isGold ? "#eab308" : hasStart ? color       : "#2d3748";
+  const arcW       = hasStart ? 5.5 : 4;
+  const arcDash    = isGold ? `${circ} 0` : hasStart ? `${circ * Math.min(progress/4,1)} ${circ}` : `0 ${circ}`;
+
+  // Gradient IDs (unique per size)
+  const gId = `sc-${SIZE}-${isGold ? "g" : hasStart ? "a" : "i"}`;
 
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + THICK }}>
+    <div style={{ position: "relative", width: SIZE, height: SIZE + LIFT + 14 }}>
 
-      {/* ── Ground shadow (ellipse below) */}
+      {/* ── 1. Colored glow halo — বাই the button (like the purple glow in screenshot) */}
       <div style={{
         position: "absolute",
-        bottom: -10,
+        bottom: 4,
         left: "50%",
         transform: "translateX(-50%)",
-        width: SIZE * 0.75,
-        height: 14,
+        width: SIZE * 0.9,
+        height: SIZE * 0.35,
         borderRadius: "50%",
-        background: `radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)`,
-        filter: "blur(6px)",
+        background: hasStart || isCurrent ? faceColor : "#374151",
+        opacity: isCurrent ? 0.55 : hasStart ? 0.35 : 0.2,
+        filter: "blur(10px)",
         zIndex: 0,
       }}/>
 
-      {/* ── Pulse ring for current */}
+      {/* ── 2. Shadow disc — darker ellipse right below the button */}
+      <div style={{
+        position: "absolute",
+        bottom: 2,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: SIZE * 0.78,
+        height: 12,
+        borderRadius: "50%",
+        background: shadowColor,
+        opacity: 0.85,
+        zIndex: 1,
+      }}/>
+
+      {/* ── 3. Pulse for current */}
       {isCurrent && (
         <motion.div style={{
-          position: "absolute", top: 0, left: 0,
+          position: "absolute",
+          top: 0, left: 0,
           width: SIZE, height: SIZE,
           borderRadius: "50%",
           border: `3px solid ${color}`,
-          opacity: 0.4,
-          zIndex: 1,
+          zIndex: 2,
         }}
-          animate={{ scale: [1, 1.45, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ repeat: Infinity, duration: 2.2 }}
+          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ repeat: Infinity, duration: 2 }}
         />
       )}
 
-      {/* ── SVG: cylinder bottom face (dark) + ring + top face */}
+      {/* ── 4. Main SVG button face */}
       <svg
-        width={SIZE} height={SIZE + THICK}
-        style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}
+        width={SIZE} height={SIZE}
+        style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}
       >
         <defs>
-          <radialGradient id={`topGrad-${SIZE}`} cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor={hasStart ? lightenColor(bgFill) : "#2a3a4a"}/>
-            <stop offset="100%" stopColor={bgFill}/>
+          {/* Radial gradient: lighter top-left → darker bottom */}
+          <radialGradient id={gId} cx="38%" cy="32%" r="70%">
+            <stop offset="0%"   stopColor={hasStart ? lightenColor(faceColor) : "#2c3a50"}/>
+            <stop offset="55%"  stopColor={hasStart ? faceColor : "#1e2d42"} stopOpacity="1"/>
+            <stop offset="100%" stopColor={hasStart ? shadeColor(faceColor, -30) : "#141e2e"} stopOpacity="1"/>
           </radialGradient>
-          <linearGradient id={`sideGrad-${SIZE}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={baseColor} stopOpacity="0.9"/>
-            <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
-          </linearGradient>
         </defs>
 
-        {/* Cylinder bottom edge (shadow face) */}
-        <ellipse
-          cx={cx} cy={cy + THICK}
-          rx={r + 5} ry={6}
-          fill={darkColor} opacity={hasStart ? 0.9 : 0.5}
-        />
+        {/* Dark outer ring (track base) */}
+        <circle cx={r} cy={r} r={r - 2} fill={bgFill} stroke={shadeColor(faceColor, -60)} strokeWidth={3}/>
 
-        {/* Cylinder side strip */}
-        <rect
-          x={cx - r - 4} y={cy - 2}
-          width={(r + 4) * 2} height={THICK + 2}
-          fill={`url(#sideGrad-${SIZE})`}
-          opacity={hasStart ? 1 : 0.4}
-        />
-
-        {/* Base ring (track) */}
-        <circle cx={cx} cy={cy} r={r} fill={bgFill} stroke="#2d3748" strokeWidth={4}/>
-
-        {/* Top highlight — lens sheen */}
-        <ellipse
-          cx={cx - r * 0.18} cy={cy - r * 0.3}
-          rx={r * 0.48} ry={r * 0.18}
-          fill="white" opacity={hasStart ? 0.12 : 0.05}
-          transform={`rotate(-20, ${cx}, ${cy})`}
-        />
+        {/* Inner filled face */}
+        <circle cx={r} cy={r} r={r - 8} fill={`url(#${gId})`}/>
 
         {/* Progress arc */}
         <motion.circle
-          cx={cx} cy={cy} r={r} fill="none"
-          stroke={strokeFill} strokeWidth={strokeW} strokeLinecap="round"
-          strokeDasharray={filledDash}
-          style={{ transform: "rotate(-90deg)", transformOrigin: `${cx}px ${cy}px` }}
+          cx={r} cy={r} r={r - 6} fill="none"
+          stroke={arcColor} strokeWidth={arcW} strokeLinecap="round"
+          strokeDasharray={arcDash}
+          style={{ transform: "rotate(-90deg)", transformOrigin: `${r}px ${r}px` }}
           initial={{ strokeDasharray: `0 ${circ}` }}
-          animate={{ strokeDasharray: filledDash }}
+          animate={{ strokeDasharray: arcDash }}
           transition={{ duration: 0.9, ease: "easeOut" }}
         />
 
-        {/* Top ellipse rim */}
+        {/* Shine highlight (top-left arc) */}
         <ellipse
-          cx={cx} cy={cy}
-          rx={r + strokeW / 2 + 1} ry={r * 0.18}
-          fill="none"
-          stroke={baseColor} strokeWidth={1.5}
-          opacity={hasStart ? 0.35 : 0.1}
+          cx={r * 0.65} cy={r * 0.5}
+          rx={r * 0.38} ry={r * 0.16}
+          fill="white" opacity={hasStart ? 0.18 : 0.07}
+          transform={`rotate(-30, ${r}, ${r})`}
         />
 
-        {/* Star icon */}
-        <g transform={`translate(${cx - SIZE * 0.19}, ${cy - SIZE * 0.19})`}>
-          <svg width={SIZE * 0.38} height={SIZE * 0.38} viewBox="0 0 24 24" fill={starColor}
-            style={{ filter: isGold ? "drop-shadow(0 0 6px #eab30890)" : "none" }}>
+        {/* Star */}
+        <g transform={`translate(${r - SIZE * 0.2}, ${r - SIZE * 0.2})`}>
+          <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill={starColor}
+            style={{ filter: isGold ? "drop-shadow(0 0 6px #eab30870)" : "none" }}>
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
         </g>
