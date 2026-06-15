@@ -93,97 +93,235 @@ function FloatingMascot({ color }: { color: string }) {
   );
 }
 
-// ─── Treasure chest ───────────────────────────────────────────────────────────
-function TreasureIcon({ unlocked, color }: { unlocked: boolean; color: string }) {
-  const gold  = unlocked ? "#eab308" : "#6b7280";
-  const dark  = unlocked ? "#92400e" : "#374151";
-  const mid   = unlocked ? "#b45309" : "#4b5563";
-  const shine = unlocked ? "#fef08a" : "#9ca3af";
+// ─── Treasure chest (improved) ───────────────────────────────────────────────
+function TreasureIcon({ unlocked }: { unlocked: boolean }) {
   return (
-    <svg width="64" height="56" viewBox="0 0 64 56" fill="none">
-      <rect x="4" y="6"  width="56" height="20" rx="5" fill={dark}/>
-      <rect x="7" y="8"  width="50" height="10" rx="3" fill={mid}/>
-      <rect x="4" y="24" width="56" height="3"  fill={dark}/>
-      <rect x="4" y="27" width="56" height="24" rx="4" fill={mid}/>
-      <rect x="4" y="27" width="56" height="10" fill={dark} opacity="0.35"/>
-      <rect x="26" y="18" width="12" height="14" rx="3" fill={gold}/>
-      <circle cx="32" cy="22" r="3" fill={dark}/>
-      <rect x="30" y="23" width="4" height="5" rx="1" fill={dark}/>
-      <rect x="4"  y="34" width="56" height="4" fill={dark} opacity="0.45"/>
-      <rect x="9"  y="9"  width="20" height="4" rx="2" fill={shine} opacity="0.4"/>
-      {unlocked && <>
-        <circle cx="22" cy="29" r="4"   fill="#eab308"/>
-        <circle cx="32" cy="26" r="4.5" fill="#fbbf24"/>
-        <circle cx="42" cy="29" r="4"   fill="#eab308"/>
-        <circle cx="27" cy="25" r="3"   fill="#fde68a"/>
-        <circle cx="37" cy="25" r="3"   fill="#fde68a"/>
-      </>}
-    </svg>
+    <div style={{ position: "relative", width: 76, height: 76 }}>
+      {/* Ground shadow */}
+      <div style={{
+        position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
+        width: 54, height: 10, borderRadius: "50%",
+        background: "radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%)",
+        filter: "blur(5px)",
+      }}/>
+      <svg width="76" height="70" viewBox="0 0 76 70" fill="none">
+        <defs>
+          <linearGradient id="chestBodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={unlocked ? "#b45309" : "#4b5563"}/>
+            <stop offset="100%" stopColor={unlocked ? "#78350f" : "#1f2937"}/>
+          </linearGradient>
+          <linearGradient id="chestLidGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={unlocked ? "#d97706" : "#6b7280"}/>
+            <stop offset="100%" stopColor={unlocked ? "#92400e" : "#374151"}/>
+          </linearGradient>
+          <linearGradient id="chestBandGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={unlocked ? "#fbbf24" : "#9ca3af"}/>
+            <stop offset="100%" stopColor={unlocked ? "#d97706" : "#6b7280"}/>
+          </linearGradient>
+          {unlocked && (
+            <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#fef08a" stopOpacity="0.9"/>
+              <stop offset="100%" stopColor="#eab308" stopOpacity="0"/>
+            </radialGradient>
+          )}
+        </defs>
+
+        {/* Glow behind when unlocked */}
+        {unlocked && <ellipse cx="38" cy="38" rx="30" ry="28" fill="url(#glowGrad)" opacity="0.4"/>}
+
+        {/* Chest body */}
+        <rect x="8" y="34" width="60" height="28" rx="5" fill="url(#chestBodyGrad)"/>
+        {/* Body side shadow */}
+        <rect x="8" y="34" width="60" height="8" rx="5" fill="black" opacity="0.2"/>
+        {/* Body highlight */}
+        <rect x="10" y="36" width="56" height="4" rx="3" fill="white" opacity="0.08"/>
+
+        {/* Horizontal band */}
+        <rect x="8" y="44" width="60" height="7" fill="url(#chestBandGrad)"/>
+        <rect x="8" y="44" width="60" height="2" fill="white" opacity="0.15"/>
+
+        {/* Vertical band stripes */}
+        <rect x="34" y="34" width="8" height="28" fill="url(#chestBandGrad)" opacity="0.7"/>
+
+        {/* Lock */}
+        <rect x="31" y="40" width="14" height="11" rx="3" fill={unlocked ? "#fef08a" : "#9ca3af"}/>
+        <path d="M34 40 Q34 35 38 35 Q42 35 42 40" stroke={unlocked ? "#d97706" : "#6b7280"} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <circle cx="38" cy="45" r="2" fill={unlocked ? "#d97706" : "#4b5563"}/>
+
+        {/* Lid */}
+        <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
+        <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
+        {/* Lid band */}
+        <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
+
+        {/* Lid top highlight */}
+        <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
+
+        {/* Coins when unlocked */}
+        {unlocked && <>
+          <circle cx="24" cy="32" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+          <circle cx="38" cy="28" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
+          <circle cx="52" cy="32" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+          <circle cx="31" cy="29" r="4" fill="#fde68a" stroke="#eab308" strokeWidth="0.5"/>
+          <circle cx="45" cy="29" r="4" fill="#fde68a" stroke="#eab308" strokeWidth="0.5"/>
+          {/* Sparkles */}
+          <text x="14" y="22" fontSize="10">✨</text>
+          <text x="54" y="20" fontSize="9">⭐</text>
+        </>}
+      </svg>
+    </div>
   );
 }
 
-// ─── Station circle ───────────────────────────────────────────────────────────
+// ─── Station circle (3D cylinder effect) ─────────────────────────────────────
 function StationCircle({ type, progress, color, isCurrent }: {
   type: "lesson" | "challenge";
   progress: number;
   color: string;
   isCurrent: boolean;
 }) {
-  const SIZE   = type === "challenge" ? 88 : 76;
-  const cx     = SIZE / 2, cy = SIZE / 2;
-  const r      = SIZE / 2 - 6;
-  const circ   = 2 * Math.PI * r;
-  const isGold = progress >= 4;
+  const SIZE     = type === "challenge" ? 92 : 78;
+  const THICK    = 10; // cylinder depth
+  const cx       = SIZE / 2;
+  const cy       = SIZE / 2;
+  const r        = SIZE / 2 - 7;
+  const circ     = 2 * Math.PI * r;
+  const isGold   = progress >= 4;
   const hasStart = progress > 0;
 
-  const bgFill     = hasStart ? (isGold ? "#1c1600" : "#0d2010") : "#1e293b";
+  // Colors
+  const baseColor  = isGold ? "#eab308" : hasStart ? color : "#374151";
+  const darkColor  = isGold ? "#78350f" : hasStart ? shadeColor(color, -40) : "#1e293b";
+  const bgFill     = hasStart ? (isGold ? "#1a1200" : "#0a1a0a") : "#1e293b";
   const starColor  = isGold ? "#eab308" : hasStart ? "#ffffff" : "#4b5563";
-  const strokeFill = isGold ? "#eab308" : hasStart ? color : "#374151";
-  const strokeW    = hasStart ? 5 : 3.5;
+  const strokeFill = isGold ? "#eab308" : hasStart ? color : "#2d3748";
+  const strokeW    = hasStart ? 5.5 : 4;
   const filledDash = isGold
     ? `${circ} 0`
     : hasStart ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
 
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE }}>
+    <div style={{ position: "relative", width: SIZE, height: SIZE + THICK }}>
+
+      {/* ── Ground shadow (ellipse below) */}
       <div style={{
-        position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
-        width: SIZE * 0.7, height: 12, borderRadius: "50%",
-        background: "radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)",
-        filter: "blur(4px)", zIndex: 0,
+        position: "absolute",
+        bottom: -10,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: SIZE * 0.75,
+        height: 14,
+        borderRadius: "50%",
+        background: `radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)`,
+        filter: "blur(6px)",
+        zIndex: 0,
       }}/>
+
+      {/* ── Pulse ring for current */}
       {isCurrent && (
         <motion.div style={{
-          position: "absolute", inset: -5, borderRadius: "50%",
-          backgroundColor: color, opacity: 0.2,
+          position: "absolute", top: 0, left: 0,
+          width: SIZE, height: SIZE,
+          borderRadius: "50%",
+          border: `3px solid ${color}`,
+          opacity: 0.4,
+          zIndex: 1,
         }}
-          animate={{ scale: [1, 1.4, 1], opacity: [0.25, 0, 0.25] }}
-          transition={{ repeat: Infinity, duration: 2 }}
+          animate={{ scale: [1, 1.45, 1], opacity: [0.4, 0, 0.4] }}
+          transition={{ repeat: Infinity, duration: 2.2 }}
         />
       )}
-      <svg width={SIZE} height={SIZE} style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}>
-        <circle cx={cx} cy={cy} r={r} fill={bgFill} stroke="#374151" strokeWidth={3.5}/>
-        <motion.circle cx={cx} cy={cy} r={r} fill="none"
+
+      {/* ── SVG: cylinder bottom face (dark) + ring + top face */}
+      <svg
+        width={SIZE} height={SIZE + THICK}
+        style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}
+      >
+        <defs>
+          <radialGradient id={`topGrad-${SIZE}`} cx="40%" cy="35%" r="65%">
+            <stop offset="0%" stopColor={hasStart ? lightenColor(bgFill) : "#2a3a4a"}/>
+            <stop offset="100%" stopColor={bgFill}/>
+          </radialGradient>
+          <linearGradient id={`sideGrad-${SIZE}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={baseColor} stopOpacity="0.9"/>
+            <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
+          </linearGradient>
+        </defs>
+
+        {/* Cylinder bottom edge (shadow face) */}
+        <ellipse
+          cx={cx} cy={cy + THICK}
+          rx={r + 5} ry={6}
+          fill={darkColor} opacity={hasStart ? 0.9 : 0.5}
+        />
+
+        {/* Cylinder side strip */}
+        <rect
+          x={cx - r - 4} y={cy - 2}
+          width={(r + 4) * 2} height={THICK + 2}
+          fill={`url(#sideGrad-${SIZE})`}
+          opacity={hasStart ? 1 : 0.4}
+        />
+
+        {/* Base ring (track) */}
+        <circle cx={cx} cy={cy} r={r} fill={bgFill} stroke="#2d3748" strokeWidth={4}/>
+
+        {/* Top highlight — lens sheen */}
+        <ellipse
+          cx={cx - r * 0.18} cy={cy - r * 0.3}
+          rx={r * 0.48} ry={r * 0.18}
+          fill="white" opacity={hasStart ? 0.12 : 0.05}
+          transform={`rotate(-20, ${cx}, ${cy})`}
+        />
+
+        {/* Progress arc */}
+        <motion.circle
+          cx={cx} cy={cy} r={r} fill="none"
           stroke={strokeFill} strokeWidth={strokeW} strokeLinecap="round"
           strokeDasharray={filledDash}
+          style={{ transform: "rotate(-90deg)", transformOrigin: `${cx}px ${cy}px` }}
           initial={{ strokeDasharray: `0 ${circ}` }}
           animate={{ strokeDasharray: filledDash }}
           transition={{ duration: 0.9, ease: "easeOut" }}
         />
-        <ellipse cx={cx} cy={cy - r + 4} rx={r * 0.5} ry={4}
-          fill="white" opacity={hasStart ? 0.06 : 0.03}/>
+
+        {/* Top ellipse rim */}
+        <ellipse
+          cx={cx} cy={cy}
+          rx={r + strokeW / 2 + 1} ry={r * 0.18}
+          fill="none"
+          stroke={baseColor} strokeWidth={1.5}
+          opacity={hasStart ? 0.35 : 0.1}
+        />
+
+        {/* Star icon */}
+        <g transform={`translate(${cx - SIZE * 0.19}, ${cy - SIZE * 0.19})`}>
+          <svg width={SIZE * 0.38} height={SIZE * 0.38} viewBox="0 0 24 24" fill={starColor}
+            style={{ filter: isGold ? "drop-shadow(0 0 6px #eab30890)" : "none" }}>
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </g>
       </svg>
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 1,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 24 24" fill={starColor}
-          style={{ filter: isGold ? "drop-shadow(0 0 5px #eab30890)" : "none", transition: "fill 0.4s" }}>
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </div>
     </div>
   );
+}
+
+// ─── Color helpers ────────────────────────────────────────────────────────────
+function shadeColor(hex: string, pct: number): string {
+  const n = parseInt(hex.replace("#",""), 16);
+  const r = Math.max(0, Math.min(255, (n >> 16) + pct));
+  const g = Math.max(0, Math.min(255, ((n >> 8) & 0xff) + pct));
+  const b = Math.max(0, Math.min(255, (n & 0xff) + pct));
+  return `rgb(${r},${g},${b})`;
+}
+function lightenColor(hex: string): string {
+  try {
+    const n = parseInt(hex.replace("#",""), 16);
+    const r = Math.min(255, (n >> 16) + 40);
+    const g = Math.min(255, ((n >> 8) & 0xff) + 40);
+    const b = Math.min(255, (n & 0xff) + 40);
+    return `rgb(${r},${g},${b})`;
+  } catch { return hex; }
 }
 
 // ─── Duolingo-style popup card ────────────────────────────────────────────────
@@ -468,7 +606,7 @@ export default function Roadmap() {
                                 background: "radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)",
                                 filter: "blur(4px)",
                               }}/>
-                              <TreasureIcon unlocked={lessonProgress >= 4} color={unit.color}/>
+                              <TreasureIcon unlocked={lessonProgress >= 4}/>
                             </div>
                           ) : (
                             <StationCircle
