@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -66,6 +66,29 @@ const CHAPTERS: Chapter[] = [
           { id: "job-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع المهن والهوايات في لعبة ممتعة!", words: [] },
           { id: "job-3", type: "lesson",    title: "جمل التعارف الكاملة", description: "ادمج كل ما تعلمته في جمل تعارف كاملة ومتكاملة.", words: ["nice","meet","pleased","glad","hello"] },
           { id: "job-c", type: "challenge", title: "تحدي الوحدة",         description: "قدّم نفسك كاملاً: اسمك، عائلتك، عملك، وهوايتك!", words: [] },
+        ],
+      },
+      // ── القسم 3: الأماكن والاتجاهات ──
+      {
+        id: "unit-places", title: "أسماء الأماكن", emoji: "🏙️", color: "#f97316",
+        sectionTitle: "تحدّث عن الأماكن والاتجاهات",
+        lessons: [
+          { id: "places-1", type: "lesson",    title: "أماكن في المدينة",   description: "تعلّم أسماء الأماكن: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
+          { id: "places-2", type: "lesson",    title: "أين تقع؟",           description: "تعلّم كيف تصف موقع مكان: next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
+          { id: "places-t", type: "treasure",  title: "كنز المراجعة",       description: "لعبة ممتعة بكل كلمات الأماكن والمواقع!", words: [] },
+          { id: "places-3", type: "lesson",    title: "الاتجاهات",          description: "تعلّم كيف تشرح الطريق: turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
+          { id: "places-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: اسأل عن الطريق واشرحه بثقة!", words: [] },
+        ],
+      },
+      {
+        id: "unit-transport", title: "وسائل المواصلات", emoji: "🚌", color: "#f97316",
+        sectionTitle: "",
+        lessons: [
+          { id: "trans-1", type: "lesson",    title: "وسائل النقل",       description: "تعلّم كلمات: bus وcar وtaxi وtrain وplane.", words: ["bus","car","taxi","train","plane"] },
+          { id: "trans-2", type: "lesson",    title: "كيف تصل؟",          description: "تعلّم جمل: How do I get to...? وHow far is it?", words: ["how","get","far","take","ride"] },
+          { id: "trans-t", type: "treasure",  title: "كنز المراجعة",      description: "راجع وسائل النقل والاتجاهات في لعبة ممتعة!", words: [] },
+          { id: "trans-3", type: "lesson",    title: "جمل في المطار",      description: "تعلّم جمل عملية في المطار والمحطة.", words: ["ticket","platform","gate","depart","arrive"] },
+          { id: "trans-c", type: "challenge", title: "تحدي الوحدة",       description: "اختبار شامل: خطط لرحلة واشرح الطريق!", words: [] },
         ],
       },
     ],
@@ -507,15 +530,52 @@ function buildPath(count: number): { x: number; y: number }[] {
   }));
 }
 
+// ─── Section info extracted from units ───────────────────────────────────────
+// Each unit with sectionTitle marks the start of a new visual section
+interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; }
+function getSections(chapter: Chapter): SectionInfo[] {
+  const sections: SectionInfo[] = [];
+  // First section uses chapter color
+  sections.push({ id: "s0", title: "قدّم واقبل المشروبات", color: chapter.color, gradient: chapter.gradient, unitId: chapter.units[0]?.id ?? "" });
+  chapter.units.forEach(u => {
+    if (u.sectionTitle) {
+      sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id });
+    }
+  });
+  return sections;
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
-  const [activeChapter, setActiveChapter] = useState(0);
+  const [activeChapter] = useState(0);
   const [progress] = useState<Record<string, number>>({});
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
+  const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const chapter = CHAPTERS[activeChapter];
+  const sections = getSections(chapter);
 
   const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
+
+  // Refs for each section divider — used for IntersectionObserver
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    sections.forEach((sec, idx) => {
+      const el = sectionRefs.current[sec.id];
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSectionIdx(idx); },
+        { threshold: 0.3, rootMargin: "-60px 0px -60% 0px" }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach(o => o.disconnect());
+  }, [sections.length]);
+
+  const activeSection = sections[activeSectionIdx] ?? sections[0];
 
   // Close popup on outside click
   const handleBackdropClick = () => setActivePopup(null);
@@ -524,18 +584,61 @@ export default function Roadmap() {
     <Layout>
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
 
-        {/* Header */}
-        <div className="text-center mb-6">
+        {/* ── Sticky section header ── */}
+        <motion.div
+          key={activeSection.id}
+          initial={{ opacity: 0.6, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            position: "sticky", top: 0, zIndex: 30,
+            padding: "10px 16px 10px",
+            background: "hsl(var(--background))",
+            borderBottom: `2px solid ${activeSection.color}30`,
+          }}
+        >
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: activeSection.color,
+            backgroundImage: `linear-gradient(135deg, ${activeSection.color}ff, ${activeSection.color}cc)`,
+            borderRadius: 18,
+            padding: "10px 16px",
+            boxShadow: `0 4px 20px ${activeSection.color}40`,
+          }}>
+            {/* Guidebook */}
+            <button
+              onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
+              style={{
+                background: "rgba(255,255,255,0.2)",
+                border: "2px solid rgba(255,255,255,0.4)",
+                borderRadius: 10, padding: "5px 12px",
+                color: "white", fontWeight: 700, fontSize: 12,
+                cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
+                flexShrink: 0,
+              }}>
+              📖 الدليل
+            </button>
+
+            {/* Title */}
+            <div style={{ textAlign: "center", flex: 1 }}>
+              <div style={{ color: "white", fontSize: 12, opacity: 0.8, marginBottom: 1 }}>
+                القسم {activeSectionIdx + 1}
+              </div>
+              <div style={{ color: "white", fontWeight: 800, fontSize: 14, lineHeight: 1.2 }}>
+                {activeSection.title}
+              </div>
+            </div>
+
+            {/* Arrow back */}
+            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 18, flexShrink: 0, paddingLeft: 4 }}>←</div>
+          </div>
+        </motion.div>
+
+        {/* Page title */}
+        <div className="text-center my-6">
           <div className="text-5xl mb-3">🗺️</div>
           <h1 className="text-3xl font-bold">خارطة التعلم</h1>
           <p className="text-muted-foreground mt-1 text-sm">طريقك من الصفر حتى إتقان الإنجليزية</p>
-        </div>
-
-        {/* Chapter badge */}
-        <div className="flex justify-center mb-8">
-          <div className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white text-sm font-bold bg-gradient-to-r ${chapter.gradient} shadow-lg`}>
-            <span>{chapter.emoji}</span><span>{chapter.title}</span>
-          </div>
         </div>
 
         {/* Map */}
@@ -550,10 +653,11 @@ export default function Roadmap() {
             const unitLabel = unitNumbers[unitIdx] ?? `${unitIdx + 1}`;
 
             return (
-              <div key={unit.id}>
+              <div key={unit.id} ref={unitIdx === 0 ? (el => { sectionRefs.current["s0"] = el; }) : undefined}>
                 {/* Section divider — يظهر فقط إذا كان للوحدة عنوان قسم */}
                 {unit.sectionTitle && (
                   <motion.div
+                    ref={el => { sectionRefs.current[unit.id] = el; }}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     className="flex items-center gap-3 my-8 px-4"
                   >
@@ -579,19 +683,7 @@ export default function Roadmap() {
                       <div className="font-bold text-sm">الوحدة {unitLabel}</div>
                       <div className="text-white/80 text-xs">{unit.title}</div>
                     </div>
-                    {/* Guidebook button — في الـ header */}
-                    <button
-                      onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
-                      style={{
-                        marginRight: 8,
-                        background: "rgba(255,255,255,0.2)",
-                        border: "2px solid rgba(255,255,255,0.4)",
-                        borderRadius: 10, padding: "4px 10px",
-                        color: "white", fontWeight: 700, fontSize: 12,
-                        cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
-                      }}>
-                      📖 الدليل
-                    </button>
+
                   </div>
                 </motion.div>
 
