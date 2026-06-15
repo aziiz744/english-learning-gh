@@ -18,7 +18,7 @@ const navigation = [
   { name: "الإنجازات",    href: "/achievements",  icon: Trophy },
   { name: "القراءة",      href: "/reading",       icon: BookOpen },
   { name: "القواعد",      href: "/grammar",       icon: GraduationCap },
-  { name: "المعلم",        href: "/teacher",       icon: MessageCircle },
+  { name: "تحدّث مع معلم", href: "/teacher",       icon: MessageCircle },
   { name: "عضوية Pro",    href: "/pro",           icon: Sparkles },
 ];
 

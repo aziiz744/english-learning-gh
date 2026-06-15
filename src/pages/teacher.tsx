@@ -30,6 +30,7 @@ export default function TeacherPage() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [started, setStarted] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const transcriptRef = useRef("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const msgIdRef = useRef(0);
@@ -93,17 +94,19 @@ export default function TeacherPage() {
         if (e.results[i].isFinal) final += e.results[i][0].transcript;
         else interim += e.results[i][0].transcript;
       }
-      setTranscript(final || interim);
+      const t = final || interim;
+      setTranscript(t);
+      transcriptRef.current = t;
     };
 
     recognition.onend = () => {
       if (!isActiveRef.current) return;
-      const t = transcript;
+      const t = transcriptRef.current;
+      transcriptRef.current = "";
+      setTranscript("");
       if (t.trim()) {
-        setTranscript("");
         sendMessage(t.trim());
       } else {
-        // Nothing said, listen again
         setTimeout(() => { if (isActiveRef.current) startListening(); }, 500);
       }
     };
@@ -116,7 +119,7 @@ export default function TeacherPage() {
 
     recognitionRef.current = recognition;
     try { recognition.start(); } catch {}
-  }, [transcript]);
+  }, []);
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || !isActiveRef.current) return;
