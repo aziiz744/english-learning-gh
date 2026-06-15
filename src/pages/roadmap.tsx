@@ -41,31 +41,20 @@ const CHAPTERS: Chapter[] = [
         lessons: [
           { id: "names-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية وتسأل الآخرين عن أسمائهم.", words: ["name","I'm","my","what","your"] },
           { id: "names-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك ومدينتك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
-          { id: "names-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته عن الأسماء والبلدان — العب واربح نقاطاً مضاعفة!", words: [] },
-          { id: "names-3", type: "lesson",    title: "الأرقام والعمر", description: "تعلّم أرقام 1-20 وكيف تقول عمرك وتسأل عن عمر الآخرين.", words: ["how","old","years","I'm","age"] },
-          { id: "names-c", type: "challenge", title: "تحدي الوحدة",    description: "تحدٍّ شامل: قدّم نفسك كاملاً — اسمك، بلدك، عمرك!", words: [] },
+          { id: "names-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته عن الأسماء والبلدان!", words: [] },
+          { id: "names-3", type: "lesson",    title: "الأرقام والعمر", description: "تعلّم أرقام 1-20 وكيف تقول عمرك.", words: ["how","old","years","I'm","age"] },
+          { id: "names-c", type: "challenge", title: "تحدي الوحدة",    description: "تحدٍّ شامل: قدّم نفسك كاملاً!", words: [] },
         ],
       },
       {
         id: "unit-family", title: "تحدّث عن عائلتك", emoji: "👨‍👩‍👧", color: "#8b5cf6",
         sectionTitle: "",
         lessons: [
-          { id: "family-1", type: "lesson",    title: "أفراد العائلة",  description: "تعلّم كلمات أفراد العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
-          { id: "family-2", type: "lesson",    title: "صف عائلتك",      description: "تعلّم كيف تصف أفراد عائلتك وتقول عددهم.", words: ["have","big","small","he","she"] },
-          { id: "family-t", type: "treasure",  title: "كنز المراجعة",   description: "لعبة ممتعة بكل كلمات العائلة — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
-          { id: "family-3", type: "lesson",    title: "صفات العائلة",   description: "تعلّم صفات تصف بها عائلتك: tall وshort وkind وfunny.", words: ["tall","short","kind","funny","smart"] },
-          { id: "family-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: تحدّث عن عائلتك بثقة كاملة!", words: [] },
-        ],
-      },
-      {
-        id: "unit-job", title: "عملك وهواياتك", emoji: "💼", color: "#8b5cf6",
-        sectionTitle: "",
-        lessons: [
-          { id: "job-1", type: "lesson",    title: "المهن والأعمال",      description: "تعلّم أسماء المهن الشائعة: teacher وdoctor وengineer.", words: ["teacher","doctor","engineer","work","job"] },
-          { id: "job-2", type: "lesson",    title: "هواياتك",             description: "تعلّم كيف تتكلم عن هواياتك: I like وI love وI enjoy.", words: ["like","love","enjoy","hobby","play"] },
-          { id: "job-t", type: "treasure",  title: "كنز المراجعة",        description: "راجع المهن والهوايات في لعبة ممتعة!", words: [] },
-          { id: "job-3", type: "lesson",    title: "جمل التعارف الكاملة", description: "ادمج كل ما تعلمته في جمل تعارف كاملة ومتكاملة.", words: ["nice","meet","pleased","glad","hello"] },
-          { id: "job-c", type: "challenge", title: "تحدي الوحدة",         description: "قدّم نفسك كاملاً: اسمك، عائلتك، عملك، وهوايتك!", words: [] },
+          { id: "family-1", type: "lesson",    title: "أفراد العائلة",  description: "تعلّم كلمات العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
+          { id: "family-2", type: "lesson",    title: "صف عائلتك",      description: "تعلّم كيف تصف أفراد عائلتك.", words: ["have","big","small","he","she"] },
+          { id: "family-t", type: "treasure",  title: "كنز المراجعة",   description: "لعبة بكل كلمات العائلة!", words: [] },
+          { id: "family-3", type: "lesson",    title: "صفات العائلة",   description: "tall وshort وkind وfunny وsmart.", words: ["tall","short","kind","funny","smart"] },
+          { id: "family-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني كاملاً!", words: [] },
         ],
       },
       // ── القسم 3: الأماكن والاتجاهات ──
@@ -302,124 +291,97 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   isJumpStation?: boolean;
   canJump?: boolean;
 }) {
-  const SIZE     = type === "challenge" ? 88 : 74;
-  const LIFT     = 6;   // how many px the button "floats" above its shadow
-  const r        = SIZE / 2;
-  const circ     = 2 * Math.PI * (r - 6);
-  const isGold   = progress >= 4;
-  // jump station OR started → show colored
-  const hasStart = progress > 0 || !!isFirstOfSection || !!isJumpStation;
+  const SIZE   = type === "challenge" ? 90 : 76;
+  const r      = SIZE / 2;
+  const trackR = r - 7;
+  const circ   = 2 * Math.PI * trackR;
+  const isGold = progress >= 4;
+  const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  // Main face color
-  const faceColor  = isGold ? "#eab308" : hasStart ? color       : "#374151";
-  const shadowColor= isGold ? "#78350f" : hasStart ? shadeColor(color, -55) : "#1a1a2e";
-  const bgFill     = isGold ? "#1a1200" : hasStart ? "#0a180a"   : "#1c2333";
-  const starColor  = isGold ? "#eab308" : hasStart ? "#ffffff"   : "#4b5563";
-  const arcColor   = isGold ? "#eab308" : hasStart ? color       : "#2d3748";
-  const arcW       = hasStart ? 5.5 : 4;
-  // jump station: full arc (looks completely filled)
-  const arcDash    = isGold ? `${circ} 0` : isJumpStation && !isGold ? `${circ} 0` : hasStart ? `${circ * Math.min(progress/4,1)} ${circ}` : `0 ${circ}`;
+  const mainColor  = isGold ? "#eab308" : isActive ? color : "#2d3a4a";
+  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -50) : "#151f2b";
+  const faceLight  = isGold ? "#fef08a" : isActive ? lightenColor(color) : "#3a4a5a";
+  const starColor  = isGold ? "#eab308" : isActive ? "#fff" : "#4b6070";
+  const trackColor = isGold ? "#eab308" : isActive ? color : "#1e2d3d";
+  const arcFilled  = isGold || isJumpStation
+    ? `${circ} 0`
+    : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
 
-  // Gradient IDs (unique per size)
-  const gId = `sc-${SIZE}-${isGold ? "g" : hasStart ? "a" : "i"}`;
+  const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
 
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + LIFT + 14 }}>
+    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
 
-      {/* ── 1. Colored glow halo — বাই the button (like the purple glow in screenshot) */}
+      {/* Soft colored glow beneath */}
       <div style={{
-        position: "absolute",
-        bottom: 4,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: SIZE * 0.9,
-        height: SIZE * 0.35,
-        borderRadius: "50%",
-        background: hasStart || isCurrent ? faceColor : "#374151",
-        opacity: isCurrent ? 0.55 : hasStart ? 0.35 : 0.2,
-        filter: "blur(10px)",
-        zIndex: 0,
+        position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+        width: SIZE * 0.85, height: SIZE * 0.3, borderRadius: "50%",
+        background: mainColor,
+        opacity: isActive ? (isCurrent ? 0.5 : 0.28) : 0.1,
+        filter: "blur(12px)", zIndex: 0,
       }}/>
 
-      {/* ── 2. Shadow disc — darker ellipse right below the button */}
-      <div style={{
-        position: "absolute",
-        bottom: 2,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: SIZE * 0.78,
-        height: 12,
-        borderRadius: "50%",
-        background: shadowColor,
-        opacity: 0.85,
-        zIndex: 1,
-      }}/>
-
-      {/* ── 3. Pulse for current */}
+      {/* Pulse ring for current */}
       {isCurrent && (
         <motion.div style={{
-          position: "absolute",
-          top: 0, left: 0,
-          width: SIZE, height: SIZE,
-          borderRadius: "50%",
-          border: `3px solid ${color}`,
-          zIndex: 2,
+          position: "absolute", top: 0, left: 0, width: SIZE, height: SIZE,
+          borderRadius: "50%", border: `2.5px solid ${color}`, zIndex: 2,
         }}
-          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ repeat: Infinity, duration: 2 }}
+          animate={{ scale: [1, 1.55, 1], opacity: [0.6, 0, 0.6] }}
+          transition={{ repeat: Infinity, duration: 2.2 }}
         />
       )}
 
-      {/* ── 4. Main SVG button face */}
-      <svg
-        width={SIZE} height={SIZE}
-        style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}
-      >
+      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}>
         <defs>
-          {/* Radial gradient: lighter top-left → darker bottom */}
-          <radialGradient id={gId} cx="38%" cy="32%" r="70%">
-            <stop offset="0%"   stopColor={hasStart ? lightenColor(faceColor) : "#2c3a50"}/>
-            <stop offset="55%"  stopColor={hasStart ? faceColor : "#1e2d42"} stopOpacity="1"/>
-            <stop offset="100%" stopColor={hasStart ? shadeColor(faceColor, -30) : "#141e2e"} stopOpacity="1"/>
+          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
+            <stop offset="0%"  stopColor={faceLight} stopOpacity="1"/>
+            <stop offset="45%" stopColor={mainColor}  stopOpacity="1"/>
+            <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
+          </radialGradient>
+          <radialGradient id={`${gId}-bg`} cx="50%" cy="50%" r="50%">
+            <stop offset="0%"  stopColor={isActive ? shadeColor(mainColor, -20) : "#1a2535"}/>
+            <stop offset="100%" stopColor={isActive ? shadeColor(mainColor, -55) : "#0d1520"}/>
           </radialGradient>
         </defs>
 
-        {/* Dark outer ring (track base) */}
-        <circle cx={r} cy={r} r={r - 2} fill={bgFill} stroke={shadeColor(faceColor, -60)} strokeWidth={3}/>
+        {/* Outer dark border ring */}
+        <circle cx={r} cy={r} r={r - 1} fill={isActive ? shadeColor(mainColor,-65) : "#0d1520"}
+          stroke={darkColor} strokeWidth={2}/>
 
-        {/* Inner filled face */}
-        <circle cx={r} cy={r} r={r - 8} fill={`url(#${gId})`}/>
+        {/* Inner face with gradient */}
+        <circle cx={r} cy={r} r={r - 7} fill={`url(#${gId})`}/>
 
-        {/* Progress arc */}
+        {/* Progress / full arc */}
         <motion.circle
-          cx={r} cy={r} r={r - 6} fill="none"
-          stroke={arcColor} strokeWidth={arcW} strokeLinecap="round"
-          strokeDasharray={arcDash}
-          style={{ transform: "rotate(-90deg)", transformOrigin: `${r}px ${r}px` }}
-          initial={{ strokeDasharray: `0 ${circ}` }}
-          animate={{ strokeDasharray: arcDash }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
+          cx={r} cy={r} r={trackR} fill="none"
+          stroke={trackColor} strokeWidth={6} strokeLinecap="round"
+          strokeDasharray={arcFilled}
+          style={{ transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
+          initial={{ strokeDasharray:`0 ${circ}` }}
+          animate={{ strokeDasharray: arcFilled }}
+          transition={{ duration: 0.8, ease:"easeOut" }}
         />
 
-        {/* Shine highlight (top-left arc) */}
-        <ellipse
-          cx={r * 0.65} cy={r * 0.5}
-          rx={r * 0.38} ry={r * 0.16}
-          fill="white" opacity={hasStart ? 0.18 : 0.07}
-          transform={`rotate(-30, ${r}, ${r})`}
-        />
+        {/* Top shine streak */}
+        <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.32} ry={r * 0.12}
+          fill="white" opacity={isActive ? 0.22 : 0.06}
+          transform={`rotate(-35 ${r} ${r})`}/>
 
-        {/* Icon: double arrows if jump station not done, star otherwise */}
-        <g transform={`translate(${r - SIZE * 0.22}, ${r - SIZE * 0.22})`}>
+        {/* Bottom subtle rim */}
+        <ellipse cx={r} cy={r * 1.62} rx={r * 0.55} ry={r * 0.1}
+          fill={darkColor} opacity={isActive ? 0.5 : 0.2}/>
+
+        {/* Icon */}
+        <g transform={`translate(${r - SIZE * 0.21}, ${r - SIZE * 0.21})`}>
           {isJumpStation && !isGold ? (
-            <svg width={SIZE * 0.44} height={SIZE * 0.44} viewBox="0 0 28 28" fill="white">
-              {/* Two clean arrows — no bar */}
+            <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 28 28" fill="white" opacity="0.95">
               <path d="M2 5 L12 14 L2 23 Z"/>
-              <path d="M13 5 L23 14 L13 23 Z"/>
+              <path d="M14 5 L24 14 L14 23 Z"/>
             </svg>
           ) : (
-            <svg width={SIZE * 0.4} height={SIZE * 0.4} viewBox="0 0 24 24" fill={starColor}
-              style={{ filter: isGold ? "drop-shadow(0 0 6px #eab30870)" : "none" }}>
+            <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 24 24" fill={starColor}
+              style={{ filter: isGold ? "drop-shadow(0 0 8px #eab30890)" : isActive ? `drop-shadow(0 1px 3px ${darkColor})` : "none" }}>
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           )}
@@ -624,7 +586,10 @@ export default function Roadmap() {
 
             {/* Title — center */}
             <div style={{ textAlign: "center", flex: 1, padding: "0 10px" }}>
-              <div style={{ color: "white", fontWeight: 900, fontSize: 17, lineHeight: 1.2 }}>
+              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
+                {chapter.title}
+              </div>
+              <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2 }}>
                 {activeSection.title}
               </div>
             </div>
