@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 interface UnitLesson {
   id: string;
-  type: "lesson" | "treasure" | "challenge";
+  type: "lesson" | "treasure" | "challenge" | "practice";
   title: string;
   description: string;
   words?: string[];
@@ -65,6 +65,7 @@ const CHAPTERS: Chapter[] = [
         lessons: [
           { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
           { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
+          { id: "airport-p", type: "practice",  title: "تمرين المطار",     description: "تمرين مكثف على كل كلمات وجمل المطار قبل الكنز!", words: [] },
           { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
           { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
           { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
@@ -187,6 +188,56 @@ function FloatingMascot({ color, chapterId }: { color: string; chapterId: string
           <RobotMascot />
         </motion.div>
       )}
+    </div>
+  );
+}
+
+// ─── Practice/Dumbbell Icon ──────────────────────────────────────────────────
+function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
+  const SIZE = 76;
+  const r = SIZE / 2;
+  const faceColor = locked ? "#2d3a4a" : color;
+  const darkColor = locked ? "#151f2b" : shadeColor(color, -50);
+  const gId = `practice-${color.replace("#","")}-${locked?"l":"u"}`;
+  return (
+    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
+      {!locked && (
+        <div style={{
+          position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+          width: SIZE * 0.8, height: SIZE * 0.25, borderRadius: "50%",
+          background: color, opacity: 0.2, filter: "blur(10px)", zIndex: 0,
+        }}/>
+      )}
+      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
+        <defs>
+          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
+            <stop offset="0%"  stopColor={locked ? "#3a4a5a" : lightenColor(faceColor)}/>
+            <stop offset="50%" stopColor={faceColor}/>
+            <stop offset="100%" stopColor={darkColor}/>
+          </radialGradient>
+        </defs>
+        {/* Circle background */}
+        <circle cx={r} cy={r} r={r-1} fill={darkColor} stroke={shadeColor(faceColor,-30)} strokeWidth={2}/>
+        <circle cx={r} cy={r} r={r-7} fill={`url(#${gId})`}/>
+        {/* Shine */}
+        <ellipse cx={r*0.68} cy={r*0.44} rx={r*0.3} ry={r*0.11}
+          fill="white" opacity={locked ? 0.04 : 0.15} transform={`rotate(-35 ${r} ${r})`}/>
+        {/* Dumbbell icon — centered */}
+        <g transform={`translate(${r-15}, ${r-10})`} opacity={locked ? 0.4 : 1}>
+          {/* Bar */}
+          <rect x="8" y="8" width="14" height="4" rx="2" fill="white"/>
+          {/* Left weight plate outer */}
+          <rect x="2" y="4" width="7" height="12" rx="3" fill="white"/>
+          {/* Left weight plate inner */}
+          <rect x="3.5" y="6" width="4" height="8" rx="2" fill={faceColor} opacity="0.5"/>
+          {/* Right weight plate outer */}
+          <rect x="21" y="4" width="7" height="12" rx="3" fill="white"/>
+          {/* Right weight plate inner */}
+          <rect x="22.5" y="6" width="4" height="8" rx="2" fill={faceColor} opacity="0.5"/>
+          {/* Hand grip hint */}
+          <rect x="13" y="6" width="4" height="8" rx="2" fill="white" opacity="0.3"/>
+        </g>
+      </svg>
     </div>
   );
 }
@@ -742,7 +793,7 @@ export default function Roadmap() {
                       : false;
                     const isLocked = normalLocked || (sectionLocked && !isJumpStation && lessonProgress === 0);
                     const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
-                    const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : 76;
+                    const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : lesson.type === "practice" ? 76 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
                     // First station of each unit/section
                     const isFirstOfSection = idx === 0;
@@ -861,6 +912,8 @@ export default function Roadmap() {
                             <TreasureIcon unlocked={lessonProgress >= 4}/>
                           ) : lesson.type === "challenge" ? (
                             <CrownIcon color={unit.color} locked={effectiveLocked && lessonProgress === 0}/>
+                          ) : lesson.type === "practice" ? (
+                            <PracticeIcon color={unit.color} locked={effectiveLocked && lessonProgress === 0}/>
                           ) : (
                             <StationCircle
                               type="lesson"
