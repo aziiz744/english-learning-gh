@@ -34,6 +34,8 @@ export default function TeacherPage() {
   const [teacher, setTeacher] = useState<Teacher>(TEACHERS[0]);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [voiceName, setVoiceName] = useState("");
+  const [history, setHistory] = useState<{teacher_id:string; messages:Message[]; updated_at:string}[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   // All refs — no stale closures
   const isActive = useRef(false);
@@ -47,6 +49,8 @@ export default function TeacherPage() {
   const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
   const callStateRef = useRef<CallState>("idle");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const watchdogRef = useRef<ReturnType<typeof setInterval>|null>(null);
+  const lastActivityRef = useRef<number>(Date.now());
 
   useEffect(() => { teacherRef.current = teacher; }, [teacher]);
   useEffect(() => { voiceNameRef.current = voiceName; }, [voiceName]);
@@ -71,6 +75,10 @@ export default function TeacherPage() {
         setIsPro(data?.is_pro ?? false);
         if (data?.gender) setUserGender(data.gender);
       });
+    // Load saved chats
+    supabase.from("chat_history").select("teacher_id,messages,updated_at")
+      .eq("user_id", user.id).order("updated_at", { ascending: false })
+      .then(({ data }) => { if (data) setHistory(data as any); });
   }, [user]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages]);
@@ -105,6 +113,7 @@ export default function TeacherPage() {
   // ── Core functions (plain functions, not useCallback — so they always use fresh refs) ──
 
   function stopMic() {
+    if (watchdogRef.current) { clearInterval(watchdogRef.current); watchdogRef.current = null; }
     if (silenceTimer.current) { clearTimeout(silenceTimer.current); silenceTimer.current = null; }
     try { recRef.current?.abort(); } catch {}
     recRef.current = null;
@@ -125,6 +134,7 @@ export default function TeacherPage() {
     rec.onstart = () => setCS("listening");
 
     rec.onresult = (e: SpeechRecognitionEvent) => {
+      lastActivityRef.current = Date.now();
       let fin = "", int = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) fin += e.results[i][0].transcript + " ";
@@ -143,7 +153,7 @@ export default function TeacherPage() {
             stopMic();
             doSend(txt);
           }
-        }, 2000);
+        }, 2500);
       }
     };
 
@@ -161,6 +171,20 @@ export default function TeacherPage() {
     };
 
     try { rec.start(); } catch { setTimeout(() => { if (isActive.current) startMic(); }, 500); }
+
+    // Watchdog: if still listening and no activity for 4s, restart mic
+    if (watchdogRef.current) clearInterval(watchdogRef.current);
+    lastActivityRef.current = Date.now();
+    watchdogRef.current = setInterval(() => {
+      if (!isActive.current) { clearInterval(watchdogRef.current!); return; }
+      if (callStateRef.current === "listening") {
+        const idle = Date.now() - lastActivityRef.current;
+        if (idle > 4000 && !pendingText.current.trim()) {
+          // Mic went silent too long — restart it
+          startMic();
+        }
+      }
+    }, 2000);
   }
 
   function speakReply(text: string) {
@@ -328,6 +352,49 @@ export default function TeacherPage() {
       <Button onClick={startCall} size="lg" className="px-10 py-6 text-lg font-bold rounded-2xl gap-2">
         <Phone className="w-5 h-5" /> ابدأ مع {teacher.name}
       </Button>
+      {/* Saved chats */}
+      {history.length > 0 && (
+        <div className="w-full max-w-xs">
+          <button onClick={() => setShowHistory(h => !h)}
+            className="text-xs text-primary hover:underline w-full text-center mb-2">
+            {showHistory ? "▲ إخفاء المحادثات المحفوظة" : `📂 محادثاتك المحفوظة (${history.length})`}
+          </button>
+          {showHistory && (
+            <div className="space-y-2">
+              {history.map((h, i) => {
+                const t = TEACHERS.find(t => t.id === h.teacher_id);
+                const date = new Date(h.updated_at).toLocaleDateString("ar");
+                const lastMsg = (h.messages as Message[]).filter(m => m.role === "user").slice(-1)[0];
+                return (
+                  <button key={i}
+                    onClick={() => {
+                      const found = TEACHERS.find(t => t.id === h.teacher_id);
+                      if (found) setTeacher(found);
+                      // Start call with history
+                      isActive.current = true;
+                      pendingText.current = "";
+                      const msgs = h.messages as Message[];
+                      messagesRef.current = msgs;
+                      setMessages(msgs);
+                      setStarted(true);
+                      setCS("idle");
+                      setTimeout(() => startMic(), 500);
+                    }}
+                    className="w-full text-right bg-muted/50 border border-border rounded-xl px-3 py-2.5 hover:bg-muted transition-all space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span>{t?.emoji ?? "👨‍🏫"}</span>
+                      <span className="text-xs font-medium">{t?.name ?? h.teacher_id}</span>
+                      <span className="text-xs text-muted-foreground mr-auto">{date}</span>
+                    </div>
+                    {lastMsg && <p className="text-xs text-muted-foreground truncate" dir="ltr">{lastMsg.content}</p>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       <p className="text-xs text-muted-foreground">يعمل بشكل أفضل على Chrome</p>
     </div>
   );
