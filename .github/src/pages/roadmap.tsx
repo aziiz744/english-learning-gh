@@ -20,11 +20,11 @@ interface Section { id: string; title: string; color: string; units: Unit[]; }
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner", title: "المبتدئ", emoji: "🌱",
-    gradient: "from-emerald-700 to-green-800", color: "#16a34a",
+    gradient: "from-green-900 to-emerald-900", color: "#166534",
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#16a34a",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#166534",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
@@ -36,7 +36,7 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
       {
-        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#6d28d9",
+        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#4c1d95",
         sectionTitle: "قدّم نفسك وعائلتك",
         lessons: [
           { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
@@ -48,7 +48,7 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 3: الأماكن والاتجاهات — وحدة واحدة فقط ──
       {
-        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#c2410c",
+        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#7c2d12",
         sectionTitle: "قل من أين أنت؟",
         lessons: [
           { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
@@ -66,13 +66,13 @@ const CHAPTERS: Chapter[] = [
 function FoxMascot() {
   return (
     <svg width="64" height="72" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#c2410c" transform="rotate(-30 52 54)"/>
+      <ellipse cx="52" cy="54" rx="10" ry="6" fill="#7c2d12" transform="rotate(-30 52 54)"/>
       <ellipse cx="54" cy="52" rx="5" ry="3" fill="#fef3c7" transform="rotate(-30 54 52)"/>
-      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#c2410c"/>
+      <ellipse cx="32" cy="50" rx="14" ry="16" fill="#7c2d12"/>
       <ellipse cx="32" cy="54" rx="8" ry="10" fill="#fef3c7"/>
-      <circle cx="32" cy="28" r="16" fill="#c2410c"/>
-      <polygon points="16,16 10,2 22,10" fill="#c2410c"/>
-      <polygon points="48,16 54,2 42,10" fill="#c2410c"/>
+      <circle cx="32" cy="28" r="16" fill="#7c2d12"/>
+      <polygon points="16,16 10,2 22,10" fill="#7c2d12"/>
+      <polygon points="48,16 54,2 42,10" fill="#7c2d12"/>
       <polygon points="17,15 12,5 21,11" fill="#fca5a5"/>
       <polygon points="47,15 52,5 43,11" fill="#fca5a5"/>
       <ellipse cx="32" cy="32" rx="10" ry="8" fill="#fef3c7"/>
@@ -86,8 +86,8 @@ function FoxMascot() {
       <path d="M29 33 Q32 36 35 33" stroke="#1e1b4b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
       <ellipse cx="22" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
       <ellipse cx="42" cy="30" rx="4" ry="2.5" fill="#fca5a5" opacity="0.5"/>
-      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#c2410c" transform="rotate(-10 20 60)"/>
-      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#c2410c" transform="rotate(10 44 60)"/>
+      <ellipse cx="20" cy="60" rx="5" ry="7" fill="#7c2d12" transform="rotate(-10 20 60)"/>
+      <ellipse cx="44" cy="60" rx="5" ry="7" fill="#7c2d12" transform="rotate(10 44 60)"/>
     </svg>
   );
 }
@@ -346,7 +346,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
         width: SIZE * 0.85, height: SIZE * 0.3, borderRadius: "50%",
         background: mainColor,
-        opacity: isActive ? (isCurrent ? 0.5 : 0.28) : 0.1,
+        opacity: isActive ? (isCurrent ? 0.3 : 0.15) : 0.06,
         filter: "blur(12px)", zIndex: 0,
       }}/>
 
@@ -394,7 +394,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 
         {/* Top shine streak */}
         <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.32} ry={r * 0.12}
-          fill="white" opacity={isActive ? 0.22 : 0.06}
+          fill="white" opacity={isActive ? 0.08 : 0.03}
           transform={`rotate(-35 ${r} ${r})`}/>
 
         {/* Bottom subtle rim */}
@@ -617,8 +617,8 @@ export default function Roadmap() {
 
             {/* Title — center */}
             <div style={{ textAlign: "center", flex: 1, padding: "0 10px" }}>
-              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
-                {chapter.title}
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
+                القسم 1 ، الوحدة {activeSectionIdx + 1}
               </div>
               <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2 }}>
                 {activeSection.title}
