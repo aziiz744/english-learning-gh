@@ -20,11 +20,11 @@ interface Section { id: string; title: string; color: string; units: Unit[]; }
 const CHAPTERS: Chapter[] = [
   {
     id: "beginner", title: "المبتدئ", emoji: "🌱",
-    gradient: "from-emerald-500 to-green-600", color: "#22c55e",
+    gradient: "from-green-900 to-emerald-900", color: "#166534",
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22c55e",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#166534",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
@@ -36,7 +36,7 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
       {
-        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#8b5cf6",
+        id: "unit-intro", title: "قدّم نفسك وعائلتك", emoji: "👋", color: "#4c1d95",
         sectionTitle: "قدّم نفسك وعائلتك",
         lessons: [
           { id: "intro-1", type: "lesson",    title: "ما اسمك؟",       description: "تعلّم كيف تقدّم نفسك بالإنجليزية.", words: ["name","I'm","my","what","your"] },
@@ -48,8 +48,8 @@ const CHAPTERS: Chapter[] = [
       },
       // ── القسم 3: الأماكن والاتجاهات — وحدة واحدة فقط ──
       {
-        id: "unit-places", title: "الأماكن والاتجاهات", emoji: "🏙️", color: "#f97316",
-        sectionTitle: "تحدّث عن الأماكن والاتجاهات",
+        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#7c2d12",
+        sectionTitle: "قل من أين أنت؟",
         lessons: [
           { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
           { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
@@ -327,11 +327,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  const mainColor  = isGold ? "#eab308" : isActive ? color : "#2d3a4a";
-  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -50) : "#151f2b";
-  const faceLight  = isGold ? "#fef08a" : isActive ? lightenColor(color) : "#3a4a5a";
+  const mainColor  = isGold ? "#eab308" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
+  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
+  const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
   const starColor  = isGold ? "#eab308" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#eab308" : isActive ? color : "#1e2d3d";
+  const trackColor = isGold ? "#eab308" : isActive ? shadeColor(color, -20) : "#1e2d3d";
   const arcFilled  = isGold || isJumpStation
     ? `${circ} 0`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
@@ -346,7 +346,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
         width: SIZE * 0.85, height: SIZE * 0.3, borderRadius: "50%",
         background: mainColor,
-        opacity: isActive ? (isCurrent ? 0.5 : 0.28) : 0.1,
+        opacity: isJumpStation ? 0.2 : isActive ? (isCurrent ? 0.25 : 0.12) : 0.05,
         filter: "blur(12px)", zIndex: 0,
       }}/>
 
@@ -364,8 +364,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
       <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}>
         <defs>
           <radialGradient id={gId} cx="35%" cy="28%" r="75%">
-            <stop offset="0%"  stopColor={faceLight} stopOpacity="1"/>
-            <stop offset="45%" stopColor={mainColor}  stopOpacity="1"/>
+            <stop offset="0%"  stopColor={isJumpStation ? mainColor : faceLight} stopOpacity="1"/>
+            <stop offset="45%" stopColor={mainColor} stopOpacity="1"/>
             <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
           </radialGradient>
           <radialGradient id={`${gId}-bg`} cx="50%" cy="50%" r="50%">
@@ -394,7 +394,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 
         {/* Top shine streak */}
         <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.32} ry={r * 0.12}
-          fill="white" opacity={isActive ? 0.22 : 0.06}
+          fill="white" opacity={isActive ? 0.08 : 0.03}
           transform={`rotate(-35 ${r} ${r})`}/>
 
         {/* Bottom subtle rim */}
@@ -473,7 +473,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClo
       {/* Title */}
       <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
       <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-        {lesson.type === "treasure" ? "كنز المراجعة" : lesson.type === "challenge" ? "تحدي الوحدة" : `الدرس ${lessonNum} من ${totalLessons}`}
+        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `النقطة ${lessonNum} · 4 دروس`}
       </p>
 
       {/* Start button */}
@@ -539,10 +539,12 @@ function buildPath(count: number): { x: number; y: number }[] {
 interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; }
 function getSections(chapter: Chapter): SectionInfo[] {
   const sections: SectionInfo[] = [];
-  // First section uses chapter color
-  sections.push({ id: "s0", title: "قدّم واقبل المشروبات", color: chapter.color, gradient: chapter.gradient, unitId: chapter.units[0]?.id ?? "" });
   chapter.units.forEach(u => {
-    if (u.sectionTitle) {
+    // كل وحدة لها sectionTitle (أو أول وحدة) = بداية وحدة جديدة
+    if (!u.sectionTitle && sections.length === 0) {
+      // الوحدة الأولى
+      sections.push({ id: "s0", title: u.title, color: u.color, gradient: chapter.gradient, unitId: u.id });
+    } else if (u.sectionTitle) {
       sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id });
     }
   });
@@ -615,8 +617,8 @@ export default function Roadmap() {
 
             {/* Title — center */}
             <div style={{ textAlign: "center", flex: 1, padding: "0 10px" }}>
-              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
-                {chapter.title}
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
+                القسم 1 ، الوحدة {activeSectionIdx + 1}
               </div>
               <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2 }}>
                 {activeSection.title}
@@ -801,7 +803,7 @@ export default function Roadmap() {
                               whiteSpace: "nowrap",
                               boxShadow: canJump ? `0 2px 10px ${unit.color}30` : "none",
                             }}>
-                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل القسم السابق"}
+                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل الوحدة السابقة"}
                             </div>
                             <div style={{ width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:`7px solid hsl(var(--border))` }}/>
                           </motion.div>
