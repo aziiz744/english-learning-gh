@@ -27,9 +27,11 @@ export default function AdminStats() {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
   useEffect(() => {
-    if (!user?.isAdmin) { setLocation("/"); return; }
+    // Wait for auth to load before checking
+    if (user === undefined) return; // still loading
+    if (user === null || !user?.isAdmin) { setLocation("/"); return; }
     load();
-    const interval = setInterval(load, 60000); // refresh every minute
+    const interval = setInterval(load, 60000);
     return () => clearInterval(interval);
   }, [user]);
 
@@ -82,7 +84,11 @@ export default function AdminStats() {
     }
   }
 
-  if (!user?.isAdmin) return null;
+  if (!user || !user?.isAdmin) return (
+    <div className="flex items-center justify-center h-[60vh]">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   const cards = data ? [
     { icon: Users,    label: "إجمالي المستخدمين",  value: data.totalUsers,              color: "text-blue-400",   bg: "bg-blue-500/10" },

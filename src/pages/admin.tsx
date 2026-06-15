@@ -27,6 +27,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (authLoading) return;
+    if (user === undefined) return;
     if (!user?.isAdmin) { setLocation("/"); return; }
     loadUsers();
     // Auto-refresh every 30 seconds to update online status
