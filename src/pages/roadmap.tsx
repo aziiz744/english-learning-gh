@@ -293,18 +293,19 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
 }
 
 // ─── Station circle — floating button style (مثل الصورة) ─────────────────────
-function StationCircle({ type, progress, color, isCurrent }: {
+function StationCircle({ type, progress, color, isCurrent, isFirstOfSection }: {
   type: "lesson" | "challenge";
   progress: number;
   color: string;
   isCurrent: boolean;
+  isFirstOfSection?: boolean;
 }) {
   const SIZE     = type === "challenge" ? 88 : 74;
   const LIFT     = 6;   // how many px the button "floats" above its shadow
   const r        = SIZE / 2;
   const circ     = 2 * Math.PI * (r - 6);
   const isGold   = progress >= 4;
-  const hasStart = progress > 0;
+  const hasStart = progress > 0 || !!isFirstOfSection;
 
   // Main face color
   const faceColor  = isGold ? "#eab308" : hasStart ? color       : "#374151";
@@ -703,43 +704,42 @@ export default function Roadmap() {
                           borderLeft: "7px solid transparent", borderRight: "7px solid transparent",
                           borderTop: `8px solid hsl(var(--border))`,
                         }}/>
-                        {/* Circle button */}
+                        {/* Circle button — double arrow like Duolingo */}
                         <motion.button
                           whileHover={canJump ? { scale: 1.08 } : {}}
-                          whileTap={canJump ? { scale: 0.93 } : {}}
+                          whileTap={canJump ? { scale: 0.94 } : {}}
                           onClick={e => {
                             e.stopPropagation();
                             if (!canJump) return;
-                            // scroll to first lesson of this section
                             const firstLesson = unit.lessons.find(l => l.type === "lesson");
                             if (firstLesson) window.location.href = `/lessons/${unit.id}/${firstLesson.id}`;
                           }}
                           style={{
-                            width: 64, height: 64, borderRadius: "50%",
-                            background: canJump
-                              ? `linear-gradient(135deg, ${unit.color}, ${unit.color}bb)`
-                              : "#374151",
+                            width: 68, height: 68, borderRadius: "50%",
+                            background: canJump ? unit.color : "#374151",
                             border: "none", cursor: canJump ? "pointer" : "not-allowed",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             boxShadow: canJump
-                              ? `0 6px 0 ${unit.color}55, 0 8px 20px ${unit.color}40`
-                              : "0 4px 0 #1a2030",
+                              ? `0 7px 0 ${shadeColor(unit.color, -55)}, 0 10px 24px ${unit.color}50`
+                              : "0 5px 0 #1a2030",
                             position: "relative",
                           }}>
-                          {/* Glow */}
+                          {/* Colored glow halo */}
                           {canJump && (
                             <motion.div
-                              animate={{ scale: [1,1.5,1], opacity: [0.3,0,0.3] }}
-                              transition={{ repeat: Infinity, duration: 2 }}
+                              animate={{ scale: [1,1.6,1], opacity: [0.35,0,0.35] }}
+                              transition={{ repeat: Infinity, duration: 2.2 }}
                               style={{
-                                position: "absolute", inset: -6, borderRadius: "50%",
-                                background: unit.color, filter: "blur(10px)",
+                                position: "absolute", inset: -8, borderRadius: "50%",
+                                background: unit.color, filter: "blur(12px)", zIndex: 0,
                               }}
                             />
                           )}
-                          <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-                            <path d="M5 4l15 8-15 8V4z"/>
-                            <path d="M19 4v16" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                          {/* Double forward arrows ⏭ */}
+                          <svg width="32" height="32" viewBox="0 0 32 32" fill="white" style={{ zIndex: 1 }}>
+                            <path d="M4 8 L14 16 L4 24 Z"/>
+                            <path d="M14 8 L24 16 L14 24 Z"/>
+                            <rect x="24" y="8" width="3.5" height="16" rx="1.5" fill="white"/>
                           </svg>
                         </motion.button>
                       </div>
@@ -787,6 +787,8 @@ export default function Roadmap() {
                     const isTreasure = lesson.type === "treasure";
                     const SIZE = lesson.type === "challenge" ? 88 : isTreasure ? 72 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
+                    // First station of each unit section shows colored (active color) even if not started
+                    const isFirstOfSection = idx === 0;
 
                     // lesson number (only count type=lesson)
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
