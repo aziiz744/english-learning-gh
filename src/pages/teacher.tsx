@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { triggerLoginModal } from "@/lib/modal-state";
 import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
+import { Layout } from "@/components/layout";
 
 interface Message { id: number; role: "user" | "assistant"; content: string; }
 type CallState = "idle" | "teacher-speaking" | "listening" | "processing";
@@ -330,11 +331,7 @@ export default function TeacherPage() {
 
   // ── Auth gate ──
   if (!user) return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
-      <button onClick={() => setLocation("/")}
-        className="self-start flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
-        ← الرئيسية
-      </button>
+    <Layout><div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
       <div className="w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl">👨‍🏫</div>
       <div className="space-y-2">
         <h1 className="text-xl font-bold">سجّل دخولك أولاً</h1>
@@ -344,7 +341,7 @@ export default function TeacherPage() {
         className="px-8 py-5 font-bold rounded-2xl gap-2">
         <span>🔑</span> تسجيل الدخول
       </Button>
-    </div>
+    </div></Layout>
   );
 
   // ── Pro gate ──
@@ -355,27 +352,19 @@ export default function TeacherPage() {
   );
 
   if (!isPro) return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
-      <button onClick={() => setLocation("/")}
-        className="self-start flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
-        ← الرئيسية
-      </button>
+    <Layout><div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
       <div className="w-20 h-20 rounded-full bg-yellow-500/10 border-2 border-yellow-500/30 flex items-center justify-center">
         <Lock className="w-9 h-9 text-yellow-400" />
       </div>
       <h1 className="text-xl font-bold">ميزة حصرية لأعضاء Pro</h1>
       <p className="text-muted-foreground text-sm max-w-xs">التحدث مع المعلم متاح فقط لأعضاء Pro</p>
       <Button onClick={() => setLocation("/pro")} className="px-8 py-5 font-bold rounded-2xl">🌟 اشترك في Pro</Button>
-    </div>
+    </div></Layout>
   );
 
   // ── Pre-call ──
   if (!started) return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
-      <button onClick={() => setLocation("/")}
-        className="self-start flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        ← الرئيسية
-      </button>
+    <Layout><div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center space-y-5">
       <h1 className="text-xl font-bold">اختر معلمك</h1>
 
       <div className="flex gap-3 flex-wrap justify-center">
@@ -454,7 +443,7 @@ export default function TeacherPage() {
       )}
 
       <p className="text-xs text-muted-foreground">يعمل بشكل أفضل على Chrome</p>
-    </div>
+    </div></Layout>
   );
 
   // ── Active call ──
@@ -466,7 +455,7 @@ export default function TeacherPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100svh-130px)] max-w-2xl mx-auto">
+    <Layout><div className="flex flex-col h-[calc(100svh-130px)] max-w-2xl mx-auto">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl bg-primary/10
@@ -544,6 +533,6 @@ export default function TeacherPage() {
           )}
         </div>
       </div>
-    </div>
+    </div></Layout>
   );
 }
