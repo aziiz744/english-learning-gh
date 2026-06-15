@@ -166,18 +166,23 @@ export default function TeacherPage() {
       // Call API
       (async () => {
         try {
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
+          const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${import.meta.env.VITE_GROQ_KEY ?? ""}`,
+            },
             body: JSON.stringify({
-              model: "claude-sonnet-4-6",
+              model: "llama-3.1-8b-instant",
               max_tokens: 300,
-              system: SYSTEM_PROMPT,
-              messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
+              messages: [
+                { role: "system", content: SYSTEM_PROMPT },
+                ...newMsgs.map(m => ({ role: m.role, content: m.content })),
+              ],
             }),
           });
           const data = await res.json();
-          const reply = data.content?.find((b: any) => b.type === "text")?.text;
+          const reply = data.choices?.[0]?.message?.content;
           if (reply && isActiveRef.current) {
             const assistantMsg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
             setMessages(p => [...p, assistantMsg]);
@@ -205,18 +210,23 @@ export default function TeacherPage() {
     setCallState("processing");
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_KEY ?? ""}`,
+        },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6",
+          model: "llama-3.1-8b-instant",
           max_tokens: 150,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: "Start the class. Greet me warmly and ask my name. Keep it short." }],
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: "Start the class. Greet me warmly and ask my name. Keep it short." },
+          ],
         }),
       });
       const data = await res.json();
-      const reply = data.content?.find((b: any) => b.type === "text")?.text
+      const reply = data.choices?.[0]?.message?.content
         || "Hello! I'm Mr. Adam, your English teacher. What's your name?";
       const msg: Message = { id: ++msgIdRef.current, role: "assistant", content: reply };
       setMessages([msg]);
