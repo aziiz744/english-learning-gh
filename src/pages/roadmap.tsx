@@ -10,6 +10,7 @@ interface UnitLesson {
   title: string;
   description: string;
   words?: string[];
+  vocab?: { word: string; arabic: string; emoji: string }[];
 }
 interface Unit { id: string; title: string; emoji: string; color: string; sectionTitle?: string; pathVariant?: string; lessons: UnitLesson[]; }
 interface Chapter { id: string; title: string; emoji: string; gradient: string; color: string; units: Unit[]; }
@@ -27,11 +28,33 @@ const CHAPTERS: Chapter[] = [
         id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
-          { id: "drinks-1", type: "lesson",    title: "الكلمات الأساسية", description: "ستتعلم كلمات المشروبات مثل tea وcoffee وwater وjuice مع سماع نطقها واختيار المعنى الصحيح.", words: ["tea","coffee","water","juice","milk"] },
-          { id: "drinks-2", type: "lesson",    title: "كلمات جديدة",      description: "ستراجع كلمات الدرس الأول وتتعلم كلمات جديدة مثل please وthank you.", words: ["please","thank you","yes","no","sorry"] },
-          { id: "drinks-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة ممتعة تشمل جميع كلمات الدرسين السابقين — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
-          { id: "drinks-3", type: "lesson",    title: "جمل كاملة",        description: "ستستخدم الكلمات في جمل كاملة مثل 'Would you like some tea?'", words: ["would","like","some","have","want"] },
-          { id: "drinks-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
+          { id: "drinks-1", type: "lesson", title: "الكلمات الأساسية", description: "تعلّم كلمات المشروبات الأساسية مع سماع نطقها.", words: ["tea","coffee","water","juice","milk","yes","no"],
+            vocab: [
+              { word:"tea",    arabic:"شاي",    emoji:"🍵" },
+              { word:"coffee", arabic:"قهوة",   emoji:"☕" },
+              { word:"water",  arabic:"ماء",    emoji:"💧" },
+              { word:"juice",  arabic:"عصير",   emoji:"🧃" },
+              { word:"milk",   arabic:"حليب",   emoji:"🥛" },
+              { word:"yes",    arabic:"نعم",    emoji:"✅" },
+              { word:"no",     arabic:"لا",     emoji:"❌" },
+            ]},
+          { id: "drinks-2", type: "lesson", title: "كلمات جديدة", description: "كلمات الأدب والتفاعل مع الآخرين عند الطلب.", words: ["please","thank you","sorry","more"],
+            vocab: [
+              { word:"please",    arabic:"من فضلك", emoji:"🙏" },
+              { word:"thank you", arabic:"شكراً",   emoji:"🙏" },
+              { word:"sorry",     arabic:"آسف",     emoji:"😔" },
+              { word:"more",      arabic:"المزيد",  emoji:"🔄" },
+            ]},
+          { id: "drinks-t", type: "treasure", title: "كنز المراجعة", description: "لعبة ممتعة تشمل جميع كلمات الدرسين — اجتزها واكسب نقاطاً مضاعفة!", words: [] },
+          { id: "drinks-3", type: "lesson", title: "جمل كاملة", description: "استخدم الكلمات في جمل مثل Would you like some tea?", words: ["would","like","some","have","want"],
+            vocab: [
+              { word:"would", arabic:"سأودّ",  emoji:"🤔" },
+              { word:"like",  arabic:"أحب",    emoji:"💚" },
+              { word:"some",  arabic:"بعض",    emoji:"🔢" },
+              { word:"have",  arabic:"أملك",   emoji:"👐" },
+              { word:"want",  arabic:"أريد",   emoji:"🙋" },
+            ]},
+          { id: "drinks-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل لكل ما تعلمته — الكلمات والجمل والحوارات.", words: [] },
         ],
       },
       // ── القسم 2: قدّم نفسك وعائلتك — وحدة واحدة فقط ──
@@ -707,11 +730,95 @@ function getSections(chapter: Chapter): SectionInfo[] {
   return sections;
 }
 
+
+// ─── Guide Drawer — ملخص كلمات الوحدة الحالية ───────────────────────────────
+function GuideDrawer({ section, chapter, onClose }: {
+  section: { title: string; color: string; unitId: string };
+  chapter: Chapter;
+  onClose: () => void;
+}) {
+  const unit = chapter.units.find(u => u.id === section.unitId) ?? chapter.units[0];
+  const lessons = unit.lessons.filter(l => l.type === "lesson" && l.vocab && l.vocab.length > 0);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 60 }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+        transition={{ type: "spring", stiffness: 280, damping: 30 }}
+        style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          background: "hsl(var(--card))",
+          borderRadius: "24px 24px 0 0",
+          padding: "24px 20px 40px",
+          maxHeight: "80vh", overflowY: "auto",
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle */}
+        <div style={{ width: 40, height: 4, background: "hsl(var(--border))", borderRadius: 2, margin: "0 auto 20px" }}/>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: section.color }}/>
+          <h2 style={{ fontWeight: 900, fontSize: 17, margin: 0 }}>دليل الوحدة</h2>
+          <span style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", marginRight: "auto" }}>{section.title}</span>
+        </div>
+
+        {/* Lessons vocab */}
+        {lessons.map((lesson, li) => (
+          <div key={lesson.id} style={{ marginBottom: 20 }}>
+            <div style={{
+              fontSize: 13, fontWeight: 800, color: section.color,
+              marginBottom: 10, display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <span style={{
+                background: section.color + "20", borderRadius: 8,
+                padding: "2px 10px",
+              }}>درس {li + 1}</span>
+              {lesson.title}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {lesson.vocab!.map(v => (
+                <div key={v.word} style={{
+                  background: "hsl(var(--background))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: 12, padding: "8px 12px",
+                  display: "flex", alignItems: "center", gap: 8,
+                }}>
+                  <span style={{ fontSize: 22 }}>{v.emoji}</span>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 14, direction: "ltr" }}>{v.word}</div>
+                    <div style={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }}>{v.arabic}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Close */}
+        <button onClick={onClose} style={{
+          width: "100%", padding: "13px", marginTop: 8,
+          background: section.color, border: "none", borderRadius: 16,
+          color: "white", fontWeight: 800, fontSize: 15, cursor: "pointer",
+        }}>
+          حسناً، جاهز للدرس! ✓
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter] = useState(0);
   const [progress] = useState<Record<string, number>>({});
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const chapter = CHAPTERS[activeChapter];
   const sections = getSections(chapter);
@@ -783,7 +890,7 @@ export default function Roadmap() {
 
             {/* Guidebook — left */}
             <button
-              onClick={e => { e.stopPropagation(); alert("الدليل قادم قريباً!"); }}
+              onClick={e => { e.stopPropagation(); setShowGuide(true); }}
               style={{
                 background: "rgba(255,255,255,0.22)",
                 border: "1.5px solid rgba(255,255,255,0.45)",
@@ -1076,6 +1183,17 @@ export default function Roadmap() {
           <div className="h-8"/>
         </motion.div>
       </div>
+
+      {/* Guide Drawer */}
+      <AnimatePresence>
+        {showGuide && (
+          <GuideDrawer
+            section={activeSection}
+            chapter={chapter}
+            onClose={() => setShowGuide(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Floating Mascot */}
       <FloatingMascot color={chapter.color} chapterId="beginner" />
