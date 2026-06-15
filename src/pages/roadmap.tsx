@@ -731,19 +731,40 @@ function getSections(chapter: Chapter): SectionInfo[] {
 }
 
 
-// ─── Guide Drawer — ملخص كلمات الوحدة الحالية ───────────────────────────────
+// ─── Guide Drawer — جمل الوحدة مع ترجمة وصوت ───────────────────────────────
+const UNIT_GUIDE_PHRASES: Record<string, { en: string; ar: string }[]> = {
+  "unit-drinks": [
+    { en: "Would you like some tea?",   ar: "هل تودّ بعض الشاي؟" },
+    { en: "Coffee or tea?",             ar: "قهوة أو شاي؟" },
+    { en: "Water, please.",             ar: "ماء، من فضلك." },
+    { en: "Yes please, thank you!",     ar: "نعم من فضلك، شكراً!" },
+    { en: "No thank you, I'm fine.",    ar: "لا شكراً، أنا بخير." },
+    { en: "Sorry, we have no juice.",   ar: "آسف، لا يوجد عصير." },
+    { en: "Would you like some more?",  ar: "هل تريد المزيد؟" },
+    { en: "I would like some milk.",    ar: "أودّ بعض الحليب." },
+  ],
+};
+
+function speakText(text: string) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
 function GuideDrawer({ section, chapter, onClose }: {
   section: { title: string; color: string; unitId: string };
   chapter: Chapter;
   onClose: () => void;
 }) {
   const unit = chapter.units.find(u => u.id === section.unitId) ?? chapter.units[0];
-  const lessons = unit.lessons.filter(l => l.type === "lesson" && l.vocab && l.vocab.length > 0);
+  const phrases = UNIT_GUIDE_PHRASES[unit.id] ?? [];
 
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 60 }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 60 }}
       onClick={onClose}
     >
       <motion.div
@@ -753,58 +774,75 @@ function GuideDrawer({ section, chapter, onClose }: {
           position: "absolute", bottom: 0, left: 0, right: 0,
           background: "hsl(var(--card))",
           borderRadius: "24px 24px 0 0",
-          padding: "24px 20px 40px",
-          maxHeight: "80vh", overflowY: "auto",
+          padding: "20px 20px 44px",
+          maxHeight: "85vh", overflowY: "auto",
         }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle */}
-        <div style={{ width: 40, height: 4, background: "hsl(var(--border))", borderRadius: 2, margin: "0 auto 20px" }}/>
+        <div style={{ width: 40, height: 4, background: "hsl(var(--border))", borderRadius: 2, margin: "0 auto 18px" }}/>
 
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 10, height: 10, borderRadius: "50%", background: section.color }}/>
-          <h2 style={{ fontWeight: 900, fontSize: 17, margin: 0 }}>دليل الوحدة</h2>
-          <span style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", marginRight: "auto" }}>{section.title}</span>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
+          <div>
+            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة 1</h2>
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 13, margin: 0, textAlign: "right" }}>
+              طالع الجمل الأساسية واستعرضها مع الترجمة
+            </p>
+          </div>
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%",
+            background: section.color + "20",
+            border: `2px solid ${section.color}40`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 32, flexShrink: 0, marginRight: 12,
+          }}>☕</div>
         </div>
 
-        {/* Lessons vocab */}
-        {lessons.map((lesson, li) => (
-          <div key={lesson.id} style={{ marginBottom: 20 }}>
-            <div style={{
-              fontSize: 13, fontWeight: 800, color: section.color,
-              marginBottom: 10, display: "flex", alignItems: "center", gap: 6,
+        {/* Section label */}
+        <div style={{ textAlign: "right", margin: "16px 0 8px" }}>
+          <span style={{ color: section.color, fontSize: 12, fontWeight: 700 }}>الجمل الأساسية</span>
+          <div style={{ fontWeight: 900, fontSize: 18 }}>{section.title}</div>
+        </div>
+
+        <div style={{ height: 1, background: "hsl(var(--border))", margin: "12px 0 16px" }}/>
+
+        {/* Phrases */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {phrases.map((p, i) => (
+            <div key={i} style={{
+              background: "hsl(var(--background))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: 16, padding: "14px 16px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-              <span style={{
-                background: section.color + "20", borderRadius: 8,
-                padding: "2px 10px",
-              }}>درس {li + 1}</span>
-              {lesson.title}
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {lesson.vocab!.map(v => (
-                <div key={v.word} style={{
-                  background: "hsl(var(--background))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 12, padding: "8px 12px",
-                  display: "flex", alignItems: "center", gap: 8,
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontWeight: 800, fontSize: 15, direction: "ltr", textAlign: "left", marginBottom: 4 }}>{p.en}</div>
+                <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", borderBottom: `1.5px dashed ${section.color}60`, paddingBottom: 2, display: "inline-block" }}>{p.ar}</div>
+              </div>
+              <button
+                onClick={() => speakText(p.en)}
+                style={{
+                  width: 40, height: 40, borderRadius: "50%",
+                  background: section.color + "15",
+                  border: `1.5px solid ${section.color}40`,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, marginLeft: 12,
                 }}>
-                  <span style={{ fontSize: 22 }}>{v.emoji}</span>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 14, direction: "ltr" }}>{v.word}</div>
-                    <div style={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }}>{v.arabic}</div>
-                  </div>
-                </div>
-              ))}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill={section.color}>
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                </svg>
+              </button>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
         {/* Close */}
         <button onClick={onClose} style={{
-          width: "100%", padding: "13px", marginTop: 8,
+          width: "100%", padding: "14px", marginTop: 20,
           background: section.color, border: "none", borderRadius: 16,
           color: "white", fontWeight: 800, fontSize: 15, cursor: "pointer",
+          boxShadow: `0 4px 16px ${section.color}40`,
         }}>
           حسناً، جاهز للدرس! ✓
         </button>
@@ -1044,7 +1082,7 @@ export default function Roadmap() {
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  window.location.href = `/lessons/unit-drinks/${lesson.id}`;
+                                  window.location.href = `/lessons/${lesson.id}`;
                                 }}
                               />
                             </div>
