@@ -2,7 +2,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
 
 interface UnitLesson {
   id: string;
@@ -496,11 +498,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  const mainColor  = isGold ? "#eab308" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
+  const mainColor  = isGold ? "#f59e0b" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
   const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
   const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
-  const starColor  = isGold ? "#eab308" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#eab308" : isActive ? shadeColor(color, -20) : "#1e2d3d";
+  const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
+  const trackColor = isGold ? "#fde047" : isActive ? "#ffffff" : "#2a3a4a";
   const arcFilled  = isGold || isJumpStation
     ? `${circ} 0`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
@@ -553,9 +555,9 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* Progress / full arc */}
         <motion.circle
           cx={r} cy={r} r={trackR} fill="none"
-          stroke={trackColor} strokeWidth={6} strokeLinecap="round"
+          stroke={trackColor} strokeWidth={7} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor})` : "none", transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
@@ -673,7 +675,7 @@ function PathConnector({ fromX, fromY, toX, toY, color, done }: {
   const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
   return (
     <g>
-      <path d={d} stroke="#2d3748" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 7"/>
+      <path d={d} stroke="#3a4658" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 8"/>
       {done && (
         <motion.path d={d} stroke={color} strokeWidth={6} fill="none" strokeLinecap="round"
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
@@ -854,15 +856,29 @@ function GuideDrawer({ section, chapter, onClose }: {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter] = useState(0);
-  const [progress] = useState<Record<string, number>>({});
+  const [progress, setProgress] = useState<Record<string, number>>({});
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const chapter = CHAPTERS[activeChapter];
   const sections = getSections(chapter);
 
   const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
+
+  // Load unit progress from Supabase
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("unit_progress").select("lesson_id, sub_progress").eq("user_id", user.id)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, number> = {};
+        data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; }); // 0-4 = ربع لكل درس
+        setProgress(map);
+      });
+  }, [user]);
 
   // Refs for each section divider — used for IntersectionObserver
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -1082,7 +1098,7 @@ export default function Roadmap() {
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  window.location.href = `/unit-lesson/${lesson.id}`;
+                                  setLocation(`/u/${lesson.id}`);
                                 }}
                               />
                             </div>

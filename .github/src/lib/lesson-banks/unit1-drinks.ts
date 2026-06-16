@@ -23,6 +23,8 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr1-t0-5", type:"translate", arabic:"حليب", options:["milk","water","tea","juice"], correctAnswer:"milk", explanation:"milk = حليب 🥛", xp:10 },
       { id:"dr1-t0-6", type:"listen_select", listenSentence:"yes", options:["yes","no","please","sorry"], correctAnswer:"yes", explanation:"yes = نعم ✅", xp:10 },
       { id:"dr1-t0-7", type:"translate", arabic:"لا", options:["no","yes","more","have"], correctAnswer:"no", explanation:"no = لا ❌", xp:10 },
+      { id:"dr1-t0-8", type:"fill_blank", blankSentence:"Tea ___ milk", blankOptions:["with","sugar","and"], correctAnswer:"with", explanation:"Tea with milk = شاي بالحليب", xp:12 },
+      { id:"dr1-t0-9", type:"matching", pairs:[{en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"water",ar:"ماء"},{en:"milk",ar:"حليب"}], correctAnswer:"matched", explanation:"طابقت كل المشروبات بمعانيها! 🎉", xp:15 },
     ],
     t1: [
       { id:"dr1-t1-1", type:"word_order", sentence:"I like tea", correctAnswer:"I like tea", explanation:"I like tea = أنا أحب الشاي", xp:12 },
@@ -32,6 +34,8 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr1-t1-5", type:"word_order", sentence:"I want water", correctAnswer:"I want water", explanation:"I want water = أريد ماء", xp:12 },
       { id:"dr1-t1-6", type:"translate", arabic:"أنا أشرب عصير", options:["I drink juice","I like juice","I want juice","I have juice"], correctAnswer:"I drink juice", explanation:"I drink juice = أنا أشرب عصير", xp:12 },
       { id:"dr1-t1-7", type:"listen_select", listenSentence:"I want tea or coffee", options:["tea","milk","juice","water"], correctAnswer:"tea", explanation:"الجملة: أريد شاياً أو قهوة — الأول هو tea", xp:12 },
+      { id:"dr1-t1-8", type:"fill_blank", blankSentence:"I ___ tea", blankOptions:["like","milk","water"], correctAnswer:"like", explanation:"I like tea = أنا أحب الشاي", xp:13 },
+      { id:"dr1-t1-9", type:"matching", pairs:[{en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"juice",ar:"عصير"},{en:"water",ar:"ماء"}], correctAnswer:"matched", explanation:"رائع! طابقت الكلمات بمعانيها", xp:15 },
     ],
     t2: [
       { id:"dr1-t2-1", type:"word_order", sentence:"Do you like coffee or tea", correctAnswer:"Do you like coffee or tea", explanation:"Do you like...or...? = هل تفضل... أو...؟", xp:14 },
@@ -65,6 +69,8 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr2-t0-5", type:"translate", arabic:"المزيد", options:["more","sorry","please","thank you"], correctAnswer:"more", explanation:"more = أكثر / المزيد 🔄", xp:10 },
       { id:"dr2-t0-6", type:"listen_select", listenSentence:"Tea please", options:["please","sorry","thank you","more"], correctAnswer:"please", explanation:"Tea please = شاي من فضلك — please في نهاية الطلب", xp:10 },
       { id:"dr2-t0-7", type:"word_order", sentence:"Thank you for the coffee", correctAnswer:"Thank you for the coffee", explanation:"Thank you for... = شكراً على...", xp:10 },
+      { id:"dr2-t0-8", type:"fill_blank", blankSentence:"Coffee ___ , please", blankOptions:["please","sorry","more"], correctAnswer:"please", explanation:"Coffee please = قهوة من فضلك", xp:12 },
+      { id:"dr2-t0-9", type:"matching", pairs:[{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"}], correctAnswer:"matched", explanation:"أحسنت! طابقت كلمات الأدب بمعانيها 🎉", xp:15 },
     ],
     t1: [
       { id:"dr2-t1-1", type:"word_order", sentence:"Water please thank you", correctAnswer:"Water please thank you", explanation:"الترتيب: الطلب + please + thank you", xp:12 },
@@ -107,6 +113,8 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr3-t0-5", type:"picture_match", word:"would like", pictureOptions:[{emoji:"🤔",label:"would like"},{emoji:"😔",label:"sorry"},{emoji:"🙏",label:"please"},{emoji:"❌",label:"no"}], correctAnswer:"would like", explanation:"would like = أود / أرغب في 🤔", xp:12 },
       { id:"dr3-t0-6", type:"word_order", sentence:"I would like to have milk", correctAnswer:"I would like to have milk", explanation:"would like to have = أود أن أتناول", xp:12 },
       { id:"dr3-t0-7", type:"translate", arabic:"هل عندك بعض الحليب؟", options:["Do you have some milk?","Would you have milk?","Can I have milk?","Do you want milk?"], correctAnswer:"Do you have some milk?", explanation:"Do you have some...? = هل عندك بعض...؟", xp:12 },
+      { id:"dr3-t0-8", type:"fill_blank", blankSentence:"Would you ___ some tea?", blankOptions:["like","want","have"], correctAnswer:"like", explanation:"Would you like = صيغة مهذبة للعرض", xp:13 },
+      { id:"dr3-t0-9", type:"matching", pairs:[{en:"would",ar:"سأودّ"},{en:"like",ar:"أحب"},{en:"have",ar:"أملك"},{en:"want",ar:"أريد"}], correctAnswer:"matched", explanation:"ممتاز! طابقت أفعال الطلب بمعانيها", xp:15 },
     ],
     t1: [
       { id:"dr3-t1-1", type:"word_order", sentence:"I would like some tea with milk please", correctAnswer:"I would like some tea with milk please", explanation:"tea with milk = شاي بالحليب — with = مع", xp:14 },
@@ -148,6 +156,8 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"ch-t0-5", type:"word_order", sentence:"Sorry we do not have any juice today", correctAnswer:"Sorry we do not have any juice today", explanation:"Sorry + do not have any = اعتذار + نفي مع any", xp:15 },
       { id:"ch-t0-6", type:"translate", arabic:"هل أجلب لك المزيد من الماء؟", options:["Shall I get you some more water?","Will I get you more water?","Can I bring you more water?","Should I get you water more?"], correctAnswer:"Shall I get you some more water?", explanation:"Shall I...? = هل أقوم بـ...؟ — عرض للمساعدة", xp:15 },
       { id:"ch-t0-7", type:"word_order", sentence:"Thank you that is very kind of you", correctAnswer:"Thank you that is very kind of you", explanation:"That is very kind of you = هذا لطيف جداً منك", xp:15 },
+      { id:"ch-t0-8", type:"fill_blank", blankSentence:"Yes ___ , I would like coffee", blankOptions:["please","sorry","no"], correctAnswer:"please", explanation:"Yes please = نعم من فضلك — قبول مهذب", xp:15 },
+      { id:"ch-t0-9", type:"matching", pairs:[{en:"tea",ar:"شاي"},{en:"please",ar:"من فضلك"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"}], correctAnswer:"matched", explanation:"رائع! راجعت كل كلمات الوحدة 👑", xp:18 },
     ],
     t1: [
       { id:"ch-t1-1", type:"translate", arabic:"كم من الكلمات التالية تعرفها؟ tea, coffee, water, juice, milk", options:["All five are drinks","Four are drinks one is food","These are all foods","Three are hot drinks"], correctAnswer:"All five are drinks", explanation:"tea ☕ coffee ☕ water 💧 juice 🧃 milk 🥛 — كلها مشروبات", xp:16 },

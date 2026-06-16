@@ -19,13 +19,18 @@
 
 export type ExObj = {
   id: string;
-  type: "word_order" | "translate" | "listen_select" | "picture_match";
+  type: "word_order" | "translate" | "listen_select" | "picture_match" | "fill_blank" | "matching";
   sentence?: string;
   arabic?: string;
   options?: string[];
   listenSentence?: string;
   word?: string;
   pictureOptions?: { emoji: string; label: string }[];
+  // fill_blank: جملة فيها ___ + خيارات لملء الفراغ
+  blankSentence?: string;       // مثل: "Tea ___ ."
+  blankOptions?: string[];      // مثل: ["with", "sugar"]
+  // matching: أزواج إنجليزي↔عربي
+  pairs?: { en: string; ar: string }[];
   correctAnswer: string;
   explanation: string;
   xp: number;

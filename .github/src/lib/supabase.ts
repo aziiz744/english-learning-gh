@@ -16,6 +16,7 @@ export interface AuthUser {
   profileImageUrl: string | null;
   isAdmin: boolean;
   isBanned: boolean;
+  isPro: boolean;
 }
 
 export interface Lesson {
@@ -97,7 +98,10 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   // Check admin from DB (secure server-side check)
-  const { data: adminRow } = await supabase.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
+  const [{ data: adminRow }, { data: statsRow }] = await Promise.all([
+    supabase.from("admins").select("user_id").eq("user_id", user.id).maybeSingle(),
+    supabase.from("user_stats").select("is_pro").eq("user_id", user.id).maybeSingle(),
+  ]);
   const ADMIN_EMAILS = ["azoozalgamde2@gmail.com"]; // fallback
   return {
     id: user.id,
@@ -107,6 +111,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     profileImageUrl: user.user_metadata?.avatar_url ?? null,
     isAdmin: !!adminRow || ADMIN_EMAILS.includes(user.email ?? ""),
     isBanned: false,
+    isPro: statsRow?.is_pro ?? false,
   };
 }
 
