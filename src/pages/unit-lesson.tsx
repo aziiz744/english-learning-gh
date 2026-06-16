@@ -22,6 +22,16 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
 };
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
+function lightColor(hex: string): string {
+  try {
+    const n = parseInt(hex.replace("#",""), 16);
+    const r = Math.min(255, (n >> 16) + 60);
+    const g = Math.min(255, ((n >> 8) & 0xff) + 60);
+    const b = Math.min(255, (n & 0xff) + 60);
+    return `rgb(${r},${g},${b})`;
+  } catch { return hex; }
+}
+
 function speak(text: string) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -410,12 +420,15 @@ export default function UnitLesson() {
   const isPro = user?.isPro;
   const proLoaded = !authLoading; // use auth loading state
   const [subLesson, setSubLesson] = useState(0); // 0..3 = الدرس الداخلي الحالي
+  const [resumeLoaded, setResumeLoaded] = useState(false);
   const [queue, setQueue] = useState<ExObj[]>([]);
   const [doneCount, setDoneCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [score, setScore] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [showStreakPop, setShowStreakPop] = useState(false);
   const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone">("playing");
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
@@ -425,19 +438,44 @@ export default function UnitLesson() {
 
   const loadExercises = useCallback((tier: number) => {
     if (!meta) return;
-    const exs = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
-    setQueue([...exs]);
+    const raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
+    // اخلط ترتيب الأسئلة + اخلط الخيارات داخل كل سؤال
+    const shuffled = [...raw]
+      .sort(() => Math.random() - 0.5)
+      .map(ex => {
+        const copy = { ...ex };
+        if (copy.options && copy.options.length > 1) {
+          copy.options = [...copy.options].sort(() => Math.random() - 0.5);
+        }
+        if (copy.pictureOptions && copy.pictureOptions.length > 1) {
+          copy.pictureOptions = [...copy.pictureOptions].sort(() => Math.random() - 0.5);
+        }
+        return copy;
+      });
+    setQueue(shuffled);
     setDoneCount(0);
     setTotalCount(0);
     setScore(0);
     setXpEarned(0);
+    setStreak(0);
     setHearts(MAX_HEARTS);
     setPhase("playing");
     setFeedback(null);
     setMascotState("idle");
   }, [meta]);
 
-  useEffect(() => { loadExercises(subLesson); }, [loadExercises, subLesson]);
+  // اقرأ التقدم المحفوظ وابدأ من الدرس الداخلي الصحيح (مرة واحدة)
+  useEffect(() => {
+    if (!user || !id || resumeLoaded) { if (!user && proLoaded) setResumeLoaded(true); return; }
+    supabase.from("unit_progress").select("sub_progress").eq("user_id", user.id).eq("lesson_id", id).maybeSingle()
+      .then(({ data }) => {
+        const saved = data?.sub_progress ?? 0;
+        if (saved > 0 && saved < 4) setSubLesson(saved); // استكمل من حيث وقف
+        setResumeLoaded(true);
+      });
+  }, [user, id, proLoaded]);
+
+  useEffect(() => { if (resumeLoaded) loadExercises(subLesson); }, [loadExercises, subLesson, resumeLoaded]);
 
   const setMascotFor = (state: "correct"|"wrong"|"complete", dur = 2500) => {
     clearTimeout(mascotTimer.current);
@@ -451,12 +489,20 @@ export default function UnitLesson() {
     const ex = queue[0];
     setTotalCount(t => t + 1);
     if (ok) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      // كل 3 إجابات صحيحة متتالية → احتفال
+      if (newStreak > 0 && newStreak % 3 === 0) {
+        setShowStreakPop(true);
+        setTimeout(() => setShowStreakPop(false), 2000);
+      }
       playCorrect();
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
       setFeedback({ ok: true, explanation: ex.explanation, correctAnswer: ex.correctAnswer });
     } else {
+      setStreak(0); // كسر الستريك
       playWrong();
       setMascotFor("wrong");
       if (isPro === false) {
@@ -553,7 +599,7 @@ export default function UnitLesson() {
           <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
             <button onClick={()=>setLocation("/roadmap")} style={{ width:36, height:36, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>✕</button>
             <div style={{ flex:1, height:10, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden" }}>
-              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:meta.color, borderRadius:10 }} transition={{ duration:0.4 }}/>
+              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 8px ${meta.color}80` }} transition={{ duration:0.4 }}/>
             </div>
             {/* Show hearts only when pro status is loaded */}
             {proLoaded && <Hearts count={hearts} isPro={isPro}/>}
@@ -585,24 +631,38 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
 
-          {/* Feedback bar — ثابتة في الأسفل مع الشخصية */}
+          {/* Streak popup — شخصية كبيرة تحفز كل 3 إجابات */}
           <AnimatePresence>
-            {feedback && (
-              <motion.div key="fb" initial={{opacity:0,y:24}} animate={{opacity:1,y:0}} exit={{opacity:0,y:24}}
-                style={{ flexShrink:0, paddingBottom:8 }}>
-                <div style={{ display:"flex", alignItems:"flex-end", gap:10 }}>
-                  {/* Mascot */}
-                  <motion.div initial={{opacity:0,scale:0.6}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:220}}>
-                    <Mascot state={mascotState} className="w-20 h-28 shrink-0" />
-                  </motion.div>
-                  {/* Bar */}
-                  <div style={{ flex:1 }}>
-                    <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
-                  </div>
-                </div>
+            {showStreakPop && (
+              <motion.div
+                initial={{ opacity:0, scale:0.5 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.5 }}
+                style={{ position:"fixed", inset:0, zIndex:50, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
+                <motion.div animate={{ y:[0,-12,0] }} transition={{ repeat:Infinity, duration:0.8 }}>
+                  <Mascot state="correct" className="w-40 h-52" />
+                </motion.div>
+                <motion.div initial={{scale:0}} animate={{scale:1}} transition={{delay:0.15,type:"spring"}}
+                  style={{ background:meta.color, color:"white", fontWeight:900, fontSize:22, padding:"10px 28px", borderRadius:20, boxShadow:`0 8px 30px ${meta.color}70`, marginTop:8 }}>
+                  🔥 {streak} متتالية! رائع!
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Bottom: mascot ثابتة + feedback */}
+          <div style={{ flexShrink:0, display:"flex", alignItems:"flex-end", gap:10, paddingBottom:8, minHeight:120 }}>
+            <div style={{ flexShrink:0, width:80 }}>
+              <Mascot state={mascotState} className="w-20 h-28" />
+            </div>
+            <div style={{ flex:1 }}>
+              <AnimatePresence>
+                {feedback && (
+                  <motion.div key="fb" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}}>
+                    <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </>}
       </div>
     </Layout>
