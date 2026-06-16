@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
+  "drinks-t": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e" },
   "drinks-3": { title: "جمل كاملة",        unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e" },
 };
@@ -322,6 +323,141 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
           );
         })}
       </div>
+    </div>
+  );
+}
+
+// ── Fill Blank (اتبع النمط) ──────────────────────────────────────────────────
+function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+  const [picked, setPicked] = useState<string|null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const parts = (ex.blankSentence ?? "").split("___");
+
+  useEffect(()=>{ const t=setTimeout(()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer)), 300); return ()=>clearTimeout(t); },[]);
+
+  const confirm = () => {
+    if (!picked || confirmed) return;
+    setConfirmed(true);
+    onAnswer(picked === ex.correctAnswer, picked);
+  };
+
+  return (
+    <div>
+      {/* Audio */}
+      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:24 }}>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer))}
+          style={{ width:64, height:64, borderRadius:18, background:color, border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </motion.button>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer))}
+          style={{ width:52, height:52, borderRadius:16, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <span style={{ fontSize:26 }}>🐢</span>
+        </motion.button>
+      </div>
+
+      {/* Sentence with blank */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:24, fontWeight:800, direction:"ltr", flexWrap:"wrap" }}>
+        <span>{parts[0]}</span>
+        <span style={{ minWidth:90, borderBottom:`3px solid ${picked?color:"hsl(var(--border))"}`, textAlign:"center", color:picked?color:"transparent", paddingBottom:2 }}>{picked ?? "__"}</span>
+        <span>{parts[1]}</span>
+      </div>
+
+      {/* Options */}
+      <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:20 }}>
+        {(ex.blankOptions??[]).map(o=>(
+          <motion.button key={o} whileTap={{scale:0.95}} onClick={()=>!confirmed && setPicked(o)}
+            style={{ padding:"12px 22px", borderRadius:14, fontSize:16, fontWeight:800, direction:"ltr", cursor:confirmed?"default":"pointer",
+              background: picked===o ? `${color}25` : "hsl(var(--card))",
+              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}` }}>{o}</motion.button>
+        ))}
+      </div>
+
+      {!confirmed && (
+        <button onClick={confirm} disabled={!picked}
+          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed" }}>
+          تحقق ✓
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── Matching pairs (الأزواج المتطابقة) ───────────────────────────────────────
+function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+  const pairs = ex.pairs ?? [];
+  const [enCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
+  const [arCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
+  const [selected, setSelected] = useState<{ col:"en"|"ar"; en:string } | null>(null);
+  const [matched, setMatched] = useState<Set<string>>(new Set());
+  const [wrongKey, setWrongKey] = useState<string|null>(null);
+
+  const playMatchCorrect = () => {
+    try {
+      const ac = new (window.AudioContext||(window as any).webkitAudioContext)();
+      const o = ac.createOscillator(); const g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.frequency.value = 660; o.type="sine";
+      g.gain.setValueAtTime(0.1, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+0.3);
+      o.start(); o.stop(ac.currentTime+0.3);
+    } catch {}
+  };
+
+  const tryMatch = (col:"en"|"ar", en:string) => {
+    if (matched.has(en)) return;
+    if (col === "en") speak(en);
+    if (!selected) { setSelected({ col, en }); return; }
+    if (selected.col === col) { setSelected({ col, en }); return; }
+    if (selected.en === en) {
+      playMatchCorrect();
+      const nm = new Set(matched); nm.add(en);
+      setMatched(nm); setSelected(null);
+      if (nm.size === pairs.length) setTimeout(()=>onAnswer(true, "matched"), 600);
+    } else {
+      setWrongKey(col+en);
+      setTimeout(()=>{ setWrongKey(null); setSelected(null); }, 600);
+    }
+  };
+
+  return (
+    <div>
+      <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+          {enCol.map(p=>{
+            const isMatched = matched.has(p.en);
+            const isSelected = selected?.col==="en" && selected.en===p.en;
+            const isWrong = wrongKey === "en"+p.en;
+            return (
+              <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>tryMatch("en", p.en)}
+                animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
+                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"ltr", cursor:isMatched?"default":"pointer",
+                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
+                  border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
+                {isMatched ? "✓ "+p.en : p.en}
+              </motion.button>
+            );
+          })}
+        </div>
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+          {arCol.map(p=>{
+            const isMatched = matched.has(p.en);
+            const isSelected = selected?.col==="ar" && selected.en===p.en;
+            const isWrong = wrongKey === "ar"+p.en;
+            return (
+              <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>tryMatch("ar", p.en)}
+                animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
+                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"rtl", cursor:isMatched?"default":"pointer",
+                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
+                  border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
+                {isMatched ? "✓ "+p.ar : p.ar}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+      <p style={{ textAlign:"center", fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:20 }}>
+        {selected ? "الآن اختر ما يطابقها من العمود الآخر" : "اختر أي كلمة لبدء المطابقة"}
+      </p>
     </div>
   );
 }

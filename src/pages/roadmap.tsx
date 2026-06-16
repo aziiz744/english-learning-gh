@@ -493,35 +493,37 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r - 3.5;
+  const trackR = r - 2.5;
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  const mainColor  = isGold ? "#f59e0b" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
-  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
-  const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
-  const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#fde047" : isActive ? "#ffffff" : "#2a3a4a";
-  // الخط يمتلئ فقط حسب التقدم الفعلي. الذهبي (مكتمل) ممتلئ. السهم بدون خط.
+  // ألوان مريحة بعمق ثلاثي الأبعاد
+  const faceTop   = isGold ? "#fbbf24" : isActive ? lightenColor(color) : "#3a4656";  // أعلى الوجه (فاتح)
+  const faceMain  = isGold ? "#f59e0b" : isActive ? color : "#2d3a4a";                  // وسط الوجه
+  const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330"; // الجانب السفلي (عمق)
+  const starColor = isGold ? "#ffffff" : isActive ? "#ffffff" : "#566578";
+  // الخط بلون أفتح من الدائرة (فاصل جميل)
+  const trackColor = isGold ? "#fde047" : isActive ? lightenColor(color, 90) : "#2a3a4a";
   const arcFilled  = isGold
     ? `${circ} 0`
     : isJumpStation
-    ? `0 ${circ}` // السهم: لا خط
+    ? `0 ${circ}`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
+  const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
 
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
+    <div style={{ position: "relative", width: SIZE, height: SIZE + depth + 6 }}>
 
       {/* Soft colored glow beneath */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        width: SIZE * 0.85, height: SIZE * 0.3, borderRadius: "50%",
-        background: mainColor,
-        opacity: isJumpStation ? 0.2 : isActive ? (isCurrent ? 0.25 : 0.12) : 0.05,
-        filter: "blur(12px)", zIndex: 0,
+        width: SIZE * 0.8, height: SIZE * 0.28, borderRadius: "50%",
+        background: faceMain,
+        opacity: isJumpStation ? 0.22 : isActive ? (isCurrent ? 0.3 : 0.14) : 0.05,
+        filter: "blur(11px)", zIndex: 0,
       }}/>
 
       {/* Pulse ring for current */}
@@ -530,61 +532,52 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           position: "absolute", top: 0, left: 0, width: SIZE, height: SIZE,
           borderRadius: "50%", border: `2.5px solid ${color}`, zIndex: 2,
         }}
-          animate={{ scale: [1, 1.55, 1], opacity: [0.6, 0, 0.6] }}
+          animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
           transition={{ repeat: Infinity, duration: 2.2 }}
         />
       )}
 
-      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}>
+      <svg width={SIZE} height={SIZE + depth} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
         <defs>
-          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
-            <stop offset="0%"  stopColor={isJumpStation ? mainColor : faceLight} stopOpacity="1"/>
-            <stop offset="45%" stopColor={mainColor} stopOpacity="1"/>
-            <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
-          </radialGradient>
-          <radialGradient id={`${gId}-bg`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%"  stopColor={isActive ? shadeColor(mainColor, -20) : "#1a2535"}/>
-            <stop offset="100%" stopColor={isActive ? shadeColor(mainColor, -55) : "#0d1520"}/>
+          <radialGradient id={gId} cx="38%" cy="30%" r="80%">
+            <stop offset="0%"  stopColor={faceTop}/>
+            <stop offset="55%" stopColor={faceMain}/>
+            <stop offset="100%" stopColor={shadeColor(faceMain, -25)}/>
           </radialGradient>
         </defs>
 
-        {/* Outer dark border ring */}
-        <circle cx={r} cy={r} r={r - 1} fill={isActive ? shadeColor(mainColor,-65) : "#0d1520"}
-          stroke={darkColor} strokeWidth={2}/>
+        {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) ── */}
+        <circle cx={r} cy={r + depth} r={r - 2} fill={sideColor}/>
 
-        {/* Inner face with gradient */}
-        <circle cx={r} cy={r} r={r - 9} fill={`url(#${gId})`}/>
+        {/* ── الوجه العلوي ── */}
+        <circle cx={r} cy={r} r={r - 2} fill={`url(#${gId})`}/>
 
-        {/* Top shine streak — صغير وداخل الوجه */}
-        <ellipse cx={r * 0.66} cy={r * 0.46} rx={r * 0.24} ry={r * 0.08}
-          fill="white" opacity={isActive ? 0.05 : 0.02}
-          transform={`rotate(-35 ${r} ${r})`}/>
+        {/* لمعة علوية ناعمة */}
+        <ellipse cx={r * 0.64} cy={r * 0.5} rx={r * 0.4} ry={r * 0.26}
+          fill="white" opacity={isActive ? 0.16 : 0.05}/>
 
-        {/* Progress / full arc — يُرسم فوق الوجه والـ shine */}
+        {/* ── خط التقدم حول الوجه ── */}
         <motion.circle
           cx={r} cy={r} r={trackR} fill="none"
-          stroke={trackColor} strokeWidth={7} strokeLinecap="round"
+          stroke={trackColor} strokeWidth={6} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor})` : "none", transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 3px ${trackColor}90)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
         />
 
-        {/* Bottom subtle rim */}
-        <ellipse cx={r} cy={r * 1.62} rx={r * 0.55} ry={r * 0.1}
-          fill={darkColor} opacity={isActive ? 0.5 : 0.2}/>
-
-        {/* Icon */}
+        {/* ── الأيقونة ── */}
         <g transform={`translate(${r - SIZE * 0.21}, ${r - SIZE * 0.21})`}>
           {isJumpStation && !isGold ? (
-            <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 28 28" fill="white" opacity="0.95">
+            <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 28 28" fill="white" opacity="0.95"
+              style={{ filter:`drop-shadow(0 2px 2px ${sideColor})` }}>
               <path d="M2 5 L12 14 L2 23 Z"/>
               <path d="M14 5 L24 14 L14 23 Z"/>
             </svg>
           ) : (
             <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 24 24" fill={starColor}
-              style={{ filter: isGold ? "drop-shadow(0 0 8px #eab30890)" : isActive ? `drop-shadow(0 1px 3px ${darkColor})` : "none" }}>
+              style={{ filter: isGold ? "drop-shadow(0 2px 3px #92400e)" : isActive ? `drop-shadow(0 2px 3px ${sideColor})` : "none" }}>
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           )}
@@ -602,12 +595,12 @@ function shadeColor(hex: string, pct: number): string {
   const b = Math.max(0, Math.min(255, (n & 0xff) + pct));
   return `rgb(${r},${g},${b})`;
 }
-function lightenColor(hex: string): string {
+function lightenColor(hex: string, amt = 40): string {
   try {
     const n = parseInt(hex.replace("#",""), 16);
-    const r = Math.min(255, (n >> 16) + 40);
-    const g = Math.min(255, ((n >> 8) & 0xff) + 40);
-    const b = Math.min(255, (n & 0xff) + 40);
+    const r = Math.min(255, (n >> 16) + amt);
+    const g = Math.min(255, ((n >> 8) & 0xff) + amt);
+    const b = Math.min(255, (n & 0xff) + amt);
     return `rgb(${r},${g},${b})`;
   } catch { return hex; }
 }
