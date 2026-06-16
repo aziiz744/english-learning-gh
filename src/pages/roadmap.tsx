@@ -1012,20 +1012,28 @@ export default function Roadmap() {
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
 
-                  {/* البومة حارسة الوحدة الأولى — على اليمين تطفو */}
+                  {/* البومة حارسة الوحدة الأولى — تقف على قاعدة وتطفو وتلف */}
                   {unitIdx === 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-                      style={{ position: "absolute", right: -20, top: 40, zIndex: 5, pointerEvents: "none" }}>
-                      {/* قاعدة دائرية */}
+                    <div style={{ position: "absolute", right: -10, top: 200, zIndex: 5, pointerEvents: "none" }}>
+                      {/* القاعدة البيضاوية */}
                       <div style={{
-                        position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
-                        width: 70, height: 18, borderRadius: "50%",
-                        background: "radial-gradient(ellipse, rgba(79,195,247,0.3) 0%, transparent 70%)",
-                        filter: "blur(3px)",
+                        position: "absolute", bottom: 4, left: "50%", transform: "translateX(-50%)",
+                        width: 72, height: 20, borderRadius: "50%",
+                        background: "rgba(45,58,74,0.9)",
                       }}/>
-                      <OwlMascot state="idle" size={84} />
-                    </motion.div>
+                      <div style={{
+                        position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)",
+                        width: 50, height: 12, borderRadius: "50%",
+                        background: "rgba(0,0,0,0.25)", filter: "blur(3px)",
+                      }}/>
+                      {/* البومة تطفو وتلف */}
+                      <motion.div
+                        animate={{ y: [0, -10, 0], rotate: [0, 0, 360, 360, 0] }}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", times: [0, 0.3, 0.5, 0.8, 1] }}
+                        style={{ position: "relative" }}>
+                        <OwlMascot state="idle" size={88} />
+                      </motion.div>
+                    </div>
                   )}
 
                   {/* Connectors */}
@@ -1264,7 +1272,7 @@ export default function Roadmap() {
       </AnimatePresence>
 
       {/* Floating Mascot */}
-      <FloatingMascot color={chapter.color} chapterId="beginner" />
+      {/* البومة الآن حارسة الوحدة — لا حاجة للروبوت القديم */}
     </Layout>
   );
 }
