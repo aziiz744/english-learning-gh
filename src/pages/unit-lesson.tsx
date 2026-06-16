@@ -32,13 +32,14 @@ function lightColor(hex: string): string {
   } catch { return hex; }
 }
 
-function speak(text: string) {
+function speak(text: string, rate = 0.85) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US"; u.rate = 0.85;
+  u.lang = "en-US"; u.rate = rate;
   window.speechSynthesis.speak(u);
 }
+function speakSlow(text: string) { speak(text, 0.5); }
 
 // ── Hearts ────────────────────────────────────────────────────────────────────
 function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
@@ -107,11 +108,33 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
 }
 
 // ── Word Order ────────────────────────────────────────────────────────────────
+function shuffleArr<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
-  const [wordBank] = useState(() => ex.sentence!.split(" ").map((w,i)=>({w,i:i+Math.random()})).sort(()=>Math.random()-0.5));
+  const [wordBank] = useState(() => {
+    const words = ex.sentence!.split(" ").map((w, i) => ({ w, i }));
+    if (words.length < 2) return words;
+    let shuffled = shuffleArr(words);
+    // أعد الخلط إذا طلع نفس ترتيب الجملة الأصلية
+    let tries = 0;
+    while (tries < 10 && shuffled.map(x => x.w).join(" ") === ex.sentence) {
+      shuffled = shuffleArr(words);
+      tries++;
+    }
+    return shuffled;
+  });
   const [selected, setSelected] = useState<{w:string;i:number}[]>([]);
   const [remaining, setRemaining] = useState(wordBank);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(()=>{ const t = setTimeout(()=>speak(ex.correctAnswer), 350); return ()=>clearTimeout(t); },[]);
 
   const add = (item:{w:string;i:number}, idx:number) => {
     if (submitted) return;
@@ -130,14 +153,19 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
-      <div style={{ textAlign:"center", marginBottom:16 }}>
-        <button onClick={()=>speak(ex.correctAnswer)}
-          style={{ background:"none", border:"none", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", margin:"0 auto", gap:4 }}>
-          <div style={{ width:52, height:52, borderRadius:"50%", background:`${color}20`, border:`2px solid ${color}40`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={color}><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          </div>
-          <span style={{ fontSize:11, color:"hsl(var(--muted-foreground))" }}>استمع للجملة</span>
-        </button>
+      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:20 }}>
+        {/* عادي */}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer)}
+          style={{ width:72, height:72, borderRadius:20, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </motion.button>
+        {/* سلحفاة بطيء */}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer)}
+          style={{ width:58, height:58, borderRadius:18, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <span style={{ fontSize:28 }}>🐢</span>
+        </motion.button>
       </div>
       {/* Answer area */}
       <div style={{ minHeight:52, background:"hsl(var(--background))", border:`2px solid hsl(var(--border))`, borderRadius:14, padding:"10px 14px", display:"flex", flexWrap:"wrap", gap:8, marginBottom:14 }}>
@@ -217,7 +245,12 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 // ── Listen & Select ───────────────────────────────────────────────────────────
 function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
   const [picked, setPicked] = useState<string|null>(null);
-  useEffect(()=>{ setTimeout(()=>speak(ex.listenSentence!), 300); },[]);
+  useEffect(()=>{
+    // تشغيل تلقائي موثوق — ننتظر جاهزية المحرك
+    const play = () => speak(ex.listenSentence!);
+    const t = setTimeout(play, 400);
+    return ()=>clearTimeout(t);
+  },[]);
 
   const choose = (o: string) => {
     if (picked) return;
@@ -227,14 +260,22 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
 
   return (
     <div>
-      <div style={{ textAlign:"center", marginBottom:28 }}>
+      {/* Audio buttons: عادي + سلحفاة بطيء */}
+      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:28 }}>
+        {/* عادي — كبير */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!)}
-          style={{ width:76, height:76, borderRadius:"50%", background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:`0 6px 20px ${color}50` }}>
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          style={{ width:96, height:96, borderRadius:24, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 24px ${color}55` }}>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
-        <div style={{ fontSize:12, color:"hsl(var(--muted-foreground))" }}>اضغط للاستماع مجدداً</div>
+        {/* سلحفاة — بطيء */}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!)}
+          style={{ width:72, height:72, borderRadius:20, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <span style={{ fontSize:34 }}>🐢</span>
+        </motion.button>
       </div>
+      <div style={{ fontSize:12, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:24 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
@@ -313,6 +354,157 @@ function SubDoneScreen({ subLesson, color, onNext }: { subLesson: number; color:
         </button>
       </div>
     </motion.div>
+  );
+}
+
+// ── Fill Blank (اتبع النمط) ──────────────────────────────────────────────────
+function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+  const [picked, setPicked] = useState<string|null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const parts = (ex.blankSentence ?? "").split("___");
+
+  useEffect(()=>{ setTimeout(()=>speak(ex.correctAnswer + " " + (ex.blankSentence??"").replace("___", ex.correctAnswer)), 200); },[]);
+
+  const confirm = () => {
+    if (!picked || confirmed) return;
+    setConfirmed(true);
+    onAnswer(picked === ex.correctAnswer, picked);
+  };
+
+  return (
+    <div>
+      {/* Audio hint */}
+      <div style={{ display:"flex", justifyContent:"center", marginBottom:24 }}>
+        <button onClick={()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer))}
+          style={{ display:"flex", alignItems:"center", gap:10, background:`${color}15`, border:`1.5px solid ${color}40`, borderRadius:16, padding:"12px 18px", cursor:"pointer" }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill={color}><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span style={{ fontWeight:700, direction:"ltr", fontSize:15 }}>{(ex.blankSentence??"").replace("___", picked ?? "____")}</span>
+        </button>
+      </div>
+
+      {/* Sentence with blank */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:22, fontWeight:800, direction:"ltr", flexWrap:"wrap" }}>
+        <span>{parts[0]}</span>
+        <span style={{
+          minWidth:90, borderBottom:`3px solid ${picked?color:"hsl(var(--border))"}`,
+          textAlign:"center", color:picked?color:"transparent", paddingBottom:2,
+        }}>{picked ?? "__"}</span>
+        <span>{parts[1]}</span>
+      </div>
+
+      {/* Options */}
+      <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:20 }}>
+        {(ex.blankOptions??[]).map(o=>(
+          <motion.button key={o} whileTap={{scale:0.95}}
+            onClick={()=>!confirmed && setPicked(o)}
+            style={{
+              padding:"12px 22px", borderRadius:14, fontSize:16, fontWeight:800, direction:"ltr",
+              cursor:confirmed?"default":"pointer",
+              background: picked===o ? `${color}25` : "hsl(var(--card))",
+              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}`,
+            }}>{o}</motion.button>
+        ))}
+      </div>
+
+      {!confirmed && (
+        <button onClick={confirm} disabled={!picked}
+          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed" }}>
+          تحقق ✓
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── Matching pairs (الأزواج المتطابقة) ───────────────────────────────────────
+function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+  const pairs = ex.pairs ?? [];
+  const [enCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
+  const [arCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
+  const [selectedEn, setSelectedEn] = useState<string|null>(null);
+  const [matched, setMatched] = useState<Set<string>>(new Set());
+  const [wrongPair, setWrongPair] = useState<string|null>(null);
+
+  const pickEn = (en: string) => {
+    if (matched.has(en)) return;
+    setSelectedEn(en);
+    speak(en);
+  };
+
+  const pickAr = (ar: string, en: string) => {
+    if (matched.has(en) || !selectedEn) return;
+    // هل selectedEn يطابق هذا العربي؟
+    const correctPair = pairs.find(p => p.en === selectedEn);
+    if (correctPair && correctPair.ar === ar) {
+      // صح
+      playMatchCorrect();
+      const newMatched = new Set(matched); newMatched.add(selectedEn);
+      setMatched(newMatched);
+      setSelectedEn(null);
+      if (newMatched.size === pairs.length) {
+        setTimeout(()=>onAnswer(true, "matched"), 600);
+      }
+    } else {
+      // خطأ
+      setWrongPair(ar);
+      setTimeout(()=>{ setWrongPair(null); setSelectedEn(null); }, 600);
+    }
+  };
+
+  const playMatchCorrect = () => {
+    try {
+      const ac = new (window.AudioContext||(window as any).webkitAudioContext)();
+      const o = ac.createOscillator(); const g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.frequency.value = 660; o.type="sine";
+      g.gain.setValueAtTime(0.1, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+0.3);
+      o.start(); o.stop(ac.currentTime+0.3);
+    } catch {}
+  };
+
+  return (
+    <div>
+      <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
+        {/* English column */}
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+          {enCol.map(p=>{
+            const isMatched = matched.has(p.en);
+            const isSelected = selectedEn === p.en;
+            return (
+              <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>pickEn(p.en)}
+                animate={isMatched?{opacity:0.4,scale:0.96}:{}}
+                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"ltr",
+                  cursor:isMatched?"default":"pointer",
+                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : "hsl(var(--card))",
+                  border: `2px solid ${isMatched ? color : isSelected ? color : "hsl(var(--border))"}` }}>
+                {isMatched ? "✓ "+p.en : p.en}
+              </motion.button>
+            );
+          })}
+        </div>
+        {/* Arabic column */}
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+          {arCol.map(p=>{
+            const isMatched = matched.has(p.en);
+            const isWrong = wrongPair === p.ar;
+            return (
+              <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>pickAr(p.ar, p.en)}
+                animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
+                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"rtl",
+                  cursor:isMatched?"default":"pointer",
+                  background: isMatched ? `${color}15` : isWrong ? "#dc262620" : "hsl(var(--card))",
+                  border: `2px solid ${isMatched ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
+                {isMatched ? "✓ "+p.ar : p.ar}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+      <p style={{ textAlign:"center", fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:20 }}>
+        {selectedEn ? "الآن اختر المعنى العربي" : "اختر كلمة إنجليزية ثم معناها"}
+      </p>
+    </div>
   );
 }
 
@@ -620,41 +812,23 @@ export default function UnitLesson() {
                   initial={{opacity:0,x:40}} animate={{opacity:1,x:0}}
                   transition={{duration:0.22}}>
                   <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
-                    {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":"🖼️ طابق الصورة"}
+                    {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":ex.type==="fill_blank"?"✏️ اتبع النمط":ex.type==="matching"?"🔗 الأزواج المتطابقة":"🖼️ طابق الصورة"}
                   </div>
                   {ex.type==="word_order"    && <WordOrderQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="translate"     && <TranslateQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="picture_match" && <PictureQ    ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="fill_blank"    && <FillBlankQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="matching"      && <MatchingQ   ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
           {/* Bottom: mascot ثابتة (تكبر عند الكومبو) + feedback */}
-          <div style={{ flexShrink:0, display:"flex", alignItems:"flex-end", gap:10, paddingBottom:8, minHeight:120, position:"relative" }}>
-            {/* Mascot — ثابتة، تكبر بسلاسة عند الكومبو */}
-            <motion.div
-              style={{ flexShrink:0, transformOrigin:"bottom center", position:"relative", zIndex: showStreakPop ? 50 : 1 }}
-              animate={{ scale: showStreakPop ? 1.6 : 1 }}
-              transition={{ type:"spring", stiffness:180, damping:14 }}>
-              <Mascot state={mascotState} className="w-20 h-28" />
-              {/* فقاعة التحفيز عند الكومبو */}
-              <AnimatePresence>
-                {showStreakPop && (
-                  <motion.div
-                    initial={{ opacity:0, scale:0.5, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
-                    style={{ position:"absolute", top:-44, left:"50%", transform:"translateX(-50%)",
-                      background:meta.color, color:"white", fontWeight:900, fontSize:13, padding:"6px 14px", borderRadius:14,
-                      whiteSpace:"nowrap", boxShadow:`0 4px 16px ${meta.color}70`, zIndex:51 }}>
-                    🔥 {streak} متتالية!
-                    <div style={{ position:"absolute", bottom:-5, left:"50%", transform:"translateX(-50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:`6px solid ${meta.color}` }}/>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-            {/* Feedback bar */}
-            <div style={{ flex:1 }}>
+          <div style={{ flexShrink:0, position:"relative", paddingBottom:8 }}>
+            {/* Feedback bar — فوق، تنمو لأعلى */}
+            <div style={{ marginRight:88 }}>
               <AnimatePresence>
                 {feedback && (
                   <motion.div key="fb" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}}>
@@ -663,6 +837,26 @@ export default function UnitLesson() {
                 )}
               </AnimatePresence>
             </div>
+            {/* Mascot — مثبتة في الزاوية اليمنى السفلى دائماً */}
+            <motion.div
+              style={{ position:"absolute", bottom:8, right:0, width:80, transformOrigin:"bottom right", zIndex: showStreakPop ? 50 : 5 }}
+              animate={{ scale: showStreakPop ? 1.7 : 1 }}
+              transition={{ type:"spring", stiffness:180, damping:14 }}>
+              <Mascot state={mascotState} className="w-20 h-28" />
+              {/* فقاعة التحفيز عند الكومبو */}
+              <AnimatePresence>
+                {showStreakPop && (
+                  <motion.div
+                    initial={{ opacity:0, scale:0.5, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
+                    style={{ position:"absolute", top:-40, right:"50%", transform:"translateX(50%)",
+                      background:meta.color, color:"white", fontWeight:900, fontSize:12, padding:"5px 12px", borderRadius:12,
+                      whiteSpace:"nowrap", boxShadow:`0 4px 16px ${meta.color}70`, zIndex:51 }}>
+                    🔥 {streak} متتالية!
+                    <div style={{ position:"absolute", bottom:-5, right:"50%", transform:"translateX(50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:`6px solid ${meta.color}` }}/>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </div>
         </>}
       </div>
