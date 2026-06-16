@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 
@@ -860,6 +861,7 @@ export default function Roadmap() {
   const [showGuide, setShowGuide] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const chapter = CHAPTERS[activeChapter];
   const sections = getSections(chapter);
 
@@ -1096,7 +1098,7 @@ export default function Roadmap() {
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  window.location.href = `/u/${lesson.id}`;
+                                  setLocation(`/u/${lesson.id}`);
                                 }}
                               />
                             </div>
