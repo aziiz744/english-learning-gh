@@ -6,12 +6,6 @@ import { getLessonMiniExercises } from "@/lib/lesson-exercises";
 import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
 
-// ── Unit progress helpers ──────────────────────────────────────────────────
-export async function getUnitProgress(userId: string): Promise<Record<string, boolean>> {
-  const { data } = await supabase.from("unit_progress").select("lesson_id").eq("user_id", userId);
-  if (!data) return {};
-  return Object.fromEntries(data.map((r: any) => [r.lesson_id, true]));
-}
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
