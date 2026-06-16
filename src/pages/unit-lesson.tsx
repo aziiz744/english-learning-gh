@@ -8,7 +8,6 @@ import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
-import { OwlMascot } from "@/components/owl-mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -817,25 +816,18 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
 
-          {/* Streak popup — البومة تحتفل */}
+          {/* Streak popup — رسالة تحفيز */}
           <AnimatePresence>
             {showStreakPop && (
               <motion.div
                 initial={{ opacity:0, scale:0.5, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
-                style={{ position:"fixed", top:"22%", left:"50%", transform:"translateX(-50%)", zIndex:50,
-                  display:"flex", flexDirection:"column", alignItems:"center", pointerEvents:"none" }}>
-                <OwlMascot state="celebrate" size={110} message={`🔥 ${streak} متتالية!`} />
+                style={{ position:"fixed", top:"30%", left:"50%", transform:"translateX(-50%)", zIndex:50,
+                  background:meta.color, color:"white", fontWeight:900, fontSize:20, padding:"12px 28px", borderRadius:20,
+                  whiteSpace:"nowrap", boxShadow:`0 8px 30px ${meta.color}70`, pointerEvents:"none" }}>
+                🔥 {streak} متتالية! رائع!
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* البومة المحفّزة الثابتة — أسفل يمين تتفاعل مع الإجابات */}
-          <div style={{ position:"absolute", bottom:90, right:8, zIndex:6, pointerEvents:"none" }}>
-            <OwlMascot
-              state={mascotState === "correct" ? "happy" : mascotState === "wrong" ? "sad" : "idle"}
-              size={64}
-            />
-          </div>
 
           {/* Feedback bar — عرض كامل، الشخصية مخفية */}
           <div style={{ flexShrink:0, paddingBottom:8 }}>

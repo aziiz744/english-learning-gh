@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
-import { OwlMascot } from "@/components/owl-mascot";
 
 interface UnitLesson {
   id: string;
@@ -548,19 +547,19 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           </radialGradient>
         </defs>
 
-        {/* ── خط التقدم (خارج الدائرة بفاصل، يوازي ميلان الدائرة) ── */}
+        {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) — خلف كل شيء ── */}
+        <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
+
+        {/* ── خط التقدم (حول الوجه تماماً، فاصل متساوٍ) ── */}
         <motion.circle
-          cx={r + pad} cy={r + pad + depth * 0.5} r={trackR} fill="none"
+          cx={r + pad} cy={r + pad} r={trackR} fill="none"
           stroke={trackColor} strokeWidth={5} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth*0.5}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
         />
-
-        {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) ── */}
-        <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
 
         {/* ── الوجه العلوي ── */}
         <circle cx={r + pad} cy={r + pad} r={r - 2} fill={`url(#${gId})`}/>
@@ -1011,30 +1010,6 @@ export default function Roadmap() {
 
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
-
-                  {/* البومة حارسة الوحدة الأولى — تقف على قاعدة وتطفو وتلف */}
-                  {unitIdx === 0 && (
-                    <div style={{ position: "absolute", right: -10, top: 200, zIndex: 5, pointerEvents: "none" }}>
-                      {/* القاعدة البيضاوية */}
-                      <div style={{
-                        position: "absolute", bottom: 4, left: "50%", transform: "translateX(-50%)",
-                        width: 72, height: 20, borderRadius: "50%",
-                        background: "rgba(45,58,74,0.9)",
-                      }}/>
-                      <div style={{
-                        position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)",
-                        width: 50, height: 12, borderRadius: "50%",
-                        background: "rgba(0,0,0,0.25)", filter: "blur(3px)",
-                      }}/>
-                      {/* البومة تطفو وتلف */}
-                      <motion.div
-                        animate={{ y: [0, -10, 0], rotate: [0, 0, 360, 360, 0] }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", times: [0, 0.3, 0.5, 0.8, 1] }}
-                        style={{ position: "relative" }}>
-                        <OwlMascot state="idle" size={88} />
-                      </motion.div>
-                    </div>
-                  )}
 
                   {/* Connectors */}
                   <svg width={CANVAS_W} height={svgH}
