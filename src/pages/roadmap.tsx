@@ -3,6 +3,7 @@ import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
 
 interface UnitLesson {
   id: string;
@@ -854,7 +855,19 @@ function GuideDrawer({ section, chapter, onClose }: {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter] = useState(0);
-  const [progress] = useState<Record<string, number>>({});
+  const [progress, setProgress] = useState<Record<string, number>>({});
+
+  // Load unit progress from Supabase
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("unit_progress").select("lesson_id").eq("user_id", user.id)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, number> = {};
+        data.forEach((r: any) => { map[r.lesson_id] = 4; }); // 4 = completed
+        setProgress(map);
+      });
+  }, [user]);
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);

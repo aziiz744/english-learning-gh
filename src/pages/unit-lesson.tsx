@@ -5,6 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getLessonMiniExercises } from "@/lib/lesson-exercises";
 import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
+
+// ── Unit progress helpers ──────────────────────────────────────────────────
+export async function getUnitProgress(userId: string): Promise<Record<string, boolean>> {
+  const { data } = await supabase.from("unit_progress").select("lesson_id").eq("user_id", userId);
+  if (!data) return {};
+  return Object.fromEntries(data.map((r: any) => [r.lesson_id, true]));
+}
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
@@ -182,9 +189,10 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
           if (isPicked && !confirmed) { bg=`${color}20`; border=`2px solid ${color}`; }
           return (
             <motion.button key={o} whileTap={{scale:0.97}} onClick={()=>choose(o)}
-              style={{ padding:"14px 16px", borderRadius:14, fontSize:15, fontWeight:700, cursor:confirmed?"default":"pointer",
+              style={{ padding:"16px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
                 textAlign:"left", direction:"ltr", background:bg, border,
-                display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                display:"flex", alignItems:"center", justifyContent:"space-between",
+                minHeight:56 }}>
               <span>{o}</span>
               <span onMouseEnter={()=>speak(o)} onClick={e=>{e.stopPropagation();speak(o);}}
                 style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
@@ -228,7 +236,7 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
           return (
             <motion.button key={o} whileTap={{scale:0.97}} onClick={()=>choose(o)}
-              style={{ padding:"14px 16px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr",
+              style={{ padding:"16px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:56,
                 background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
                 border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
               {o}
@@ -463,6 +471,27 @@ export default function UnitLesson() {
         if (newQ.length === 0) {
           setMascotFor("complete", 0);
           playComplete();
+          // Save progress to Supabase
+          if (user) {
+            supabase.from("unit_progress").upsert({
+              user_id: user.id,
+              lesson_id: id,
+              completed_at: new Date().toISOString(),
+              score: Math.round(((score + 1) / Math.max(totalCount + 1, 1)) * 100),
+            }, { onConflict: "user_id,lesson_id" }).then(() => {
+              // Also update XP
+              supabase.from("user_stats").select("total_xp,weekly_xp,exercises_completed")
+                .eq("user_id", user.id).single().then(({ data }) => {
+                  if (data) {
+                    supabase.from("user_stats").update({
+                      total_xp: (data.total_xp ?? 0) + (xpEarned + (ex?.xp ?? 10)),
+                      weekly_xp: (data.weekly_xp ?? 0) + (xpEarned + (ex?.xp ?? 10)),
+                      exercises_completed: (data.exercises_completed ?? 0) + 1,
+                    }).eq("user_id", user.id);
+                  }
+                });
+            });
+          }
           setPhase("finish");
         }
         return newQ;
@@ -535,20 +564,24 @@ export default function UnitLesson() {
             </div>
           </div>
 
-          {/* Mobile mascot + Feedback */}
+          {/* Feedback + mascot row */}
           <div style={{ flexShrink:0, marginTop:"auto", paddingBottom:8 }}>
             <AnimatePresence>
               {feedback && (
-                <motion.div key="mob-mascot" initial={{opacity:0,x:40,scale:0.7}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,scale:0.7}}
-                  className="sm:hidden"
-                  style={{ position:"absolute", bottom:220, left:16, zIndex:30 }}>
-                  <Mascot state={mascotState} className="w-24 h-32" />
+                <motion.div key="fb-row" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:20}}>
+                  {/* Mascot beside feedback on mobile */}
+                  <div style={{ display:"flex", alignItems:"flex-end", gap:8, marginBottom:6 }} className="sm:hidden">
+                    <motion.div initial={{opacity:0,x:-20,scale:0.7}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,scale:0.7}} transition={{type:"spring",stiffness:200}}>
+                      <Mascot state={mascotState} className="w-20 h-28" />
+                    </motion.div>
+                    <div style={{ flex:1 }}>
+                      <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+                    </div>
+                  </div>
+                  <div className="hidden sm:block">
+                    <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+                  </div>
                 </motion.div>
-              )}
-            </AnimatePresence>
-            <AnimatePresence>
-              {feedback && (
-                <FeedbackBar key="fb" correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
               )}
             </AnimatePresence>
           </div>
