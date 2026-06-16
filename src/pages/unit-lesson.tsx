@@ -55,8 +55,7 @@ function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
 function W({ word, color }: { word: string; color: string }) {
   return (
     <span
-      onMouseEnter={() => speak(word)}
-      onTouchStart={() => speak(word)}
+      onClick={() => speak(word)}
       style={{ borderBottom:`2px dotted ${color}`, cursor:"pointer", fontWeight:800, direction:"ltr", display:"inline" }}
     >{word}</span>
   );
@@ -122,7 +121,7 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   return (
     <div>
       <div style={{ textAlign:"center", marginBottom:16 }}>
-        <button onMouseEnter={()=>speak(ex.correctAnswer)} onClick={()=>speak(ex.correctAnswer)}
+        <button onClick={()=>speak(ex.correctAnswer)}
           style={{ background:"none", border:"none", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", margin:"0 auto", gap:4 }}>
           <div style={{ width:52, height:52, borderRadius:"50%", background:`${color}20`, border:`2px solid ${color}40`, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill={color}><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
@@ -144,7 +143,7 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:20, justifyContent:"center" }}>
         {remaining.map((item,i)=>(
           <motion.button key={item.i} initial={{opacity:0}} animate={{opacity:1}} onClick={()=>add(item,i)}
-            onMouseEnter={()=>speak(item.w)}
+            
             style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:8, padding:"6px 14px", fontSize:15, fontWeight:700, cursor:"pointer" }}>
             {item.w}
           </motion.button>
@@ -189,7 +188,7 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
                 display:"flex", alignItems:"center", justifyContent:"space-between",
                 minHeight:56 }}>
               <span>{o}</span>
-              <span onMouseEnter={()=>speak(o)} onClick={e=>{e.stopPropagation();speak(o);}}
+              <span onClick={e=>{e.stopPropagation();speak(o);}}
                 style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
             </motion.button>
           );
@@ -268,7 +267,7 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
                 display:"flex", flexDirection:"column", alignItems:"center", gap:10,
                 background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
                 border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <span onMouseEnter={()=>speak(o.label)} style={{ fontSize:52 }}>{o.emoji}</span>
+              <span style={{ fontSize:52 }}>{o.emoji}</span>
             </motion.button>
           );
         })}

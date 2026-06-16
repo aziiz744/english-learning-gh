@@ -501,7 +501,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
   const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
   const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#f59e0b" : isActive ? shadeColor(color, -20) : "#1e2d3d";
+  const trackColor = isGold ? "#fde047" : isActive ? lightenColor(lightenColor(color)) : "#1e2d3d";
   const arcFilled  = isGold || isJumpStation
     ? `${circ} 0`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
@@ -554,9 +554,9 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* Progress / full arc */}
         <motion.circle
           cx={r} cy={r} r={trackR} fill="none"
-          stroke={trackColor} strokeWidth={6} strokeLinecap="round"
+          stroke={trackColor} strokeWidth={7} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor})` : "none", transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
