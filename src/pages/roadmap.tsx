@@ -510,8 +510,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const r      = SIZE / 2;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
   const pad = 16; // مساحة إضافية للخط الخارجي
-  const trackR = r + depth/2 + 6; // يحيط بالدائرة الكلية (وجه+عمق) بفاصل متساوٍ
-  const circ   = 2 * Math.PI * trackR;
+  const gap = 6; // الفاصل بين الخط والدائرة
+  const trackRx = r + gap;            // أفقياً: نصف القطر + فاصل
+  const trackRy = r + depth/2 + gap;  // عمودياً: يشمل التمدد + فاصل
+  // محيط البيضاوي التقريبي (Ramanujan)
+  const ellipseCirc = Math.PI * (3*(trackRx+trackRy) - Math.sqrt((3*trackRx+trackRy)*(trackRx+3*trackRy)));
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
@@ -523,10 +526,10 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   // الخط بلون الوحدة نفسه (أو ذهبي للمكتمل)
   const trackColor = isGold ? "#f59e0b" : isActive ? color : "#2a3a4a";
   const arcFilled  = isGold
-    ? `${circ} 0`
+    ? `${ellipseCirc} 0`
     : isJumpStation
-    ? `0 ${circ}`
-    : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
+    ? `0 ${ellipseCirc}`
+    : isActive ? `${ellipseCirc * Math.min(progress / 4, 1)} ${ellipseCirc}` : `0 ${ellipseCirc}`;
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
 
@@ -565,13 +568,14 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) — خلف كل شيء ── */}
         <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
 
-        {/* ── خط التقدم (حول الدائرة كاملة بفاصل متساوٍ من كل الجهات) ── */}
-        <motion.circle
-          cx={r + pad} cy={r + pad + depth/2} r={trackR} fill="none"
+        {/* ── خط التقدم (بيضاوي يواكب تمدد الدائرة) ── */}
+        <motion.ellipse
+          cx={r + pad} cy={r + pad + depth/2}
+          rx={trackRx} ry={trackRy} fill="none"
           stroke={trackColor} strokeWidth={5} strokeLinecap="round"
           strokeDasharray={arcFilled}
           style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
-          initial={{ strokeDasharray:`0 ${circ}` }}
+          initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
         />

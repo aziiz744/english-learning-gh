@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
+import { DrinkArt } from "@/components/drink-art";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -314,11 +315,11 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
           const isCorrect=o.label===ex.correctAnswer, isPicked=o.label===picked;
           return (
             <motion.button key={o.label} whileTap={{scale:0.95}} onClick={()=>choose(o.label)}
-              style={{ padding:"20px 10px", borderRadius:16, cursor:picked?"default":"pointer",
+              style={{ padding:"16px 10px", borderRadius:16, cursor:picked?"default":"pointer",
                 display:"flex", flexDirection:"column", alignItems:"center", gap:10,
                 background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
                 border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <span style={{ fontSize:52 }}>{o.emoji}</span>
+              <div style={{ width:64, height:64 }}><DrinkArt label={o.label}/></div>
             </motion.button>
           );
         })}
