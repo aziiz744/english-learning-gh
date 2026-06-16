@@ -475,6 +475,7 @@ export default function UnitLesson() {
   const handleNext = () => {
     if (!feedback) return;
     const ok = feedback.ok;
+    const ex = queue[0];
     setFeedback(null);
 
     if (!ok && hearts <= 0 && isPro === false) {
@@ -482,53 +483,48 @@ export default function UnitLesson() {
       return;
     }
 
-    setQueue(q => {
-      const ex = q[0];
-      const rest = q.slice(1);
-      if (ok) {
-        // correct — remove from queue
-        const newQ = rest;
-        setDoneCount(d => d + 1);
-        if (newQ.length === 0) {
-          // خلصنا درس داخلي — احفظ ربع التقدم
-          const completedSub = subLesson + 1; // 1..4
-          if (user) {
-            supabase.from("unit_progress").upsert({
-              user_id: user.id,
-              lesson_id: id,
-              sub_progress: completedSub, // كم درس داخلي خلص (1-4)
-              completed_at: completedSub >= 4 ? new Date().toISOString() : null,
-              score: Math.round(((score + 1) / Math.max(totalCount + 1, 1)) * 100),
-            }, { onConflict: "user_id,lesson_id" });
-            supabase.from("user_stats").select("total_xp,weekly_xp,exercises_completed")
-              .eq("user_id", user.id).single().then(({ data }) => {
-                if (data) {
-                  supabase.from("user_stats").update({
-                    total_xp: (data.total_xp ?? 0) + xpEarned + (ex?.xp ?? 10),
-                    weekly_xp: (data.weekly_xp ?? 0) + xpEarned + (ex?.xp ?? 10),
-                    exercises_completed: (data.exercises_completed ?? 0) + 1,
-                  }).eq("user_id", user.id);
-                }
-              });
-          }
-          if (completedSub >= 4) {
-            // خلصت كل الـ 4 دروس — دائرة كاملة
-            setMascotFor("complete", 0);
-            playComplete();
-            setPhase("finish");
-          } else {
-            // انتقل للدرس الداخلي التالي
-            setMascotFor("complete", 0);
-            playComplete();
-            setPhase("subdone");
-          }
+    if (ok) {
+      const rest = queue.slice(1);
+      setDoneCount(d => d + 1);
+
+      if (rest.length === 0) {
+        // خلصنا كل أسئلة الدرس الداخلي
+        const completedSub = subLesson + 1; // 1..4
+
+        // احفظ التقدم (بدون كسر الـ flow إذا فشل)
+        if (user) {
+          supabase.from("unit_progress").upsert({
+            user_id: user.id,
+            lesson_id: id,
+            sub_progress: completedSub,
+            completed_at: completedSub >= 4 ? new Date().toISOString() : null,
+            score: Math.round(((score) / Math.max(totalCount, 1)) * 100),
+          }, { onConflict: "user_id,lesson_id" }).then(({ error }) => {
+            if (error) console.warn("progress save failed:", error.message);
+          });
+          supabase.from("user_stats").select("total_xp,weekly_xp,exercises_completed")
+            .eq("user_id", user.id).single().then(({ data }) => {
+              if (data) {
+                supabase.from("user_stats").update({
+                  total_xp: (data.total_xp ?? 0) + xpEarned,
+                  weekly_xp: (data.weekly_xp ?? 0) + xpEarned,
+                  exercises_completed: (data.exercises_completed ?? 0) + 1,
+                }).eq("user_id", user.id);
+              }
+            });
         }
-        return newQ;
+
+        setMascotFor("complete", 0);
+        playComplete();
+        setQueue([]);
+        setPhase(completedSub >= 4 ? "finish" : "subdone");
       } else {
-        // wrong — push to end
-        return [...rest, ex];
+        setQueue(rest);
       }
-    });
+    } else {
+      // خطأ — ادفع السؤال لآخر القائمة
+      setQueue(q => [...q.slice(1), ex]);
+    }
   };
 
   const progress = (doneCount / Math.max(doneCount + queue.length, 1)) * 100;
@@ -549,8 +545,9 @@ export default function UnitLesson() {
     <Layout>
       <div style={{ maxWidth:440, margin:"0 auto", padding:"0 16px", height:"calc(100svh - 130px)", display:"flex", flexDirection:"column" }}>
 
-        {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={loadExercises} onBack={()=>setLocation("/roadmap")}/>}
-        {phase === "finish"   && <CompletionScreen score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false} onRetry={loadExercises} onBack={()=>setLocation("/roadmap")}/>}
+        {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
+        {phase === "subdone"  && <SubDoneScreen subLesson={subLesson+1} color={meta.color} onNext={()=>setSubLesson(s=>s+1)}/>}
+        {phase === "finish"   && <CompletionScreen score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false} onRetry={()=>{setSubLesson(0);loadExercises(0);}} onBack={()=>setLocation("/roadmap")}/>}
 
         {phase === "playing" && <>
           {/* Top bar */}
