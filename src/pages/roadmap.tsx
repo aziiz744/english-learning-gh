@@ -461,25 +461,35 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
         <path d="M34 40 Q34 35 38 35 Q42 35 42 40" stroke={unlocked ? "#d97706" : "#6b7280"} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
         <circle cx="38" cy="45" r="2" fill={unlocked ? "#d97706" : "#4b5563"}/>
 
-        {/* Lid */}
-        <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
-        <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
-        {/* Lid band */}
-        <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
-
-        {/* Lid top highlight */}
-        <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
-
-        {/* Coins when unlocked */}
+        {/* Coins/gems inside when unlocked */}
         {unlocked && <>
-          <circle cx="24" cy="32" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <circle cx="38" cy="28" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
-          <circle cx="52" cy="32" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <circle cx="31" cy="29" r="4" fill="#fde68a" stroke="#eab308" strokeWidth="0.5"/>
-          <circle cx="45" cy="29" r="4" fill="#fde68a" stroke="#eab308" strokeWidth="0.5"/>
-          {/* Sparkles */}
-          <text x="14" y="22" fontSize="10">✨</text>
-          <text x="54" y="20" fontSize="9">⭐</text>
+          <circle cx="24" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+          <circle cx="38" cy="38" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
+          <circle cx="52" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+          <text x="30" y="36" fontSize="11">💎</text>
+        </>}
+
+        {/* Lid — مفتوح إذا unlocked، مغلق إذا لا */}
+        {unlocked ? (
+          /* غطاء مفتوح (مائل للخلف) */
+          <g transform="rotate(-105 12 22)">
+            <rect x="8" y="12" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
+            <rect x="8" y="24" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
+            <ellipse cx="38" cy="13" rx="22" ry="3" fill="white" opacity="0.12"/>
+          </g>
+        ) : (
+          <>
+            <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
+            <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
+            <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
+            <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
+          </>
+        )}
+
+        {/* Sparkles when unlocked */}
+        {unlocked && <>
+          <text x="10" y="16" fontSize="10">✨</text>
+          <text x="58" y="14" fontSize="9">⭐</text>
         </>}
       </svg>
     </div>
@@ -498,7 +508,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r + 7; // فاصل واضح مريح مثل Duolingo
+  const trackR = r + depth/2 + 6; // يحيط بالدائرة الكلية (وجه+عمق) بفاصل متساوٍ
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
@@ -518,7 +528,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
-  const pad = 12; // مساحة إضافية للخط الخارجي
+  const pad = 16; // مساحة إضافية للخط الخارجي
 
   return (
     <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
@@ -555,12 +565,12 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) — خلف كل شيء ── */}
         <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
 
-        {/* ── خط التقدم (حول الوجه تماماً، فاصل متساوٍ) ── */}
+        {/* ── خط التقدم (حول الدائرة كاملة بفاصل متساوٍ من كل الجهات) ── */}
         <motion.circle
-          cx={r + pad} cy={r + pad} r={trackR} fill="none"
+          cx={r + pad} cy={r + pad + depth/2} r={trackR} fill="none"
           stroke={trackColor} strokeWidth={5} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
@@ -1028,18 +1038,7 @@ export default function Roadmap() {
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
 
-                  {/* Connectors */}
-                  <svg width={CANVAS_W} height={svgH}
-                    style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
-                    {positions.map((pos, idx) => {
-                      if (idx === 0) return null;
-                      const prev = positions[idx - 1];
-                      const done = (progress[unit.lessons[idx - 1].id] ?? 0) >= 4;
-                      return <PathConnector key={`c${idx}`}
-                        fromX={prev.x} fromY={prev.y} toX={pos.x} toY={pos.y}
-                        color={unit.color} done={done} />;
-                    })}
-                  </svg>
+                  {/* الشريط بين الدوائر محذوف — الدوائر مستقلة */}
 
                   {/* Stations */}
                   {unit.lessons.map((lesson, idx) => {
