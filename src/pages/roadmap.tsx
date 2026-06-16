@@ -856,6 +856,15 @@ function GuideDrawer({ section, chapter, onClose }: {
 export default function Roadmap() {
   const [activeChapter] = useState(0);
   const [progress, setProgress] = useState<Record<string, number>>({});
+  const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
+  const [activeSectionIdx, setActiveSectionIdx] = useState(0);
+  const { user } = useAuth();
+  const chapter = CHAPTERS[activeChapter];
+  const sections = getSections(chapter);
+
+  const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
+  const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   // Load unit progress from Supabase
   useEffect(() => {
@@ -864,18 +873,10 @@ export default function Roadmap() {
       .then(({ data }) => {
         if (!data) return;
         const map: Record<string, number> = {};
-        data.forEach((r: any) => { map[r.lesson_id] = 4; }); // 4 = completed
+        data.forEach((r: any) => { map[r.lesson_id] = 4; });
         setProgress(map);
       });
   }, [user]);
-  const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
-  const [showGuide, setShowGuide] = useState(false);
-  const [activeSectionIdx, setActiveSectionIdx] = useState(0);
-  const chapter = CHAPTERS[activeChapter];
-  const sections = getSections(chapter);
-
-  const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
-  const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   // Refs for each section divider — used for IntersectionObserver
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
