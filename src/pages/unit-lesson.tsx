@@ -380,11 +380,12 @@ const MAX_HEARTS = 5;
 export default function UnitLesson() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { playCorrect, playWrong, playComplete } = useSound();
   const meta = id ? LESSON_MAP[id] : undefined;
 
-  const [isPro, setIsProState] = useState<boolean | null>(null); // null = loading
+  const isPro = user?.isPro;
+  const proLoaded = !authLoading; // use auth loading state
   const [queue, setQueue] = useState<ExObj[]>([]);
   const [doneCount, setDoneCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
@@ -396,12 +397,7 @@ export default function UnitLesson() {
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  // Load pro status immediately
-  useEffect(() => {
-    if (!user) { setIsProState(false); return; }
-    supabase.from("user_stats").select("is_pro").eq("user_id", user.id).single()
-      .then(({ data }) => setIsProState(data?.is_pro ?? false));
-  }, [user]);
+
 
   const loadExercises = useCallback(() => {
     if (!meta) return;
@@ -504,7 +500,7 @@ export default function UnitLesson() {
 
   const progress = (doneCount / Math.max(doneCount + queue.length, 1)) * 100;
   const ex = queue[0];
-  const proLoaded = isPro !== null;
+
 
   if (!meta) return (
     <Layout>
@@ -531,7 +527,7 @@ export default function UnitLesson() {
               <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:meta.color, borderRadius:10 }} transition={{ duration:0.4 }}/>
             </div>
             {/* Show hearts only when pro status is loaded */}
-            {proLoaded && <Hearts count={hearts} isPro={isPro!}/>}
+            {proLoaded && <Hearts count={hearts} isPro={isPro}/>}
           </div>
 
           {/* Lesson label */}
