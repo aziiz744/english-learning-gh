@@ -10,7 +10,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Mascot } from "@/components/mascot";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
@@ -421,35 +420,10 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
   const pairs = ex.pairs ?? [];
   const [enCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
   const [arCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
-  const [selectedEn, setSelectedEn] = useState<string|null>(null);
+  // selected = { col: "en"|"ar", en: string } — الكلمة المختارة من أي عمود
+  const [selected, setSelected] = useState<{ col:"en"|"ar"; en:string } | null>(null);
   const [matched, setMatched] = useState<Set<string>>(new Set());
-  const [wrongPair, setWrongPair] = useState<string|null>(null);
-
-  const pickEn = (en: string) => {
-    if (matched.has(en)) return;
-    setSelectedEn(en);
-    speak(en);
-  };
-
-  const pickAr = (ar: string, en: string) => {
-    if (matched.has(en) || !selectedEn) return;
-    // هل selectedEn يطابق هذا العربي؟
-    const correctPair = pairs.find(p => p.en === selectedEn);
-    if (correctPair && correctPair.ar === ar) {
-      // صح
-      playMatchCorrect();
-      const newMatched = new Set(matched); newMatched.add(selectedEn);
-      setMatched(newMatched);
-      setSelectedEn(null);
-      if (newMatched.size === pairs.length) {
-        setTimeout(()=>onAnswer(true, "matched"), 600);
-      }
-    } else {
-      // خطأ
-      setWrongPair(ar);
-      setTimeout(()=>{ setWrongPair(null); setSelectedEn(null); }, 600);
-    }
-  };
+  const [wrongKey, setWrongKey] = useState<string|null>(null);
 
   const playMatchCorrect = () => {
     try {
@@ -463,6 +437,37 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
     } catch {}
   };
 
+  const tryMatch = (col:"en"|"ar", en:string) => {
+    if (matched.has(en)) return;
+    const pair = pairs.find(p => p.en === en)!;
+    if (col === "en") speak(en);
+
+    if (!selected) {
+      // أول اختيار من أي عمود
+      setSelected({ col, en });
+      return;
+    }
+    if (selected.col === col) {
+      // اختار من نفس العمود — غيّر الاختيار
+      setSelected({ col, en });
+      if (col === "en") speak(en);
+      return;
+    }
+    // اختار من العمود الآخر — تحقق التطابق
+    if (selected.en === en) {
+      // صح! نفس الزوج
+      playMatchCorrect();
+      const nm = new Set(matched); nm.add(en);
+      setMatched(nm);
+      setSelected(null);
+      if (nm.size === pairs.length) setTimeout(()=>onAnswer(true, "matched"), 600);
+    } else {
+      // خطأ
+      setWrongKey(col+en);
+      setTimeout(()=>{ setWrongKey(null); setSelected(null); }, 600);
+    }
+  };
+
   return (
     <div>
       <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
@@ -470,14 +475,15 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
         <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
           {enCol.map(p=>{
             const isMatched = matched.has(p.en);
-            const isSelected = selectedEn === p.en;
+            const isSelected = selected?.col==="en" && selected.en===p.en;
+            const isWrong = wrongKey === "en"+p.en;
             return (
-              <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>pickEn(p.en)}
-                animate={isMatched?{opacity:0.4,scale:0.96}:{}}
+              <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>tryMatch("en", p.en)}
+                animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
                 style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"ltr",
                   cursor:isMatched?"default":"pointer",
-                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : "hsl(var(--card))",
-                  border: `2px solid ${isMatched ? color : isSelected ? color : "hsl(var(--border))"}` }}>
+                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
+                  border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
                 {isMatched ? "✓ "+p.en : p.en}
               </motion.button>
             );
@@ -487,14 +493,15 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
         <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
           {arCol.map(p=>{
             const isMatched = matched.has(p.en);
-            const isWrong = wrongPair === p.ar;
+            const isSelected = selected?.col==="ar" && selected.en===p.en;
+            const isWrong = wrongKey === "ar"+p.en;
             return (
-              <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>pickAr(p.ar, p.en)}
+              <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>tryMatch("ar", p.en)}
                 animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
                 style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"rtl",
                   cursor:isMatched?"default":"pointer",
-                  background: isMatched ? `${color}15` : isWrong ? "#dc262620" : "hsl(var(--card))",
-                  border: `2px solid ${isMatched ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
+                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
+                  border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
                 {isMatched ? "✓ "+p.ar : p.ar}
               </motion.button>
             );
@@ -502,7 +509,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
         </div>
       </div>
       <p style={{ textAlign:"center", fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:20 }}>
-        {selectedEn ? "الآن اختر المعنى العربي" : "اختر كلمة إنجليزية ثم معناها"}
+        {selected ? "الآن اختر ما يطابقها من العمود الآخر" : "اختر أي كلمة لبدء المطابقة"}
       </p>
     </div>
   );
@@ -759,8 +766,8 @@ export default function UnitLesson() {
         setQueue(rest);
       }
     } else {
-      // خطأ — ادفع السؤال لآخر القائمة
-      setQueue(q => [...q.slice(1), ex]);
+      // خطأ — ادفع السؤال لآخر القائمة وأعد تركيب المكوّن
+      setQueue(q => [...q.slice(1), { ...ex, id: `${ex.id}-r${Date.now()}` }]);
     }
   };
 
@@ -825,38 +832,28 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
 
-          {/* Bottom: mascot ثابتة (تكبر عند الكومبو) + feedback */}
-          <div style={{ flexShrink:0, position:"relative", paddingBottom:8 }}>
-            {/* Feedback bar — فوق، تنمو لأعلى */}
-            <div style={{ marginRight:88 }}>
-              <AnimatePresence>
-                {feedback && (
-                  <motion.div key="fb" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}}>
-                    <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            {/* Mascot — مثبتة في الزاوية اليمنى السفلى دائماً */}
-            <motion.div
-              style={{ position:"absolute", bottom:8, right:0, width:80, transformOrigin:"bottom right", zIndex: showStreakPop ? 50 : 5 }}
-              animate={{ scale: showStreakPop ? 1.7 : 1 }}
-              transition={{ type:"spring", stiffness:180, damping:14 }}>
-              <Mascot state={mascotState} className="w-20 h-28" />
-              {/* فقاعة التحفيز عند الكومبو */}
-              <AnimatePresence>
-                {showStreakPop && (
-                  <motion.div
-                    initial={{ opacity:0, scale:0.5, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
-                    style={{ position:"absolute", top:-40, right:"50%", transform:"translateX(50%)",
-                      background:meta.color, color:"white", fontWeight:900, fontSize:12, padding:"5px 12px", borderRadius:12,
-                      whiteSpace:"nowrap", boxShadow:`0 4px 16px ${meta.color}70`, zIndex:51 }}>
-                    🔥 {streak} متتالية!
-                    <div style={{ position:"absolute", bottom:-5, right:"50%", transform:"translateX(50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:`6px solid ${meta.color}` }}/>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+          {/* Streak popup — في الوسط (بدون شخصية) */}
+          <AnimatePresence>
+            {showStreakPop && (
+              <motion.div
+                initial={{ opacity:0, scale:0.5, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
+                style={{ position:"fixed", top:"30%", left:"50%", transform:"translateX(-50%)", zIndex:50,
+                  background:meta.color, color:"white", fontWeight:900, fontSize:20, padding:"12px 28px", borderRadius:20,
+                  whiteSpace:"nowrap", boxShadow:`0 8px 30px ${meta.color}70`, pointerEvents:"none" }}>
+                🔥 {streak} متتالية! رائع!
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Feedback bar — عرض كامل، الشخصية مخفية */}
+          <div style={{ flexShrink:0, paddingBottom:8 }}>
+            <AnimatePresence>
+              {feedback && (
+                <motion.div key="fb" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}}>
+                  <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </>}
       </div>

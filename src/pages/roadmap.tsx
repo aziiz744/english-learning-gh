@@ -503,8 +503,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
   const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
   const trackColor = isGold ? "#fde047" : isActive ? "#ffffff" : "#2a3a4a";
-  const arcFilled  = isGold || isJumpStation
+  // الخط يمتلئ فقط حسب التقدم الفعلي. الذهبي (مكتمل) ممتلئ. السهم بدون خط.
+  const arcFilled  = isGold
     ? `${circ} 0`
+    : isJumpStation
+    ? `0 ${circ}` // السهم: لا خط
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
@@ -552,7 +555,12 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* Inner face with gradient */}
         <circle cx={r} cy={r} r={r - 7} fill={`url(#${gId})`}/>
 
-        {/* Progress / full arc */}
+        {/* Top shine streak — قبل الـ arc حتى لا يغطيه */}
+        <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.28} ry={r * 0.1}
+          fill="white" opacity={isActive ? 0.06 : 0.025}
+          transform={`rotate(-35 ${r} ${r})`}/>
+
+        {/* Progress / full arc — يُرسم فوق الوجه والـ shine */}
         <motion.circle
           cx={r} cy={r} r={trackR} fill="none"
           stroke={trackColor} strokeWidth={7} strokeLinecap="round"
@@ -562,11 +570,6 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
         />
-
-        {/* Top shine streak */}
-        <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.32} ry={r * 0.12}
-          fill="white" opacity={isActive ? 0.08 : 0.03}
-          transform={`rotate(-35 ${r} ${r})`}/>
 
         {/* Bottom subtle rim */}
         <ellipse cx={r} cy={r * 1.62} rx={r * 0.55} ry={r * 0.1}
