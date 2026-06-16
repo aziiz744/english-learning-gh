@@ -493,18 +493,18 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r - 2.5;
+  const trackR = r + 4; // الخط خارج الدائرة بفاصل واضح
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
   // ألوان مريحة بعمق ثلاثي الأبعاد
-  const faceTop   = isGold ? "#fbbf24" : isActive ? lightenColor(color) : "#3a4656";  // أعلى الوجه (فاتح)
-  const faceMain  = isGold ? "#f59e0b" : isActive ? color : "#2d3a4a";                  // وسط الوجه
-  const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330"; // الجانب السفلي (عمق)
+  const faceTop   = isGold ? "#fbbf24" : isActive ? lightenColor(color) : "#3a4656";
+  const faceMain  = isGold ? "#f59e0b" : isActive ? color : "#2d3a4a";
+  const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330";
   const starColor = isGold ? "#ffffff" : isActive ? "#ffffff" : "#566578";
-  // الخط بلون أفتح من الدائرة (فاصل جميل)
-  const trackColor = isGold ? "#fde047" : isActive ? lightenColor(color, 90) : "#2a3a4a";
+  // الخط بلون الوحدة نفسه (أو ذهبي للمكتمل)
+  const trackColor = isGold ? "#f59e0b" : isActive ? color : "#2a3a4a";
   const arcFilled  = isGold
     ? `${circ} 0`
     : isJumpStation
@@ -513,9 +513,10 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
+  const pad = 8; // مساحة إضافية للخط الخارجي
 
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + depth + 6 }}>
+    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
 
       {/* Soft colored glow beneath */}
       <div style={{
@@ -529,7 +530,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
       {/* Pulse ring for current */}
       {isCurrent && (
         <motion.div style={{
-          position: "absolute", top: 0, left: 0, width: SIZE, height: SIZE,
+          position: "absolute", top: pad, left: pad, width: SIZE, height: SIZE,
           borderRadius: "50%", border: `2.5px solid ${color}`, zIndex: 2,
         }}
           animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
@@ -537,7 +538,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         />
       )}
 
-      <svg width={SIZE} height={SIZE + depth} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
+      <svg width={SIZE + pad*2} height={SIZE + depth + pad} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
         <defs>
           <radialGradient id={gId} cx="38%" cy="30%" r="80%">
             <stop offset="0%"  stopColor={faceTop}/>
@@ -546,29 +547,29 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           </radialGradient>
         </defs>
 
-        {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) ── */}
-        <circle cx={r} cy={r + depth} r={r - 2} fill={sideColor}/>
-
-        {/* ── الوجه العلوي ── */}
-        <circle cx={r} cy={r} r={r - 2} fill={`url(#${gId})`}/>
-
-        {/* لمعة علوية ناعمة */}
-        <ellipse cx={r * 0.64} cy={r * 0.5} rx={r * 0.4} ry={r * 0.26}
-          fill="white" opacity={isActive ? 0.16 : 0.05}/>
-
-        {/* ── خط التقدم حول الوجه ── */}
+        {/* ── خط التقدم (خارج الدائرة بفاصل) ── */}
         <motion.circle
-          cx={r} cy={r} r={trackR} fill="none"
-          stroke={trackColor} strokeWidth={6} strokeLinecap="round"
+          cx={r + pad} cy={r + pad} r={trackR} fill="none"
+          stroke={trackColor} strokeWidth={5} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 3px ${trackColor}90)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
         />
 
+        {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) ── */}
+        <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
+
+        {/* ── الوجه العلوي ── */}
+        <circle cx={r + pad} cy={r + pad} r={r - 2} fill={`url(#${gId})`}/>
+
+        {/* لمعة علوية ناعمة */}
+        <ellipse cx={(r + pad) - r*0.36} cy={(r + pad) - r*0.5} rx={r * 0.4} ry={r * 0.26}
+          fill="white" opacity={isActive ? 0.16 : 0.05}/>
+
         {/* ── الأيقونة ── */}
-        <g transform={`translate(${r - SIZE * 0.21}, ${r - SIZE * 0.21})`}>
+        <g transform={`translate(${r + pad - SIZE * 0.21}, ${r + pad - SIZE * 0.21})`}>
           {isJumpStation && !isGold ? (
             <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 28 28" fill="white" opacity="0.95"
               style={{ filter:`drop-shadow(0 2px 2px ${sideColor})` }}>
@@ -1116,7 +1117,7 @@ export default function Roadmap() {
                               whiteSpace: "nowrap",
                               boxShadow: canJump ? `0 2px 10px ${unit.color}30` : "none",
                             }}>
-                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل الوحدة السابقة"}
+                              {"القفز إلى هنا"}
                             </div>
                             <div style={{ width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:`7px solid hsl(var(--border))` }}/>
                           </motion.div>
@@ -1147,10 +1148,10 @@ export default function Roadmap() {
                         {/* Station */}
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
                           transition={{ delay: idx * 0.08, type: "spring", stiffness: 200 }}
-                          whileHover={!effectiveLocked ? { scale: 1.07 } : {}}
-                          whileTap={!effectiveLocked ? { scale: 0.94 } : {}}
+                          whileHover={!effectiveLocked ? { y: 3, transition: { duration: 0.15 } } : {}}
+                          whileTap={!effectiveLocked ? { y: 7, scale: 0.97, transition: { duration: 0.1 } } : {}}
                           onClick={e => {
                             e.stopPropagation();
                             if (!effectiveLocked) {
