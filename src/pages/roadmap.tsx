@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
+import { OwlMascot } from "@/components/owl-mascot";
 
 interface UnitLesson {
   id: string;
@@ -547,12 +548,12 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           </radialGradient>
         </defs>
 
-        {/* ── خط التقدم (خارج الدائرة بفاصل) ── */}
+        {/* ── خط التقدم (خارج الدائرة بفاصل، يوازي ميلان الدائرة) ── */}
         <motion.circle
-          cx={r + pad} cy={r + pad} r={trackR} fill="none"
+          cx={r + pad} cy={r + pad + depth * 0.5} r={trackR} fill="none"
           stroke={trackColor} strokeWidth={5} strokeLinecap="round"
           strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad}px` }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth*0.5}px` }}
           initial={{ strokeDasharray:`0 ${circ}` }}
           animate={{ strokeDasharray: arcFilled }}
           transition={{ duration: 0.8, ease:"easeOut" }}
@@ -1010,6 +1011,22 @@ export default function Roadmap() {
 
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
+
+                  {/* البومة حارسة الوحدة الأولى — على اليمين تطفو */}
+                  {unitIdx === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                      style={{ position: "absolute", right: -20, top: 40, zIndex: 5, pointerEvents: "none" }}>
+                      {/* قاعدة دائرية */}
+                      <div style={{
+                        position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
+                        width: 70, height: 18, borderRadius: "50%",
+                        background: "radial-gradient(ellipse, rgba(79,195,247,0.3) 0%, transparent 70%)",
+                        filter: "blur(3px)",
+                      }}/>
+                      <OwlMascot state="idle" size={84} />
+                    </motion.div>
+                  )}
 
                   {/* Connectors */}
                   <svg width={CANVAS_W} height={svgH}
