@@ -352,48 +352,53 @@ function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Crown icon for challenge stations ───────────────────────────────────────
 function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 90;
+  const SIZE = 76;
   const r = SIZE / 2;
-  const gold = locked ? "#4b5563" : color;
-  const light = locked ? "#6b7280" : lightenColor(color);
-  const dark  = locked ? "#1f2937" : shadeColor(color, -55);
+  const depth = SIZE * 0.11;
+  const pad = 5;
+  const faceTop  = locked ? "#3a4656" : lightenColor(color);
+  const faceMain = locked ? "#2d3a4a" : color;
+  const sideCol  = locked ? "#1a2330" : shadeColor(color, -60);
   const gId = `crown-${color.replace("#","")}-${locked?"l":"u"}`;
+
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
-      {/* Glow */}
+    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
       {!locked && (
         <div style={{
           position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-          width: SIZE * 0.85, height: SIZE * 0.28, borderRadius: "50%",
-          background: color, opacity: 0.35, filter: "blur(12px)", zIndex: 0,
+          width: SIZE * 0.8, height: SIZE * 0.28, borderRadius: "50%",
+          background: color, opacity: 0.25, filter: "blur(10px)", zIndex: 0,
         }}/>
       )}
-      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
+      <svg width={SIZE + pad*2} height={SIZE + depth + pad} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
         <defs>
-          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
-            <stop offset="0%"  stopColor={light}/>
-            <stop offset="50%" stopColor={gold}/>
-            <stop offset="100%" stopColor={dark}/>
+          <radialGradient id={gId} cx="38%" cy="30%" r="80%">
+            <stop offset="0%"  stopColor={faceTop}/>
+            <stop offset="55%" stopColor={faceMain}/>
+            <stop offset="100%" stopColor={shadeColor(faceMain, -25)}/>
           </radialGradient>
         </defs>
-        {/* Outer ring */}
-        <circle cx={r} cy={r} r={r-1} fill={dark} stroke={shadeColor(gold,-30)} strokeWidth={2}/>
-        {/* Inner face */}
-        <circle cx={r} cy={r} r={r-7} fill={`url(#${gId})`}/>
-        {/* Shine */}
-        <ellipse cx={r*0.68} cy={r*0.44} rx={r*0.3} ry={r*0.11}
-          fill="white" opacity={locked ? 0.05 : 0.2} transform={`rotate(-35 ${r} ${r})`}/>
-        {/* Crown icon */}
-        <g transform={`translate(${r-18}, ${r-14})`}>
-          <path d="M3 22 L33 22 L30 10 L22 17 L18 6 L14 17 L6 10 Z"
-            fill={locked ? "#4b5563" : "white"} opacity={locked ? 0.5 : 1}/>
-          <rect x="3" y="22" width="30" height="5" rx="2"
-            fill={locked ? "#374151" : "rgba(255,255,255,0.7)"}/>
-          {/* Crown gems */}
+        {/* العمق */}
+        <circle cx={r+pad} cy={r+pad+depth} r={r-2} fill={sideCol}/>
+        {/* الوجه */}
+        <circle cx={r+pad} cy={r+pad} r={r-2} fill={`url(#${gId})`}/>
+        {/* لمعة */}
+        <ellipse cx={(r+pad)-r*0.36} cy={(r+pad)-r*0.5} rx={r*0.4} ry={r*0.26}
+          fill="white" opacity={locked ? 0.05 : 0.14}/>
+        {/* التاج — أكبر وأوضح */}
+        <g transform={`translate(${r+pad-20}, ${r+pad-16})`}>
+          {/* جسم التاج */}
+          <path d="M2 26 L38 26 L34 10 L26 19 L20 4 L14 19 L6 10 Z"
+            fill={locked ? "#4b5563" : "#fbbf24"}
+            stroke={locked ? "#374151" : "#f59e0b"} strokeWidth="1.5"/>
+          {/* قاعدة التاج */}
+          <rect x="2" y="26" width="36" height="7" rx="3"
+            fill={locked ? "#374151" : "#f59e0b"}/>
+          {/* الجواهر */}
           {!locked && <>
-            <circle cx="18" cy="8" r="2.5" fill="#fef08a"/>
-            <circle cx="7" cy="12" r="2" fill="#fef08a"/>
-            <circle cx="29" cy="12" r="2" fill="#fef08a"/>
+            <circle cx="20" cy="7" r="3.5" fill="#fff" opacity="0.9"/>
+            <circle cx="7" cy="13" r="2.5" fill="#fff" opacity="0.7"/>
+            <circle cx="33" cy="13" r="2.5" fill="#fff" opacity="0.7"/>
           </>}
         </g>
       </svg>
@@ -493,7 +498,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r + 4; // الخط خارج الدائرة بفاصل واضح
+  const trackR = r + 1; // الخط قريب من الدائرة بفاصل مريح مثل Duolingo
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
@@ -607,11 +612,12 @@ function lightenColor(hex: string, amt = 40): string {
 }
 
 // ─── Duolingo-style popup card ────────────────────────────────────────────────
-function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClose, onStart }: {
+function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lessonProgress, onClose, onStart }: {
   lesson: UnitLesson; color: string; unitTitle: string;
-  lessonNum: number; totalLessons: number;
+  lessonNum: number; totalLessons: number; lessonProgress: number;
   onClose: () => void; onStart: () => void;
 }) {
+  const isTreasureDone = lesson.type === "treasure" && lessonProgress >= 4;
   const darkColor = color + "dd";
   return (
     <motion.div
@@ -644,22 +650,33 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClo
         {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
       </p>
 
-      {/* Start button */}
-      <button onClick={onStart}
-        style={{
-          display: "block", width: "100%",
-          background: "white", color: "#1e293b",
+      {/* Start button or completed state */}
+      {isTreasureDone ? (
+        <div style={{
+          display: "block", width: "100%", textAlign: "center",
+          background: "rgba(255,255,255,0.2)", color: "white",
           fontWeight: 800, fontSize: 14,
           padding: "10px 0", borderRadius: 14,
-          border: "none", cursor: "pointer",
-          boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
-          transition: "transform 0.1s, box-shadow 0.1s",
-        }}
-        onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
-        onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
-      >
-        ابدأ +10 XP
-      </button>
+        }}>
+          ✅ مكتمل — حصلت على المكافأة
+        </div>
+      ) : (
+        <button onClick={onStart}
+          style={{
+            display: "block", width: "100%",
+            background: "white", color: "#1e293b",
+            fontWeight: 800, fontSize: 14,
+            padding: "10px 0", borderRadius: 14,
+            border: "none", cursor: "pointer",
+            boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
+            transition: "transform 0.1s, box-shadow 0.1s",
+          }}
+          onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
+          onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
+        >
+          {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : "ابدأ +10 XP"}
+        </button>
+      )}
     </motion.div>
   );
 }
@@ -1092,6 +1109,7 @@ export default function Roadmap() {
                                 unitTitle={unit.title}
                                 lessonNum={lessonNum}
                                 totalLessons={lessonStations.length}
+                                lessonProgress={lessonProgress}
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import {
-  LayoutDashboard, Route, BookOpen, Trophy, Flame,
+  LayoutDashboard, Route, Trophy, Flame,
   Shield, LogIn, LogOut, User, Menu, X, Crown, GraduationCap,
   Sparkles, MessageCircle, BookMarked, MoreHorizontal, ChevronRight, Activity,
 } from "lucide-react";
@@ -15,7 +15,6 @@ import { motion, AnimatePresence } from "framer-motion";
 // ── Bottom nav: 5 items max ──
 const BOTTOM_NAV = [
   { name: "الرئيسية",  href: "/",          icon: LayoutDashboard },
-  { name: "الدروس",    href: "/lessons",    icon: BookOpen },
   { name: "خارطة",    href: "/roadmap",    icon: Route },
   { name: "معلم",      href: "/teacher",    icon: MessageCircle },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
@@ -25,7 +24,6 @@ const BOTTOM_NAV = [
 const navigation = [
   { name: "الرئيسية",       href: "/",            icon: LayoutDashboard },
   { name: "خارطة التعلم",   href: "/roadmap",     icon: Route },
-  { name: "الدروس",         href: "/lessons",     icon: BookOpen },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
   { name: "القواعد",        href: "/grammar",     icon: GraduationCap },
