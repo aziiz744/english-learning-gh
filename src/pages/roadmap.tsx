@@ -501,7 +501,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
   const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
   const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#fde047" : isActive ? lightenColor(lightenColor(color)) : "#1e2d3d";
+  const trackColor = isGold ? "#fde047" : isActive ? "#ffffff" : "#2a3a4a";
   const arcFilled  = isGold || isJumpStation
     ? `${circ} 0`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
@@ -674,7 +674,7 @@ function PathConnector({ fromX, fromY, toX, toY, color, done }: {
   const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
   return (
     <g>
-      <path d={d} stroke="#2d3748" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 7"/>
+      <path d={d} stroke="#3a4658" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 8"/>
       {done && (
         <motion.path d={d} stroke={color} strokeWidth={6} fill="none" strokeLinecap="round"
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}

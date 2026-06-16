@@ -45,7 +45,7 @@ function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
   if (isPro) return (
     <div className="flex items-center gap-1">
       {[0,1,2,3,4].map(i => (
-        <Heart key={i} className="w-5 h-5 fill-blue-400 text-blue-400" />
+        <Heart key={i} className="w-4 h-4 fill-blue-400 text-blue-400" />
       ))}
       <span className="text-xs text-blue-400 font-bold mr-1">∞</span>
     </div>
@@ -54,7 +54,7 @@ function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
     <div className="flex items-center gap-1">
       {[0,1,2,3,4].map(i => (
         <motion.div key={i} animate={i === count ? { scale:[1,1.5,1] } : {}} transition={{ duration:0.3 }}>
-          <Heart className={cn("w-5 h-5 transition-all", i < count ? "fill-red-500 text-red-500" : "text-muted-foreground/20 fill-muted-foreground/10")} />
+          <Heart className={cn("w-4 h-4 transition-all", i < count ? "fill-red-500 text-red-500" : "text-muted-foreground/20 fill-muted-foreground/10")} />
         </motion.div>
       ))}
     </div>
@@ -596,9 +596,9 @@ export default function UnitLesson() {
 
         {phase === "playing" && <>
           {/* Top bar */}
-          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
-            <button onClick={()=>setLocation("/roadmap")} style={{ width:36, height:36, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>✕</button>
-            <div style={{ flex:1, height:10, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
+            <button onClick={()=>setLocation("/roadmap")} style={{ width:32, height:32, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>✕</button>
+            <div style={{ flex:1, height:12, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
               <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 8px ${meta.color}80` }} transition={{ duration:0.4 }}/>
             </div>
             {/* Show hearts only when pro status is loaded */}
@@ -631,28 +631,29 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
 
-          {/* Streak popup — شخصية كبيرة تحفز كل 3 إجابات */}
-          <AnimatePresence>
-            {showStreakPop && (
-              <motion.div
-                initial={{ opacity:0, scale:0.5 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.5 }}
-                style={{ position:"fixed", inset:0, zIndex:50, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
-                <motion.div animate={{ y:[0,-12,0] }} transition={{ repeat:Infinity, duration:0.8 }}>
-                  <Mascot state="correct" className="w-40 h-52" />
-                </motion.div>
-                <motion.div initial={{scale:0}} animate={{scale:1}} transition={{delay:0.15,type:"spring"}}
-                  style={{ background:meta.color, color:"white", fontWeight:900, fontSize:22, padding:"10px 28px", borderRadius:20, boxShadow:`0 8px 30px ${meta.color}70`, marginTop:8 }}>
-                  🔥 {streak} متتالية! رائع!
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Bottom: mascot ثابتة + feedback */}
-          <div style={{ flexShrink:0, display:"flex", alignItems:"flex-end", gap:10, paddingBottom:8, minHeight:120 }}>
-            <div style={{ flexShrink:0, width:80 }}>
+          {/* Bottom: mascot ثابتة (تكبر عند الكومبو) + feedback */}
+          <div style={{ flexShrink:0, display:"flex", alignItems:"flex-end", gap:10, paddingBottom:8, minHeight:120, position:"relative" }}>
+            {/* Mascot — ثابتة، تكبر بسلاسة عند الكومبو */}
+            <motion.div
+              style={{ flexShrink:0, transformOrigin:"bottom center", position:"relative", zIndex: showStreakPop ? 50 : 1 }}
+              animate={{ scale: showStreakPop ? 1.6 : 1 }}
+              transition={{ type:"spring", stiffness:180, damping:14 }}>
               <Mascot state={mascotState} className="w-20 h-28" />
-            </div>
+              {/* فقاعة التحفيز عند الكومبو */}
+              <AnimatePresence>
+                {showStreakPop && (
+                  <motion.div
+                    initial={{ opacity:0, scale:0.5, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
+                    style={{ position:"absolute", top:-44, left:"50%", transform:"translateX(-50%)",
+                      background:meta.color, color:"white", fontWeight:900, fontSize:13, padding:"6px 14px", borderRadius:14,
+                      whiteSpace:"nowrap", boxShadow:`0 4px 16px ${meta.color}70`, zIndex:51 }}>
+                    🔥 {streak} متتالية!
+                    <div style={{ position:"absolute", bottom:-5, left:"50%", transform:"translateX(-50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:`6px solid ${meta.color}` }}/>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+            {/* Feedback bar */}
             <div style={{ flex:1 }}>
               <AnimatePresence>
                 {feedback && (
