@@ -530,51 +530,44 @@ export default function UnitLesson() {
             <div style={{ fontWeight:900, fontSize:19, color:meta.color }}>{meta.title}</div>
           </div>
 
-          {/* Exercise + mascot row */}
-          <div style={{ flex:1, display:"flex", gap:12, overflow:"hidden" }}>
-            {/* Question */}
-            <div style={{ flex:1, overflowY:"auto" }}>
-              <AnimatePresence mode="wait">
-                {ex && !feedback && (
-                  <motion.div key={`${ex.id}-${queue.length}`} initial={{opacity:0,x:40}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-40}} transition={{duration:0.22}}>
-                    <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
-                      {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":"🖼️ طابق الصورة"}
-                    </div>
-                    {ex.type==="word_order"    && <WordOrderQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
-                    {ex.type==="translate"     && <TranslateQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
-                    {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
-                    {ex.type==="picture_match" && <PictureQ    ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            {/* Mascot — desktop */}
-            <div className="hidden sm:flex w-32 shrink-0 items-end pb-2">
-              <Mascot state={mascotState} className="w-32 h-44" />
-            </div>
-          </div>
-
-          {/* Feedback + mascot row */}
-          <div style={{ flexShrink:0, marginTop:"auto", paddingBottom:8 }}>
-            <AnimatePresence>
-              {feedback && (
-                <motion.div key="fb-row" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:20}}>
-                  {/* Mascot beside feedback on mobile */}
-                  <div style={{ display:"flex", alignItems:"flex-end", gap:8, marginBottom:6 }} className="sm:hidden">
-                    <motion.div initial={{opacity:0,x:-20,scale:0.7}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,scale:0.7}} transition={{type:"spring",stiffness:200}}>
-                      <Mascot state={mascotState} className="w-20 h-28" />
-                    </motion.div>
-                    <div style={{ flex:1 }}>
-                      <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
-                    </div>
+          {/* Main content area */}
+          <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column" }}>
+            {/* Question — يبقى ظاهر حتى بعد الإجابة */}
+            <AnimatePresence mode="wait">
+              {ex && (
+                <motion.div key={`${ex.id}-${queue.length}`}
+                  initial={{opacity:0,x:40}} animate={{opacity:1,x:0}}
+                  transition={{duration:0.22}}>
+                  <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
+                    {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":"🖼️ طابق الصورة"}
                   </div>
-                  <div className="hidden sm:block">
-                    <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
-                  </div>
+                  {ex.type==="word_order"    && <WordOrderQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="translate"     && <TranslateQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="picture_match" && <PictureQ    ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
+
+          {/* Feedback bar — ثابتة في الأسفل مع الشخصية */}
+          <AnimatePresence>
+            {feedback && (
+              <motion.div key="fb" initial={{opacity:0,y:24}} animate={{opacity:1,y:0}} exit={{opacity:0,y:24}}
+                style={{ flexShrink:0, paddingBottom:8 }}>
+                <div style={{ display:"flex", alignItems:"flex-end", gap:10 }}>
+                  {/* Mascot */}
+                  <motion.div initial={{opacity:0,scale:0.6}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:220}}>
+                    <Mascot state={mascotState} className="w-20 h-28 shrink-0" />
+                  </motion.div>
+                  {/* Bar */}
+                  <div style={{ flex:1 }}>
+                    <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>}
       </div>
     </Layout>
