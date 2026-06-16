@@ -13,11 +13,12 @@ import { cn } from "@/lib/utils";
 import { Mascot } from "@/components/mascot";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
-const LESSON_MAP: Record<string, { title: string; tier: 0|1|2|3; unitTitle: string; emoji: string; color: string }> = {
-  "drinks-1": { title: "الكلمات الأساسية", tier: 0, unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
-  "drinks-2": { title: "كلمات جديدة",      tier: 1, unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
-  "drinks-3": { title: "جمل كاملة",        tier: 2, unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
-  "drinks-c": { title: "تحدي الوحدة",      tier: 3, unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e" },
+// كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string }> = {
+  "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
+  "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
+  "drinks-3": { title: "جمل كاملة",        unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
+  "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e" },
 };
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
@@ -267,13 +268,42 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
                 display:"flex", flexDirection:"column", alignItems:"center", gap:10,
                 background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
                 border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <span onMouseEnter={()=>speak(o.label)} style={{ fontSize:48 }}>{o.emoji}</span>
-              <span style={{ fontSize:13, fontWeight:700, direction:"ltr", borderBottom:`2px dotted ${color}60`, paddingBottom:2 }}>{o.label}</span>
+              <span onMouseEnter={()=>speak(o.label)} style={{ fontSize:52 }}>{o.emoji}</span>
             </motion.button>
           );
         })}
       </div>
     </div>
+  );
+}
+
+// ── Sub-lesson done (انتقال بين الدروس الداخلية) ───────────────────────────
+function SubDoneScreen({ subLesson, color, onNext }: { subLesson: number; color: string; onNext: () => void }) {
+  return (
+    <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} className="flex-1 flex items-center justify-center">
+      <div className="text-center max-w-sm mx-auto p-6">
+        <motion.div initial={{scale:0,rotate:-20}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:200}}>
+          <div style={{ fontSize:64, marginBottom:16 }}>🎯</div>
+        </motion.div>
+        <h2 className="text-2xl font-bold mb-2">أحسنت! درس {subLesson} من 4</h2>
+        {/* Quarter circle progress */}
+        <div style={{ display:"flex", justifyContent:"center", gap:8, margin:"20px 0 28px" }}>
+          {[1,2,3,4].map(i => (
+            <div key={i} style={{
+              width:36, height:36, borderRadius:"50%",
+              background: i <= subLesson ? color : "hsl(var(--muted))",
+              border: `2px solid ${i <= subLesson ? color : "hsl(var(--border))"}`,
+              display:"flex", alignItems:"center", justifyContent:"center",
+              color:"white", fontWeight:800, fontSize:14,
+            }}>{i <= subLesson ? "✓" : i}</div>
+          ))}
+        </div>
+        <p className="text-muted-foreground mb-6">أكملت {subLesson}/4 من دروس هذه المحطة</p>
+        <button onClick={onNext} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
+          الدرس التالي ←
+        </button>
+      </div>
+    </motion.div>
   );
 }
 
@@ -380,22 +410,23 @@ export default function UnitLesson() {
 
   const isPro = user?.isPro;
   const proLoaded = !authLoading; // use auth loading state
+  const [subLesson, setSubLesson] = useState(0); // 0..3 = الدرس الداخلي الحالي
   const [queue, setQueue] = useState<ExObj[]>([]);
   const [doneCount, setDoneCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [score, setScore] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
-  const [phase, setPhase] = useState<"playing"|"gameover"|"finish">("playing");
+  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone">("playing");
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
 
 
 
-  const loadExercises = useCallback(() => {
+  const loadExercises = useCallback((tier: number) => {
     if (!meta) return;
-    const exs = getLessonMiniExercises(meta.title, 7, meta.tier);
+    const exs = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
     setQueue([...exs]);
     setDoneCount(0);
     setTotalCount(0);
@@ -407,7 +438,7 @@ export default function UnitLesson() {
     setMascotState("idle");
   }, [meta]);
 
-  useEffect(() => { loadExercises(); }, [loadExercises]);
+  useEffect(() => { loadExercises(subLesson); }, [loadExercises, subLesson]);
 
   const setMascotFor = (state: "correct"|"wrong"|"complete", dur = 2500) => {
     clearTimeout(mascotTimer.current);
@@ -459,30 +490,38 @@ export default function UnitLesson() {
         const newQ = rest;
         setDoneCount(d => d + 1);
         if (newQ.length === 0) {
-          setMascotFor("complete", 0);
-          playComplete();
-          // Save progress to Supabase
+          // خلصنا درس داخلي — احفظ ربع التقدم
+          const completedSub = subLesson + 1; // 1..4
           if (user) {
             supabase.from("unit_progress").upsert({
               user_id: user.id,
               lesson_id: id,
-              completed_at: new Date().toISOString(),
+              sub_progress: completedSub, // كم درس داخلي خلص (1-4)
+              completed_at: completedSub >= 4 ? new Date().toISOString() : null,
               score: Math.round(((score + 1) / Math.max(totalCount + 1, 1)) * 100),
-            }, { onConflict: "user_id,lesson_id" }).then(() => {
-              // Also update XP
-              supabase.from("user_stats").select("total_xp,weekly_xp,exercises_completed")
-                .eq("user_id", user.id).single().then(({ data }) => {
-                  if (data) {
-                    supabase.from("user_stats").update({
-                      total_xp: (data.total_xp ?? 0) + (xpEarned + (ex?.xp ?? 10)),
-                      weekly_xp: (data.weekly_xp ?? 0) + (xpEarned + (ex?.xp ?? 10)),
-                      exercises_completed: (data.exercises_completed ?? 0) + 1,
-                    }).eq("user_id", user.id);
-                  }
-                });
-            });
+            }, { onConflict: "user_id,lesson_id" });
+            supabase.from("user_stats").select("total_xp,weekly_xp,exercises_completed")
+              .eq("user_id", user.id).single().then(({ data }) => {
+                if (data) {
+                  supabase.from("user_stats").update({
+                    total_xp: (data.total_xp ?? 0) + xpEarned + (ex?.xp ?? 10),
+                    weekly_xp: (data.weekly_xp ?? 0) + xpEarned + (ex?.xp ?? 10),
+                    exercises_completed: (data.exercises_completed ?? 0) + 1,
+                  }).eq("user_id", user.id);
+                }
+              });
           }
-          setPhase("finish");
+          if (completedSub >= 4) {
+            // خلصت كل الـ 4 دروس — دائرة كاملة
+            setMascotFor("complete", 0);
+            playComplete();
+            setPhase("finish");
+          } else {
+            // انتقل للدرس الداخلي التالي
+            setMascotFor("complete", 0);
+            playComplete();
+            setPhase("subdone");
+          }
         }
         return newQ;
       } else {
@@ -531,7 +570,7 @@ export default function UnitLesson() {
           </div>
 
           {/* Main content area */}
-          <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column" }}>
+          <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait">
               {ex && (

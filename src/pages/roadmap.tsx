@@ -497,11 +497,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  const mainColor  = isGold ? "#eab308" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
+  const mainColor  = isGold ? "#f59e0b" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
   const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
   const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
-  const starColor  = isGold ? "#eab308" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#eab308" : isActive ? shadeColor(color, -20) : "#1e2d3d";
+  const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
+  const trackColor = isGold ? "#f59e0b" : isActive ? shadeColor(color, -20) : "#1e2d3d";
   const arcFilled  = isGold || isJumpStation
     ? `${circ} 0`
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
@@ -869,11 +869,11 @@ export default function Roadmap() {
   // Load unit progress from Supabase
   useEffect(() => {
     if (!user) return;
-    supabase.from("unit_progress").select("lesson_id").eq("user_id", user.id)
+    supabase.from("unit_progress").select("lesson_id, sub_progress").eq("user_id", user.id)
       .then(({ data }) => {
         if (!data) return;
         const map: Record<string, number> = {};
-        data.forEach((r: any) => { map[r.lesson_id] = 4; });
+        data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; }); // 0-4 = ربع لكل درس
         setProgress(map);
       });
   }, [user]);
