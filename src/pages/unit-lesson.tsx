@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
-const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string }> = {
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[] }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
-  "drinks-t": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e" },
+  "drinks-t": { title: "كنز المراجعة",     unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الكلمات الأساسية", "كلمات جديدة"] },
   "drinks-3": { title: "جمل كاملة",        unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e" },
 };
@@ -462,6 +462,79 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
   );
 }
 
+// ── Chest Open Screen (فتح صندوق الكنز) ──────────────────────────────────────
+function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBack:()=>void }) {
+  const [opened, setOpened] = useState(false);
+  useEffect(()=>{ const t=setTimeout(()=>setOpened(true), 700); return ()=>clearTimeout(t); },[]);
+
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
+      <div className="text-center max-w-sm mx-auto p-6">
+        <div style={{ position:"relative", width:200, height:200, margin:"0 auto 24px" }}>
+          {/* أشعة ضوئية */}
+          <AnimatePresence>
+            {opened && (
+              <motion.div initial={{opacity:0,scale:0.5}} animate={{opacity:1,scale:1}}
+                style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <div style={{ width:160, height:160, borderRadius:"50%",
+                  background:`radial-gradient(circle, ${color}40 0%, transparent 70%)` }}/>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* الجواهر تطير */}
+          <AnimatePresence>
+            {opened && [0,1,2,3,4].map(i=>(
+              <motion.div key={i}
+                initial={{ x:100, y:120, opacity:0, scale:0 }}
+                animate={{ x:100+(i-2)*38, y:40+Math.abs(i-2)*16, opacity:1, scale:1 }}
+                transition={{ delay:0.1+i*0.08, type:"spring" }}
+                style={{ position:"absolute", fontSize:28 }}>
+                {["💎","💰","⭐","💎","✨"][i]}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* الصندوق */}
+          <motion.div animate={opened?{}:{ rotate:[0,-3,3,-3,0] }} transition={{ repeat:opened?0:Infinity, duration:0.4 }}
+            style={{ position:"absolute", bottom:10, left:"50%", transform:"translateX(-50%)" }}>
+            <svg width="120" height="110" viewBox="0 0 120 110">
+              <defs>
+                <linearGradient id="cBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a16207"/><stop offset="100%" stopColor="#713f12"/></linearGradient>
+                <linearGradient id="cLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ca8a04"/><stop offset="100%" stopColor="#854d0e"/></linearGradient>
+              </defs>
+              {/* جسم الصندوق */}
+              <rect x="15" y="50" width="90" height="48" rx="6" fill="url(#cBody)"/>
+              <rect x="15" y="62" width="90" height="10" fill="#5c3410"/>
+              <rect x="52" y="50" width="16" height="48" fill="#5c3410" opacity="0.6"/>
+              {/* القفل */}
+              <rect x="52" y="66" width="16" height="14" rx="3" fill="#fbbf24"/>
+              {/* الغطاء — يفتح */}
+              <motion.g animate={opened?{ rotate:-110 }:{ rotate:0 }} transition={{ type:"spring", stiffness:120 }}
+                style={{ transformOrigin:"15px 50px" }}>
+                <rect x="15" y="28" width="90" height="26" rx="8" fill="url(#cLid)"/>
+                <rect x="15" y="42" width="90" height="8" fill="#5c3410"/>
+                <ellipse cx="60" cy="30" rx="30" ry="4" fill="white" opacity="0.15"/>
+              </motion.g>
+            </svg>
+          </motion.div>
+        </div>
+
+        <motion.div initial={{opacity:0,y:10}} animate={{opacity:opened?1:0,y:opened?0:10}} transition={{delay:0.5}}>
+          <h2 className="text-2xl font-bold mb-2" style={{ color }}>🎉 أحسنت! فتحت الكنز</h2>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:`${color}20`, border:`2px solid ${color}50`, borderRadius:16, padding:"10px 24px", marginBottom:24 }}>
+            <span style={{ fontSize:24 }}>💎</span>
+            <span style={{ fontWeight:900, fontSize:20, color }}>+{xp} XP</span>
+          </div>
+          <button onClick={onBack} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
+            واصل الرحلة 🗺️
+          </button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Completion Screen ─────────────────────────────────────────────────────────
 function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, onNext, onRetry, onBack }: {
   score:number; total:number; xpEarned:number; hearts:number; isPro:boolean;
@@ -605,7 +678,7 @@ export default function UnitLesson() {
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone">("playing");
+  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest">("playing");
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -614,7 +687,19 @@ export default function UnitLesson() {
 
   const loadExercises = useCallback((tier: number) => {
     if (!meta) return;
-    const raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
+    let raw: ExObj[];
+    if (meta.isReview && meta.reviewTitles) {
+      // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
+      raw = [];
+      meta.reviewTitles.forEach(title => {
+        raw.push(...getLessonMiniExercises(title, 4, 0));
+        raw.push(...getLessonMiniExercises(title, 3, 1));
+      });
+      // اخلط وخذ 8 أسئلة فقط
+      raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
+    } else {
+      raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
+    }
     // اخلط ترتيب الأسئلة + اخلط الخيارات داخل كل سؤال
     const shuffled = [...raw]
       .sort(() => Math.random() - 0.5)
@@ -711,11 +796,12 @@ export default function UnitLesson() {
 
       if (rest.length === 0) {
         // خلصنا كل أسئلة الدرس الداخلي
-        const completedSub = subLesson + 1; // 1..4
-        const saveSub = Math.max(completedSub, maxSubReached); // لا يقل التقدم أبداً
+        const isReview = !!meta.isReview;
+        const completedSub = isReview ? 4 : subLesson + 1; // المراجعة تكمل دفعة واحدة
+        const saveSub = Math.max(completedSub, maxSubReached);
         setMaxSubReached(saveSub);
+        const bonusXp = isReview ? xpEarned + 20 : xpEarned; // مكافأة الكنز
 
-        // احفظ التقدم (بدون كسر الـ flow إذا فشل)
         if (user) {
           supabase.from("unit_progress").upsert({
             user_id: user.id,
@@ -730,8 +816,8 @@ export default function UnitLesson() {
             .eq("user_id", user.id).single().then(({ data }) => {
               if (data) {
                 supabase.from("user_stats").update({
-                  total_xp: (data.total_xp ?? 0) + xpEarned,
-                  weekly_xp: (data.weekly_xp ?? 0) + xpEarned,
+                  total_xp: (data.total_xp ?? 0) + bonusXp,
+                  weekly_xp: (data.weekly_xp ?? 0) + bonusXp,
                   exercises_completed: (data.exercises_completed ?? 0) + 1,
                 }).eq("user_id", user.id);
               }
@@ -741,7 +827,7 @@ export default function UnitLesson() {
         setMascotFor("complete", 0);
         playComplete();
         setQueue([]);
-        setPhase("finish"); // CompletionScreen يميز عبر isLast
+        setPhase(isReview ? "chest" : "finish");
       } else {
         setQueue(rest);
       }
@@ -770,6 +856,7 @@ export default function UnitLesson() {
       <div style={{ maxWidth:440, margin:"0 auto", padding:"0 16px", height:"calc(100svh - 130px)", display:"flex", flexDirection:"column" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
+        {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "finish"   && <CompletionScreen
           score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
           subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}

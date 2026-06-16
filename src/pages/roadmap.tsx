@@ -428,8 +428,8 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
             <stop offset="100%" stopColor={unlocked ? "#92400e" : "#374151"}/>
           </linearGradient>
           <linearGradient id="chestBandGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#fbbf24" : "#9ca3af"}/>
-            <stop offset="100%" stopColor={unlocked ? "#d97706" : "#6b7280"}/>
+            <stop offset="0%" stopColor={unlocked ? "#a16207" : "#9ca3af"}/>
+            <stop offset="100%" stopColor={unlocked ? "#713f12" : "#6b7280"}/>
           </linearGradient>
           {unlocked && (
             <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
@@ -498,7 +498,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r + 1; // الخط قريب من الدائرة بفاصل مريح مثل Duolingo
+  const trackR = r + 7; // فاصل واضح مريح مثل Duolingo
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
@@ -518,7 +518,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
-  const pad = 8; // مساحة إضافية للخط الخارجي
+  const pad = 12; // مساحة إضافية للخط الخارجي
 
   return (
     <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
