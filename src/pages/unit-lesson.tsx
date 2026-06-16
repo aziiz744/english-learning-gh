@@ -326,199 +326,11 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
   );
 }
 
-// ── Sub-lesson done (انتقال بين الدروس الداخلية) ───────────────────────────
-function SubDoneScreen({ subLesson, color, onNext }: { subLesson: number; color: string; onNext: () => void }) {
-  return (
-    <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} className="flex-1 flex items-center justify-center">
-      <div className="text-center max-w-sm mx-auto p-6">
-        <motion.div initial={{scale:0,rotate:-20}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:200}}>
-          <div style={{ fontSize:64, marginBottom:16 }}>🎯</div>
-        </motion.div>
-        <h2 className="text-2xl font-bold mb-2">أحسنت! درس {subLesson} من 4</h2>
-        {/* Quarter circle progress */}
-        <div style={{ display:"flex", justifyContent:"center", gap:8, margin:"20px 0 28px" }}>
-          {[1,2,3,4].map(i => (
-            <div key={i} style={{
-              width:36, height:36, borderRadius:"50%",
-              background: i <= subLesson ? color : "hsl(var(--muted))",
-              border: `2px solid ${i <= subLesson ? color : "hsl(var(--border))"}`,
-              display:"flex", alignItems:"center", justifyContent:"center",
-              color:"white", fontWeight:800, fontSize:14,
-            }}>{i <= subLesson ? "✓" : i}</div>
-          ))}
-        </div>
-        <p className="text-muted-foreground mb-6">أكملت {subLesson}/4 من دروس هذه المحطة</p>
-        <button onClick={onNext} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
-          الدرس التالي ←
-        </button>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Fill Blank (اتبع النمط) ──────────────────────────────────────────────────
-function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
-  const [picked, setPicked] = useState<string|null>(null);
-  const [confirmed, setConfirmed] = useState(false);
-  const parts = (ex.blankSentence ?? "").split("___");
-
-  useEffect(()=>{ setTimeout(()=>speak(ex.correctAnswer + " " + (ex.blankSentence??"").replace("___", ex.correctAnswer)), 200); },[]);
-
-  const confirm = () => {
-    if (!picked || confirmed) return;
-    setConfirmed(true);
-    onAnswer(picked === ex.correctAnswer, picked);
-  };
-
-  return (
-    <div>
-      {/* Audio hint */}
-      <div style={{ display:"flex", justifyContent:"center", marginBottom:24 }}>
-        <button onClick={()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer))}
-          style={{ display:"flex", alignItems:"center", gap:10, background:`${color}15`, border:`1.5px solid ${color}40`, borderRadius:16, padding:"12px 18px", cursor:"pointer" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill={color}><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          <span style={{ fontWeight:700, direction:"ltr", fontSize:15 }}>{(ex.blankSentence??"").replace("___", picked ?? "____")}</span>
-        </button>
-      </div>
-
-      {/* Sentence with blank */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:22, fontWeight:800, direction:"ltr", flexWrap:"wrap" }}>
-        <span>{parts[0]}</span>
-        <span style={{
-          minWidth:90, borderBottom:`3px solid ${picked?color:"hsl(var(--border))"}`,
-          textAlign:"center", color:picked?color:"transparent", paddingBottom:2,
-        }}>{picked ?? "__"}</span>
-        <span>{parts[1]}</span>
-      </div>
-
-      {/* Options */}
-      <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:20 }}>
-        {(ex.blankOptions??[]).map(o=>(
-          <motion.button key={o} whileTap={{scale:0.95}}
-            onClick={()=>!confirmed && setPicked(o)}
-            style={{
-              padding:"12px 22px", borderRadius:14, fontSize:16, fontWeight:800, direction:"ltr",
-              cursor:confirmed?"default":"pointer",
-              background: picked===o ? `${color}25` : "hsl(var(--card))",
-              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}`,
-            }}>{o}</motion.button>
-        ))}
-      </div>
-
-      {!confirmed && (
-        <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed" }}>
-          تحقق ✓
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ── Matching pairs (الأزواج المتطابقة) ───────────────────────────────────────
-function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
-  const pairs = ex.pairs ?? [];
-  const [enCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
-  const [arCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
-  // selected = { col: "en"|"ar", en: string } — الكلمة المختارة من أي عمود
-  const [selected, setSelected] = useState<{ col:"en"|"ar"; en:string } | null>(null);
-  const [matched, setMatched] = useState<Set<string>>(new Set());
-  const [wrongKey, setWrongKey] = useState<string|null>(null);
-
-  const playMatchCorrect = () => {
-    try {
-      const ac = new (window.AudioContext||(window as any).webkitAudioContext)();
-      const o = ac.createOscillator(); const g = ac.createGain();
-      o.connect(g); g.connect(ac.destination);
-      o.frequency.value = 660; o.type="sine";
-      g.gain.setValueAtTime(0.1, ac.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+0.3);
-      o.start(); o.stop(ac.currentTime+0.3);
-    } catch {}
-  };
-
-  const tryMatch = (col:"en"|"ar", en:string) => {
-    if (matched.has(en)) return;
-    const pair = pairs.find(p => p.en === en)!;
-    if (col === "en") speak(en);
-
-    if (!selected) {
-      // أول اختيار من أي عمود
-      setSelected({ col, en });
-      return;
-    }
-    if (selected.col === col) {
-      // اختار من نفس العمود — غيّر الاختيار
-      setSelected({ col, en });
-      if (col === "en") speak(en);
-      return;
-    }
-    // اختار من العمود الآخر — تحقق التطابق
-    if (selected.en === en) {
-      // صح! نفس الزوج
-      playMatchCorrect();
-      const nm = new Set(matched); nm.add(en);
-      setMatched(nm);
-      setSelected(null);
-      if (nm.size === pairs.length) setTimeout(()=>onAnswer(true, "matched"), 600);
-    } else {
-      // خطأ
-      setWrongKey(col+en);
-      setTimeout(()=>{ setWrongKey(null); setSelected(null); }, 600);
-    }
-  };
-
-  return (
-    <div>
-      <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
-        {/* English column */}
-        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
-          {enCol.map(p=>{
-            const isMatched = matched.has(p.en);
-            const isSelected = selected?.col==="en" && selected.en===p.en;
-            const isWrong = wrongKey === "en"+p.en;
-            return (
-              <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>tryMatch("en", p.en)}
-                animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
-                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"ltr",
-                  cursor:isMatched?"default":"pointer",
-                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
-                  border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
-                {isMatched ? "✓ "+p.en : p.en}
-              </motion.button>
-            );
-          })}
-        </div>
-        {/* Arabic column */}
-        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
-          {arCol.map(p=>{
-            const isMatched = matched.has(p.en);
-            const isSelected = selected?.col==="ar" && selected.en===p.en;
-            const isWrong = wrongKey === "ar"+p.en;
-            return (
-              <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>tryMatch("ar", p.en)}
-                animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
-                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"rtl",
-                  cursor:isMatched?"default":"pointer",
-                  background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
-                  border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
-                {isMatched ? "✓ "+p.ar : p.ar}
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-      <p style={{ textAlign:"center", fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:20 }}>
-        {selected ? "الآن اختر ما يطابقها من العمود الآخر" : "اختر أي كلمة لبدء المطابقة"}
-      </p>
-    </div>
-  );
-}
-
 // ── Completion Screen ─────────────────────────────────────────────────────────
-function CompletionScreen({ score, total, xpEarned, hearts, isPro, onRetry, onBack }: {
+function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, onNext, onRetry, onBack }: {
   score:number; total:number; xpEarned:number; hearts:number; isPro:boolean;
-  onRetry:()=>void; onBack:()=>void;
+  subLesson:number; isLast:boolean; color:string;
+  onNext:()=>void; onRetry:()=>void; onBack:()=>void;
 }) {
   const pct = Math.round((score/total)*100);
   const stars = pct>=90?3:pct>=70?2:1;
@@ -528,16 +340,32 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, onRetry, onBa
       className="flex-1 flex items-center justify-center">
       <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-2xl shadow-2xl bg-card">
         {/* Header */}
-        <div className="py-10 flex flex-col items-center bg-primary/10 relative">
+        <div className="py-8 flex flex-col items-center bg-primary/10 relative">
           <motion.div animate={{rotate:[0,-10,10,-10,0],scale:[1,1.1,1]}} transition={{delay:0.3,duration:0.6}}
-            className="w-28 h-28 bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-5 shadow-xl shadow-primary/30">
-            <Trophy className="w-14 h-14" />
+            className="w-24 h-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-4 shadow-xl shadow-primary/30">
+            <Trophy className="w-12 h-12" />
           </motion.div>
-          <h2 className="text-3xl font-bold text-primary mb-1">🎉 أحسنت!</h2>
+          <h2 className="text-2xl font-bold text-primary mb-1">{isLast ? "🎉 أكملت المحطة!" : "🎯 أحسنت!"}</h2>
+          {/* Sub-lesson dots */}
+          <div style={{ display:"flex", gap:8, margin:"10px 0 4px" }}>
+            {[1,2,3,4].map(i=>(
+              <motion.div key={i} initial={{scale:0}} animate={{scale:1}} transition={{delay:0.3+i*0.1}}
+                style={{ width:30, height:30, borderRadius:"50%",
+                  background: i <= subLesson ? color : "hsl(var(--muted))",
+                  border:`2px solid ${i <= subLesson ? color : "hsl(var(--border))"}`,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  color:"white", fontWeight:800, fontSize:13 }}>
+                {i <= subLesson ? "✓" : i}
+              </motion.div>
+            ))}
+          </div>
+          <p style={{ fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:4 }}>
+            الدرس {subLesson} من 4
+          </p>
           <div className="flex gap-1 mt-2">
             {[0,1,2].map(i=>(
               <motion.div key={i} initial={{scale:0}} animate={{scale:1}} transition={{delay:0.5+i*0.15}}>
-                <Star className={cn("w-6 h-6", i<stars?"text-amber-400 fill-amber-400":"text-muted-foreground/20")}/>
+                <Star className={cn("w-5 h-5", i<stars?"text-amber-400 fill-amber-400":"text-muted-foreground/20")}/>
               </motion.div>
             ))}
           </div>
@@ -563,12 +391,23 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, onRetry, onBa
             <Hearts count={hearts} isPro={isPro}/>
           </div>
           <div className="space-y-3">
-            <button onClick={onBack} style={{ width:"100%", padding:"14px", background:"hsl(var(--primary))", color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-              واصل الرحلة <ArrowRight size={18}/>
-            </button>
+            {isLast ? (
+              <button onClick={onBack} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                واصل الرحلة 🗺️ <ArrowRight size={18}/>
+              </button>
+            ) : (
+              <button onClick={onNext} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                الدرس التالي <ArrowRight size={18}/>
+              </button>
+            )}
             <button onClick={onRetry} style={{ width:"100%", padding:"12px", background:"transparent", border:"2px solid hsl(var(--border))", borderRadius:14, fontWeight:700, fontSize:14, cursor:"pointer" }}>
-              أعد المحاولة 🔄
+              أعد هذا الدرس 🔄
             </button>
+            {!isLast && (
+              <button onClick={onBack} style={{ width:"100%", padding:"10px", background:"transparent", border:"none", color:"hsl(var(--muted-foreground))", fontWeight:700, fontSize:13, cursor:"pointer" }}>
+                الخروج للخارطة
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -619,6 +458,7 @@ export default function UnitLesson() {
   const isPro = user?.isPro;
   const proLoaded = !authLoading; // use auth loading state
   const [subLesson, setSubLesson] = useState(0); // 0..3 = الدرس الداخلي الحالي
+  const [maxSubReached, setMaxSubReached] = useState(0); // أعلى تقدم محفوظ (لا يقل)
   const [resumeLoaded, setResumeLoaded] = useState(false);
   const [queue, setQueue] = useState<ExObj[]>([]);
   const [doneCount, setDoneCount] = useState(0);
@@ -628,6 +468,7 @@ export default function UnitLesson() {
   const [xpEarned, setXpEarned] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone">("playing");
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
@@ -669,6 +510,7 @@ export default function UnitLesson() {
     supabase.from("unit_progress").select("sub_progress").eq("user_id", user.id).eq("lesson_id", id).maybeSingle()
       .then(({ data }) => {
         const saved = data?.sub_progress ?? 0;
+        setMaxSubReached(saved); // احفظ أعلى تقدم سابق
         if (saved > 0 && saved < 4) setSubLesson(saved); // استكمل من حيث وقف
         setResumeLoaded(true);
       });
@@ -734,14 +576,16 @@ export default function UnitLesson() {
       if (rest.length === 0) {
         // خلصنا كل أسئلة الدرس الداخلي
         const completedSub = subLesson + 1; // 1..4
+        const saveSub = Math.max(completedSub, maxSubReached); // لا يقل التقدم أبداً
+        setMaxSubReached(saveSub);
 
         // احفظ التقدم (بدون كسر الـ flow إذا فشل)
         if (user) {
           supabase.from("unit_progress").upsert({
             user_id: user.id,
             lesson_id: id,
-            sub_progress: completedSub,
-            completed_at: completedSub >= 4 ? new Date().toISOString() : null,
+            sub_progress: saveSub,
+            completed_at: saveSub >= 4 ? new Date().toISOString() : null,
             score: Math.round(((score) / Math.max(totalCount, 1)) * 100),
           }, { onConflict: "user_id,lesson_id" }).then(({ error }) => {
             if (error) console.warn("progress save failed:", error.message);
@@ -761,7 +605,7 @@ export default function UnitLesson() {
         setMascotFor("complete", 0);
         playComplete();
         setQueue([]);
-        setPhase(completedSub >= 4 ? "finish" : "subdone");
+        setPhase("finish"); // CompletionScreen يميز عبر isLast
       } else {
         setQueue(rest);
       }
@@ -790,13 +634,17 @@ export default function UnitLesson() {
       <div style={{ maxWidth:440, margin:"0 auto", padding:"0 16px", height:"calc(100svh - 130px)", display:"flex", flexDirection:"column" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
-        {phase === "subdone"  && <SubDoneScreen subLesson={subLesson+1} color={meta.color} onNext={()=>setSubLesson(s=>s+1)}/>}
-        {phase === "finish"   && <CompletionScreen score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false} onRetry={()=>{setSubLesson(0);loadExercises(0);}} onBack={()=>setLocation("/roadmap")}/>}
+        {phase === "finish"   && <CompletionScreen
+          score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
+          subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}
+          onNext={()=>setSubLesson(s=>s+1)}
+          onRetry={()=>loadExercises(subLesson)}
+          onBack={()=>setLocation("/roadmap")}/>}
 
         {phase === "playing" && <>
           {/* Top bar */}
           <div style={{ display:"flex", alignItems:"center", gap:8, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
-            <button onClick={()=>setLocation("/roadmap")} style={{ width:32, height:32, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>✕</button>
+            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>✕</button>
             <div style={{ flex:1, height:12, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
               <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 8px ${meta.color}80` }} transition={{ duration:0.4 }}/>
             </div>
@@ -856,6 +704,37 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
         </>}
+
+        {/* Exit confirmation modal */}
+        <AnimatePresence>
+          {showExitConfirm && (
+            <motion.div
+              initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+              onClick={()=>setShowExitConfirm(false)}
+              style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", zIndex:60, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+              <motion.div
+                initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+                onClick={e=>e.stopPropagation()}
+                style={{ background:"hsl(var(--card))", borderRadius:24, padding:"28px 24px", maxWidth:340, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
+                <div style={{ fontSize:52, marginBottom:12 }}>🛑</div>
+                <h3 style={{ fontWeight:900, fontSize:19, marginBottom:8 }}>انتظر، لا ترحل!</h3>
+                <p style={{ color:"hsl(var(--muted-foreground))", fontSize:14, lineHeight:1.6, marginBottom:24 }}>
+                  ستفقد تقدّم هذا الدرس إذا غادرت الآن
+                </p>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  <button onClick={()=>setShowExitConfirm(false)}
+                    style={{ width:"100%", padding:"13px", background:meta.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer" }}>
+                    تابع التعلم 💪
+                  </button>
+                  <button onClick={()=>setLocation("/roadmap")}
+                    style={{ width:"100%", padding:"13px", background:"transparent", border:"2px solid #dc2626", color:"#dc2626", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer" }}>
+                    إنهاء الجلسة
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </Layout>
   );

@@ -493,7 +493,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r - 7;
+  const trackR = r - 3.5;
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
@@ -553,11 +553,11 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
           stroke={darkColor} strokeWidth={2}/>
 
         {/* Inner face with gradient */}
-        <circle cx={r} cy={r} r={r - 7} fill={`url(#${gId})`}/>
+        <circle cx={r} cy={r} r={r - 9} fill={`url(#${gId})`}/>
 
-        {/* Top shine streak — قبل الـ arc حتى لا يغطيه */}
-        <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.28} ry={r * 0.1}
-          fill="white" opacity={isActive ? 0.06 : 0.025}
+        {/* Top shine streak — صغير وداخل الوجه */}
+        <ellipse cx={r * 0.66} cy={r * 0.46} rx={r * 0.24} ry={r * 0.08}
+          fill="white" opacity={isActive ? 0.05 : 0.02}
           transform={`rotate(-35 ${r} ${r})`}/>
 
         {/* Progress / full arc — يُرسم فوق الوجه والـ shine */}
