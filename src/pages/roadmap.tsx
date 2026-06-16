@@ -508,6 +508,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
+  const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
+  const pad = 16; // مساحة إضافية للخط الخارجي
   const trackR = r + depth/2 + 6; // يحيط بالدائرة الكلية (وجه+عمق) بفاصل متساوٍ
   const circ   = 2 * Math.PI * trackR;
   const isGold = progress >= 4;
@@ -527,8 +529,6 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
     : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
-  const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
-  const pad = 16; // مساحة إضافية للخط الخارجي
 
   return (
     <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
