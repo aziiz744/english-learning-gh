@@ -9,7 +9,6 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
-import { OwlMascot } from "@/components/owl-mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -1368,8 +1367,8 @@ export default function UnitLesson() {
           <motion.div initial={{opacity:0}} animate={{opacity:1}}
             style={{ position:"fixed", inset:0, background:"hsl(var(--background))", zIndex:80, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
             <motion.div initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} className="text-center max-w-sm mx-auto">
-              <div style={{ display:"flex", justifyContent:"center", marginBottom:8 }}>
-                <OwlMascot state="celebrate" size={130}/>
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:12 }}>
+                <motion.div animate={{ y:[0,-8,0], rotate:[0,-5,5,0] }} transition={{ repeat:Infinity, duration:2 }} style={{ fontSize:64 }}>🏋️</motion.div>
               </div>
               <div style={{ display:"inline-block", background:`${meta.color}18`, color:meta.color, fontWeight:800, fontSize:13, padding:"5px 16px", borderRadius:20, marginBottom:14 }}>
                 🏋️ تمرين إضافي خاص بك

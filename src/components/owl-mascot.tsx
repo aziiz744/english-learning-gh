@@ -1,67 +1,87 @@
-// ── شخصية البومة "English Spark" — الصورة الأصلية + حركات 360 احترافية ──
-import { motion } from "framer-motion";
-import owlImg from "@/assets/owl-mascot.png";
+// ── شخصية البومة "English Spark" — 6 وضعيات تتبدّل تلقائياً كأنها حية ──
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import owlIdle from "@/assets/owl/owl-idle.png";
+import owlHop from "@/assets/owl/owl-hop.png";
+import owlWing from "@/assets/owl/owl-wing.png";
+import owlCelebrate from "@/assets/owl/owl-celebrate.png";
+import owlFlight from "@/assets/owl/owl-flight.png";
+import owlThink from "@/assets/owl/owl-think.png";
 
-export type OwlState = "idle" | "correct" | "wrong" | "celebrate" | "thinking" | "spin";
+export type OwlState = "idle" | "correct" | "wrong" | "celebrate" | "thinking" | "auto";
 
-export function OwlMascot({ state = "idle", size = 120 }: { state?: OwlState; size?: number }) {
-  // حركات احترافية ثلاثية الأبعاد لكل حالة
-  const anim: any =
-    state === "correct" ? {
-      // قفزة مع دوران كامل 360 + تكبير
-      y: [0, -28, 0],
-      rotateY: [0, 360],
-      scale: [1, 1.15, 1],
-    } :
-    state === "celebrate" ? {
-      // احتفال: دورتان كاملتان + قفز + تمايل
-      rotateY: [0, 360, 720],
-      y: [0, -30, 0, -18, 0],
-      scale: [1, 1.12, 1, 1.08, 1],
-    } :
-    state === "wrong" ? {
-      // اهتزاز يمين/يسار + ميلان
-      x: [0, -10, 10, -10, 10, 0],
-      rotate: [0, -6, 6, -6, 6, 0],
-    } :
-    state === "thinking" ? {
-      // تمايل بـ perspective + ميلان رأس
-      rotateY: [0, 18, -18, 0],
-      rotate: [0, -4, 4, 0],
-    } :
-    state === "spin" ? {
-      // دوران مستمر 360
-      rotateY: [0, 360],
-    } :
-    {
-      // idle: طفو ناعم + تمايل خفيف ثلاثي الأبعاد
-      y: [0, -10, 0],
-      rotateY: [0, 8, -8, 0],
-      rotate: [0, 1.5, -1.5, 0],
+// كل وضعية: الصورة + حركة مصاحبة
+const POSES = {
+  idle:      { img: owlIdle,      anim: { y: [0, -8, 0], rotate: [0, 1.5, -1.5, 0] },       dur: 3.2 },
+  hop:       { img: owlHop,       anim: { y: [0, -22, 0], rotate: [0, -5, 5, 0] },           dur: 1.1 },
+  wing:      { img: owlWing,      anim: { rotate: [0, -3, 3, -3, 0], y: [0, -4, 0] },        dur: 1.6 },
+  celebrate: { img: owlCelebrate, anim: { y: [0, -18, 0, -10, 0], rotate: [0, -7, 7, 0] },  dur: 1.4 },
+  flight:    { img: owlFlight,    anim: { x: [0, 8, -8, 0], y: [0, -6, 0] },                 dur: 2.0 },
+  think:     { img: owlThink,     anim: { rotate: [0, -4, 4, 0], x: [0, 2, -2, 0] },         dur: 2.6 },
+} as const;
+
+type PoseKey = keyof typeof POSES;
+
+// تسلسل عفوي للوضعيات (كأنها تعيش)
+const AUTO_SEQUENCE: { pose: PoseKey; hold: number }[] = [
+  { pose: "idle",      hold: 4000 },
+  { pose: "wing",      hold: 2600 },
+  { pose: "think",     hold: 3000 },
+  { pose: "idle",      hold: 3500 },
+  { pose: "hop",       hold: 1800 },
+  { pose: "flight",    hold: 2800 },
+  { pose: "celebrate", hold: 2400 },
+  { pose: "idle",      hold: 4000 },
+];
+
+export function OwlMascot({ state = "auto", size = 120 }: { state?: OwlState; size?: number }) {
+  const [autoPose, setAutoPose] = useState<PoseKey>("idle");
+  const idxRef = useRef(0);
+
+  // التبديل التلقائي بين الوضعيات (فقط في وضع auto)
+  useEffect(() => {
+    if (state !== "auto") return;
+    let timer: any;
+    const step = () => {
+      const cur = AUTO_SEQUENCE[idxRef.current % AUTO_SEQUENCE.length];
+      setAutoPose(cur.pose);
+      idxRef.current++;
+      timer = setTimeout(step, cur.hold);
     };
+    step();
+    return () => clearTimeout(timer);
+  }, [state]);
 
-  const trans: any =
-    state === "correct"   ? { duration: 0.9, ease: "easeOut" } :
-    state === "celebrate" ? { duration: 1.8, ease: "easeInOut" } :
-    state === "wrong"     ? { duration: 0.5, ease: "easeInOut" } :
-    state === "thinking"  ? { repeat: Infinity, duration: 3, ease: "easeInOut" } :
-    state === "spin"      ? { repeat: Infinity, duration: 1.6, ease: "linear" } :
-    { repeat: Infinity, duration: 4, ease: "easeInOut" };
+  // تحديد الوضعية حسب الحالة
+  const poseKey: PoseKey =
+    state === "auto"      ? autoPose :
+    state === "correct"   ? "hop" :
+    state === "celebrate" ? "celebrate" :
+    state === "thinking"  ? "think" :
+    state === "wrong"     ? "wing" :
+    "idle";
+
+  const pose = POSES[poseKey];
 
   return (
-    <div style={{ width: size, height: size, perspective: 600, display: "inline-block" }}>
-      <motion.div
-        animate={anim}
-        transition={trans}
-        style={{
-          width: "100%", height: "100%",
-          transformStyle: "preserve-3d",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.18))",
-        }}>
-        <img src={owlImg} alt="English Spark" draggable={false}
-          style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none", backfaceVisibility: "hidden" }}/>
-      </motion.div>
+    <div style={{ width: size, height: size, position: "relative", display: "inline-block" }}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={poseKey}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.85 }}
+          transition={{ duration: 0.3 }}
+          style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}>
+          <motion.div
+            animate={pose.anim}
+            transition={{ repeat: Infinity, duration: pose.dur, ease: "easeInOut" }}
+            style={{ width: "100%", height: "100%", filter: "drop-shadow(0 5px 8px rgba(0,0,0,0.16))" }}>
+            <img src={pose.img} alt="English Spark" draggable={false}
+              style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }}/>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

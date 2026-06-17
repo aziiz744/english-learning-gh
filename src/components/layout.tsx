@@ -53,7 +53,7 @@ function SidebarMascot() {
   return (
     <button onClick={nextTip} className="w-full px-3 pb-3 flex items-end gap-2 cursor-pointer group" title="انقر للحصول على نصيحة جديدة">
       <div className="shrink-0 transition-transform group-hover:scale-110">
-        <OwlMascot state="idle" size={72} />
+        <OwlMascot state="auto" size={76} />
       </div>
       <AnimatePresence mode="wait">
         {visible && (
