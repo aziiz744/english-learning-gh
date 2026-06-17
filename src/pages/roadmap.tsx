@@ -568,32 +568,42 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) — خلف كل شيء ── */}
         <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
 
-        {/* ── المسار الرمادي المفرّغ (يظهر على الحالية أو المكتملة) ── */}
+        {/* ── المسار ثلاثي الأبعاد (يظهر على الحالية أو المكتملة) ── */}
         {showTrack && (
           <>
-            {/* ظل خفيف تحت الخط */}
+            {/* (1) الطبقة السفلية للمسار — العمق ثلاثي الأبعاد (أغمق، منزاحة لأسفل) */}
             <ellipse
-              cx={r + pad} cy={r + pad + depth/2 + 2}
+              cx={r + pad} cy={r + pad + depth/2 + depth*0.7}
               rx={trackRx} ry={trackRy} fill="none"
-              stroke="rgba(0,0,0,0.25)" strokeWidth={8}
-              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2+2}px` }}
+              stroke="#222e3c" strokeWidth={9} strokeLinecap="round"
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2+depth*0.7}px` }}
             />
-            {/* المسار الرمادي الكامل */}
+            {/* (2) المسار الرمادي الكامل (الوجه العلوي للخط) */}
             <ellipse
               cx={r + pad} cy={r + pad + depth/2}
               rx={trackRx} ry={trackRy} fill="none"
-              stroke="#3a4656" strokeWidth={8} strokeLinecap="round"
+              stroke="#3a4656" strokeWidth={9} strokeLinecap="round"
               style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
             />
-            {/* الجزء الممتلئ بلون الوحدة */}
+            {/* (3) الجزء الممتلئ بلون الوحدة — له عمق سفلي أغمق */}
             <motion.ellipse
-              cx={r + pad} cy={r + pad + depth/2}
+              cx={r + pad} cy={r + pad + depth/2 + depth*0.7}
               rx={trackRx} ry={trackRy} fill="none"
-              stroke={fillColor} strokeWidth={8} strokeLinecap="round"
-              style={{ filter:`drop-shadow(0 1px 2px ${shadeColor(fillColor,-50)})`, transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
+              stroke={shadeColor(fillColor, -55)} strokeWidth={9} strokeLinecap="round"
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2+depth*0.7}px` }}
               initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
               animate={{ strokeDasharray: fillDash }}
               transition={{ duration: 0.8, ease:"easeOut" }}
+            />
+            {/* (4) الجزء الممتلئ — الوجه العلوي الفاتح */}
+            <motion.ellipse
+              cx={r + pad} cy={r + pad + depth/2}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke={fillColor} strokeWidth={9} strokeLinecap="round"
+              initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
+              animate={{ strokeDasharray: fillDash }}
+              transition={{ duration: 0.8, ease:"easeOut" }}
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
             />
           </>
         )}

@@ -882,22 +882,23 @@ export default function UnitLesson() {
 
   const loadExercises = useCallback((tier: number) => {
     if (!meta) return;
-    let raw: ExObj[];
-    if (meta.isJump && meta.jumpPrevTitles) {
-      // اختبار القفز — 12 سؤال متراكم من كل الوحدات السابقة، الأصعب، بدون ترجمة
-      const pool: ExObj[] = [];
-      meta.jumpPrevTitles.forEach((title: string) => {
-        pool.push(...getLessonMiniExercises(title, 6, 3)); // أصعب
-        pool.push(...getLessonMiniExercises(title, 6, 2));
-      });
-      const seen = new Set<string>();
-      raw = pool.filter(ex => {
-        if (ex.type === "translate") return false;
-        if (seen.has(ex.id)) return false;
-        seen.add(ex.id);
-        return true;
-      }).sort(() => Math.random() - 0.5).slice(0, 12);
-    } else if (meta.isChallenge) {
+    let raw: ExObj[] = [];
+    try {
+      if (meta.isJump && meta.jumpPrevTitles) {
+        // اختبار القفز — 12 سؤال متراكم من كل الوحدات السابقة، الأصعب، بدون ترجمة
+        const pool: ExObj[] = [];
+        meta.jumpPrevTitles.forEach((title: string) => {
+          pool.push(...getLessonMiniExercises(title, 6, 3));
+          pool.push(...getLessonMiniExercises(title, 6, 2));
+        });
+        const seen = new Set<string>();
+        raw = pool.filter(ex => {
+          if (ex.type === "translate") return false;
+          if (seen.has(ex.id)) return false;
+          seen.add(ex.id);
+          return true;
+        }).sort(() => Math.random() - 0.5).slice(0, 12);
+      } else if (meta.isChallenge) {
       // التحدي — اختبار واحد: 10 أسئلة صعبة من كل المستويات، بدون ترجمة
       const pool = [
         ...getLessonMiniExercises(meta.title, 9, 3),
@@ -911,16 +912,20 @@ export default function UnitLesson() {
         seen.add(ex.id);
         return true;
       }).sort(() => Math.random() - 0.5).slice(0, 10);
-    } else if (meta.isReview && meta.reviewTitles) {
-      // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
+      } else if (meta.isReview && meta.reviewTitles) {
+        // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
+        raw = [];
+        meta.reviewTitles.forEach((title: string) => {
+          raw.push(...getLessonMiniExercises(title, 4, 0));
+          raw.push(...getLessonMiniExercises(title, 3, 1));
+        });
+        raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
+      } else {
+        raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
+      }
+    } catch (err) {
+      console.error("loadExercises error:", err);
       raw = [];
-      meta.reviewTitles.forEach(title => {
-        raw.push(...getLessonMiniExercises(title, 4, 0));
-        raw.push(...getLessonMiniExercises(title, 3, 1));
-      });
-      raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
-    } else {
-      raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
     }
     // اخلط ترتيب الأسئلة + اخلط الخيارات داخل كل سؤال
     const shuffled = [...raw]
@@ -949,17 +954,25 @@ export default function UnitLesson() {
 
   // اقرأ التقدم المحفوظ وابدأ من الدرس الداخلي الصحيح (مرة واحدة)
   useEffect(() => {
-    // وضع القفز: لا resume، حمّل مباشرة
+    // وضع القفز: لا resume ولا انتظار auth، حمّل مباشرة
     if (isJumpMode) { setResumeLoaded(true); return; }
     if (!user || !id || resumeLoaded) { if (!user && proLoaded) setResumeLoaded(true); return; }
     supabase.from("unit_progress").select("sub_progress").eq("user_id", user.id).eq("lesson_id", id).maybeSingle()
       .then(({ data }) => {
         const saved = data?.sub_progress ?? 0;
-        setMaxSubReached(saved); // احفظ أعلى تقدم سابق
-        if (saved > 0 && saved < 4) setSubLesson(saved); // استكمل من حيث وقف
+        setMaxSubReached(saved);
+        if (saved > 0 && saved < 4) setSubLesson(saved);
         setResumeLoaded(true);
       });
   }, [user, id, proLoaded, isJumpMode]);
+
+  // ضمان إضافي: في وضع القفز، حمّل الأسئلة فور توفر meta
+  useEffect(() => {
+    if (isJumpMode && meta && queue.length === 0 && phase === "playing") {
+      loadExercises(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isJumpMode, meta]);
 
   useEffect(() => { if (resumeLoaded) loadExercises(subLesson); }, [loadExercises, subLesson, resumeLoaded]);
 
