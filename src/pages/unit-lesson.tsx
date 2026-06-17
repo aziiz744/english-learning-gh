@@ -14,12 +14,12 @@ import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
-const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; vocab?: {en:string;ar:string}[] }> = {
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; vocab?: {en:string;ar:string}[] }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-t": { title: "كنز المراجعة",     unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الكلمات الأساسية", "كلمات جديدة"] },
   "drinks-3": { title: "جمل كاملة",        unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
-  "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e", isUnitFinal: true,
+  "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e", isUnitFinal: true, isChallenge: true,
     vocab: [
       {en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"water",ar:"ماء"},{en:"juice",ar:"عصير"},{en:"milk",ar:"حليب"},
       {en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"sorry",ar:"آسف"},
@@ -31,7 +31,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "intro-2": { title: "من أين أنت؟",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🌍", color: "#7c3aed" },
   "intro-t": { title: "كنز المراجعة",   unitTitle: "قدّم نفسك وعائلتك", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["ما اسمك؟", "من أين أنت؟"] },
   "intro-3": { title: "عائلتك",         unitTitle: "قدّم نفسك وعائلتك", emoji: "👨‍👩‍👧", color: "#7c3aed" },
-  "intro-c": { title: "تحدي الوحدة",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🏆", color: "#7c3aed", isUnitFinal: true,
+  "intro-c": { title: "تحدي الوحدة",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🏆", color: "#7c3aed", isUnitFinal: true, isChallenge: true,
     vocab: [
       {en:"name",ar:"اسم"},{en:"my name is",ar:"اسمي"},{en:"what",ar:"ما"},{en:"your",ar:"خاصتك"},{en:"I am",ar:"أنا"},
       {en:"from",ar:"من"},{en:"where",ar:"أين"},{en:"hello",ar:"مرحباً"},{en:"nice to meet you",ar:"سررت بلقائك"},
@@ -844,14 +844,27 @@ export default function UnitLesson() {
   const loadExercises = useCallback((tier: number) => {
     if (!meta) return;
     let raw: ExObj[];
-    if (meta.isReview && meta.reviewTitles) {
+    if (meta.isChallenge) {
+      // التحدي — اختبار واحد: 10 أسئلة صعبة من كل المستويات، بدون ترجمة
+      const pool = [
+        ...getLessonMiniExercises(meta.title, 9, 3),
+        ...getLessonMiniExercises(meta.title, 9, 2),
+        ...getLessonMiniExercises(meta.title, 9, 1),
+      ];
+      const seen = new Set<string>();
+      raw = pool.filter(ex => {
+        if (ex.type === "translate") return false; // بدون ترجمة
+        if (seen.has(ex.id)) return false;
+        seen.add(ex.id);
+        return true;
+      }).sort(() => Math.random() - 0.5).slice(0, 10);
+    } else if (meta.isReview && meta.reviewTitles) {
       // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
       raw = [];
       meta.reviewTitles.forEach(title => {
         raw.push(...getLessonMiniExercises(title, 4, 0));
         raw.push(...getLessonMiniExercises(title, 3, 1));
       });
-      // اخلط وخذ 8 أسئلة فقط
       raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
     } else {
       raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
@@ -953,10 +966,12 @@ export default function UnitLesson() {
       if (rest.length === 0) {
         // خلصنا كل أسئلة الدرس الداخلي
         const isReview = !!meta.isReview;
-        const completedSub = isReview ? 4 : subLesson + 1; // المراجعة تكمل دفعة واحدة
+        const isChallenge = !!meta.isChallenge;
+        const oneShot = isReview || isChallenge; // الكنز والتحدي = اختبار واحد
+        const completedSub = oneShot ? 4 : subLesson + 1;
         const saveSub = Math.max(completedSub, maxSubReached);
         setMaxSubReached(saveSub);
-        const bonusXp = isReview ? xpEarned + 20 : xpEarned; // مكافأة الكنز
+        const bonusXp = isReview ? xpEarned + 20 : xpEarned;
 
         if (user) {
           supabase.from("unit_progress").upsert({
