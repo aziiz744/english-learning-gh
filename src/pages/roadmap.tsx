@@ -1097,7 +1097,10 @@ export default function Roadmap() {
                     const prevSectionChallenge = unit.sectionTitle
                       ? chapter.units.slice(0, unitIdx).reverse().find(u => u.lessons.some(l => l.type === "challenge"))?.lessons.find(l => l.type === "challenge")?.id
                       : undefined;
-                    const sectionLocked = prevSectionChallenge
+                    const jumpPassed = (progress[`jump-${unit.id}`] ?? 0) >= 4; // اجتاز اختبار القفز
+                    const sectionLocked = jumpPassed
+                      ? false
+                      : prevSectionChallenge
                       ? (progress[prevSectionChallenge] ?? 0) < 4
                       : false;
                     // First station of each unit/section
@@ -1155,7 +1158,12 @@ export default function Roadmap() {
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  setLocation(`/u/${lesson.id}`);
+                                  if (isJumpStation && canJump) {
+                                    // اختبار القفز — يفتح اختبار تراكمي للوحدات السابقة
+                                    setLocation(`/jump/${unit.id}`);
+                                  } else {
+                                    setLocation(`/u/${lesson.id}`);
+                                  }
                                 }}
                               />
                             </div>

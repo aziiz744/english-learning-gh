@@ -39,6 +39,16 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
     ] },
 };
 
+// ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──
+const JUMP_MAP: Record<string, { unitTitle: string; color: string; prevTitles: string[] }> = {
+  // القفز لوحدة 2 = اختبار وحدة 1 (المشروبات)
+  "unit-intro": { unitTitle: "قدّم نفسك وعائلتك", color: "#7c3aed",
+    prevTitles: ["الكلمات الأساسية", "كلمات جديدة", "جمل كاملة"] },
+  // القفز لوحدة 3 = اختبار وحدتي 1+2
+  "unit-places": { unitTitle: "قل من أين أنت؟", color: "#d4622a",
+    prevTitles: ["الكلمات الأساسية", "كلمات جديدة", "جمل كاملة", "ما اسمك؟", "من أين أنت؟", "عائلتك"] },
+};
+
 // ── TTS ───────────────────────────────────────────────────────────────────────
 function lightColor(hex: string): string {
   try {
@@ -814,11 +824,20 @@ function GameOverScreen({ score, total, isPro, onRetry, onBack }: {
 const MAX_HEARTS = 5;
 
 export default function UnitLesson() {
-  const { id } = useParams<{ id: string }>();
-  const [, setLocation] = useLocation();
+  const { id, unitId } = useParams<{ id: string; unitId: string }>();
+  const [location, setLocation] = useLocation();
   const { user, isLoading: authLoading } = useAuth();
   const { playCorrect, playWrong, playComplete } = useSound();
-  const meta = id ? LESSON_MAP[id] : undefined;
+
+  // وضع القفز: المسار /jump/:unitId
+  const isJumpMode = location.startsWith("/jump/");
+  const jumpInfo = isJumpMode && unitId ? JUMP_MAP[unitId] : undefined;
+
+  // meta عادي أو meta مُركّب لوضع القفز
+  const meta = isJumpMode && jumpInfo
+    ? { title: "اختبار القفز", unitTitle: jumpInfo.unitTitle, emoji: "🚀", color: jumpInfo.color,
+        isJump: true, jumpPrevTitles: jumpInfo.prevTitles, jumpTargetUnit: unitId } as any
+    : (id ? LESSON_MAP[id] : undefined);
 
   const isPro = user?.isPro;
   const proLoaded = !authLoading; // use auth loading state
@@ -828,13 +847,13 @@ export default function UnitLesson() {
   const [queue, setQueue] = useState<ExObj[]>([]);
   const [doneCount, setDoneCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const [hearts, setHearts] = useState(MAX_HEARTS);
+  const [hearts, setHearts] = useState(isJumpMode ? 3 : MAX_HEARTS);
   const [score, setScore] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone">("playing");
+  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone"|"jumpdone">("playing");
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -844,7 +863,21 @@ export default function UnitLesson() {
   const loadExercises = useCallback((tier: number) => {
     if (!meta) return;
     let raw: ExObj[];
-    if (meta.isChallenge) {
+    if (meta.isJump && meta.jumpPrevTitles) {
+      // اختبار القفز — 12 سؤال متراكم من كل الوحدات السابقة، الأصعب، بدون ترجمة
+      const pool: ExObj[] = [];
+      meta.jumpPrevTitles.forEach((title: string) => {
+        pool.push(...getLessonMiniExercises(title, 6, 3)); // أصعب
+        pool.push(...getLessonMiniExercises(title, 6, 2));
+      });
+      const seen = new Set<string>();
+      raw = pool.filter(ex => {
+        if (ex.type === "translate") return false;
+        if (seen.has(ex.id)) return false;
+        seen.add(ex.id);
+        return true;
+      }).sort(() => Math.random() - 0.5).slice(0, 12);
+    } else if (meta.isChallenge) {
       // التحدي — اختبار واحد: 10 أسئلة صعبة من كل المستويات، بدون ترجمة
       const pool = [
         ...getLessonMiniExercises(meta.title, 9, 3),
@@ -888,7 +921,7 @@ export default function UnitLesson() {
     setScore(0);
     setXpEarned(0);
     setStreak(0);
-    setHearts(MAX_HEARTS);
+    setHearts(meta.isJump ? 3 : MAX_HEARTS);
     setPhase("playing");
     setFeedback(null);
     setMascotState("idle");
@@ -896,6 +929,8 @@ export default function UnitLesson() {
 
   // اقرأ التقدم المحفوظ وابدأ من الدرس الداخلي الصحيح (مرة واحدة)
   useEffect(() => {
+    // وضع القفز: لا resume، حمّل مباشرة
+    if (isJumpMode) { setResumeLoaded(true); return; }
     if (!user || !id || resumeLoaded) { if (!user && proLoaded) setResumeLoaded(true); return; }
     supabase.from("unit_progress").select("sub_progress").eq("user_id", user.id).eq("lesson_id", id).maybeSingle()
       .then(({ data }) => {
@@ -904,7 +939,7 @@ export default function UnitLesson() {
         if (saved > 0 && saved < 4) setSubLesson(saved); // استكمل من حيث وقف
         setResumeLoaded(true);
       });
-  }, [user, id, proLoaded]);
+  }, [user, id, proLoaded, isJumpMode]);
 
   useEffect(() => { if (resumeLoaded) loadExercises(subLesson); }, [loadExercises, subLesson, resumeLoaded]);
 
@@ -964,6 +999,28 @@ export default function UnitLesson() {
       setDoneCount(d => d + 1);
 
       if (rest.length === 0) {
+        // وضع القفز — اجتاز الاختبار، افتح الوحدة المستهدفة
+        if (meta.isJump) {
+          // افتح أول درس في الوحدة المستهدفة (sub_progress=0 لكنه متاح)
+          if (user && meta.jumpTargetUnit) {
+            // علّم اجتياز القفز بحفظ صف خاص يفتح الوحدة
+            const jumpKey = `jump-${meta.jumpTargetUnit}`;
+            supabase.from("unit_progress").upsert({
+              user_id: user.id,
+              lesson_id: jumpKey,
+              sub_progress: 4,
+              completed_at: new Date().toISOString(),
+              score: Math.round(((score) / Math.max(totalCount, 1)) * 100),
+            }, { onConflict: "user_id,lesson_id" }).then(({ error }) => {
+              if (error) console.warn("jump save failed:", error.message);
+            });
+          }
+          setMascotFor("complete", 0);
+          playComplete();
+          setQueue([]);
+          setPhase("jumpdone");
+          return;
+        }
         // خلصنا كل أسئلة الدرس الداخلي
         const isReview = !!meta.isReview;
         const isChallenge = !!meta.isChallenge;
@@ -1034,6 +1091,21 @@ export default function UnitLesson() {
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "unitdone" && <UnitCompleteScreen unitTitle={meta.unitTitle} vocab={meta.vocab ?? []} xpEarned={xpEarned} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
+        {phase === "jumpdone" && (
+          <motion.div initial={{opacity:0,scale:0.85}} animate={{opacity:1,scale:1}} transition={{type:"spring"}} className="flex-1 flex items-center justify-center">
+            <div className="text-center max-w-sm mx-auto p-6">
+              <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}} style={{ fontSize:72, marginBottom:12 }}>🚀</motion.div>
+              <h2 className="text-2xl font-bold mb-2" style={{ color:meta.color }}>اجتزت الاختبار! 🎉</h2>
+              <p className="text-muted-foreground text-sm mb-6" style={{ direction:"rtl" }}>
+                فتحت وحدة "{meta.unitTitle}" — ابدأ التدرّب الآن!
+              </p>
+              <button onClick={()=>setLocation("/roadmap")}
+                style={{ width:"100%", padding:"14px", background:meta.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
+                ابدأ الوحدة الجديدة 🗺️
+              </button>
+            </div>
+          </motion.div>
+        )}
         {phase === "finish"   && <CompletionScreen
           score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
           subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}
