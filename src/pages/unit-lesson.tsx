@@ -184,11 +184,38 @@ function lightColor(hex: string): string {
   } catch { return hex; }
 }
 
+// أصوات متعددة تتناوب (عشان ما تتكرر وتصير مزعجة)
+let _cachedVoices: SpeechSynthesisVoice[] = [];
+let _voiceIdx = 0;
+function loadVoices() {
+  if (!window.speechSynthesis) return;
+  const all = window.speechSynthesis.getVoices();
+  // فضّل أصوات إنجليزية أنثوية/أطفال واضحة
+  const preferred = all.filter(v =>
+    /en[-_]/i.test(v.lang) &&
+    /(female|woman|girl|child|kid|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
+  );
+  const englishVoices = all.filter(v => /en[-_]/i.test(v.lang));
+  _cachedVoices = (preferred.length >= 2 ? preferred : englishVoices).slice(0, 6);
+}
+if (typeof window !== "undefined" && window.speechSynthesis) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
 function speak(text: string, rate = 0.85) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
+  if (_cachedVoices.length === 0) loadVoices();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US"; u.rate = rate;
+  // اختر صوتاً مختلفاً كل مرة (تناوب دائري)
+  if (_cachedVoices.length > 0) {
+    u.voice = _cachedVoices[_voiceIdx % _cachedVoices.length];
+    _voiceIdx++;
+    // نبرة أعلى قليلاً لإحساس طفولي ودود
+    u.pitch = 1.15;
+  }
   window.speechSynthesis.speak(u);
 }
 function speakSlow(text: string) { speak(text, 0.5); }
@@ -499,16 +526,16 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
       <div style={{ textAlign:"center", marginBottom:24 }}>
         <W word={ex.word!} color={color}/>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
         {(ex.pictureOptions??[]).map(o=>{
           const isCorrect=o.label===ex.correctAnswer, isPicked=o.label===picked;
           return (
             <motion.button key={o.label} whileTap={{scale:0.95}} onClick={()=>choose(o.label)}
-              style={{ padding:"16px 10px", borderRadius:16, cursor:picked?"default":"pointer",
-                display:"flex", flexDirection:"column", alignItems:"center", gap:10,
+              style={{ padding:"14px 10px 10px", borderRadius:18, cursor:picked?"default":"pointer",
+                display:"flex", flexDirection:"column", alignItems:"center", gap:6,
                 background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
-                border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <div style={{ width:64, height:64 }}><DrinkArt label={o.label}/></div>
+                border:`2.5px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
+              <div style={{ width:96, height:96 }}><DrinkArt label={o.label}/></div>
             </motion.button>
           );
         })}
@@ -1275,11 +1302,12 @@ export default function UnitLesson() {
           {/* Main content area */}
           <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               {ex && (
-                <motion.div key={`${ex.id}-${queue.length}`}
-                  initial={{opacity:0,x:40}} animate={{opacity:1,x:0}}
-                  transition={{duration:0.22}}>
+                <motion.div key={ex.id}
+                  initial={{opacity:0,x:24}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-24,position:"absolute"}}
+                  transition={{duration:0.15,ease:"easeOut"}}
+                  style={{width:"100%"}}>
                   <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
                     {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":ex.type==="fill_blank"?"✏️ اتبع النمط":ex.type==="matching"?"🔗 الأزواج المتطابقة":"🖼️ طابق الصورة"}
                   </div>
@@ -1294,15 +1322,21 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
 
-          {/* Streak popup — رسالة تحفيز */}
+          {/* Streak popup — رسالة تحفيز (موضع مناسب أعلى الشاشة) */}
           <AnimatePresence>
             {showStreakPop && (
               <motion.div
-                initial={{ opacity:0, scale:0.5, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
-                style={{ position:"fixed", top:"30%", left:"50%", transform:"translateX(-50%)", zIndex:50,
-                  background:meta.color, color:"white", fontWeight:900, fontSize:20, padding:"12px 28px", borderRadius:20,
-                  whiteSpace:"nowrap", boxShadow:`0 8px 30px ${meta.color}70`, pointerEvents:"none" }}>
-                🔥 {streak} متتالية! رائع!
+                initial={{ opacity:0, scale:0.6, y:-10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.6, y:-10 }}
+                style={{ position:"fixed", top:"calc(76px + env(safe-area-inset-top, 0px))", left:0, right:0, zIndex:50,
+                  display:"flex", justifyContent:"center", pointerEvents:"none", padding:"0 16px" }}>
+                <div style={{
+                  background:`linear-gradient(135deg, ${lightColor(meta.color)}, ${meta.color})`,
+                  color:"white", fontWeight:900, fontSize:17, padding:"10px 22px", borderRadius:18,
+                  whiteSpace:"nowrap", boxShadow:`0 6px 22px ${meta.color}70`,
+                  border:"2px solid rgba(255,255,255,0.4)", display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:22 }}>🔥</span>
+                  <span>{streak} إجابات متتالية!</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

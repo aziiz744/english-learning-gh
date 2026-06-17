@@ -14,16 +14,15 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // ── Bottom nav: 5 items max ──
 const BOTTOM_NAV = [
-  { name: "الرئيسية",  href: "/",          icon: LayoutDashboard },
-  { name: "خارطة",    href: "/roadmap",    icon: Route },
+  { name: "الخارطة",  href: "/",          icon: Route },
+  { name: "الإنجازات", href: "/achievements", icon: Trophy },
   { name: "معلم",      href: "/teacher",    icon: MessageCircle },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
 
 // ── Sidebar / drawer: full list ──
 const navigation = [
-  { name: "الرئيسية",       href: "/",            icon: LayoutDashboard },
-  { name: "خارطة التعلم",   href: "/roadmap",     icon: Route },
+  { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
   { name: "القواعد",        href: "/grammar",     icon: GraduationCap },
