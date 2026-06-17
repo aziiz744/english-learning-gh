@@ -714,16 +714,22 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
 }
 
 // ─── SVG path connector ───────────────────────────────────────────────────────
-function PathConnector({ fromX, fromY, toX, toY, color, done }: {
-  fromX: number; fromY: number; toX: number; toY: number; color: string; done: boolean;
+function PathConnector({ fromX, fromY, toX, toY, color, bothDone, anyDone }: {
+  fromX: number; fromY: number; toX: number; toY: number; color: string;
+  bothDone: boolean; anyDone: boolean;
 }) {
   const midY = (fromY + toY) / 2;
   const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
+  // ذهبي إذا الدائرتان مكتملتان، لون الوحدة إذا واحدة فقط، رمادي إذا لا شيء
+  const lineColor = bothDone ? "#f59e0b" : color;
+  const showColor = anyDone;
   return (
     <g>
-      <path d={d} stroke="#3a4658" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 8"/>
-      {done && (
-        <motion.path d={d} stroke={color} strokeWidth={6} fill="none" strokeLinecap="round"
+      {/* مسار رمادي خلفي خفيف */}
+      <path d={d} stroke="#3a4658" strokeWidth={4} fill="none" strokeLinecap="round" strokeDasharray="8 7" opacity={0.5}/>
+      {/* المسار الملوّن (شفاف + سُمك بسيط) */}
+      {showColor && (
+        <motion.path d={d} stroke={lineColor} strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.55}
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         />
@@ -1060,7 +1066,21 @@ export default function Roadmap() {
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
 
-                  {/* الشريط بين الدوائر محذوف — الدوائر مستقلة */}
+                  {/* Connectors بين الدوائر */}
+                  <svg width={CANVAS_W} height={svgH}
+                    style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
+                    {positions.map((pos, idx) => {
+                      if (idx === 0) return null;
+                      const prev = positions[idx - 1];
+                      const prevDone = (progress[unit.lessons[idx - 1].id] ?? 0) >= 4;
+                      const curDone  = (progress[unit.lessons[idx].id] ?? 0) >= 4;
+                      return <PathConnector key={`c${idx}`}
+                        fromX={prev.x} fromY={prev.y} toX={pos.x} toY={pos.y}
+                        color={unit.color}
+                        bothDone={prevDone && curDone}
+                        anyDone={prevDone || curDone} />;
+                    })}
+                  </svg>
 
                   {/* Stations */}
                   {unit.lessons.map((lesson, idx) => {
@@ -1080,14 +1100,15 @@ export default function Roadmap() {
                     const sectionLocked = prevSectionChallenge
                       ? (progress[prevSectionChallenge] ?? 0) < 4
                       : false;
-                    const isLocked = normalLocked || (sectionLocked && !isJumpStation && lessonProgress === 0);
+                    // First station of each unit/section
+                    const isFirstOfSection = idx === 0;
+                    // سهمان فقط إذا لم أصل إليها بعد (لست current وما فيها تقدم)
+                    const rawJumpStation = isFirstOfSection && !!unit.sectionTitle;
+                    const isJumpStation = rawJumpStation && !isCurrent && lessonProgress === 0;
+                    const isLocked = normalLocked || (sectionLocked && !rawJumpStation && lessonProgress === 0);
                     const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
                     const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : lesson.type === "practice" ? 76 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
-                    // First station of each unit/section
-                    const isFirstOfSection = idx === 0;
-                    // Is this the jump station? First station of a section that has sectionTitle
-                    const isJumpStation = isFirstOfSection && !!unit.sectionTitle;
                     // Can the user jump? Previous section challenge done
                     const prevChallengeId = isJumpStation
                       ? chapter.units.slice(0, unitIdx).reverse()
