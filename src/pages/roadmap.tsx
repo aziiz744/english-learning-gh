@@ -809,16 +809,14 @@ function buildPath(count: number, variant?: string): { x: number; y: number }[] 
 
 // ─── Section info extracted from units ───────────────────────────────────────
 // Each unit with sectionTitle marks the start of a new visual section
-interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; }
+interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; emoji: string; }
 function getSections(chapter: Chapter): SectionInfo[] {
   const sections: SectionInfo[] = [];
   chapter.units.forEach(u => {
-    // كل وحدة لها sectionTitle (أو أول وحدة) = بداية وحدة جديدة
     if (!u.sectionTitle && sections.length === 0) {
-      // الوحدة الأولى
-      sections.push({ id: "s0", title: u.title, color: u.color, gradient: chapter.gradient, unitId: u.id });
+      sections.push({ id: "s0", title: u.title, color: u.color, gradient: chapter.gradient, unitId: u.id, emoji: u.emoji });
     } else if (u.sectionTitle) {
-      sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id });
+      sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id, emoji: u.emoji });
     }
   });
   return sections;
@@ -945,6 +943,20 @@ function GuideDrawer({ section, chapter, onClose }: {
   );
 }
 
+// ─── دليل مختصر لكل وحدة (يظهر في الهيدر) ───
+const UNIT_GUIDES: Record<string, string> = {
+  "unit-drinks": "اطلب واقبل المشروبات بأدب: شاي، قهوة، ماء وعصير",
+  "unit-intro": "قدّم نفسك واسأل عن الاسم والبلد والعائلة",
+  "unit-places": "اسأل عن الأماكن والاتجاهات في المدينة",
+  "unit-airport": "تنقّل في المطار: التذكرة، البوابة، والطائرة",
+  "unit-adjectives": "صف الأشياء وقارن بينها بالصفات",
+  "unit-food": "اطلب الطعام والمشروبات في المطعم",
+  "unit-present-jobs": "تحدّث عن المهن بالزمن المضارع",
+  "unit-present": "استخدم الزمن المضارع في حياتك اليومية",
+  "unit-weather": "تحدّث عن الطقس والفصول",
+  "unit-pets": "تحدّث عن حيواناتك الأليفة",
+};
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter] = useState(0);
@@ -1011,55 +1023,80 @@ export default function Roadmap() {
   return (
     <Layout>
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
+        <style>{`
+          .roadmap-sticky-header { top: 8px; }
+          @media (max-width: 767px) {
+            .roadmap-sticky-header { top: calc(58px + env(safe-area-inset-top, 0px)); }
+          }
+        `}</style>
 
-        {/* ── Sticky section header ── */}
+        {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
         <motion.div
           key={activeSection.id}
+          className="roadmap-sticky-header"
           initial={{ opacity: 0.7, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
           style={{
-            position: "sticky", top: 0, zIndex: 30,
-            padding: "8px 20px",
-            background: "hsl(var(--background))",
-            borderBottom: `1.5px solid ${activeSection.color}25`,
+            position: "sticky",
+            zIndex: 30,
+            padding: "8px 16px",
           }}
         >
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            background: `linear-gradient(135deg, ${activeSection.color}, ${activeSection.color}cc)`,
-            borderRadius: 16,
-            padding: "11px 16px",
-            boxShadow: `0 4px 18px ${activeSection.color}45`,
-            maxWidth: 340,
-            margin: "0 auto",
-          }}>
-            {/* Arrow right side */}
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 20, flexShrink: 0 }}>←</div>
+          <div style={{ maxWidth: 360, margin: "0 auto", position: "relative" }}>
+            {/* الطبقة السفلية (العمق ثلاثي الأبعاد) */}
+            <div style={{
+              position: "absolute", inset: 0, top: 6,
+              background: shadeColor(activeSection.color, -55),
+              borderRadius: 18,
+            }}/>
+            {/* الوجه العلوي */}
+            <div style={{
+              position: "relative",
+              background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 25)}, ${activeSection.color} 55%, ${shadeColor(activeSection.color, -20)})`,
+              borderRadius: 18,
+              padding: "12px 16px",
+              boxShadow: `0 6px 0 ${shadeColor(activeSection.color, -55)}, 0 10px 22px ${activeSection.color}55`,
+              border: `1.5px solid ${lightenColor(activeSection.color, 35)}`,
+            }}>
+              {/* لمعة علوية */}
+              <div style={{
+                position: "absolute", top: 4, left: 12, right: 12, height: 14,
+                background: "linear-gradient(180deg, rgba(255,255,255,0.35), transparent)",
+                borderRadius: 12, pointerEvents: "none",
+              }}/>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                {/* Title — center */}
+                <div style={{ flex: 1, textAlign: "center", padding: "0 4px" }}>
+                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 700, marginBottom: 2 }}>
+                    القسم 1 · الوحدة {activeSectionIdx + 1} {activeSection.emoji}
+                  </div>
+                  <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
+                    {activeSection.title}
+                  </div>
+                  {/* دليل مختصر */}
+                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 10.5, fontWeight: 600, marginTop: 3, lineHeight: 1.35 }}>
+                    {UNIT_GUIDES[activeSection.unitId] ?? "تعلّم كلمات وجمل جديدة خطوة بخطوة"}
+                  </div>
+                </div>
 
-            {/* Title — center */}
-            <div style={{ textAlign: "center", flex: 1, padding: "0 10px" }}>
-              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
-                القسم 1 ، الوحدة {activeSectionIdx + 1}
-              </div>
-              <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2 }}>
-                {activeSection.title}
+                {/* Guidebook button */}
+                <button
+                  onClick={e => { e.stopPropagation(); setShowGuide(true); }}
+                  style={{
+                    background: "rgba(255,255,255,0.25)",
+                    border: "1.5px solid rgba(255,255,255,0.5)",
+                    borderRadius: 12, padding: "7px 10px",
+                    color: "white", fontWeight: 800, fontSize: 12,
+                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                    flexShrink: 0, whiteSpace: "nowrap",
+                    boxShadow: `0 3px 0 ${shadeColor(activeSection.color, -50)}`,
+                  }}>
+                  <span style={{ fontSize: 16 }}>📖</span>
+                  <span>الدليل</span>
+                </button>
               </div>
             </div>
-
-            {/* Guidebook — left */}
-            <button
-              onClick={e => { e.stopPropagation(); setShowGuide(true); }}
-              style={{
-                background: "rgba(255,255,255,0.22)",
-                border: "1.5px solid rgba(255,255,255,0.45)",
-                borderRadius: 10, padding: "5px 11px",
-                color: "white", fontWeight: 800, fontSize: 13,
-                cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
-                flexShrink: 0, whiteSpace: "nowrap",
-              }}>
-              📖 الدليل
-            </button>
           </div>
         </motion.div>
 

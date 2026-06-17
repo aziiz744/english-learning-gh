@@ -75,6 +75,71 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
       {en:"tall",ar:"طويل"},{en:"short",ar:"قصير"},{en:"hot",ar:"حار"},{en:"cold",ar:"بارد"},
       {en:"bigger than",ar:"أكبر من"},{en:"smaller than",ar:"أصغر من"},{en:"the biggest",ar:"الأكبر"},{en:"very",ar:"جداً"},
     ] },
+
+  // ── الوحدة 6: اطلب الطعام والمشروبات ──
+  "food-1": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777" },
+  "food-2": { title: "في المطعم",       unitTitle: "اطلب الطعام والمشروبات", emoji: "🍴", color: "#db2777" },
+  "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" },
+  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"] },
+  "food-3": { title: "المشروبات والحلويات", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍰", color: "#db2777" },
+  "food-c": { title: "تحدي الوحدة",     unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#db2777", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"rice",ar:"أرز"},{en:"chicken",ar:"دجاج"},{en:"bread",ar:"خبز"},{en:"salad",ar:"سلطة"},{en:"soup",ar:"شوربة"},
+      {en:"Can I have",ar:"هل يمكنني"},{en:"I'd like",ar:"أودّ"},{en:"the bill",ar:"الفاتورة"},{en:"menu",ar:"قائمة"},
+      {en:"cake",ar:"كيك"},{en:"dessert",ar:"حلوى"},{en:"ice cream",ar:"آيس كريم"},{en:"delicious",ar:"لذيذ"},{en:"order",ar:"طلب"},
+    ] },
+
+  // ── الوحدة 7: استخدم الزمن المضارع للمهن ──
+  "pj-1": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a" },
+  "pj-2": { title: "جمل المضارع",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "✍️", color: "#16a34a" },
+  "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" },
+  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"] },
+  "pj-3": { title: "اسأل عن المهن", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "❓", color: "#16a34a" },
+  "pj-c": { title: "تحدي الوحدة",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"teach",ar:"يُعلّم"},{en:"drive",ar:"يقود"},{en:"cook",ar:"يطبخ"},{en:"build",ar:"يبني"},{en:"write",ar:"يكتب"},
+      {en:"teacher",ar:"معلّم"},{en:"driver",ar:"سائق"},{en:"doctor",ar:"طبيب"},{en:"work",ar:"يعمل"},
+      {en:"What do you do",ar:"ما عملك"},{en:"Where do you work",ar:"أين تعمل"},{en:"job",ar:"وظيفة"},{en:"he teaches",ar:"هو يُعلّم"},{en:"she works",ar:"هي تعمل"},
+    ] },
+
+  // ── الوحدة 8: استخدم الزمن المضارع (الروتين اليومي) ──
+  "pr-1": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c" },
+  "pr-2": { title: "روتينك اليومي", unitTitle: "استخدم الزمن المضارع", emoji: "🌅", color: "#fb923c" },
+  "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" },
+  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"] },
+  "pr-3": { title: "الكلمات الزمنية", unitTitle: "استخدم الزمن المضارع", emoji: "📅", color: "#fb923c" },
+  "pr-c": { title: "تحدي الوحدة",   unitTitle: "استخدم الزمن المضارع", emoji: "🏆", color: "#fb923c", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"eat",ar:"يأكل"},{en:"sleep",ar:"ينام"},{en:"walk",ar:"يمشي"},{en:"read",ar:"يقرأ"},{en:"watch",ar:"يشاهد"},
+      {en:"wake up",ar:"يستيقظ"},{en:"go",ar:"يذهب"},{en:"play",ar:"يلعب"},
+      {en:"always",ar:"دائماً"},{en:"usually",ar:"عادةً"},{en:"sometimes",ar:"أحياناً"},{en:"never",ar:"أبداً"},{en:"every day",ar:"كل يوم"},{en:"breakfast",ar:"فطور"},
+    ] },
+
+  // ── الوحدة 9: تحدث عن الطقس ──
+  "wt-1": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🌤️", color: "#f87171" },
+  "wt-2": { title: "صف الطقس",      unitTitle: "تحدث عن الطقس", emoji: "🌡️", color: "#f87171" },
+  "wt-p": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🏋️", color: "#f87171" },
+  "wt-t": { title: "كنز المراجعة",  unitTitle: "تحدث عن الطقس", emoji: "💎", color: "#f87171", isReview: true, reviewTitles: ["كلمات الطقس", "صف الطقس"] },
+  "wt-3": { title: "الفصول الأربعة", unitTitle: "تحدث عن الطقس", emoji: "🍂", color: "#f87171" },
+  "wt-c": { title: "تحدي الوحدة",   unitTitle: "تحدث عن الطقس", emoji: "🏆", color: "#f87171", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"sunny",ar:"مشمس"},{en:"rainy",ar:"ممطر"},{en:"cloudy",ar:"غائم"},{en:"windy",ar:"عاصف"},{en:"snowy",ar:"مثلج"},
+      {en:"hot",ar:"حار"},{en:"cold",ar:"بارد"},{en:"weather",ar:"طقس"},{en:"today",ar:"اليوم"},
+      {en:"spring",ar:"ربيع"},{en:"summer",ar:"صيف"},{en:"autumn",ar:"خريف"},{en:"winter",ar:"شتاء"},{en:"season",ar:"فصل"},
+    ] },
+
+  // ── الوحدة 10: تحدث عن حيواناتك الأليفة ──
+  "pet-1": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐾", color: "#a78bfa" },
+  "pet-2": { title: "صف حيوانك",       unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐱", color: "#a78bfa" },
+  "pet-p": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏋️", color: "#a78bfa" },
+  "pet-t": { title: "كنز المراجعة",    unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "💎", color: "#a78bfa", isReview: true, reviewTitles: ["أسماء الحيوانات", "صف حيوانك"] },
+  "pet-3": { title: "العناية بالحيوان", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🦴", color: "#a78bfa" },
+  "pet-c": { title: "تحدي الوحدة",     unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏆", color: "#a78bfa", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"cat",ar:"قطة"},{en:"dog",ar:"كلب"},{en:"bird",ar:"طائر"},{en:"fish",ar:"سمكة"},{en:"rabbit",ar:"أرنب"},
+      {en:"fluffy",ar:"كثيف الفرو"},{en:"playful",ar:"مرح"},{en:"cute",ar:"لطيف"},{en:"gentle",ar:"لطيف"},
+      {en:"feed",ar:"يُطعم"},{en:"walk",ar:"يمشّي"},{en:"play",ar:"يلعب"},{en:"vet",ar:"طبيب بيطري"},{en:"pet",ar:"حيوان أليف"},
+    ] },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──
@@ -94,6 +159,18 @@ const JUMP_MAP: Record<string, { unitTitle: string; color: string; prevTitles: s
   // القفز لوحدة 6 = اختبار وحدات 1-5
   "unit-food": { unitTitle: "اطلب الطعام والمشروبات", color: "#db2777",
     prevTitles: ["الكلمات الأساسية", "كلمات جديدة", "جمل كاملة", "ما اسمك؟", "من أين أنت؟", "عائلتك", "أماكن في المدينة", "أين تقع؟", "الاتجاهات", "في المطار", "جمل السفر", "في الطائرة", "الصفات الأساسية", "صف الأشياء", "قارن بين الأشياء"] },
+  // القفز لوحدة 7 = اختبار وحدات 1-6
+  "unit-present-jobs": { unitTitle: "استخدم الزمن المضارع للمهن", color: "#16a34a",
+    prevTitles: ["جمل كاملة", "عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "أسماء الأطعمة", "في المطعم", "المشروبات والحلويات"] },
+  // القفز لوحدة 8 = اختبار وحدات 1-7
+  "unit-present": { unitTitle: "استخدم الزمن المضارع", color: "#fb923c",
+    prevTitles: ["جمل كاملة", "عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
+  // القفز لوحدة 9 = اختبار وحدات 1-8
+  "unit-weather": { unitTitle: "تحدث عن الطقس", color: "#f87171",
+    prevTitles: ["عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "اسأل عن المهن", "أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
+  // القفز لوحدة 10 = اختبار وحدات 1-9
+  "unit-pets": { unitTitle: "تحدث عن حيواناتك الأليفة", color: "#a78bfa",
+    prevTitles: ["عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "اسأل عن المهن", "روتينك اليومي", "كلمات الطقس", "صف الطقس", "الفصول الأربعة"] },
 };
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
