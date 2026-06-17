@@ -1003,6 +1003,17 @@ export default function Roadmap() {
 
   const isPro = (user as any)?.isPro ?? false;
 
+  // جلب الستريك من user_stats
+  const [streak, setStreak] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_stats").select("streak").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data) setStreak(data.streak ?? 0); });
+  }, [user]);
+
+  // أي شارة مضغوطة لعرض توضيحها
+  const [statInfo, setStatInfo] = useState<null | "gems" | "hearts" | "streak">(null);
+
   // أعد تحميل التقدم عند العودة للصفحة (بعد اختبار القفز مثلاً)
   useEffect(() => {
     const onFocus = () => loadProgress();
@@ -1049,45 +1060,103 @@ export default function Roadmap() {
           }
         `}</style>
 
-        {/* ── شريط الجواهر والقلوب (ثابت أعلى) ── */}
+        {/* ── شريط البيانات المختصر (كله على اليسار) ── */}
         <div className="roadmap-stats-bar" style={{
-          position: "sticky", zIndex: 31, display: "flex", justifyContent: "space-between",
-          alignItems: "center", padding: "4px 14px 0", pointerEvents: "none",
+          position: "sticky", zIndex: 31, display: "flex", justifyContent: "flex-start",
+          alignItems: "center", gap: 8, padding: "4px 14px 0", flexWrap: "wrap",
         }}>
-          {/* الجواهر — يسار */}
+          {/* علم أمريكا (لغة التعلّم) */}
           <div style={{
-            display: "flex", alignItems: "center", gap: 6,
-            background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
-            padding: "5px 12px 5px 8px", borderRadius: 14,
-            boxShadow: "0 3px 0 #0369a1, 0 5px 12px rgba(14,165,233,0.4)",
-            border: "1.5px solid #7dd3fc",
+            display: "flex", alignItems: "center", gap: 5,
+            background: "hsl(var(--card))", padding: "5px 10px", borderRadius: 12,
+            boxShadow: "0 2px 6px rgba(0,0,0,0.12)", border: "1.5px solid hsl(var(--border))",
           }}>
-            <svg width="22" height="22" viewBox="0 0 24 24">
+            <svg width="24" height="17" viewBox="0 0 24 17" style={{ borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }}>
+              <rect width="24" height="17" fill="#b22234"/>
+              {[1,3,5,7,9,11].map(i=>(<rect key={i} y={i*1.3} width="24" height="1.3" fill="white"/>))}
+              <rect width="10" height="9.1" fill="#3c3b6e"/>
+              {[...Array(15)].map((_,i)=>(<circle key={i} cx={1.3+(i%5)*1.9} cy={1.3+Math.floor(i/5)*2.6} r="0.5" fill="white"/>))}
+            </svg>
+            <span style={{ fontSize: 12, fontWeight: 800, color: "hsl(var(--foreground))" }}>EN</span>
+          </div>
+
+          {/* الستريك */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("streak");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            background: "linear-gradient(135deg, #fb923c, #f97316)",
+            padding: "5px 11px", borderRadius: 12,
+            boxShadow: "0 3px 0 #c2410c, 0 4px 10px rgba(249,115,22,0.35)", border: "1.5px solid #fdba74",
+          }}>
+            <span style={{ fontSize: 16 }}>🔥</span>
+            <span style={{ color: "white", fontWeight: 900, fontSize: 14, textShadow: "0 1px 2px #9a3412" }}>{streak}</span>
+          </button>
+
+          {/* الجواهر */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("gems");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
+            padding: "5px 11px 5px 8px", borderRadius: 12,
+            boxShadow: "0 3px 0 #0369a1, 0 4px 10px rgba(14,165,233,0.35)", border: "1.5px solid #7dd3fc",
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24">
               <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#a5f3fc" stroke="#0891b2" strokeWidth="1"/>
               <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#67e8f9" opacity="0.8"/>
               <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#22d3ee" opacity="0.6"/>
               <path d="M2 9 H22" stroke="#0891b2" strokeWidth="0.8"/>
             </svg>
-            <span style={{ color: "white", fontWeight: 900, fontSize: 15, textShadow: "0 1px 2px #0369a1" }}>{gemCount}</span>
-          </div>
+            <span style={{ color: "white", fontWeight: 900, fontSize: 14, textShadow: "0 1px 2px #0369a1" }}>{gemCount}</span>
+          </button>
 
-          {/* القلوب — يمين */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 5,
+          {/* القلوب */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("hearts");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
             background: isPro ? "linear-gradient(135deg, #60a5fa, #2563eb)" : "linear-gradient(135deg, #fb7185, #e11d48)",
-            padding: "5px 12px", borderRadius: 14,
-            boxShadow: isPro ? "0 3px 0 #1e40af, 0 5px 12px rgba(37,99,235,0.4)" : "0 3px 0 #9f1239, 0 5px 12px rgba(225,29,72,0.4)",
+            padding: "5px 11px", borderRadius: 12,
+            boxShadow: isPro ? "0 3px 0 #1e40af, 0 4px 10px rgba(37,99,235,0.35)" : "0 3px 0 #9f1239, 0 4px 10px rgba(225,29,72,0.35)",
             border: isPro ? "1.5px solid #93c5fd" : "1.5px solid #fda4af",
           }}>
-            <svg width="22" height="22" viewBox="0 0 24 24">
+            <svg width="20" height="20" viewBox="0 0 24 24">
               <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
                 fill={isPro ? "#dbeafe" : "#ffe4e6"} stroke={isPro ? "#1d4ed8" : "#be123c"} strokeWidth="1.5"/>
             </svg>
-            <span style={{ color: "white", fontWeight: 900, fontSize: 15, textShadow: isPro ? "0 1px 2px #1e40af" : "0 1px 2px #9f1239" }}>
+            <span style={{ color: "white", fontWeight: 900, fontSize: 14, textShadow: isPro ? "0 1px 2px #1e40af" : "0 1px 2px #9f1239" }}>
               {isPro ? "∞" : "5"}
             </span>
-          </div>
+          </button>
         </div>
+
+        {/* ── نافذة توضيح البيانات ── */}
+        <AnimatePresence>
+          {statInfo && (
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+              onClick={()=>setStatInfo(null)}
+              style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:70, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+              <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+                onClick={e=>e.stopPropagation()}
+                style={{ background:"hsl(var(--card))", borderRadius:22, padding:"26px 22px", maxWidth:320, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
+                <div style={{ fontSize:48, marginBottom:12 }}>
+                  {statInfo==="streak" ? "🔥" : statInfo==="gems" ? "💎" : "❤️"}
+                </div>
+                <h3 style={{ fontWeight:900, fontSize:18, marginBottom:8, color:"hsl(var(--foreground))" }}>
+                  {statInfo==="streak" ? "سلسلة التعلّم" : statInfo==="gems" ? "جواهرك" : "قلوب التمارين"}
+                </h3>
+                <p style={{ fontSize:14, color:"hsl(var(--muted-foreground))", lineHeight:1.7, direction:"rtl" }}>
+                  {statInfo==="streak"
+                    ? `لقد حافظت على تواصلك في التعلّم لمدة ${streak} ${streak===1?"يوم":"أيام"}! استمر يومياً لتكبر سلسلتك 🔥`
+                    : statInfo==="gems"
+                    ? `لديك ${gemCount} جوهرة 💎 اجمعها من فتح الكنوز وإكمال التحديات والدروس. قريباً ستتمكن من استخدامها!`
+                    : isPro
+                    ? "لديك قلوب لا نهائية ♾️ بصفتك عضو Pro — تدرّب بلا حدود!"
+                    : "لديك 5 قلوب للتمارين ❤️ كل إجابة خاطئة تكلّفك قلباً. اشترك في Pro للحصول على قلوب لا نهائية."}
+                </p>
+                <button onClick={()=>setStatInfo(null)}
+                  style={{ marginTop:18, width:"100%", padding:"12px", background:activeSection.color, color:"white", border:"none", borderRadius:12, fontWeight:800, fontSize:15, cursor:"pointer" }}>
+                  حسناً
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
         <motion.div
