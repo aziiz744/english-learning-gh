@@ -184,13 +184,11 @@ function lightColor(hex: string): string {
   } catch { return hex; }
 }
 
-// أصوات متعددة تتناوب (عشان ما تتكرر وتصير مزعجة)
+// أصوات متعددة — لكن صوت ثابت لكل سؤال (يُمرّر voiceKey)
 let _cachedVoices: SpeechSynthesisVoice[] = [];
-let _voiceIdx = 0;
 function loadVoices() {
   if (!window.speechSynthesis) return;
   const all = window.speechSynthesis.getVoices();
-  // فضّل أصوات إنجليزية أنثوية/أطفال واضحة
   const preferred = all.filter(v =>
     /en[-_]/i.test(v.lang) &&
     /(female|woman|girl|child|kid|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
@@ -203,22 +201,28 @@ if (typeof window !== "undefined" && window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-function speak(text: string, rate = 0.85) {
+// حوّل نصاً لرقم ثابت (عشان نفس السؤال = نفس الصوت)
+function _hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+
+function speak(text: string, rate = 0.85, voiceKey?: string) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   if (_cachedVoices.length === 0) loadVoices();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US"; u.rate = rate;
-  // اختر صوتاً مختلفاً كل مرة (تناوب دائري)
   if (_cachedVoices.length > 0) {
-    u.voice = _cachedVoices[_voiceIdx % _cachedVoices.length];
-    _voiceIdx++;
-    // نبرة أعلى قليلاً لإحساس طفولي ودود
-    u.pitch = 1.15;
+    // الصوت ثابت لكل سؤال (حسب voiceKey)، أو حسب النص إن لم يُمرّر
+    const idx = _hashStr(voiceKey ?? text) % _cachedVoices.length;
+    u.voice = _cachedVoices[idx];
+    u.pitch = 1.12;
   }
   window.speechSynthesis.speak(u);
 }
-function speakSlow(text: string) { speak(text, 0.5); }
+function speakSlow(text: string, voiceKey?: string) { speak(text, 0.5, voiceKey); }
 
 // مؤثرات صوتية لفتح الكنز
 function playChestOpen() {
@@ -351,7 +355,7 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   const [remaining, setRemaining] = useState(wordBank);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(()=>{ const t = setTimeout(()=>speak(ex.correctAnswer), 350); return ()=>clearTimeout(t); },[]);
+  useEffect(()=>{ const t = setTimeout(()=>speak(ex.correctAnswer, 0.85, ex.id), 350); return ()=>clearTimeout(t); },[]);
 
   const add = (item:{w:string;i:number}, idx:number) => {
     if (submitted) return;
@@ -372,13 +376,13 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
     <div>
       <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:20 }}>
         {/* عادي */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer)}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
           style={{ width:72, height:72, borderRadius:20, background:color, border:"none", cursor:"pointer",
             display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
         {/* سلحفاة بطيء */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer)}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
           style={{ width:58, height:58, borderRadius:18, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
             display:"flex", alignItems:"center", justifyContent:"center" }}>
           <span style={{ fontSize:28 }}>🐢</span>
@@ -419,7 +423,7 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   const choose = (o: string) => {
     if (confirmed) return;
     setPicked(o);
-    speak(o);
+    speak(o, 0.85, ex.id);
   };
 
   const confirm = () => {
@@ -443,7 +447,7 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
                 display:"flex", alignItems:"center", justifyContent:"space-between",
                 minHeight:56 }}>
               <span>{o}</span>
-              <span onClick={e=>{e.stopPropagation();speak(o);}}
+              <span onClick={e=>{e.stopPropagation();speak(o, 0.85, ex.id);}}
                 style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
             </motion.button>
           );
@@ -464,7 +468,7 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   const [picked, setPicked] = useState<string|null>(null);
   useEffect(()=>{
     // تشغيل تلقائي موثوق — ننتظر جاهزية المحرك
-    const play = () => speak(ex.listenSentence!);
+    const play = () => speak(ex.listenSentence!, 0.85, ex.id);
     const t = setTimeout(play, 400);
     return ()=>clearTimeout(t);
   },[]);
@@ -480,13 +484,13 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
       {/* Audio buttons: عادي + سلحفاة بطيء */}
       <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:28 }}>
         {/* عادي — كبير */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!)}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!, 0.85, ex.id)}
           style={{ width:96, height:96, borderRadius:24, background:color, border:"none", cursor:"pointer",
             display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 24px ${color}55` }}>
           <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
         {/* سلحفاة — بطيء */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!)}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!, ex.id)}
           style={{ width:72, height:72, borderRadius:20, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
             display:"flex", alignItems:"center", justifyContent:"center" }}>
           <span style={{ fontSize:34 }}>🐢</span>
@@ -516,7 +520,7 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
 
   const choose = (label: string) => {
     if (picked) return;
-    speak(label);
+    speak(label, 0.85, ex.id);
     setPicked(label);
     onAnswer(label===ex.correctAnswer, label);
   };
@@ -550,7 +554,7 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   const [confirmed, setConfirmed] = useState(false);
   const parts = (ex.blankSentence ?? "").split("___");
 
-  useEffect(()=>{ const t=setTimeout(()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer)), 300); return ()=>clearTimeout(t); },[]);
+  useEffect(()=>{ const t=setTimeout(()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer), 0.85, ex.id), 300); return ()=>clearTimeout(t); },[]);
 
   const confirm = () => {
     if (!picked || confirmed) return;
@@ -562,11 +566,11 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
     <div>
       {/* Audio */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:24 }}>
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer))}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), 0.85, ex.id)}
           style={{ width:64, height:64, borderRadius:18, background:color, border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer))}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), ex.id)}
           style={{ width:52, height:52, borderRadius:16, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
           <span style={{ fontSize:26 }}>🐢</span>
         </motion.button>
@@ -622,7 +626,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
   const tryMatch = (col:"en"|"ar", en:string) => {
     if (matched.has(en)) return;
-    if (col === "en") speak(en);
+    if (col === "en") speak(en, 0.85, ex.id);
     if (!selected) { setSelected({ col, en }); return; }
     if (selected.col === col) { setSelected({ col, en }); return; }
     if (selected.en === en) {
@@ -681,30 +685,57 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
 // ── Chest Open Screen (فتح صندوق الكنز) ──────────────────────────────────────
 function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBack:()=>void }) {
-  const [phase, setPhase] = useState<"shaking"|"opening"|"done">("shaking");
-  useEffect(()=>{
-    const t1 = setTimeout(()=>{ setPhase("opening"); playChestOpen(); }, 900);
-    const t2 = setTimeout(()=>{ playGemSparkle(); }, 1100);
-    const t3 = setTimeout(()=>setPhase("done"), 1400);
-    return ()=>{ clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  },[]);
-  const opened = phase !== "shaking";
+  const [phase, setPhase] = useState<"intro"|"shaking"|"opening"|"done">("intro");
 
-  // جواهر متنوعة تتطاير
-  const gems = ["💎","💰","⭐","💎","✨","💎","🪙"];
+  const startOpening = () => {
+    setPhase("shaking");
+    setTimeout(()=>{ setPhase("opening"); playChestOpen(); }, 800);
+    setTimeout(()=>{ playGemSparkle(); }, 1000);
+    setTimeout(()=>setPhase("done"), 1500);
+  };
+
+  const opened = phase === "opening" || phase === "done";
+  const gems = ["💎","💰","⭐","💎","✨","💎","🪙","💎"];
+
+  // ── لوحة تمهيدية قبل فتح الكنز ──
+  if (phase === "intro") {
+    return (
+      <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} className="flex-1 flex items-center justify-center">
+        <div className="text-center max-w-sm mx-auto p-6">
+          {/* صندوق مقفل ثلاثي الأبعاد */}
+          <motion.div
+            animate={{ y:[0,-6,0] }} transition={{ repeat:Infinity, duration:2 }}
+            style={{ width:200, height:170, margin:"0 auto 20px" }}>
+            <OrnateChest opened={false} color={color} glow={false}/>
+          </motion.div>
+          <h2 className="text-2xl font-bold mb-2" style={{ color }}>💎 كنز المراجعة</h2>
+          <p className="text-muted-foreground text-sm mb-2" style={{ direction:"rtl", lineHeight:1.7 }}>
+            هذا الكنز يحوي أسئلة من <b>الدروس السابقة</b> لتختبر ما تعلّمته.
+          </p>
+          <p className="text-sm mb-6" style={{ direction:"rtl", color, fontWeight:700 }}>
+            هل تستطيع الإجابة وفتح الكنز؟ 🗝️
+          </p>
+          <button onClick={startOpening}
+            style={{ width:"100%", padding:"14px", background:`linear-gradient(135deg, ${lightColor(color)}, ${color})`, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 5px 0 ${color}99` }}>
+            افتح الكنز 💎
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
       <div className="text-center max-w-sm mx-auto p-6">
-        <div style={{ position:"relative", width:220, height:220, margin:"0 auto 24px" }}>
+        <div style={{ position:"relative", width:240, height:240, margin:"0 auto 24px" }}>
           {/* وهج خلفي ينبض */}
           <AnimatePresence>
             {opened && (
-              <motion.div initial={{opacity:0,scale:0.3}} animate={{opacity:[0,1,0.7],scale:[0.3,1.3,1]}}
-                transition={{ duration:0.8 }}
+              <motion.div initial={{opacity:0,scale:0.3}} animate={{opacity:[0,1,0.7],scale:[0.3,1.4,1.1]}}
+                transition={{ duration:0.9 }}
                 style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <div style={{ width:200, height:200, borderRadius:"50%",
-                  background:`radial-gradient(circle, ${color}55 0%, ${color}20 40%, transparent 70%)` }}/>
+                <div style={{ width:230, height:230, borderRadius:"50%",
+                  background:`radial-gradient(circle, #fde68a88 0%, ${color}30 45%, transparent 72%)` }}/>
               </motion.div>
             )}
           </AnimatePresence>
@@ -712,13 +743,13 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
           {/* أشعة دوّارة */}
           <AnimatePresence>
             {opened && (
-              <motion.div initial={{opacity:0,rotate:0}} animate={{opacity:[0,0.6,0.3],rotate:90}}
-                transition={{ duration:1.2 }}
+              <motion.div initial={{opacity:0,rotate:0}} animate={{opacity:[0,0.7,0.35],rotate:120}}
+                transition={{ duration:1.4 }}
                 style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <svg width="220" height="220" viewBox="0 0 220 220">
-                  {[...Array(8)].map((_,i)=>(
-                    <rect key={i} x="108" y="20" width="4" height="50" fill={color} opacity="0.35"
-                      transform={`rotate(${i*45} 110 110)`}/>
+                <svg width="240" height="240" viewBox="0 0 240 240">
+                  {[...Array(12)].map((_,i)=>(
+                    <rect key={i} x="117" y="14" width="5" height="58" fill="#fbbf24" opacity="0.4"
+                      transform={`rotate(${i*30} 120 120)`}/>
                   ))}
                 </svg>
               </motion.div>
@@ -728,75 +759,119 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
           {/* الجواهر تنفجر للأعلى */}
           <AnimatePresence>
             {opened && gems.map((gem,i)=>{
-              const angle = (i/gems.length)*Math.PI - Math.PI/2; // قوس علوي
-              const dist = 70 + (i%3)*15;
+              const angle = (i/(gems.length-1))*Math.PI - Math.PI; // قوس علوي كامل
+              const dist = 80 + (i%3)*16;
               return (
                 <motion.div key={i}
-                  initial={{ x:110, y:130, opacity:0, scale:0, rotate:0 }}
+                  initial={{ x:120, y:140, opacity:0, scale:0, rotate:0 }}
                   animate={{
-                    x:110 + Math.cos(angle)*dist,
-                    y:130 + Math.sin(angle)*dist - 20,
-                    opacity:[0,1,1,0.9], scale:[0,1.3,1], rotate:(i%2?360:-360),
+                    x:120 + Math.cos(angle)*dist,
+                    y:140 + Math.sin(angle)*dist - 10,
+                    opacity:[0,1,1,0.9], scale:[0,1.4,1], rotate:(i%2?360:-360),
                   }}
-                  transition={{ delay:0.1+i*0.05, duration:1, type:"spring", stiffness:80 }}
-                  style={{ position:"absolute", fontSize:30, zIndex:5 }}>
+                  transition={{ delay:0.15+i*0.05, duration:1.1, type:"spring", stiffness:75 }}
+                  style={{ position:"absolute", fontSize:32, zIndex:5 }}>
                   {gem}
                 </motion.div>
               );
             })}
           </AnimatePresence>
 
-          {/* الصندوق */}
+          {/* الصندوق الفخم */}
           <motion.div
             animate={
-              phase==="shaking" ? { rotate:[0,-5,5,-5,5,0], x:[0,-2,2,-2,2,0] } :
-              phase==="opening" ? { scale:[1,1.15,1], y:[0,-8,0] } : {}
+              phase==="shaking" ? { rotate:[0,-6,6,-6,6,0], x:[0,-3,3,-3,3,0] } :
+              phase==="opening" ? { scale:[1,1.18,1], y:[0,-10,0] } : {}
             }
-            transition={ phase==="shaking" ? { repeat:Infinity, duration:0.4 } : { duration:0.4 } }
-            style={{ position:"absolute", bottom:14, left:"50%", transform:"translateX(-50%)", zIndex:3 }}>
-            <svg width="130" height="120" viewBox="0 0 130 120">
-              <defs>
-                <linearGradient id="cBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a16207"/><stop offset="100%" stopColor="#5c3410"/></linearGradient>
-                <linearGradient id="cLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b45309"/><stop offset="100%" stopColor="#78350f"/></linearGradient>
-                <radialGradient id="cGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
-              </defs>
-              {/* توهج داخلي عند الفتح */}
-              {opened && <ellipse cx="65" cy="58" rx="40" ry="20" fill="url(#cGlow)"/>}
-              {/* جسم الصندوق */}
-              <rect x="20" y="56" width="90" height="50" rx="7" fill="url(#cBody)" stroke="#4a2a0a" strokeWidth="1.5"/>
-              {/* ألواح خشبية */}
-              <line x1="42" y1="56" x2="42" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
-              <line x1="65" y1="56" x2="65" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
-              <line x1="88" y1="56" x2="88" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
-              {/* شريط معدني سفلي */}
-              <rect x="20" y="70" width="90" height="9" fill="#92400e"/>
-              {/* القفل */}
-              <rect x="57" y="72" width="16" height="14" rx="3" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-              {/* الغطاء — يفتح للخلف */}
-              <motion.g
-                animate={opened ? { rotate:-112 } : { rotate:0 }}
-                transition={{ type:"spring", stiffness:90, damping:11 }}
-                style={{ transformOrigin:"20px 56px" }}>
-                <rect x="20" y="32" width="90" height="28" rx="9" fill="url(#cLid)" stroke="#4a2a0a" strokeWidth="1.5"/>
-                <rect x="20" y="48" width="90" height="9" fill="#92400e"/>
-                <ellipse cx="65" cy="38" rx="32" ry="5" fill="white" opacity="0.18"/>
-              </motion.g>
-            </svg>
+            transition={ phase==="shaking" ? { repeat:Infinity, duration:0.4 } : { duration:0.45 } }
+            style={{ position:"absolute", bottom:20, left:"50%", transform:"translateX(-50%)", zIndex:3, width:210, height:180 }}>
+            <OrnateChest opened={opened} color={color} glow={opened}/>
           </motion.div>
         </div>
 
         <motion.div initial={{opacity:0,y:10}} animate={{opacity:phase==="done"?1:0,y:phase==="done"?0:10}} transition={{duration:0.4}}>
           <h2 className="text-2xl font-bold mb-2" style={{ color }}>🎉 أحسنت! فتحت الكنز</h2>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:`${color}20`, border:`2px solid ${color}50`, borderRadius:16, padding:"10px 24px", marginBottom:24 }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"linear-gradient(135deg,#38bdf8,#0ea5e9)", borderRadius:16, padding:"10px 24px", marginBottom:8, boxShadow:"0 4px 12px rgba(14,165,233,0.4)" }}>
             <span style={{ fontSize:24 }}>💎</span>
-            <span style={{ fontWeight:900, fontSize:20, color }}>+{xp} XP</span>
+            <span style={{ fontWeight:900, fontSize:20, color:"white" }}>+20 جوهرة</span>
           </div>
+          <div style={{ fontSize:13, color:"hsl(var(--muted-foreground))", marginBottom:20 }}>+{xp} XP</div>
           <button onClick={onBack} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
             واصل الرحلة 🗺️
           </button>
         </motion.div>
       </div>
     </motion.div>
+  );
+}
+
+// ── صندوق كنز قديم فخم ثلاثي الأبعاد ──
+function OrnateChest({ opened, color, glow }: { opened:boolean; color:string; glow:boolean }) {
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 210 180">
+      <defs>
+        <linearGradient id="chestWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b9803c"/><stop offset="50%" stopColor="#8a5a28"/><stop offset="100%" stopColor="#5c3410"/></linearGradient>
+        <linearGradient id="chestLidWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c98a45"/><stop offset="100%" stopColor="#7a4a1e"/></linearGradient>
+        <linearGradient id="chestGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fde047"/><stop offset="50%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#b45309"/></linearGradient>
+        <radialGradient id="chestInnerGlow" cx="50%" cy="40%" r="60%"><stop offset="0%" stopColor="#fffbeb"/><stop offset="60%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
+      </defs>
+
+      {/* ظل أرضي */}
+      <ellipse cx="105" cy="168" rx="80" ry="10" fill="rgba(0,0,0,0.2)"/>
+
+      {/* ── جسم الصندوق (الصندوق السفلي) ── */}
+      <g>
+        {/* الجانب الأمامي */}
+        <path d="M30 95 L30 150 Q30 156 38 156 L172 156 Q180 156 180 150 L180 95 Z" fill="url(#chestWood)" stroke="#3d2208" strokeWidth="2.5"/>
+        {/* ألواح خشبية عمودية */}
+        <line x1="65" y1="95" x2="65" y2="156" stroke="#3d2208" strokeWidth="1.5" opacity="0.5"/>
+        <line x1="105" y1="95" x2="105" y2="156" stroke="#3d2208" strokeWidth="1.5" opacity="0.5"/>
+        <line x1="145" y1="95" x2="145" y2="156" stroke="#3d2208" strokeWidth="1.5" opacity="0.5"/>
+        {/* أحزمة معدنية ذهبية */}
+        <rect x="30" y="108" width="150" height="11" fill="url(#chestGold)" stroke="#92400e" strokeWidth="1"/>
+        <rect x="30" y="138" width="150" height="11" fill="url(#chestGold)" stroke="#92400e" strokeWidth="1"/>
+        {/* مسامير ذهبية */}
+        {[42,72,105,138,168].map(x=>(<circle key={x} cx={x} cy="113.5" r="2.5" fill="#fef3c7" stroke="#92400e" strokeWidth="0.6"/>))}
+        {[42,72,105,138,168].map(x=>(<circle key={"b"+x} cx={x} cy="143.5" r="2.5" fill="#fef3c7" stroke="#92400e" strokeWidth="0.6"/>))}
+        {/* توهج داخلي عند الفتح */}
+        {glow && <ellipse cx="105" cy="98" rx="68" ry="20" fill="url(#chestInnerGlow)"/>}
+        {/* جواهر داخل الصندوق تظهر عند الفتح */}
+        {opened && (
+          <g>
+            <circle cx="80" cy="96" r="7" fill="#f472b6" stroke="#be185d" strokeWidth="1"/>
+            <circle cx="105" cy="92" r="8" fill="#38bdf8" stroke="#0369a1" strokeWidth="1"/>
+            <circle cx="130" cy="96" r="7" fill="#34d399" stroke="#047857" strokeWidth="1"/>
+            <rect x="92" y="90" width="10" height="10" rx="2" fill="#fbbf24" stroke="#b45309" strokeWidth="1" transform="rotate(45 97 95)"/>
+          </g>
+        )}
+      </g>
+
+      {/* القفل الذهبي الكبير (يختفي عند الفتح) */}
+      {!opened && (
+        <g>
+          <rect x="92" y="100" width="26" height="24" rx="4" fill="url(#chestGold)" stroke="#92400e" strokeWidth="1.5"/>
+          <circle cx="105" cy="110" r="4" fill="#5c3410"/>
+          <rect x="103" y="110" width="4" height="8" fill="#5c3410"/>
+        </g>
+      )}
+
+      {/* ── الغطاء (ينفتح للخلف عبر scaleY لتفادي مشاكل transformOrigin) ── */}
+      <motion.g
+        animate={opened ? { scaleY:-0.55, y:-2 } : { scaleY:1, y:0 }}
+        transition={{ type:"spring", stiffness:80, damping:12 }}
+        style={{ transformOrigin:"105px 92px", transformBox:"fill-box" } as any}>
+        {/* قبة الغطاء */}
+        <path d="M30 92 Q30 50 105 50 Q180 50 180 92 Z" fill="url(#chestLidWood)" stroke="#3d2208" strokeWidth="2.5"/>
+        {/* حزام ذهبي على الغطاء */}
+        <path d="M30 78 Q30 56 105 56 Q180 56 180 78" fill="none" stroke="url(#chestGold)" strokeWidth="9"/>
+        {/* حزام ذهبي وسطي عمودي */}
+        <path d="M105 50 L105 92" stroke="url(#chestGold)" strokeWidth="8"/>
+        {/* مسامير على الغطاء */}
+        {[55,80,130,155].map(x=>(<circle key={"l"+x} cx={x} cy="70" r="2.3" fill="#fef3c7" stroke="#92400e" strokeWidth="0.6"/>))}
+        {/* لمعة على الغطاء */}
+        <path d="M50 64 Q105 54 160 64" stroke="rgba(255,255,255,0.35)" strokeWidth="3" fill="none"/>
+      </motion.g>
+    </svg>
   );
 }
 

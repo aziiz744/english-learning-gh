@@ -986,6 +986,23 @@ export default function Roadmap() {
 
   useEffect(() => { loadProgress(); }, [loadProgress]);
 
+  // عدد الجواهر = مجموع مكافآت الكنوز والتحديات المكتملة
+  const gemCount = (() => {
+    let g = 0;
+    chapter.units.forEach(u => {
+      u.lessons.forEach(l => {
+        const done = (progress[l.id] ?? 0) >= 4;
+        if (!done) return;
+        if (l.type === "treasure") g += 20;      // كنز المراجعة
+        else if (l.type === "challenge") g += 15; // تحدي الوحدة
+        else g += 5;                              // درس عادي
+      });
+    });
+    return g;
+  })();
+
+  const isPro = (user as any)?.isPro ?? false;
+
   // أعد تحميل التقدم عند العودة للصفحة (بعد اختبار القفز مثلاً)
   useEffect(() => {
     const onFocus = () => loadProgress();
@@ -1024,11 +1041,53 @@ export default function Roadmap() {
     <Layout>
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
-          .roadmap-sticky-header { top: 8px; }
+          .roadmap-sticky-header { top: 44px; }
+          .roadmap-stats-bar { top: 8px; }
           @media (max-width: 767px) {
-            .roadmap-sticky-header { top: calc(58px + env(safe-area-inset-top, 0px)); }
+            .roadmap-sticky-header { top: calc(94px + env(safe-area-inset-top, 0px)); }
+            .roadmap-stats-bar { top: calc(58px + env(safe-area-inset-top, 0px)); }
           }
         `}</style>
+
+        {/* ── شريط الجواهر والقلوب (ثابت أعلى) ── */}
+        <div className="roadmap-stats-bar" style={{
+          position: "sticky", zIndex: 31, display: "flex", justifyContent: "space-between",
+          alignItems: "center", padding: "4px 14px 0", pointerEvents: "none",
+        }}>
+          {/* الجواهر — يسار */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
+            padding: "5px 12px 5px 8px", borderRadius: 14,
+            boxShadow: "0 3px 0 #0369a1, 0 5px 12px rgba(14,165,233,0.4)",
+            border: "1.5px solid #7dd3fc",
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24">
+              <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#a5f3fc" stroke="#0891b2" strokeWidth="1"/>
+              <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#67e8f9" opacity="0.8"/>
+              <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#22d3ee" opacity="0.6"/>
+              <path d="M2 9 H22" stroke="#0891b2" strokeWidth="0.8"/>
+            </svg>
+            <span style={{ color: "white", fontWeight: 900, fontSize: 15, textShadow: "0 1px 2px #0369a1" }}>{gemCount}</span>
+          </div>
+
+          {/* القلوب — يمين */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 5,
+            background: isPro ? "linear-gradient(135deg, #60a5fa, #2563eb)" : "linear-gradient(135deg, #fb7185, #e11d48)",
+            padding: "5px 12px", borderRadius: 14,
+            boxShadow: isPro ? "0 3px 0 #1e40af, 0 5px 12px rgba(37,99,235,0.4)" : "0 3px 0 #9f1239, 0 5px 12px rgba(225,29,72,0.4)",
+            border: isPro ? "1.5px solid #93c5fd" : "1.5px solid #fda4af",
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24">
+              <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
+                fill={isPro ? "#dbeafe" : "#ffe4e6"} stroke={isPro ? "#1d4ed8" : "#be123c"} strokeWidth="1.5"/>
+            </svg>
+            <span style={{ color: "white", fontWeight: 900, fontSize: 15, textShadow: isPro ? "0 1px 2px #1e40af" : "0 1px 2px #9f1239" }}>
+              {isPro ? "∞" : "5"}
+            </span>
+          </div>
+        </div>
 
         {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
         <motion.div
