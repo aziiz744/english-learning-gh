@@ -34,6 +34,7 @@ function Router() {
       <Route path="/lessons" component={Lessons} />
       <Route path="/lessons/:id" component={LessonDetail} />
       <Route path="/u/:id" component={UnitLesson} />
+      <Route path="/jump/:unitId" component={UnitLesson} />
       <Route path="/achievements" component={Achievements} />
       <Route path="/level-test/:level" component={LevelTest} />
       <Route path="/admin" component={Admin} />

@@ -11,6 +11,12 @@ import { b2Banks } from "./lesson-banks/b2";
 import { c1Banks } from "./lesson-banks/c1";
 import { c2Banks } from "./lesson-banks/c2";
 import { unit1DrinksBank } from "./lesson-banks/unit1-drinks";
+import { unit2IntroBank } from "./lesson-banks/unit2-intro";
+import { unit3PlacesBank } from "./lesson-banks/unit3-places";
+import { unit4AirportBank } from "./lesson-banks/unit4-airport";
+import { unit5AdjectivesBank } from "./lesson-banks/unit5-adjectives";
+import { unit6FoodBank } from "./lesson-banks/unit6-food";
+import { unit7JobsBank } from "./lesson-banks/unit7-jobs";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -22,6 +28,12 @@ const B: Record<string, TieredBank> = {
   ...c1Banks,
   ...c2Banks,
   ...unit1DrinksBank,
+  ...unit2IntroBank,
+  ...unit3PlacesBank,
+  ...unit4AirportBank,
+  ...unit5AdjectivesBank,
+  ...unit6FoodBank,
+  ...unit7JobsBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.
@@ -153,11 +165,22 @@ export function getLessonMiniExercises(
   tier: 0 | 1 | 2 | 3
 ): ExObj[] {
   const bank = getLessonBank(lessonTitle);
-  const chosen: ExObj[] = pickN(bank[TIER_KEYS[tier]], count);
+  const pool = bank[TIER_KEYS[tier]] ?? [];
 
+  // اضمن ظهور الأنماط الخاصة (اتبع النمط + الأزواج) إن وُجدت
+  const special = pool.filter(e => e.type === "fill_blank" || e.type === "matching");
+  const normal  = pool.filter(e => e.type !== "fill_blank" && e.type !== "matching");
+
+  const chosen: ExObj[] = [];
+  // خذ نمط واحد على الأقل من كل نوع خاص إن وجد
+  const pickedSpecial = pickN(special, Math.min(2, special.length));
+  chosen.push(...pickedSpecial);
+  // أكمل الباقي من العادية
+  chosen.push(...pickN(normal, count - chosen.length));
+
+  // إذا ما زلنا أقل من العدد، خذ من الـ tiers المجاورة
   if (chosen.length < count) {
     const seen = new Set(chosen.map((e) => e.id));
-    // Prefer the nearest tiers first (tier-1, tier+1, tier-2, ...).
     const order: (0 | 1 | 2 | 3)[] = [];
     for (let d = 1; d < 4; d++) {
       if (tier - d >= 0) order.push((tier - d) as 0 | 1 | 2 | 3);
@@ -167,10 +190,7 @@ export function getLessonMiniExercises(
       if (chosen.length >= count) break;
       for (const e of pickN(bank[TIER_KEYS[t]], count)) {
         if (chosen.length >= count) break;
-        if (!seen.has(e.id)) {
-          chosen.push(e);
-          seen.add(e.id);
-        }
+        if (!seen.has(e.id)) { chosen.push(e); seen.add(e.id); }
       }
     }
   }

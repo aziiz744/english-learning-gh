@@ -352,48 +352,53 @@ function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Crown icon for challenge stations ───────────────────────────────────────
 function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 90;
+  const SIZE = 76;
   const r = SIZE / 2;
-  const gold = locked ? "#4b5563" : color;
-  const light = locked ? "#6b7280" : lightenColor(color);
-  const dark  = locked ? "#1f2937" : shadeColor(color, -55);
+  const depth = SIZE * 0.11;
+  const pad = 5;
+  const faceTop  = locked ? "#3a4656" : lightenColor(color);
+  const faceMain = locked ? "#2d3a4a" : color;
+  const sideCol  = locked ? "#1a2330" : shadeColor(color, -60);
   const gId = `crown-${color.replace("#","")}-${locked?"l":"u"}`;
+
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
-      {/* Glow */}
+    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
       {!locked && (
         <div style={{
           position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-          width: SIZE * 0.85, height: SIZE * 0.28, borderRadius: "50%",
-          background: color, opacity: 0.35, filter: "blur(12px)", zIndex: 0,
+          width: SIZE * 0.8, height: SIZE * 0.28, borderRadius: "50%",
+          background: color, opacity: 0.25, filter: "blur(10px)", zIndex: 0,
         }}/>
       )}
-      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
+      <svg width={SIZE + pad*2} height={SIZE + depth + pad} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
         <defs>
-          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
-            <stop offset="0%"  stopColor={light}/>
-            <stop offset="50%" stopColor={gold}/>
-            <stop offset="100%" stopColor={dark}/>
+          <radialGradient id={gId} cx="38%" cy="30%" r="80%">
+            <stop offset="0%"  stopColor={faceTop}/>
+            <stop offset="55%" stopColor={faceMain}/>
+            <stop offset="100%" stopColor={shadeColor(faceMain, -25)}/>
           </radialGradient>
         </defs>
-        {/* Outer ring */}
-        <circle cx={r} cy={r} r={r-1} fill={dark} stroke={shadeColor(gold,-30)} strokeWidth={2}/>
-        {/* Inner face */}
-        <circle cx={r} cy={r} r={r-7} fill={`url(#${gId})`}/>
-        {/* Shine */}
-        <ellipse cx={r*0.68} cy={r*0.44} rx={r*0.3} ry={r*0.11}
-          fill="white" opacity={locked ? 0.05 : 0.2} transform={`rotate(-35 ${r} ${r})`}/>
-        {/* Crown icon */}
-        <g transform={`translate(${r-18}, ${r-14})`}>
-          <path d="M3 22 L33 22 L30 10 L22 17 L18 6 L14 17 L6 10 Z"
-            fill={locked ? "#4b5563" : "white"} opacity={locked ? 0.5 : 1}/>
-          <rect x="3" y="22" width="30" height="5" rx="2"
-            fill={locked ? "#374151" : "rgba(255,255,255,0.7)"}/>
-          {/* Crown gems */}
+        {/* العمق */}
+        <circle cx={r+pad} cy={r+pad+depth} r={r-2} fill={sideCol}/>
+        {/* الوجه */}
+        <circle cx={r+pad} cy={r+pad} r={r-2} fill={`url(#${gId})`}/>
+        {/* لمعة */}
+        <ellipse cx={(r+pad)-r*0.36} cy={(r+pad)-r*0.5} rx={r*0.4} ry={r*0.26}
+          fill="white" opacity={locked ? 0.05 : 0.14}/>
+        {/* التاج — أكبر وأوضح */}
+        <g transform={`translate(${r+pad-20}, ${r+pad-16})`}>
+          {/* جسم التاج */}
+          <path d="M2 26 L38 26 L34 10 L26 19 L20 4 L14 19 L6 10 Z"
+            fill={locked ? "#4b5563" : "#fbbf24"}
+            stroke={locked ? "#374151" : "#f59e0b"} strokeWidth="1.5"/>
+          {/* قاعدة التاج */}
+          <rect x="2" y="26" width="36" height="7" rx="3"
+            fill={locked ? "#374151" : "#f59e0b"}/>
+          {/* الجواهر */}
           {!locked && <>
-            <circle cx="18" cy="8" r="2.5" fill="#fef08a"/>
-            <circle cx="7" cy="12" r="2" fill="#fef08a"/>
-            <circle cx="29" cy="12" r="2" fill="#fef08a"/>
+            <circle cx="20" cy="7" r="3.5" fill="#fff" opacity="0.9"/>
+            <circle cx="7" cy="13" r="2.5" fill="#fff" opacity="0.7"/>
+            <circle cx="33" cy="13" r="2.5" fill="#fff" opacity="0.7"/>
           </>}
         </g>
       </svg>
@@ -423,8 +428,8 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
             <stop offset="100%" stopColor={unlocked ? "#92400e" : "#374151"}/>
           </linearGradient>
           <linearGradient id="chestBandGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#fbbf24" : "#9ca3af"}/>
-            <stop offset="100%" stopColor={unlocked ? "#d97706" : "#6b7280"}/>
+            <stop offset="0%" stopColor={unlocked ? "#a16207" : "#9ca3af"}/>
+            <stop offset="100%" stopColor={unlocked ? "#713f12" : "#6b7280"}/>
           </linearGradient>
           {unlocked && (
             <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
@@ -456,25 +461,35 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
         <path d="M34 40 Q34 35 38 35 Q42 35 42 40" stroke={unlocked ? "#d97706" : "#6b7280"} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
         <circle cx="38" cy="45" r="2" fill={unlocked ? "#d97706" : "#4b5563"}/>
 
-        {/* Lid */}
-        <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
-        <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
-        {/* Lid band */}
-        <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
-
-        {/* Lid top highlight */}
-        <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
-
-        {/* Coins when unlocked */}
+        {/* Coins/gems inside when unlocked */}
         {unlocked && <>
-          <circle cx="24" cy="32" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <circle cx="38" cy="28" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
-          <circle cx="52" cy="32" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <circle cx="31" cy="29" r="4" fill="#fde68a" stroke="#eab308" strokeWidth="0.5"/>
-          <circle cx="45" cy="29" r="4" fill="#fde68a" stroke="#eab308" strokeWidth="0.5"/>
-          {/* Sparkles */}
-          <text x="14" y="22" fontSize="10">✨</text>
-          <text x="54" y="20" fontSize="9">⭐</text>
+          <circle cx="24" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+          <circle cx="38" cy="38" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
+          <circle cx="52" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+          <text x="30" y="36" fontSize="11">💎</text>
+        </>}
+
+        {/* Lid — مفتوح إذا unlocked، مغلق إذا لا */}
+        {unlocked ? (
+          /* غطاء مفتوح (مائل للخلف) */
+          <g transform="rotate(-105 12 22)">
+            <rect x="8" y="12" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
+            <rect x="8" y="24" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
+            <ellipse cx="38" cy="13" rx="22" ry="3" fill="white" opacity="0.12"/>
+          </g>
+        ) : (
+          <>
+            <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
+            <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
+            <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
+            <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
+          </>
+        )}
+
+        {/* Sparkles when unlocked */}
+        {unlocked && <>
+          <text x="10" y="16" fontSize="10">✨</text>
+          <text x="58" y="14" fontSize="9">⭐</text>
         </>}
       </svg>
     </div>
@@ -493,95 +508,124 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 }) {
   const SIZE   = type === "challenge" ? 90 : 76;
   const r      = SIZE / 2;
-  const trackR = r - 7;
-  const circ   = 2 * Math.PI * trackR;
+  const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
+  const pad = 16; // مساحة إضافية للخط الخارجي
+  const gap = 5; // الفاصل بين الخط والدائرة
+  const trackRx = r + gap;            // أفقياً: نصف القطر + فاصل بسيط فقط
+  const trackRy = r + depth/2 + gap;  // عمودياً: يشمل التمدد لأسفل
+  // محيط البيضاوي التقريبي (Ramanujan)
+  const ellipseCirc = Math.PI * (3*(trackRx+trackRy) - Math.sqrt((3*trackRx+trackRy)*(trackRx+3*trackRy)));
   const isGold = progress >= 4;
   const isActive = progress > 0 || !!isFirstOfSection || !!isJumpStation || isCurrent;
 
-  const mainColor  = isGold ? "#f59e0b" : isActive ? (isJumpStation ? shadeColor(color, -20) : color) : "#2d3a4a";
-  const darkColor  = isGold ? "#92400e" : isActive ? shadeColor(color, -55) : "#151f2b";
-  const faceLight  = isGold ? "#fef08a" : isActive ? color : "#3a4a5a";
-  const starColor  = isGold ? "#f59e0b" : isActive ? "#fff" : "#4b6070";
-  const trackColor = isGold ? "#fde047" : isActive ? "#ffffff" : "#2a3a4a";
-  const arcFilled  = isGold || isJumpStation
-    ? `${circ} 0`
-    : isActive ? `${circ * Math.min(progress / 4, 1)} ${circ}` : `0 ${circ}`;
+  // ألوان مريحة بعمق ثلاثي الأبعاد
+  const faceTop   = isGold ? "#fbbf24" : isActive ? lightenColor(color) : "#3a4656";
+  const faceMain  = isGold ? "#f59e0b" : isActive ? color : "#2d3a4a";
+  const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330";
+  const starColor = isGold ? "#ffffff" : isActive ? "#ffffff" : "#566578";
+
+  // المسار الرمادي المفرّغ يظهر على الدائرة الحالية (ابدأ) أو المكتملة
+  const showTrack = isCurrent || isGold || (progress > 0 && progress < 4);
+  const fillColor = isGold ? "#f59e0b" : color; // لون الجزء الممتلئ
+  // كم يمتلئ (ربع لكل درس)
+  const fillFraction = isGold ? 1 : Math.min(progress / 4, 1);
+  const fillDash = `${ellipseCirc * fillFraction} ${ellipseCirc}`;
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
 
   return (
-    <div style={{ position: "relative", width: SIZE, height: SIZE + 10 }}>
+    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
 
       {/* Soft colored glow beneath */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        width: SIZE * 0.85, height: SIZE * 0.3, borderRadius: "50%",
-        background: mainColor,
-        opacity: isJumpStation ? 0.2 : isActive ? (isCurrent ? 0.25 : 0.12) : 0.05,
-        filter: "blur(12px)", zIndex: 0,
+        width: SIZE * 0.8, height: SIZE * 0.28, borderRadius: "50%",
+        background: faceMain,
+        opacity: isJumpStation ? 0.22 : isActive ? (isCurrent ? 0.3 : 0.14) : 0.05,
+        filter: "blur(11px)", zIndex: 0,
       }}/>
 
       {/* Pulse ring for current */}
       {isCurrent && (
         <motion.div style={{
-          position: "absolute", top: 0, left: 0, width: SIZE, height: SIZE,
+          position: "absolute", top: pad, left: pad, width: SIZE, height: SIZE,
           borderRadius: "50%", border: `2.5px solid ${color}`, zIndex: 2,
         }}
-          animate={{ scale: [1, 1.55, 1], opacity: [0.6, 0, 0.6] }}
+          animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
           transition={{ repeat: Infinity, duration: 2.2 }}
         />
       )}
 
-      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }}>
+      <svg width={SIZE + pad*2} height={SIZE + depth + pad} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
         <defs>
-          <radialGradient id={gId} cx="35%" cy="28%" r="75%">
-            <stop offset="0%"  stopColor={isJumpStation ? mainColor : faceLight} stopOpacity="1"/>
-            <stop offset="45%" stopColor={mainColor} stopOpacity="1"/>
-            <stop offset="100%" stopColor={darkColor} stopOpacity="1"/>
-          </radialGradient>
-          <radialGradient id={`${gId}-bg`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%"  stopColor={isActive ? shadeColor(mainColor, -20) : "#1a2535"}/>
-            <stop offset="100%" stopColor={isActive ? shadeColor(mainColor, -55) : "#0d1520"}/>
+          <radialGradient id={gId} cx="38%" cy="30%" r="80%">
+            <stop offset="0%"  stopColor={faceTop}/>
+            <stop offset="55%" stopColor={faceMain}/>
+            <stop offset="100%" stopColor={shadeColor(faceMain, -25)}/>
           </radialGradient>
         </defs>
 
-        {/* Outer dark border ring */}
-        <circle cx={r} cy={r} r={r - 1} fill={isActive ? shadeColor(mainColor,-65) : "#0d1520"}
-          stroke={darkColor} strokeWidth={2}/>
+        {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) — خلف كل شيء ── */}
+        <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
 
-        {/* Inner face with gradient */}
-        <circle cx={r} cy={r} r={r - 7} fill={`url(#${gId})`}/>
+        {/* ── المسار ثلاثي الأبعاد (يظهر على الحالية أو المكتملة) ── */}
+        {showTrack && (
+          <>
+            {/* (1) الطبقة السفلية للمسار — العمق ثلاثي الأبعاد (أغمق، منزاحة لأسفل) */}
+            <ellipse
+              cx={r + pad} cy={r + pad + depth/2 + depth*0.7}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke="#222e3c" strokeWidth={9} strokeLinecap="round"
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2+depth*0.7}px` }}
+            />
+            {/* (2) المسار الرمادي الكامل (الوجه العلوي للخط) */}
+            <ellipse
+              cx={r + pad} cy={r + pad + depth/2}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke="#3a4656" strokeWidth={9} strokeLinecap="round"
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
+            />
+            {/* (3) الجزء الممتلئ بلون الوحدة — له عمق سفلي أغمق */}
+            <motion.ellipse
+              cx={r + pad} cy={r + pad + depth/2 + depth*0.7}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke={shadeColor(fillColor, -55)} strokeWidth={9} strokeLinecap="round"
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2+depth*0.7}px` }}
+              initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
+              animate={{ strokeDasharray: fillDash }}
+              transition={{ duration: 0.8, ease:"easeOut" }}
+            />
+            {/* (4) الجزء الممتلئ — الوجه العلوي الفاتح */}
+            <motion.ellipse
+              cx={r + pad} cy={r + pad + depth/2}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke={fillColor} strokeWidth={9} strokeLinecap="round"
+              initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
+              animate={{ strokeDasharray: fillDash }}
+              transition={{ duration: 0.8, ease:"easeOut" }}
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
+            />
+          </>
+        )}
 
-        {/* Progress / full arc */}
-        <motion.circle
-          cx={r} cy={r} r={trackR} fill="none"
-          stroke={trackColor} strokeWidth={7} strokeLinecap="round"
-          strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor})` : "none", transform:"rotate(-90deg)", transformOrigin:`${r}px ${r}px` }}
-          initial={{ strokeDasharray:`0 ${circ}` }}
-          animate={{ strokeDasharray: arcFilled }}
-          transition={{ duration: 0.8, ease:"easeOut" }}
-        />
+        {/* ── الوجه العلوي ── */}
+        <circle cx={r + pad} cy={r + pad} r={r - 2} fill={`url(#${gId})`}/>
 
-        {/* Top shine streak */}
-        <ellipse cx={r * 0.68} cy={r * 0.44} rx={r * 0.32} ry={r * 0.12}
-          fill="white" opacity={isActive ? 0.08 : 0.03}
-          transform={`rotate(-35 ${r} ${r})`}/>
+        {/* لمعة علوية ناعمة */}
+        <ellipse cx={(r + pad) - r*0.36} cy={(r + pad) - r*0.5} rx={r * 0.4} ry={r * 0.26}
+          fill="white" opacity={isActive ? 0.16 : 0.05}/>
 
-        {/* Bottom subtle rim */}
-        <ellipse cx={r} cy={r * 1.62} rx={r * 0.55} ry={r * 0.1}
-          fill={darkColor} opacity={isActive ? 0.5 : 0.2}/>
-
-        {/* Icon */}
-        <g transform={`translate(${r - SIZE * 0.21}, ${r - SIZE * 0.21})`}>
+        {/* ── الأيقونة ── */}
+        <g transform={`translate(${r + pad - SIZE * 0.21}, ${r + pad - SIZE * 0.21})`}>
           {isJumpStation && !isGold ? (
-            <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 28 28" fill="white" opacity="0.95">
+            <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 28 28" fill="white" opacity="0.95"
+              style={{ filter:`drop-shadow(0 2px 2px ${sideColor})` }}>
               <path d="M2 5 L12 14 L2 23 Z"/>
               <path d="M14 5 L24 14 L14 23 Z"/>
             </svg>
           ) : (
             <svg width={SIZE * 0.42} height={SIZE * 0.42} viewBox="0 0 24 24" fill={starColor}
-              style={{ filter: isGold ? "drop-shadow(0 0 8px #eab30890)" : isActive ? `drop-shadow(0 1px 3px ${darkColor})` : "none" }}>
+              style={{ filter: isGold ? "drop-shadow(0 2px 3px #92400e)" : isActive ? `drop-shadow(0 2px 3px ${sideColor})` : "none" }}>
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           )}
@@ -599,22 +643,23 @@ function shadeColor(hex: string, pct: number): string {
   const b = Math.max(0, Math.min(255, (n & 0xff) + pct));
   return `rgb(${r},${g},${b})`;
 }
-function lightenColor(hex: string): string {
+function lightenColor(hex: string, amt = 40): string {
   try {
     const n = parseInt(hex.replace("#",""), 16);
-    const r = Math.min(255, (n >> 16) + 40);
-    const g = Math.min(255, ((n >> 8) & 0xff) + 40);
-    const b = Math.min(255, (n & 0xff) + 40);
+    const r = Math.min(255, (n >> 16) + amt);
+    const g = Math.min(255, ((n >> 8) & 0xff) + amt);
+    const b = Math.min(255, (n & 0xff) + amt);
     return `rgb(${r},${g},${b})`;
   } catch { return hex; }
 }
 
 // ─── Duolingo-style popup card ────────────────────────────────────────────────
-function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClose, onStart }: {
+function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lessonProgress, isJump, onClose, onStart }: {
   lesson: UnitLesson; color: string; unitTitle: string;
-  lessonNum: number; totalLessons: number;
+  lessonNum: number; totalLessons: number; lessonProgress: number; isJump?: boolean;
   onClose: () => void; onStart: () => void;
 }) {
+  const isTreasureDone = lesson.type === "treasure" && lessonProgress >= 4;
   const darkColor = color + "dd";
   return (
     <motion.div
@@ -642,42 +687,89 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, onClo
       }}/>
 
       {/* Title */}
-      <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
-      <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
-      </p>
+      {isJump ? (
+        <>
+          <p className="font-bold text-white text-center mb-1" style={{ fontSize: 15 }}>اختبار القفز</p>
+          <p className="text-white/90 text-center mb-1" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+            اجتز اختبار الوحدات السابقة للقفز إلى هنا
+          </p>
+          <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:10, flexWrap:"wrap" }}>
+            <span style={{ background:"rgba(255,255,255,0.18)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:10 }}>📝 12 سؤال</span>
+            <span style={{ background:"rgba(255,255,255,0.18)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:10 }}>❤️ 3 محاولات</span>
+          </div>
+          <button onClick={onStart}
+            style={{
+              display: "block", width: "100%",
+              background: "white", color: "#1e293b",
+              fontWeight: 800, fontSize: 14,
+              padding: "11px 0", borderRadius: 14,
+              border: "none", cursor: "pointer",
+              boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
+              transition: "transform 0.1s, box-shadow 0.1s",
+            }}
+            onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
+            onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
+          >
+            ابدأ الاختبار
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
+          <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
+            {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
+          </p>
 
-      {/* Start button */}
-      <button onClick={onStart}
-        style={{
-          display: "block", width: "100%",
-          background: "white", color: "#1e293b",
-          fontWeight: 800, fontSize: 14,
-          padding: "10px 0", borderRadius: 14,
-          border: "none", cursor: "pointer",
-          boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
-          transition: "transform 0.1s, box-shadow 0.1s",
-        }}
-        onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
-        onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
-      >
-        ابدأ +10 XP
-      </button>
+          {/* Start button or completed state */}
+          {isTreasureDone ? (
+            <div style={{
+              display: "block", width: "100%", textAlign: "center",
+              background: "rgba(255,255,255,0.2)", color: "white",
+              fontWeight: 800, fontSize: 14,
+              padding: "10px 0", borderRadius: 14,
+            }}>
+              ✅ مكتمل — حصلت على المكافأة
+            </div>
+          ) : (
+            <button onClick={onStart}
+              style={{
+                display: "block", width: "100%",
+                background: "white", color: "#1e293b",
+                fontWeight: 800, fontSize: 14,
+                padding: "10px 0", borderRadius: 14,
+                border: "none", cursor: "pointer",
+                boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
+                transition: "transform 0.1s, box-shadow 0.1s",
+              }}
+              onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
+              onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
+            >
+              {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : "ابدأ +10 XP"}
+            </button>
+          )}
+        </>
+      )}
     </motion.div>
   );
 }
 
 // ─── SVG path connector ───────────────────────────────────────────────────────
-function PathConnector({ fromX, fromY, toX, toY, color, done }: {
-  fromX: number; fromY: number; toX: number; toY: number; color: string; done: boolean;
+function PathConnector({ fromX, fromY, toX, toY, color, bothDone, anyDone }: {
+  fromX: number; fromY: number; toX: number; toY: number; color: string;
+  bothDone: boolean; anyDone: boolean;
 }) {
   const midY = (fromY + toY) / 2;
   const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
+  // ذهبي إذا الدائرتان مكتملتان، لون الوحدة إذا واحدة فقط، رمادي إذا لا شيء
+  const lineColor = bothDone ? "#f59e0b" : color;
+  const showColor = anyDone;
   return (
     <g>
-      <path d={d} stroke="#3a4658" strokeWidth={6} fill="none" strokeLinecap="round" strokeDasharray="10 8"/>
-      {done && (
-        <motion.path d={d} stroke={color} strokeWidth={6} fill="none" strokeLinecap="round"
+      {/* مسار رمادي خلفي خفيف */}
+      <path d={d} stroke="#3a4658" strokeWidth={4} fill="none" strokeLinecap="round" strokeDasharray="8 7" opacity={0.5}/>
+      {/* المسار الملوّن (شفاف + سُمك بسيط) */}
+      {showColor && (
+        <motion.path d={d} stroke={lineColor} strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.55}
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         />
@@ -717,16 +809,14 @@ function buildPath(count: number, variant?: string): { x: number; y: number }[] 
 
 // ─── Section info extracted from units ───────────────────────────────────────
 // Each unit with sectionTitle marks the start of a new visual section
-interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; }
+interface SectionInfo { id: string; title: string; color: string; gradient: string; unitId: string; emoji: string; }
 function getSections(chapter: Chapter): SectionInfo[] {
   const sections: SectionInfo[] = [];
   chapter.units.forEach(u => {
-    // كل وحدة لها sectionTitle (أو أول وحدة) = بداية وحدة جديدة
     if (!u.sectionTitle && sections.length === 0) {
-      // الوحدة الأولى
-      sections.push({ id: "s0", title: u.title, color: u.color, gradient: chapter.gradient, unitId: u.id });
+      sections.push({ id: "s0", title: u.title, color: u.color, gradient: chapter.gradient, unitId: u.id, emoji: u.emoji });
     } else if (u.sectionTitle) {
-      sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id });
+      sections.push({ id: u.id, title: u.sectionTitle, color: u.color, gradient: `linear-gradient(135deg, ${u.color}, ${u.color}bb)`, unitId: u.id, emoji: u.emoji });
     }
   });
   return sections;
@@ -853,6 +943,20 @@ function GuideDrawer({ section, chapter, onClose }: {
   );
 }
 
+// ─── دليل مختصر لكل وحدة (يظهر في الهيدر) ───
+const UNIT_GUIDES: Record<string, string> = {
+  "unit-drinks": "اطلب واقبل المشروبات بأدب: شاي، قهوة، ماء وعصير",
+  "unit-intro": "قدّم نفسك واسأل عن الاسم والبلد والعائلة",
+  "unit-places": "اسأل عن الأماكن والاتجاهات في المدينة",
+  "unit-airport": "تنقّل في المطار: التذكرة، البوابة، والطائرة",
+  "unit-adjectives": "صف الأشياء وقارن بينها بالصفات",
+  "unit-food": "اطلب الطعام والمشروبات في المطعم",
+  "unit-present-jobs": "تحدّث عن المهن بالزمن المضارع",
+  "unit-present": "استخدم الزمن المضارع في حياتك اليومية",
+  "unit-weather": "تحدّث عن الطقس والفصول",
+  "unit-pets": "تحدّث عن حيواناتك الأليفة",
+};
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Roadmap() {
   const [activeChapter] = useState(0);
@@ -869,16 +973,29 @@ export default function Roadmap() {
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   // Load unit progress from Supabase
-  useEffect(() => {
+  const loadProgress = useCallback(() => {
     if (!user) return;
     supabase.from("unit_progress").select("lesson_id, sub_progress").eq("user_id", user.id)
       .then(({ data }) => {
         if (!data) return;
         const map: Record<string, number> = {};
-        data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; }); // 0-4 = ربع لكل درس
+        data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; });
         setProgress(map);
       });
   }, [user]);
+
+  useEffect(() => { loadProgress(); }, [loadProgress]);
+
+  // أعد تحميل التقدم عند العودة للصفحة (بعد اختبار القفز مثلاً)
+  useEffect(() => {
+    const onFocus = () => loadProgress();
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, [loadProgress]);
 
   // Refs for each section divider — used for IntersectionObserver
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -906,55 +1023,80 @@ export default function Roadmap() {
   return (
     <Layout>
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
+        <style>{`
+          .roadmap-sticky-header { top: 8px; }
+          @media (max-width: 767px) {
+            .roadmap-sticky-header { top: calc(58px + env(safe-area-inset-top, 0px)); }
+          }
+        `}</style>
 
-        {/* ── Sticky section header ── */}
+        {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
         <motion.div
           key={activeSection.id}
+          className="roadmap-sticky-header"
           initial={{ opacity: 0.7, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
           style={{
-            position: "sticky", top: 0, zIndex: 30,
-            padding: "8px 20px",
-            background: "hsl(var(--background))",
-            borderBottom: `1.5px solid ${activeSection.color}25`,
+            position: "sticky",
+            zIndex: 30,
+            padding: "8px 16px",
           }}
         >
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            background: `linear-gradient(135deg, ${activeSection.color}, ${activeSection.color}cc)`,
-            borderRadius: 16,
-            padding: "11px 16px",
-            boxShadow: `0 4px 18px ${activeSection.color}45`,
-            maxWidth: 340,
-            margin: "0 auto",
-          }}>
-            {/* Arrow right side */}
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 20, flexShrink: 0 }}>←</div>
+          <div style={{ maxWidth: 360, margin: "0 auto", position: "relative" }}>
+            {/* الطبقة السفلية (العمق ثلاثي الأبعاد) */}
+            <div style={{
+              position: "absolute", inset: 0, top: 6,
+              background: shadeColor(activeSection.color, -55),
+              borderRadius: 18,
+            }}/>
+            {/* الوجه العلوي */}
+            <div style={{
+              position: "relative",
+              background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 25)}, ${activeSection.color} 55%, ${shadeColor(activeSection.color, -20)})`,
+              borderRadius: 18,
+              padding: "12px 16px",
+              boxShadow: `0 6px 0 ${shadeColor(activeSection.color, -55)}, 0 10px 22px ${activeSection.color}55`,
+              border: `1.5px solid ${lightenColor(activeSection.color, 35)}`,
+            }}>
+              {/* لمعة علوية */}
+              <div style={{
+                position: "absolute", top: 4, left: 12, right: 12, height: 14,
+                background: "linear-gradient(180deg, rgba(255,255,255,0.35), transparent)",
+                borderRadius: 12, pointerEvents: "none",
+              }}/>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                {/* Title — center */}
+                <div style={{ flex: 1, textAlign: "center", padding: "0 4px" }}>
+                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 700, marginBottom: 2 }}>
+                    القسم 1 · الوحدة {activeSectionIdx + 1} {activeSection.emoji}
+                  </div>
+                  <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
+                    {activeSection.title}
+                  </div>
+                  {/* دليل مختصر */}
+                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 10.5, fontWeight: 600, marginTop: 3, lineHeight: 1.35 }}>
+                    {UNIT_GUIDES[activeSection.unitId] ?? "تعلّم كلمات وجمل جديدة خطوة بخطوة"}
+                  </div>
+                </div>
 
-            {/* Title — center */}
-            <div style={{ textAlign: "center", flex: 1, padding: "0 10px" }}>
-              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>
-                القسم 1 ، الوحدة {activeSectionIdx + 1}
-              </div>
-              <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2 }}>
-                {activeSection.title}
+                {/* Guidebook button */}
+                <button
+                  onClick={e => { e.stopPropagation(); setShowGuide(true); }}
+                  style={{
+                    background: "rgba(255,255,255,0.25)",
+                    border: "1.5px solid rgba(255,255,255,0.5)",
+                    borderRadius: 12, padding: "7px 10px",
+                    color: "white", fontWeight: 800, fontSize: 12,
+                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                    flexShrink: 0, whiteSpace: "nowrap",
+                    boxShadow: `0 3px 0 ${shadeColor(activeSection.color, -50)}`,
+                  }}>
+                  <span style={{ fontSize: 16 }}>📖</span>
+                  <span>الدليل</span>
+                </button>
               </div>
             </div>
-
-            {/* Guidebook — left */}
-            <button
-              onClick={e => { e.stopPropagation(); setShowGuide(true); }}
-              style={{
-                background: "rgba(255,255,255,0.22)",
-                border: "1.5px solid rgba(255,255,255,0.45)",
-                borderRadius: 10, padding: "5px 11px",
-                color: "white", fontWeight: 800, fontSize: 13,
-                cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
-                flexShrink: 0, whiteSpace: "nowrap",
-              }}>
-              📖 الدليل
-            </button>
           </div>
         </motion.div>
 
@@ -1014,16 +1156,19 @@ export default function Roadmap() {
                 {/* Canvas */}
                 <div style={{ position: "relative", width: CANVAS_W, margin: "0 auto", height: svgH }}>
 
-                  {/* Connectors */}
+                  {/* Connectors بين الدوائر */}
                   <svg width={CANVAS_W} height={svgH}
                     style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
                     {positions.map((pos, idx) => {
                       if (idx === 0) return null;
                       const prev = positions[idx - 1];
-                      const done = (progress[unit.lessons[idx - 1].id] ?? 0) >= 4;
+                      const prevDone = (progress[unit.lessons[idx - 1].id] ?? 0) >= 4;
+                      const curDone  = (progress[unit.lessons[idx].id] ?? 0) >= 4;
                       return <PathConnector key={`c${idx}`}
                         fromX={prev.x} fromY={prev.y} toX={pos.x} toY={pos.y}
-                        color={unit.color} done={done} />;
+                        color={unit.color}
+                        bothDone={prevDone && curDone}
+                        anyDone={prevDone || curDone} />;
                     })}
                   </svg>
 
@@ -1032,7 +1177,10 @@ export default function Roadmap() {
                     const { x, y } = positions[idx];
                     const lessonProgress = progress[lesson.id] ?? 0;
                     const allIdx = allLessons.findIndex(l => l.id === lesson.id);
-                    const isCurrent = allIdx === currentIdx;
+                    const jumpPassed = (progress[`jump-${unit.id}`] ?? 0) >= 4; // اجتاز اختبار القفز
+                    const rawFirstOfSection = idx === 0 && !!unit.sectionTitle;
+                    // current عادي أو أول درس في وحدة مفتوحة بالقفز
+                    const isCurrent = allIdx === currentIdx || (rawFirstOfSection && jumpPassed && (progress[lesson.id] ?? 0) === 0);
                     // Normal lock: previous lesson not done
                     const normalLocked = allIdx > 0 && (progress[allLessons[allIdx - 1]?.id] ?? 0) < 4 && lessonProgress === 0;
                     // Section lock: if this unit belongs to section 2+, lock unless prev section challenge done
@@ -1042,28 +1190,29 @@ export default function Roadmap() {
                     const prevSectionChallenge = unit.sectionTitle
                       ? chapter.units.slice(0, unitIdx).reverse().find(u => u.lessons.some(l => l.type === "challenge"))?.lessons.find(l => l.type === "challenge")?.id
                       : undefined;
-                    const sectionLocked = prevSectionChallenge
+                    const sectionLocked = jumpPassed
+                      ? false
+                      : prevSectionChallenge
                       ? (progress[prevSectionChallenge] ?? 0) < 4
                       : false;
-                    const isLocked = normalLocked || (sectionLocked && !isJumpStation && lessonProgress === 0);
+                    // First station of each unit/section
+                    const isFirstOfSection = idx === 0;
+                    // إذا اجتاز القفز، أول درس متاح كنجمة عادية (لا سهمان)
+                    const rawJumpStation = isFirstOfSection && !!unit.sectionTitle;
+                    // سهمان فقط إذا: نقطة قفز + لم أصلها + ما اجتزت القفز
+                    const isJumpStation = rawJumpStation && !isCurrent && lessonProgress === 0 && !jumpPassed;
+                    // متاح كنجمة إذا اجتاز القفز (أول درس في الوحدة المفتوحة بالقفز)
+                    const jumpUnlockedStation = rawJumpStation && jumpPassed && lessonProgress === 0;
+                    const isLocked = jumpUnlockedStation
+                      ? false
+                      : normalLocked || (sectionLocked && !rawJumpStation && lessonProgress === 0);
                     const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
                     const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : lesson.type === "practice" ? 76 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
-                    // First station of each unit/section
-                    const isFirstOfSection = idx === 0;
-                    // Is this the jump station? First station of a section that has sectionTitle
-                    const isJumpStation = isFirstOfSection && !!unit.sectionTitle;
-                    // Can the user jump? Previous section challenge done
-                    const prevChallengeId = isJumpStation
-                      ? chapter.units.slice(0, unitIdx).reverse()
-                          .find(u => u.lessons.some(l => l.type === "challenge"))
-                          ?.lessons.find(l => l.type === "challenge")?.id
-                      : undefined;
-                    const canJump = isJumpStation
-                      ? (prevChallengeId ? (progress[prevChallengeId] ?? 0) >= 4 : false)
-                      : false;
-                    // Jump station is unlocked if canJump (even if locked normally)
-                    const effectiveLocked = isJumpStation ? false : isLocked;
+                    // القفز متاح: الوحدة مقفلة (ما وصلتها طبيعي) + ما اجتاز القفز بعد
+                    const canJump = isJumpStation && sectionLocked && !jumpPassed;
+                    // الدائرة قابلة للضغط: jump station يحتاج canJump، البقية حسب القفل
+                    const effectiveLocked = isJumpStation ? !canJump : isLocked;
 
                     // lesson number (only count type=lesson)
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
@@ -1095,10 +1244,16 @@ export default function Roadmap() {
                                 unitTitle={unit.title}
                                 lessonNum={lessonNum}
                                 totalLessons={lessonStations.length}
+                                lessonProgress={lessonProgress}
+                                isJump={isJumpStation && canJump}
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
-                                  setLocation(`/u/${lesson.id}`);
+                                  if (isJumpStation && canJump) {
+                                    setLocation(`/jump/${unit.id}`);
+                                  } else {
+                                    setLocation(`/u/${lesson.id}`);
+                                  }
                                 }}
                               />
                             </div>
@@ -1120,7 +1275,7 @@ export default function Roadmap() {
                               whiteSpace: "nowrap",
                               boxShadow: canJump ? `0 2px 10px ${unit.color}30` : "none",
                             }}>
-                              {canJump ? "القفز إلى هنا؟" : "🔒 أكمل الوحدة السابقة"}
+                              {"القفز إلى هنا"}
                             </div>
                             <div style={{ width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:`7px solid hsl(var(--border))` }}/>
                           </motion.div>
@@ -1151,10 +1306,10 @@ export default function Roadmap() {
                         {/* Station */}
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
                           transition={{ delay: idx * 0.08, type: "spring", stiffness: 200 }}
-                          whileHover={!effectiveLocked ? { scale: 1.07 } : {}}
-                          whileTap={!effectiveLocked ? { scale: 0.94 } : {}}
+                          whileHover={!effectiveLocked ? { y: 3, transition: { duration: 0.15 } } : {}}
+                          whileTap={!effectiveLocked ? { y: 7, scale: 0.97, transition: { duration: 0.1 } } : {}}
                           onClick={e => {
                             e.stopPropagation();
                             if (!effectiveLocked) {
@@ -1250,7 +1405,7 @@ export default function Roadmap() {
       </AnimatePresence>
 
       {/* Floating Mascot */}
-      <FloatingMascot color={chapter.color} chapterId="beginner" />
+      {/* البومة الآن حارسة الوحدة — لا حاجة للروبوت القديم */}
     </Layout>
   );
 }
