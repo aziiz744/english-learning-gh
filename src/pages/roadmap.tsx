@@ -961,16 +961,29 @@ export default function Roadmap() {
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   // Load unit progress from Supabase
-  useEffect(() => {
+  const loadProgress = useCallback(() => {
     if (!user) return;
     supabase.from("unit_progress").select("lesson_id, sub_progress").eq("user_id", user.id)
       .then(({ data }) => {
         if (!data) return;
         const map: Record<string, number> = {};
-        data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; }); // 0-4 = ربع لكل درس
+        data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; });
         setProgress(map);
       });
   }, [user]);
+
+  useEffect(() => { loadProgress(); }, [loadProgress]);
+
+  // أعد تحميل التقدم عند العودة للصفحة (بعد اختبار القفز مثلاً)
+  useEffect(() => {
+    const onFocus = () => loadProgress();
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, [loadProgress]);
 
   // Refs for each section divider — used for IntersectionObserver
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -1127,7 +1140,10 @@ export default function Roadmap() {
                     const { x, y } = positions[idx];
                     const lessonProgress = progress[lesson.id] ?? 0;
                     const allIdx = allLessons.findIndex(l => l.id === lesson.id);
-                    const isCurrent = allIdx === currentIdx;
+                    const jumpPassed = (progress[`jump-${unit.id}`] ?? 0) >= 4; // اجتاز اختبار القفز
+                    const rawFirstOfSection = idx === 0 && !!unit.sectionTitle;
+                    // current عادي أو أول درس في وحدة مفتوحة بالقفز
+                    const isCurrent = allIdx === currentIdx || (rawFirstOfSection && jumpPassed && (progress[lesson.id] ?? 0) === 0);
                     // Normal lock: previous lesson not done
                     const normalLocked = allIdx > 0 && (progress[allLessons[allIdx - 1]?.id] ?? 0) < 4 && lessonProgress === 0;
                     // Section lock: if this unit belongs to section 2+, lock unless prev section challenge done
@@ -1137,7 +1153,6 @@ export default function Roadmap() {
                     const prevSectionChallenge = unit.sectionTitle
                       ? chapter.units.slice(0, unitIdx).reverse().find(u => u.lessons.some(l => l.type === "challenge"))?.lessons.find(l => l.type === "challenge")?.id
                       : undefined;
-                    const jumpPassed = (progress[`jump-${unit.id}`] ?? 0) >= 4; // اجتاز اختبار القفز
                     const sectionLocked = jumpPassed
                       ? false
                       : prevSectionChallenge
@@ -1145,17 +1160,21 @@ export default function Roadmap() {
                       : false;
                     // First station of each unit/section
                     const isFirstOfSection = idx === 0;
-                    // سهمان فقط إذا لم أصل إليها بعد (لست current وما فيها تقدم)
+                    // إذا اجتاز القفز، أول درس متاح كنجمة عادية (لا سهمان)
                     const rawJumpStation = isFirstOfSection && !!unit.sectionTitle;
-                    const isJumpStation = rawJumpStation && !isCurrent && lessonProgress === 0;
-                    const isLocked = normalLocked || (sectionLocked && !rawJumpStation && lessonProgress === 0);
+                    // سهمان فقط إذا: نقطة قفز + لم أصلها + ما اجتزت القفز
+                    const isJumpStation = rawJumpStation && !isCurrent && lessonProgress === 0 && !jumpPassed;
+                    // متاح كنجمة إذا اجتاز القفز (أول درس في الوحدة المفتوحة بالقفز)
+                    const jumpUnlockedStation = rawJumpStation && jumpPassed && lessonProgress === 0;
+                    const isLocked = jumpUnlockedStation
+                      ? false
+                      : normalLocked || (sectionLocked && !rawJumpStation && lessonProgress === 0);
                     const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
                     const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : lesson.type === "practice" ? 76 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
-                    // القفز متاح: الوحدة مقفلة (ما وصلتها طبيعي) + اجتياز الاختبار يفتحها
-                    // الشرط: jump station + الوحدة مقفلة فعلاً + ما اجتاز القفز بعد
+                    // القفز متاح: الوحدة مقفلة (ما وصلتها طبيعي) + ما اجتاز القفز بعد
                     const canJump = isJumpStation && sectionLocked && !jumpPassed;
-                    // Jump station is unlocked if canJump (even if locked normally)
+                    // الدائرة قابلة للضغط: jump station يحتاج canJump، البقية حسب القفل
                     const effectiveLocked = isJumpStation ? !canJump : isLocked;
 
                     // lesson number (only count type=lesson)
