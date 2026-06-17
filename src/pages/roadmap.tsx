@@ -644,9 +644,9 @@ function lightenColor(hex: string, amt = 40): string {
 }
 
 // ─── Duolingo-style popup card ────────────────────────────────────────────────
-function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lessonProgress, onClose, onStart }: {
+function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lessonProgress, isJump, onClose, onStart }: {
   lesson: UnitLesson; color: string; unitTitle: string;
-  lessonNum: number; totalLessons: number; lessonProgress: number;
+  lessonNum: number; totalLessons: number; lessonProgress: number; isJump?: boolean;
   onClose: () => void; onStart: () => void;
 }) {
   const isTreasureDone = lesson.type === "treasure" && lessonProgress >= 4;
@@ -677,37 +677,67 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
       }}/>
 
       {/* Title */}
-      <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
-      <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-        {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
-      </p>
-
-      {/* Start button or completed state */}
-      {isTreasureDone ? (
-        <div style={{
-          display: "block", width: "100%", textAlign: "center",
-          background: "rgba(255,255,255,0.2)", color: "white",
-          fontWeight: 800, fontSize: 14,
-          padding: "10px 0", borderRadius: 14,
-        }}>
-          ✅ مكتمل — حصلت على المكافأة
-        </div>
+      {isJump ? (
+        <>
+          <p className="font-bold text-white text-center mb-1" style={{ fontSize: 15 }}>🚀 اختبار القفز</p>
+          <p className="text-white/90 text-center mb-1" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+            اجتز اختبار الوحدات السابقة للقفز إلى هنا
+          </p>
+          <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:10, flexWrap:"wrap" }}>
+            <span style={{ background:"rgba(255,255,255,0.18)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:10 }}>📝 12 سؤال</span>
+            <span style={{ background:"rgba(255,255,255,0.18)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:10 }}>❤️ 3 محاولات</span>
+          </div>
+          <button onClick={onStart}
+            style={{
+              display: "block", width: "100%",
+              background: "white", color: "#1e293b",
+              fontWeight: 800, fontSize: 14,
+              padding: "11px 0", borderRadius: 14,
+              border: "none", cursor: "pointer",
+              boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
+              transition: "transform 0.1s, box-shadow 0.1s",
+            }}
+            onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
+            onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
+          >
+            ابدأ الاختبار 🚀
+          </button>
+        </>
       ) : (
-        <button onClick={onStart}
-          style={{
-            display: "block", width: "100%",
-            background: "white", color: "#1e293b",
-            fontWeight: 800, fontSize: 14,
-            padding: "10px 0", borderRadius: 14,
-            border: "none", cursor: "pointer",
-            boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
-            transition: "transform 0.1s, box-shadow 0.1s",
-          }}
-          onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
-          onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
-        >
-          {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : "ابدأ +10 XP"}
-        </button>
+        <>
+          <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
+          <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
+            {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
+          </p>
+
+          {/* Start button or completed state */}
+          {isTreasureDone ? (
+            <div style={{
+              display: "block", width: "100%", textAlign: "center",
+              background: "rgba(255,255,255,0.2)", color: "white",
+              fontWeight: 800, fontSize: 14,
+              padding: "10px 0", borderRadius: 14,
+            }}>
+              ✅ مكتمل — حصلت على المكافأة
+            </div>
+          ) : (
+            <button onClick={onStart}
+              style={{
+                display: "block", width: "100%",
+                background: "white", color: "#1e293b",
+                fontWeight: 800, fontSize: 14,
+                padding: "10px 0", borderRadius: 14,
+                border: "none", cursor: "pointer",
+                boxShadow: "0 4px 0 rgba(0,0,0,0.15)",
+                transition: "transform 0.1s, box-shadow 0.1s",
+              }}
+              onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
+              onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
+            >
+              {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : "ابدأ +10 XP"}
+            </button>
+          )}
+        </>
       )}
     </motion.div>
   );
@@ -1112,17 +1142,11 @@ export default function Roadmap() {
                     const isTreasure = lesson.type === "treasure"; // kept for SIZE calc
                     const SIZE = lesson.type === "challenge" ? 90 : lesson.type === "treasure" ? 72 : lesson.type === "practice" ? 76 : 76;
                     const isPopupOpen = activePopup?.lessonId === lesson.id;
-                    // Can the user jump? Previous section challenge done
-                    const prevChallengeId = isJumpStation
-                      ? chapter.units.slice(0, unitIdx).reverse()
-                          .find(u => u.lessons.some(l => l.type === "challenge"))
-                          ?.lessons.find(l => l.type === "challenge")?.id
-                      : undefined;
-                    const canJump = isJumpStation
-                      ? (prevChallengeId ? (progress[prevChallengeId] ?? 0) >= 4 : false)
-                      : false;
+                    // القفز متاح: الوحدة مقفلة (ما وصلتها طبيعي) + اجتياز الاختبار يفتحها
+                    // الشرط: jump station + الوحدة مقفلة فعلاً + ما اجتاز القفز بعد
+                    const canJump = isJumpStation && sectionLocked && !jumpPassed;
                     // Jump station is unlocked if canJump (even if locked normally)
-                    const effectiveLocked = isJumpStation ? false : isLocked;
+                    const effectiveLocked = isJumpStation ? !canJump : isLocked;
 
                     // lesson number (only count type=lesson)
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
@@ -1155,11 +1179,11 @@ export default function Roadmap() {
                                 lessonNum={lessonNum}
                                 totalLessons={lessonStations.length}
                                 lessonProgress={lessonProgress}
+                                isJump={isJumpStation && canJump}
                                 onClose={() => setActivePopup(null)}
                                 onStart={() => {
                                   setActivePopup(null);
                                   if (isJumpStation && canJump) {
-                                    // اختبار القفز — يفتح اختبار تراكمي للوحدات السابقة
                                     setLocation(`/jump/${unit.id}`);
                                   } else {
                                     setLocation(`/u/${lesson.id}`);
