@@ -59,6 +59,44 @@ function speak(text: string, rate = 0.85) {
 }
 function speakSlow(text: string) { speak(text, 0.5); }
 
+// مؤثرات صوتية لفتح الكنز
+function playChestOpen() {
+  try {
+    const ac = new (window.AudioContext || (window as any).webkitAudioContext)();
+    // صوت فتح الغطاء (صرير خشبي → نغمة صاعدة)
+    const now = ac.currentTime;
+    // نغمة صاعدة سحرية
+    [523, 659, 784, 1047].forEach((freq, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.frequency.value = freq; o.type = "triangle";
+      const t = now + i * 0.1;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.15, t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      o.start(t); o.stop(t + 0.4);
+    });
+  } catch {}
+}
+
+function playGemSparkle() {
+  try {
+    const ac = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const now = ac.currentTime;
+    // رنين جواهر متلألئة
+    [1568, 2093, 2637].forEach((freq, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.frequency.value = freq; o.type = "sine";
+      const t = now + 0.3 + i * 0.08;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.1, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+      o.start(t); o.stop(t + 0.5);
+    });
+  } catch {}
+}
+
 // ── Hearts ────────────────────────────────────────────────────────────────────
 function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
   if (isPro) return (
@@ -440,7 +478,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
   return (
     <div>
       <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
-        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:6 }}>
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:8 }}>
           {enCol.map(p=>{
             const isMatched = matched.has(p.en);
             const isSelected = selected?.col==="en" && selected.en===p.en;
@@ -448,7 +486,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
             return (
               <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>tryMatch("en", p.en)}
                 animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
-                style={{ padding:"9px 8px", borderRadius:11, fontSize:13, fontWeight:700, direction:"ltr", cursor:isMatched?"default":"pointer",
+                style={{ padding:"12px 10px", borderRadius:12, fontSize:14, fontWeight:800, direction:"ltr", cursor:isMatched?"default":"pointer",
                   background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
                   border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
                 {isMatched ? "✓ "+p.en : p.en}
@@ -456,7 +494,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
             );
           })}
         </div>
-        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:6 }}>
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:8 }}>
           {arCol.map(p=>{
             const isMatched = matched.has(p.en);
             const isSelected = selected?.col==="ar" && selected.en===p.en;
@@ -464,7 +502,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
             return (
               <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>tryMatch("ar", p.en)}
                 animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
-                style={{ padding:"9px 8px", borderRadius:11, fontSize:13, fontWeight:700, direction:"rtl", cursor:isMatched?"default":"pointer",
+                style={{ padding:"12px 10px", borderRadius:12, fontSize:14, fontWeight:800, direction:"rtl", cursor:isMatched?"default":"pointer",
                   background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
                   border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
                 {isMatched ? "✓ "+p.ar : p.ar}
@@ -482,63 +520,111 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
 // ── Chest Open Screen (فتح صندوق الكنز) ──────────────────────────────────────
 function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBack:()=>void }) {
-  const [opened, setOpened] = useState(false);
-  useEffect(()=>{ const t=setTimeout(()=>setOpened(true), 700); return ()=>clearTimeout(t); },[]);
+  const [phase, setPhase] = useState<"shaking"|"opening"|"done">("shaking");
+  useEffect(()=>{
+    const t1 = setTimeout(()=>{ setPhase("opening"); playChestOpen(); }, 900);
+    const t2 = setTimeout(()=>{ playGemSparkle(); }, 1100);
+    const t3 = setTimeout(()=>setPhase("done"), 1400);
+    return ()=>{ clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  },[]);
+  const opened = phase !== "shaking";
+
+  // جواهر متنوعة تتطاير
+  const gems = ["💎","💰","⭐","💎","✨","💎","🪙"];
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
       <div className="text-center max-w-sm mx-auto p-6">
-        <div style={{ position:"relative", width:200, height:200, margin:"0 auto 24px" }}>
-          {/* أشعة ضوئية */}
+        <div style={{ position:"relative", width:220, height:220, margin:"0 auto 24px" }}>
+          {/* وهج خلفي ينبض */}
           <AnimatePresence>
             {opened && (
-              <motion.div initial={{opacity:0,scale:0.5}} animate={{opacity:1,scale:1}}
+              <motion.div initial={{opacity:0,scale:0.3}} animate={{opacity:[0,1,0.7],scale:[0.3,1.3,1]}}
+                transition={{ duration:0.8 }}
                 style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <div style={{ width:160, height:160, borderRadius:"50%",
-                  background:`radial-gradient(circle, ${color}40 0%, transparent 70%)` }}/>
+                <div style={{ width:200, height:200, borderRadius:"50%",
+                  background:`radial-gradient(circle, ${color}55 0%, ${color}20 40%, transparent 70%)` }}/>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* الجواهر تطير */}
+          {/* أشعة دوّارة */}
           <AnimatePresence>
-            {opened && [0,1,2,3,4].map(i=>(
-              <motion.div key={i}
-                initial={{ x:100, y:120, opacity:0, scale:0 }}
-                animate={{ x:100+(i-2)*38, y:40+Math.abs(i-2)*16, opacity:1, scale:1 }}
-                transition={{ delay:0.1+i*0.08, type:"spring" }}
-                style={{ position:"absolute", fontSize:28 }}>
-                {["💎","💰","⭐","💎","✨"][i]}
+            {opened && (
+              <motion.div initial={{opacity:0,rotate:0}} animate={{opacity:[0,0.6,0.3],rotate:90}}
+                transition={{ duration:1.2 }}
+                style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg width="220" height="220" viewBox="0 0 220 220">
+                  {[...Array(8)].map((_,i)=>(
+                    <rect key={i} x="108" y="20" width="4" height="50" fill={color} opacity="0.35"
+                      transform={`rotate(${i*45} 110 110)`}/>
+                  ))}
+                </svg>
               </motion.div>
-            ))}
+            )}
+          </AnimatePresence>
+
+          {/* الجواهر تنفجر للأعلى */}
+          <AnimatePresence>
+            {opened && gems.map((gem,i)=>{
+              const angle = (i/gems.length)*Math.PI - Math.PI/2; // قوس علوي
+              const dist = 70 + (i%3)*15;
+              return (
+                <motion.div key={i}
+                  initial={{ x:110, y:130, opacity:0, scale:0, rotate:0 }}
+                  animate={{
+                    x:110 + Math.cos(angle)*dist,
+                    y:130 + Math.sin(angle)*dist - 20,
+                    opacity:[0,1,1,0.9], scale:[0,1.3,1], rotate:(i%2?360:-360),
+                  }}
+                  transition={{ delay:0.1+i*0.05, duration:1, type:"spring", stiffness:80 }}
+                  style={{ position:"absolute", fontSize:30, zIndex:5 }}>
+                  {gem}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
 
           {/* الصندوق */}
-          <motion.div animate={opened?{}:{ rotate:[0,-3,3,-3,0] }} transition={{ repeat:opened?0:Infinity, duration:0.4 }}
-            style={{ position:"absolute", bottom:10, left:"50%", transform:"translateX(-50%)" }}>
-            <svg width="120" height="110" viewBox="0 0 120 110">
+          <motion.div
+            animate={
+              phase==="shaking" ? { rotate:[0,-5,5,-5,5,0], x:[0,-2,2,-2,2,0] } :
+              phase==="opening" ? { scale:[1,1.15,1], y:[0,-8,0] } : {}
+            }
+            transition={ phase==="shaking" ? { repeat:Infinity, duration:0.4 } : { duration:0.4 } }
+            style={{ position:"absolute", bottom:14, left:"50%", transform:"translateX(-50%)", zIndex:3 }}>
+            <svg width="130" height="120" viewBox="0 0 130 120">
               <defs>
-                <linearGradient id="cBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a16207"/><stop offset="100%" stopColor="#713f12"/></linearGradient>
-                <linearGradient id="cLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ca8a04"/><stop offset="100%" stopColor="#854d0e"/></linearGradient>
+                <linearGradient id="cBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a16207"/><stop offset="100%" stopColor="#5c3410"/></linearGradient>
+                <linearGradient id="cLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b45309"/><stop offset="100%" stopColor="#78350f"/></linearGradient>
+                <radialGradient id="cGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
               </defs>
+              {/* توهج داخلي عند الفتح */}
+              {opened && <ellipse cx="65" cy="58" rx="40" ry="20" fill="url(#cGlow)"/>}
               {/* جسم الصندوق */}
-              <rect x="15" y="50" width="90" height="48" rx="6" fill="url(#cBody)"/>
-              <rect x="15" y="62" width="90" height="10" fill="#5c3410"/>
-              <rect x="52" y="50" width="16" height="48" fill="#5c3410" opacity="0.6"/>
+              <rect x="20" y="56" width="90" height="50" rx="7" fill="url(#cBody)" stroke="#4a2a0a" strokeWidth="1.5"/>
+              {/* ألواح خشبية */}
+              <line x1="42" y1="56" x2="42" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
+              <line x1="65" y1="56" x2="65" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
+              <line x1="88" y1="56" x2="88" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
+              {/* شريط معدني سفلي */}
+              <rect x="20" y="70" width="90" height="9" fill="#92400e"/>
               {/* القفل */}
-              <rect x="52" y="66" width="16" height="14" rx="3" fill="#fbbf24"/>
-              {/* الغطاء — يفتح */}
-              <motion.g animate={opened?{ rotate:-110 }:{ rotate:0 }} transition={{ type:"spring", stiffness:120 }}
-                style={{ transformOrigin:"15px 50px" }}>
-                <rect x="15" y="28" width="90" height="26" rx="8" fill="url(#cLid)"/>
-                <rect x="15" y="42" width="90" height="8" fill="#5c3410"/>
-                <ellipse cx="60" cy="30" rx="30" ry="4" fill="white" opacity="0.15"/>
+              <rect x="57" y="72" width="16" height="14" rx="3" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
+              {/* الغطاء — يفتح للخلف */}
+              <motion.g
+                animate={opened ? { rotate:-112 } : { rotate:0 }}
+                transition={{ type:"spring", stiffness:90, damping:11 }}
+                style={{ transformOrigin:"20px 56px" }}>
+                <rect x="20" y="32" width="90" height="28" rx="9" fill="url(#cLid)" stroke="#4a2a0a" strokeWidth="1.5"/>
+                <rect x="20" y="48" width="90" height="9" fill="#92400e"/>
+                <ellipse cx="65" cy="38" rx="32" ry="5" fill="white" opacity="0.18"/>
               </motion.g>
             </svg>
           </motion.div>
         </div>
 
-        <motion.div initial={{opacity:0,y:10}} animate={{opacity:opened?1:0,y:opened?0:10}} transition={{delay:0.5}}>
+        <motion.div initial={{opacity:0,y:10}} animate={{opacity:phase==="done"?1:0,y:phase==="done"?0:10}} transition={{duration:0.4}}>
           <h2 className="text-2xl font-bold mb-2" style={{ color }}>🎉 أحسنت! فتحت الكنز</h2>
           <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:`${color}20`, border:`2px solid ${color}50`, borderRadius:16, padding:"10px 24px", marginBottom:24 }}>
             <span style={{ fontSize:24 }}>💎</span>

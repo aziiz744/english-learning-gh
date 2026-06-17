@@ -24,7 +24,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr1-t0-6", type:"listen_select", listenSentence:"yes", options:["yes","no","please","sorry"], correctAnswer:"yes", explanation:"yes = نعم ✅", xp:10 },
       { id:"dr1-t0-7", type:"translate", arabic:"لا", options:["no","yes","more","have"], correctAnswer:"no", explanation:"no = لا ❌", xp:10 },
       { id:"dr1-t0-8", type:"fill_blank", blankSentence:"Tea ___ milk", blankOptions:["with","sugar","and"], correctAnswer:"with", explanation:"Tea with milk = شاي بالحليب", xp:12 },
-      { id:"dr1-t0-9", type:"matching", pairs:[{en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"water",ar:"ماء"},{en:"milk",ar:"حليب"},{en:"juice",ar:"عصير"},{en:"cup",ar:"كوب"},{en:"glass",ar:"كأس"},{en:"hot",ar:"ساخن"}], correctAnswer:"matched", explanation:"طابقت كل المشروبات بمعانيها! 🎉", xp:15 },
+      { id:"dr1-t0-9", type:"matching", pairs:[{en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"water",ar:"ماء"},{en:"milk",ar:"حليب"},{en:"juice",ar:"عصير"},{en:"cup",ar:"كوب"}], correctAnswer:"matched", explanation:"طابقت كل المشروبات بمعانيها! 🎉", xp:15 },
     ],
     t1: [
       { id:"dr1-t1-1", type:"word_order", sentence:"I like tea", correctAnswer:"I like tea", explanation:"I like tea = أنا أحب الشاي", xp:12 },
@@ -35,7 +35,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr1-t1-6", type:"translate", arabic:"أنا أشرب عصير", options:["I drink juice","I like juice","I want juice","I have juice"], correctAnswer:"I drink juice", explanation:"I drink juice = أنا أشرب عصير", xp:12 },
       { id:"dr1-t1-7", type:"listen_select", listenSentence:"Tea or coffee", options:["tea","milk","juice","water"], correctAnswer:"tea", explanation:"الجملة: أريد شاياً أو قهوة — الأول هو tea", xp:12 },
       { id:"dr1-t1-8", type:"fill_blank", blankSentence:"I ___ tea", blankOptions:["like","milk","water"], correctAnswer:"like", explanation:"I like tea = أنا أحب الشاي", xp:13 },
-      { id:"dr1-t1-9", type:"matching", pairs:[{en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"juice",ar:"عصير"},{en:"water",ar:"ماء"},{en:"milk",ar:"حليب"},{en:"glass",ar:"كأس"},{en:"cold",ar:"بارد"},{en:"drink",ar:"مشروب"}], correctAnswer:"matched", explanation:"رائع! طابقت الكلمات بمعانيها", xp:15 },
+      { id:"dr1-t1-9", type:"matching", pairs:[{en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"juice",ar:"عصير"},{en:"water",ar:"ماء"},{en:"milk",ar:"حليب"},{en:"glass",ar:"كأس"}], correctAnswer:"matched", explanation:"رائع! طابقت الكلمات بمعانيها", xp:15 },
     ],
     t2: [
       { id:"dr1-t2-1", type:"word_order", sentence:"Do you like coffee or tea", correctAnswer:"Do you like coffee or tea", explanation:"Do you like...or...? = هل تفضل... أو...؟", xp:14 },
@@ -46,7 +46,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr1-t2-6", type:"translate", arabic:"ما هو مشروبك المفضل؟", options:["What is your favourite drink?","What is your favourite food?","Which do you drink?","What drink do you want?"], correctAnswer:"What is your favourite drink?", explanation:"favourite drink = المشروب المفضل", xp:15 },
       { id:"dr1-t2-7", type:"word_order", sentence:"I prefer water over juice", correctAnswer:"I prefer water over juice", explanation:"prefer...over... = أفضّل... على...", xp:15 },
       { id:"dr1-t2-8", type:"fill_blank", blankSentence:"This is a cup ___ tea", blankOptions:["of","for","with"], correctAnswer:"of", explanation:"a cup of tea = كوب شاي", xp:15 },
-      { id:"dr1-t2-9", type:"matching", pairs:[{en:"cup",ar:"كوب"},{en:"glass",ar:"كأس"},{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"},{en:"drink",ar:"مشروب"},{en:"sweet",ar:"حلو"},{en:"sugar",ar:"سكر"},{en:"warm",ar:"دافئ"}], correctAnswer:"matched", explanation:"أحسنت!", xp:16 },
+      { id:"dr1-t2-9", type:"matching", pairs:[{en:"cup",ar:"كوب"},{en:"glass",ar:"كأس"},{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"},{en:"drink",ar:"مشروب"},{en:"sweet",ar:"حلو"}], correctAnswer:"matched", explanation:"أحسنت!", xp:16 },
     ],
     t3: [
       { id:"dr1-t3-1", type:"word_order", sentence:"Would you like some tea or coffee", correctAnswer:"Would you like some tea or coffee", explanation:"Would you like some...? = صيغة مهذبة للعرض", xp:18 },
@@ -57,7 +57,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr1-t3-6", type:"word_order", sentence:"No coffee without milk", correctAnswer:"No coffee without milk", explanation:"without = بدون — I do not like = لا أحب", xp:18 },
       { id:"dr1-t3-7", type:"picture_match", word:"milk", pictureOptions:[{emoji:"🥛",label:"milk"},{emoji:"🍵",label:"tea"},{emoji:"☕",label:"coffee"},{emoji:"🧃",label:"juice"}], correctAnswer:"milk", explanation:"milk = حليب 🥛", xp:18 },
       { id:"dr1-t3-8", type:"fill_blank", blankSentence:"Could I have ___ water please", blankOptions:["some","any","a"], correctAnswer:"some", explanation:"some مع الطلب المهذب", xp:18 },
-      { id:"dr1-t3-9", type:"matching", pairs:[{en:"warm",ar:"دافئ"},{en:"cold",ar:"بارد"},{en:"sweet",ar:"حلو"},{en:"bitter",ar:"مرّ"},{en:"sugar",ar:"سكر"},{en:"hot",ar:"ساخن"},{en:"cup",ar:"كوب"},{en:"drink",ar:"مشروب"}], correctAnswer:"matched", explanation:"رائع!", xp:18 },
+      { id:"dr1-t3-9", type:"matching", pairs:[{en:"warm",ar:"دافئ"},{en:"cold",ar:"بارد"},{en:"sweet",ar:"حلو"},{en:"bitter",ar:"مرّ"},{en:"sugar",ar:"سكر"},{en:"hot",ar:"ساخن"}], correctAnswer:"matched", explanation:"رائع!", xp:18 },
     ],
   },
 
@@ -74,7 +74,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr2-t0-6", type:"listen_select", listenSentence:"Tea please", options:["please","sorry","thank you","more"], correctAnswer:"please", explanation:"Tea please = شاي من فضلك — please في نهاية الطلب", xp:10 },
       { id:"dr2-t0-7", type:"word_order", sentence:"Thank you for the coffee", correctAnswer:"Thank you for the coffee", explanation:"Thank you for... = شكراً على...", xp:10 },
       { id:"dr2-t0-8", type:"fill_blank", blankSentence:"Coffee ___ , please", blankOptions:["please","sorry","more"], correctAnswer:"please", explanation:"Coffee please = قهوة من فضلك", xp:12 },
-      { id:"dr2-t0-9", type:"matching", pairs:[{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"},{en:"yes",ar:"نعم"},{en:"cafe",ar:"مقهى"},{en:"cup",ar:"كوب"},{en:"hot",ar:"ساخن"}], correctAnswer:"matched", explanation:"أحسنت! طابقت كلمات الأدب بمعانيها 🎉", xp:15 },
+      { id:"dr2-t0-9", type:"matching", pairs:[{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"},{en:"yes",ar:"نعم"},{en:"cafe",ar:"مقهى"}], correctAnswer:"matched", explanation:"أحسنت! طابقت كلمات الأدب بمعانيها 🎉", xp:15 },
     ],
     t1: [
       { id:"dr2-t1-1", type:"word_order", sentence:"Water please thank you", correctAnswer:"Water please thank you", explanation:"الترتيب: الطلب + please + thank you", xp:12 },
@@ -85,7 +85,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr2-t1-6", type:"picture_match", word:"sorry", pictureOptions:[{emoji:"😔",label:"sorry"},{emoji:"🙏",label:"please"},{emoji:"✅",label:"yes"},{emoji:"🔄",label:"more"}], correctAnswer:"sorry", explanation:"sorry = آسف 😔", xp:12 },
       { id:"dr2-t1-7", type:"word_order", sentence:"Sorry I do not have water", correctAnswer:"Sorry I do not have water", explanation:"Sorry + جملة = الاعتذار ثم التوضيح", xp:12 },
       { id:"dr2-t1-8", type:"fill_blank", blankSentence:"More milk ___ , please", blankOptions:["please","sorry","thanks"], correctAnswer:"please", explanation:"More...please = طلب المزيد بأدب", xp:13 },
-      { id:"dr2-t1-9", type:"matching", pairs:[{en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"please",ar:"من فضلك"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"},{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"},{en:"cafe",ar:"مقهى"}], correctAnswer:"matched", explanation:"أحسنت!", xp:15 },
+      { id:"dr2-t1-9", type:"matching", pairs:[{en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"please",ar:"من فضلك"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"},{en:"hot",ar:"ساخن"}], correctAnswer:"matched", explanation:"أحسنت!", xp:15 },
     ],
     t2: [
       { id:"dr2-t2-1", type:"word_order", sentence:"More juice please", correctAnswer:"More juice please", explanation:"Could I have more...please = طلب مهذب لمزيد من شيء", xp:14 },
@@ -96,7 +96,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr2-t2-6", type:"picture_match", word:"more", pictureOptions:[{emoji:"🔄",label:"more"},{emoji:"😔",label:"sorry"},{emoji:"🙏",label:"please"},{emoji:"❌",label:"no"}], correctAnswer:"more", explanation:"more = المزيد 🔄", xp:14 },
       { id:"dr2-t2-7", type:"word_order", sentence:"Sorry we do not have coffee today", correctAnswer:"Sorry we do not have coffee today", explanation:"today = اليوم — do not have = لا يوجد عندنا", xp:14 },
       { id:"dr2-t2-8", type:"fill_blank", blankSentence:"Thank you ___ the coffee", blankOptions:["for","to","of"], correctAnswer:"for", explanation:"Thank you for = شكراً على", xp:15 },
-      { id:"dr2-t2-9", type:"matching", pairs:[{en:"thank you",ar:"شكراً"},{en:"welcome",ar:"عفواً"},{en:"more",ar:"المزيد"},{en:"enough",ar:"يكفي"},{en:"please",ar:"من فضلك"},{en:"cold",ar:"بارد"},{en:"sweet",ar:"حلو"},{en:"glass",ar:"كأس"}], correctAnswer:"matched", explanation:"ممتاز!", xp:16 },
+      { id:"dr2-t2-9", type:"matching", pairs:[{en:"thank you",ar:"شكراً"},{en:"welcome",ar:"عفواً"},{en:"more",ar:"المزيد"},{en:"enough",ar:"يكفي"},{en:"please",ar:"من فضلك"},{en:"cold",ar:"بارد"}], correctAnswer:"matched", explanation:"ممتاز!", xp:16 },
     ],
     t3: [
       { id:"dr2-t3-1", type:"word_order", sentence:"More water please", correctAnswer:"More water please", explanation:"Could I please have...thank you — طلب مهذب جداً", xp:18 },
@@ -107,7 +107,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr2-t3-6", type:"word_order", sentence:"No more milk thanks", correctAnswer:"No more milk thanks", explanation:"I have had enough = اكتفيت — رفض مهذب", xp:18 },
       { id:"dr2-t3-7", type:"picture_match", word:"thank you", pictureOptions:[{emoji:"🙏",label:"thank you"},{emoji:"😔",label:"sorry"},{emoji:"✅",label:"yes"},{emoji:"🔄",label:"more"}], correctAnswer:"thank you", explanation:"thank you = شكراً 🙏", xp:18 },
       { id:"dr2-t3-8", type:"fill_blank", blankSentence:"I am ___ sorry for the delay", blankOptions:["very","much","so"], correctAnswer:"very", explanation:"very sorry = آسف جداً", xp:18 },
-      { id:"dr2-t3-9", type:"matching", pairs:[{en:"sorry",ar:"آسف"},{en:"excuse me",ar:"عذراً"},{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"welcome",ar:"عفواً"},{en:"more",ar:"المزيد"},{en:"enough",ar:"يكفي"},{en:"cafe",ar:"مقهى"}], correctAnswer:"matched", explanation:"رائع!", xp:18 },
+      { id:"dr2-t3-9", type:"matching", pairs:[{en:"sorry",ar:"آسف"},{en:"excuse me",ar:"عذراً"},{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"welcome",ar:"عفواً"},{en:"more",ar:"المزيد"}], correctAnswer:"matched", explanation:"رائع!", xp:18 },
     ],
   },
 
@@ -124,7 +124,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr3-t0-6", type:"word_order", sentence:"I want milk", correctAnswer:"I want milk", explanation:"would like to have = أود أن أتناول", xp:12 },
       { id:"dr3-t0-7", type:"translate", arabic:"هل عندك بعض الحليب؟", options:["Do you have some milk?","Would you have milk?","Can I have milk?","Do you want milk?"], correctAnswer:"Do you have some milk?", explanation:"Do you have some...? = هل عندك بعض...؟", xp:12 },
       { id:"dr3-t0-8", type:"fill_blank", blankSentence:"Would you ___ some tea?", blankOptions:["like","want","have"], correctAnswer:"like", explanation:"Would you like = صيغة مهذبة للعرض", xp:13 },
-      { id:"dr3-t0-9", type:"matching", pairs:[{en:"would",ar:"سأودّ"},{en:"like",ar:"أحب"},{en:"have",ar:"أملك"},{en:"want",ar:"أريد"},{en:"some",ar:"بعض"},{en:"with",ar:"مع"},{en:"sweet",ar:"حلو"},{en:"sugar",ar:"سكر"}], correctAnswer:"matched", explanation:"ممتاز! طابقت أفعال الطلب بمعانيها", xp:15 },
+      { id:"dr3-t0-9", type:"matching", pairs:[{en:"would",ar:"سأودّ"},{en:"like",ar:"أحب"},{en:"have",ar:"أملك"},{en:"want",ar:"أريد"},{en:"some",ar:"بعض"},{en:"with",ar:"مع"}], correctAnswer:"matched", explanation:"ممتاز! طابقت أفعال الطلب بمعانيها", xp:15 },
     ],
     t1: [
       { id:"dr3-t1-1", type:"word_order", sentence:"Tea with milk please", correctAnswer:"Tea with milk please", explanation:"tea with milk = شاي بالحليب — with = مع", xp:14 },
@@ -135,7 +135,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr3-t1-6", type:"word_order", sentence:"Sorry I do not have any juice", correctAnswer:"Sorry I do not have any juice", explanation:"do not have any = لا يوجد عندي أي — any مع النفي", xp:14 },
       { id:"dr3-t1-7", type:"picture_match", word:"some", pictureOptions:[{emoji:"🔢",label:"some"},{emoji:"🙏",label:"please"},{emoji:"😔",label:"sorry"},{emoji:"🔄",label:"more"}], correctAnswer:"some", explanation:"some = بعض 🔢", xp:14 },
       { id:"dr3-t1-8", type:"fill_blank", blankSentence:"I would like tea ___ milk", blankOptions:["with","of","for"], correctAnswer:"with", explanation:"tea with milk = شاي بالحليب", xp:15 },
-      { id:"dr3-t1-9", type:"matching", pairs:[{en:"I would like",ar:"أودّ"},{en:"I want",ar:"أريد"},{en:"I have",ar:"أملك"},{en:"do you have",ar:"هل عندك"},{en:"some",ar:"بعض"},{en:"with",ar:"مع"},{en:"without",ar:"بدون"},{en:"more",ar:"المزيد"}], correctAnswer:"matched", explanation:"أحسنت!", xp:16 },
+      { id:"dr3-t1-9", type:"matching", pairs:[{en:"I would like",ar:"أودّ"},{en:"I want",ar:"أريد"},{en:"I have",ar:"أملك"},{en:"do you have",ar:"هل عندك"},{en:"some",ar:"بعض"},{en:"with",ar:"مع"}], correctAnswer:"matched", explanation:"أحسنت!", xp:16 },
     ],
     t2: [
       { id:"dr3-t2-1", type:"word_order", sentence:"Tea or coffee with us", correctAnswer:"Tea or coffee with us", explanation:"with us = معنا — دعوة للمشاركة", xp:16 },
@@ -146,7 +146,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr3-t2-6", type:"word_order", sentence:"Can I get you something to drink", correctAnswer:"Can I get you something to drink", explanation:"Can I get you something to drink? = هل يمكنني أن أحضر لك شيئاً لتشربه؟", xp:16 },
       { id:"dr3-t2-7", type:"translate", arabic:"أنا لا أشرب القهوة، هل عندك شاي؟", options:["I do not drink coffee, do you have tea?","I do not drink coffee, have you tea?","I don't drink coffee, would you have tea?","I am not drink coffee, do you have tea?"], correctAnswer:"I do not drink coffee, do you have tea?", explanation:"I do not drink = لا أشرب", xp:16 },
       { id:"dr3-t2-8", type:"fill_blank", blankSentence:"Would you ___ for some tea", blankOptions:["care","like","want"], correctAnswer:"care", explanation:"Would you care for = هل تودّ (رسمي)", xp:16 },
-      { id:"dr3-t2-9", type:"matching", pairs:[{en:"with",ar:"مع"},{en:"without",ar:"بدون"},{en:"some",ar:"بعض"},{en:"more",ar:"المزيد"},{en:"sugar",ar:"سكر"},{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"},{en:"sweet",ar:"حلو"}], correctAnswer:"matched", explanation:"ممتاز!", xp:16 },
+      { id:"dr3-t2-9", type:"matching", pairs:[{en:"with",ar:"مع"},{en:"without",ar:"بدون"},{en:"some",ar:"بعض"},{en:"more",ar:"المزيد"},{en:"sugar",ar:"سكر"},{en:"hot",ar:"ساخن"}], correctAnswer:"matched", explanation:"ممتاز!", xp:16 },
     ],
     t3: [
       { id:"dr3-t3-1", type:"word_order", sentence:"Tea or coffee", correctAnswer:"Tea or coffee", explanation:"Would you care for...? = هل تودّ...؟ — صيغة رسمية جداً", xp:20 },
@@ -157,7 +157,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"dr3-t3-6", type:"word_order", sentence:"Help yourself to juice", correctAnswer:"Help yourself to juice", explanation:"help yourself to... = تفضل... — Not at all = بكل سرور", xp:20 },
       { id:"dr3-t3-7", type:"translate", arabic:"كيف تحب قهوتك — سوداء أم بالحليب؟", options:["How do you take your coffee — black or with milk?","How do you like your coffee — black or with milk?","How would you have your coffee — black or with milk?","A and B are correct"], correctAnswer:"A and B are correct", explanation:"How do you take/like your coffee?", xp:22 },
       { id:"dr3-t3-8", type:"fill_blank", blankSentence:"Help yourself ___ the juice", blankOptions:["to","with","of"], correctAnswer:"to", explanation:"help yourself to = تفضل خذ", xp:20 },
-      { id:"dr3-t3-9", type:"matching", pairs:[{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"},{en:"black",ar:"سادة"},{en:"sweet",ar:"محلّى"},{en:"warm",ar:"دافئ"},{en:"sugar",ar:"سكر"},{en:"cup",ar:"كوب"},{en:"glass",ar:"كأس"}], correctAnswer:"matched", explanation:"رائع!", xp:20 },
+      { id:"dr3-t3-9", type:"matching", pairs:[{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"},{en:"black",ar:"سادة"},{en:"sweet",ar:"محلّى"},{en:"warm",ar:"دافئ"},{en:"sugar",ar:"سكر"}], correctAnswer:"matched", explanation:"رائع!", xp:20 },
     ],
   },
 
@@ -173,7 +173,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"ch-t0-6", type:"translate", arabic:"هل أجلب لك المزيد من الماء؟", options:["Shall I get you some more water?","Will I get you more water?","Can I bring you more water?","Should I get you water more?"], correctAnswer:"Shall I get you some more water?", explanation:"Shall I...? = هل أقوم بـ...؟ — عرض للمساعدة", xp:15 },
       { id:"ch-t0-7", type:"word_order", sentence:"Thank you that is very kind of you", correctAnswer:"Thank you that is very kind of you", explanation:"That is very kind of you = هذا لطيف جداً منك", xp:15 },
       { id:"ch-t0-8", type:"fill_blank", blankSentence:"Yes ___ , I would like coffee", blankOptions:["please","sorry","no"], correctAnswer:"please", explanation:"Yes please = نعم من فضلك — قبول مهذب", xp:15 },
-      { id:"ch-t0-9", type:"matching", pairs:[{en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"please",ar:"من فضلك"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"},{en:"water",ar:"ماء"},{en:"milk",ar:"حليب"},{en:"cup",ar:"كوب"}], correctAnswer:"matched", explanation:"رائع! راجعت كل كلمات الوحدة 👑", xp:18 },
+      { id:"ch-t0-9", type:"matching", pairs:[{en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"please",ar:"من فضلك"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"},{en:"water",ar:"ماء"}], correctAnswer:"matched", explanation:"رائع! راجعت كل كلمات الوحدة 👑", xp:18 },
     ],
     t1: [
       { id:"ch-t1-1", type:"translate", arabic:"كم من الكلمات التالية تعرفها؟ tea, coffee, water, juice, milk", options:["All five are drinks","Four are drinks one is food","These are all foods","Three are hot drinks"], correctAnswer:"All five are drinks", explanation:"tea ☕ coffee ☕ water 💧 juice 🧃 milk 🥛 — كلها مشروبات", xp:16 },
@@ -184,7 +184,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"ch-t1-6", type:"translate", arabic:"عذراً، هل قلت شاي أم قهوة؟", options:["Sorry, did you say tea or coffee?","Sorry, do you say tea or coffee?","Excuse me, did you say tea or coffee?","A and C are correct"], correctAnswer:"A and C are correct", explanation:"did you say = هل قلت (ماضي) — Sorry/Excuse me كلاهما صحيح", xp:17 },
       { id:"ch-t1-7", type:"picture_match", word:"coffee", pictureOptions:[{emoji:"☕",label:"coffee"},{emoji:"🍵",label:"tea"},{emoji:"💧",label:"water"},{emoji:"🥛",label:"milk"}], correctAnswer:"coffee", explanation:"coffee = قهوة ☕", xp:16 },
       { id:"ch-t1-8", type:"fill_blank", blankSentence:"Would you like ___ more juice", blankOptions:["some","any","a"], correctAnswer:"some", explanation:"some more = مزيد", xp:16 },
-      { id:"ch-t1-9", type:"matching", pairs:[{en:"juice",ar:"عصير"},{en:"milk",ar:"حليب"},{en:"water",ar:"ماء"},{en:"coffee",ar:"قهوة"},{en:"tea",ar:"شاي"},{en:"glass",ar:"كأس"},{en:"hot",ar:"ساخن"},{en:"cold",ar:"بارد"}], correctAnswer:"matched", explanation:"أحسنت!", xp:17 },
+      { id:"ch-t1-9", type:"matching", pairs:[{en:"juice",ar:"عصير"},{en:"milk",ar:"حليب"},{en:"water",ar:"ماء"},{en:"coffee",ar:"قهوة"},{en:"tea",ar:"شاي"},{en:"glass",ar:"كأس"}], correctAnswer:"matched", explanation:"أحسنت!", xp:17 },
     ],
     t2: [
       { id:"ch-t2-1", type:"word_order", sentence:"Tea with milk, no sugar", correctAnswer:"Tea with milk, no sugar", explanation:"with a little milk and no sugar = بقليل من الحليب وبدون سكر", xp:18 },
@@ -195,7 +195,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"ch-t2-6", type:"word_order", sentence:"Yes, cold water please", correctAnswer:"Yes, cold water please", explanation:"I would love = أودّ جداً — cold water = ماء بارد", xp:18 },
       { id:"ch-t2-7", type:"translate", arabic:"أقدّم لكم الشاي والقهوة والعصير", options:["I am serving tea, coffee and juice","I am offering tea, coffee and juice","I offer tea, coffee and juice","All of the above"], correctAnswer:"All of the above", explanation:"serve/offer — كلها صحيحة", xp:18 },
       { id:"ch-t2-8", type:"fill_blank", blankSentence:"Coffee ___ sugar, please", blankOptions:["without","with","of"], correctAnswer:"without", explanation:"without sugar = بدون سكر", xp:18 },
-      { id:"ch-t2-9", type:"matching", pairs:[{en:"would",ar:"سأودّ"},{en:"care for",ar:"ترغب"},{en:"prefer",ar:"تفضّل"},{en:"instead",ar:"بدلاً"},{en:"some",ar:"بعض"},{en:"with",ar:"مع"},{en:"more",ar:"المزيد"},{en:"sweet",ar:"حلو"}], correctAnswer:"matched", explanation:"ممتاز!", xp:18 },
+      { id:"ch-t2-9", type:"matching", pairs:[{en:"would",ar:"سأودّ"},{en:"care for",ar:"ترغب"},{en:"prefer",ar:"تفضّل"},{en:"instead",ar:"بدلاً"},{en:"some",ar:"بعض"},{en:"with",ar:"مع"}], correctAnswer:"matched", explanation:"ممتاز!", xp:18 },
     ],
     t3: [
       { id:"ch-t3-1", type:"word_order", sentence:"Tea or cold juice", correctAnswer:"Tea or cold juice", explanation:"Would you care for...? + a cold glass of juice — صياغة رسمية راقية", xp:22 },
@@ -206,7 +206,7 @@ export const unit1DrinksBank: Record<string, TieredBank> = {
       { id:"ch-t3-6", type:"word_order", sentence:"Thank you for the tea", correctAnswer:"Thank you for the tea", explanation:"hospitality = الكرم / حسن الضيافة — were excellent = كانا ممتازين", xp:22 },
       { id:"ch-t3-7", type:"translate", arabic:"هل يمكنني الاطلاع على قائمة المشروبات من فضلك؟", options:["Could I see the drinks menu please?","Can I look at the drink menu please?","May I have a look at the drinks menu please?","A and C are correct"], correctAnswer:"A and C are correct", explanation:"Could I see / May I have a look", xp:24 },
       { id:"ch-t3-8", type:"fill_blank", blankSentence:"I am afraid we have ___ out of milk", blankOptions:["run","gone","went"], correctAnswer:"run", explanation:"run out of = نفد", xp:22 },
-      { id:"ch-t3-9", type:"matching", pairs:[{en:"hospitality",ar:"كرم الضيافة"},{en:"generosity",ar:"السخاء"},{en:"trouble",ar:"إزعاج"},{en:"delay",ar:"تأخير"},{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"sorry",ar:"آسف"},{en:"more",ar:"المزيد"}], correctAnswer:"matched", explanation:"رائع! 👑", xp:24 },
+      { id:"ch-t3-9", type:"matching", pairs:[{en:"hospitality",ar:"كرم الضيافة"},{en:"generosity",ar:"السخاء"},{en:"trouble",ar:"إزعاج"},{en:"delay",ar:"تأخير"},{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"}], correctAnswer:"matched", explanation:"رائع! 👑", xp:24 },
     ],
   },
 };
