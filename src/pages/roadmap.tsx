@@ -510,9 +510,9 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const r      = SIZE / 2;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
   const pad = 16; // مساحة إضافية للخط الخارجي
-  const gap = 6; // الفاصل بين الخط والدائرة
-  const trackRx = r + gap;            // أفقياً: نصف القطر + فاصل
-  const trackRy = r + depth/2 + gap;  // عمودياً: يشمل التمدد + فاصل
+  const gap = 5; // الفاصل بين الخط والدائرة
+  const trackRx = r + gap;            // أفقياً: نصف القطر + فاصل بسيط فقط
+  const trackRy = r + depth/2 + gap;  // عمودياً: يشمل التمدد لأسفل
   // محيط البيضاوي التقريبي (Ramanujan)
   const ellipseCirc = Math.PI * (3*(trackRx+trackRy) - Math.sqrt((3*trackRx+trackRy)*(trackRx+3*trackRy)));
   const isGold = progress >= 4;
@@ -523,13 +523,13 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const faceMain  = isGold ? "#f59e0b" : isActive ? color : "#2d3a4a";
   const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330";
   const starColor = isGold ? "#ffffff" : isActive ? "#ffffff" : "#566578";
-  // الخط بلون الوحدة نفسه (أو ذهبي للمكتمل)
-  const trackColor = isGold ? "#f59e0b" : isActive ? color : "#2a3a4a";
-  const arcFilled  = isGold
-    ? `${ellipseCirc} 0`
-    : isJumpStation
-    ? `0 ${ellipseCirc}`
-    : isActive ? `${ellipseCirc * Math.min(progress / 4, 1)} ${ellipseCirc}` : `0 ${ellipseCirc}`;
+
+  // المسار الرمادي المفرّغ يظهر على الدائرة الحالية (ابدأ) أو المكتملة
+  const showTrack = isCurrent || isGold;
+  const fillColor = isGold ? "#f59e0b" : color; // لون الجزء الممتلئ
+  // كم يمتلئ (ربع لكل درس)
+  const fillFraction = isGold ? 1 : Math.min(progress / 4, 1);
+  const fillDash = `${ellipseCirc * fillFraction} ${ellipseCirc}`;
 
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
 
@@ -568,17 +568,35 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         {/* ── الطبقة السفلية (العمق ثلاثي الأبعاد) — خلف كل شيء ── */}
         <circle cx={r + pad} cy={r + pad + depth} r={r - 2} fill={sideColor}/>
 
-        {/* ── خط التقدم (بيضاوي يواكب تمدد الدائرة) ── */}
-        <motion.ellipse
-          cx={r + pad} cy={r + pad + depth/2}
-          rx={trackRx} ry={trackRy} fill="none"
-          stroke={trackColor} strokeWidth={5} strokeLinecap="round"
-          strokeDasharray={arcFilled}
-          style={{ filter: isActive ? `drop-shadow(0 0 4px ${trackColor}aa)` : "none", transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
-          initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
-          animate={{ strokeDasharray: arcFilled }}
-          transition={{ duration: 0.8, ease:"easeOut" }}
-        />
+        {/* ── المسار الرمادي المفرّغ (يظهر على الحالية أو المكتملة) ── */}
+        {showTrack && (
+          <>
+            {/* ظل خفيف تحت الخط */}
+            <ellipse
+              cx={r + pad} cy={r + pad + depth/2 + 2}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke="rgba(0,0,0,0.25)" strokeWidth={8}
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2+2}px` }}
+            />
+            {/* المسار الرمادي الكامل */}
+            <ellipse
+              cx={r + pad} cy={r + pad + depth/2}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke="#3a4656" strokeWidth={8} strokeLinecap="round"
+              style={{ transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
+            />
+            {/* الجزء الممتلئ بلون الوحدة */}
+            <motion.ellipse
+              cx={r + pad} cy={r + pad + depth/2}
+              rx={trackRx} ry={trackRy} fill="none"
+              stroke={fillColor} strokeWidth={8} strokeLinecap="round"
+              style={{ filter:`drop-shadow(0 1px 2px ${shadeColor(fillColor,-50)})`, transform:"rotate(-90deg)", transformOrigin:`${r+pad}px ${r+pad+depth/2}px` }}
+              initial={{ strokeDasharray:`0 ${ellipseCirc}` }}
+              animate={{ strokeDasharray: fillDash }}
+              transition={{ duration: 0.8, ease:"easeOut" }}
+            />
+          </>
+        )}
 
         {/* ── الوجه العلوي ── */}
         <circle cx={r + pad} cy={r + pad} r={r - 2} fill={`url(#${gId})`}/>
