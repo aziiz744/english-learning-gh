@@ -440,7 +440,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
   return (
     <div>
       <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
-        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:6 }}>
           {enCol.map(p=>{
             const isMatched = matched.has(p.en);
             const isSelected = selected?.col==="en" && selected.en===p.en;
@@ -448,7 +448,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
             return (
               <motion.button key={p.en} whileTap={{scale:0.96}} onClick={()=>tryMatch("en", p.en)}
                 animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
-                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"ltr", cursor:isMatched?"default":"pointer",
+                style={{ padding:"9px 8px", borderRadius:11, fontSize:13, fontWeight:700, direction:"ltr", cursor:isMatched?"default":"pointer",
                   background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
                   border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
                 {isMatched ? "✓ "+p.en : p.en}
@@ -456,7 +456,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
             );
           })}
         </div>
-        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+        <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:6 }}>
           {arCol.map(p=>{
             const isMatched = matched.has(p.en);
             const isSelected = selected?.col==="ar" && selected.en===p.en;
@@ -464,7 +464,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
             return (
               <motion.button key={p.ar} whileTap={{scale:0.96}} onClick={()=>tryMatch("ar", p.en)}
                 animate={isMatched?{opacity:0.4,scale:0.96}:isWrong?{x:[0,-6,6,-6,0]}:{}}
-                style={{ padding:"14px 12px", borderRadius:14, fontSize:15, fontWeight:800, direction:"rtl", cursor:isMatched?"default":"pointer",
+                style={{ padding:"9px 8px", borderRadius:11, fontSize:13, fontWeight:700, direction:"rtl", cursor:isMatched?"default":"pointer",
                   background: isMatched ? `${color}15` : isSelected ? `${color}30` : isWrong ? "#dc262620" : "hsl(var(--card))",
                   border: `2px solid ${isMatched ? color : isSelected ? color : isWrong ? "#dc2626" : "hsl(var(--border))"}` }}>
                 {isMatched ? "✓ "+p.ar : p.ar}
