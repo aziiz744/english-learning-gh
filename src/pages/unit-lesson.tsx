@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,6 +37,18 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
       {en:"from",ar:"من"},{en:"where",ar:"أين"},{en:"hello",ar:"مرحباً"},{en:"nice to meet you",ar:"سررت بلقائك"},
       {en:"mother",ar:"أم"},{en:"father",ar:"أب"},{en:"brother",ar:"أخ"},{en:"sister",ar:"أخت"},{en:"family",ar:"عائلة"},
     ] },
+
+  // ── الوحدة 3: قل من أين أنت؟ (الأماكن والاتجاهات) ──
+  "places-1": { title: "أماكن في المدينة", unitTitle: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a" },
+  "places-2": { title: "أين تقع؟",         unitTitle: "قل من أين أنت؟", emoji: "📍", color: "#d4622a" },
+  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"] },
+  "places-3": { title: "الاتجاهات",        unitTitle: "قل من أين أنت؟", emoji: "🧭", color: "#d4622a" },
+  "places-c": { title: "تحدي الوحدة",      unitTitle: "قل من أين أنت؟", emoji: "🏆", color: "#d4622a", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"school",ar:"مدرسة"},{en:"hospital",ar:"مستشفى"},{en:"market",ar:"سوق"},{en:"park",ar:"حديقة"},{en:"bank",ar:"بنك"},
+      {en:"next to",ar:"بجانب"},{en:"behind",ar:"خلف"},{en:"in front of",ar:"أمام"},{en:"near",ar:"قريب"},
+      {en:"turn left",ar:"انعطف يساراً"},{en:"turn right",ar:"انعطف يميناً"},{en:"go straight",ar:"اذهب مستقيماً"},{en:"where",ar:"أين"},{en:"here",ar:"هنا"},
+    ] },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──
@@ -47,6 +59,9 @@ const JUMP_MAP: Record<string, { unitTitle: string; color: string; prevTitles: s
   // القفز لوحدة 3 = اختبار وحدتي 1+2
   "unit-places": { unitTitle: "قل من أين أنت؟", color: "#d4622a",
     prevTitles: ["الكلمات الأساسية", "كلمات جديدة", "جمل كاملة", "ما اسمك؟", "من أين أنت؟", "عائلتك"] },
+  // القفز لوحدة 4 = اختبار وحدات 1+2+3
+  "unit-airport": { unitTitle: "تنقل في المطار", color: "#0891b2",
+    prevTitles: ["الكلمات الأساسية", "كلمات جديدة", "جمل كاملة", "ما اسمك؟", "من أين أنت؟", "عائلتك", "أماكن في المدينة", "أين تقع؟", "الاتجاهات"] },
 };
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
@@ -694,7 +709,7 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
         <motion.button initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.7}}
           onClick={onBack}
           style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
-          واصل إلى الوحدة التالية 🚀
+          واصل إلى الوحدة التالية
         </motion.button>
       </div>
     </motion.div>
@@ -825,19 +840,24 @@ const MAX_HEARTS = 5;
 
 export default function UnitLesson() {
   const { id, unitId } = useParams<{ id: string; unitId: string }>();
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const { user, isLoading: authLoading } = useAuth();
   const { playCorrect, playWrong, playComplete } = useSound();
 
-  // وضع القفز: المسار /jump/:unitId
-  const isJumpMode = location.startsWith("/jump/");
-  const jumpInfo = isJumpMode && unitId ? JUMP_MAP[unitId] : undefined;
+  // وضع القفز: المسار /jump/:unitId (نكتشفه عبر وجود unitId param)
+  const isJumpMode = !!unitId;
 
-  // meta عادي أو meta مُركّب لوضع القفز
-  const meta = isJumpMode && jumpInfo
-    ? { title: "اختبار القفز", unitTitle: jumpInfo.unitTitle, emoji: "🚀", color: jumpInfo.color,
-        isJump: true, jumpPrevTitles: jumpInfo.prevTitles, jumpTargetUnit: unitId } as any
-    : (id ? LESSON_MAP[id] : undefined);
+  // meta عادي أو meta مُركّب لوضع القفز (مستقر عبر useMemo)
+  const meta = useMemo(() => {
+    if (isJumpMode && unitId) {
+      const jumpInfo = JUMP_MAP[unitId];
+      if (jumpInfo) {
+        return { title: "اختبار القفز", unitTitle: jumpInfo.unitTitle, emoji: "🎯", color: jumpInfo.color,
+          isJump: true, jumpPrevTitles: jumpInfo.prevTitles, jumpTargetUnit: unitId } as any;
+      }
+    }
+    return id ? LESSON_MAP[id] : undefined;
+  }, [isJumpMode, unitId, id]);
 
   const isPro = user?.isPro;
   const proLoaded = !authLoading; // use auth loading state
@@ -1094,14 +1114,14 @@ export default function UnitLesson() {
         {phase === "jumpdone" && (
           <motion.div initial={{opacity:0,scale:0.85}} animate={{opacity:1,scale:1}} transition={{type:"spring"}} className="flex-1 flex items-center justify-center">
             <div className="text-center max-w-sm mx-auto p-6">
-              <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}} style={{ fontSize:72, marginBottom:12 }}>🚀</motion.div>
+              <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}} style={{ fontSize:72, marginBottom:12 }}>🎯</motion.div>
               <h2 className="text-2xl font-bold mb-2" style={{ color:meta.color }}>اجتزت الاختبار! 🎉</h2>
               <p className="text-muted-foreground text-sm mb-6" style={{ direction:"rtl" }}>
                 فتحت وحدة "{meta.unitTitle}" — ابدأ التدرّب الآن!
               </p>
               <button onClick={()=>setLocation("/roadmap")}
                 style={{ width:"100%", padding:"14px", background:meta.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
-                ابدأ الوحدة الجديدة 🗺️
+                ابدأ الوحدة الجديدة
               </button>
             </div>
           </motion.div>

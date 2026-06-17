@@ -679,7 +679,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
       {/* Title */}
       {isJump ? (
         <>
-          <p className="font-bold text-white text-center mb-1" style={{ fontSize: 15 }}>🚀 اختبار القفز</p>
+          <p className="font-bold text-white text-center mb-1" style={{ fontSize: 15 }}>اختبار القفز</p>
           <p className="text-white/90 text-center mb-1" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
             اجتز اختبار الوحدات السابقة للقفز إلى هنا
           </p>
@@ -700,7 +700,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
             onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
             onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
           >
-            ابدأ الاختبار 🚀
+            ابدأ الاختبار
           </button>
         </>
       ) : (
