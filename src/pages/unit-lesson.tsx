@@ -14,12 +14,29 @@ import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
-const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[] }> = {
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; vocab?: {en:string;ar:string}[] }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-t": { title: "كنز المراجعة",     unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الكلمات الأساسية", "كلمات جديدة"] },
   "drinks-3": { title: "جمل كاملة",        unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
-  "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e" },
+  "drinks-c": { title: "تحدي الوحدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "🏆", color: "#22a55e", isUnitFinal: true,
+    vocab: [
+      {en:"tea",ar:"شاي"},{en:"coffee",ar:"قهوة"},{en:"water",ar:"ماء"},{en:"juice",ar:"عصير"},{en:"milk",ar:"حليب"},
+      {en:"yes",ar:"نعم"},{en:"no",ar:"لا"},{en:"please",ar:"من فضلك"},{en:"thank you",ar:"شكراً"},{en:"sorry",ar:"آسف"},
+      {en:"more",ar:"المزيد"},{en:"would like",ar:"أودّ"},{en:"want",ar:"أريد"},{en:"have",ar:"أملك"},{en:"some",ar:"بعض"},
+    ] },
+
+  // ── الوحدة 2: قدّم نفسك وعائلتك ──
+  "intro-1": { title: "ما اسمك؟",       unitTitle: "قدّم نفسك وعائلتك", emoji: "👋", color: "#7c3aed" },
+  "intro-2": { title: "من أين أنت؟",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🌍", color: "#7c3aed" },
+  "intro-t": { title: "كنز المراجعة",   unitTitle: "قدّم نفسك وعائلتك", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["ما اسمك؟", "من أين أنت؟"] },
+  "intro-3": { title: "عائلتك",         unitTitle: "قدّم نفسك وعائلتك", emoji: "👨‍👩‍👧", color: "#7c3aed" },
+  "intro-c": { title: "تحدي الوحدة",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🏆", color: "#7c3aed", isUnitFinal: true,
+    vocab: [
+      {en:"name",ar:"اسم"},{en:"my name is",ar:"اسمي"},{en:"what",ar:"ما"},{en:"your",ar:"خاصتك"},{en:"I am",ar:"أنا"},
+      {en:"from",ar:"من"},{en:"where",ar:"أين"},{en:"hello",ar:"مرحباً"},{en:"nice to meet you",ar:"سررت بلقائك"},
+      {en:"mother",ar:"أم"},{en:"father",ar:"أب"},{en:"brother",ar:"أخ"},{en:"sister",ar:"أخت"},{en:"family",ar:"عائلة"},
+    ] },
 };
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
@@ -536,6 +553,58 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
   );
 }
 
+// ── Unit Complete Screen (إنجاز الوحدة كاملة + ملخص الكلمات) ─────────────────
+function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
+  unitTitle:string; vocab:{en:string;ar:string}[]; xpEarned:number; color:string; onBack:()=>void;
+}) {
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center" style={{ overflowY:"auto" }}>
+      <div className="w-full max-w-md mx-auto p-4">
+        {/* Trophy header */}
+        <div className="text-center mb-6">
+          <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}}
+            style={{ fontSize:72, marginBottom:8 }}>🏆</motion.div>
+          <motion.h2 initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
+            className="text-2xl font-bold mb-1" style={{ color }}>أكملت الوحدة! 🎉</motion.h2>
+          <p className="text-muted-foreground text-sm" style={{ direction:"rtl" }}>{unitTitle}</p>
+        </div>
+
+        {/* XP badge */}
+        <motion.div initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{delay:0.35}}
+          style={{ display:"flex", justifyContent:"center", gap:12, marginBottom:24 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, background:`${color}20`, border:`2px solid ${color}50`, borderRadius:14, padding:"10px 20px" }}>
+            <Star className="w-5 h-5" style={{ color, fill:color }}/>
+            <span style={{ fontWeight:900, fontSize:18, color }}>+{xpEarned} XP</span>
+          </div>
+        </motion.div>
+
+        {/* Vocabulary summary */}
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}}
+          style={{ background:"hsl(var(--card))", borderRadius:18, padding:"18px 16px", border:"2px solid hsl(var(--border))", marginBottom:20 }}>
+          <h3 style={{ fontWeight:800, fontSize:15, marginBottom:14, textAlign:"center" }}>📚 الكلمات التي تعلّمتها</h3>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+            {vocab.map((w,i)=>(
+              <motion.div key={w.en} initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{delay:0.55+i*0.03}}
+                onClick={()=>speak(w.en)}
+                style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:6, background:`${color}10`, borderRadius:10, padding:"8px 12px", cursor:"pointer" }}>
+                <span style={{ fontWeight:800, fontSize:14, direction:"ltr", color }}>{w.en}</span>
+                <span style={{ fontSize:13, color:"hsl(var(--muted-foreground))", direction:"rtl" }}>{w.ar}</span>
+              </motion.div>
+            ))}
+          </div>
+          <p style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginTop:12 }}>اضغط أي كلمة لسماع نطقها 🔊</p>
+        </motion.div>
+
+        <motion.button initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.7}}
+          onClick={onBack}
+          style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
+          واصل إلى الوحدة التالية 🚀
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Completion Screen ─────────────────────────────────────────────────────────
 function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, onNext, onRetry, onBack }: {
   score:number; total:number; xpEarned:number; hearts:number; isPro:boolean;
@@ -679,7 +748,7 @@ export default function UnitLesson() {
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest">("playing");
+  const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone">("playing");
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -828,7 +897,12 @@ export default function UnitLesson() {
         setMascotFor("complete", 0);
         playComplete();
         setQueue([]);
-        setPhase(isReview ? "chest" : "finish");
+        // إذا كان التحدي النهائي واكتمل آخر درس → شاشة إنجاز الوحدة
+        if (meta.isUnitFinal && completedSub >= 4) {
+          setPhase("unitdone");
+        } else {
+          setPhase(isReview ? "chest" : "finish");
+        }
       } else {
         setQueue(rest);
       }
@@ -858,6 +932,7 @@ export default function UnitLesson() {
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
+        {phase === "unitdone" && <UnitCompleteScreen unitTitle={meta.unitTitle} vocab={meta.vocab ?? []} xpEarned={xpEarned} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "finish"   && <CompletionScreen
           score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
           subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}
