@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Mascot } from "@/components/mascot";
+import { OwlMascot } from "@/components/owl-mascot";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -52,7 +52,7 @@ function SidebarMascot() {
   return (
     <button onClick={nextTip} className="w-full px-3 pb-3 flex items-end gap-2 cursor-pointer group" title="انقر للحصول على نصيحة جديدة">
       <div className="shrink-0 transition-transform group-hover:scale-110">
-        <Mascot state="idle" className="w-14 h-20" />
+        <OwlMascot state="idle" size={72} />
       </div>
       <AnimatePresence mode="wait">
         {visible && (
