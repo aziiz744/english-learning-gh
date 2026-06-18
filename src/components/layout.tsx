@@ -8,8 +8,7 @@ import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { OwlMascot } from "@/components/owl-mascot";
-import owlImg from "@/assets/owl-mascot.png";
+import { Mascot } from "@/components/mascot";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -51,7 +50,7 @@ function SidebarMascot() {
   return (
     <button onClick={nextTip} className="w-full px-3 pb-3 flex items-end gap-2 cursor-pointer group" title="انقر للحصول على نصيحة جديدة">
       <div className="shrink-0 transition-transform group-hover:scale-110">
-        <OwlMascot state="auto" size={76} />
+        <Mascot state="idle" className="w-16 h-20" />
       </div>
       <AnimatePresence mode="wait">
         {visible && (
@@ -76,7 +75,10 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <img src={owlImg} alt="مسار الإنجليزية" className="w-10 h-10 object-contain shrink-0" draggable={false} />
+          <svg width="30" height="30" viewBox="0 0 24 24" className="shrink-0">
+            <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
+              fill="#ef4444" stroke="#b91c1c" strokeWidth="1"/>
+          </svg>
           <div>
             <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
             <span className="text-xs text-muted-foreground">EnglishPath</span>
@@ -288,7 +290,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1.5">
-          <img src={owlImg} alt="مسار الإنجليزية" className="w-8 h-8 object-contain" draggable={false} />
+          <svg width="22" height="22" viewBox="0 0 24 24">
+            <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
+              fill="#ef4444" stroke="#b91c1c" strokeWidth="1"/>
+          </svg>
           <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
         </div>
         {stats && stats.streak > 0 ? (

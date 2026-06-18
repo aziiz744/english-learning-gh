@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
-import { OwlMascot } from "@/components/owl-mascot";
+import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -1417,7 +1417,7 @@ export default function UnitLesson() {
     <Layout>
       <div style={{ maxWidth:400, margin:"0 auto", padding:"40px 20px", minHeight:"calc(100svh - 160px)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
         <div style={{ marginBottom:8 }}>
-          <OwlMascot state="thinking" size={120}/>
+          <Mascot state="thinking" className="w-28 h-32"/>
         </div>
         <div style={{ fontSize:54, marginBottom:4 }}>🔒</div>
         <h2 style={{ fontWeight:900, fontSize:23, marginBottom:12, color:"hsl(var(--foreground))" }}>سجّل دخولك أولاً</h2>
