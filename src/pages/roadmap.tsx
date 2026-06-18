@@ -1012,7 +1012,7 @@ export default function Roadmap() {
   }, [user]);
 
   // أي شارة مضغوطة لعرض توضيحها
-  const [statInfo, setStatInfo] = useState<null | "gems" | "hearts" | "streak">(null);
+  const [statInfo, setStatInfo] = useState<null | "gems" | "hearts" | "streak" | "lang">(null);
 
   // أعد تحميل التقدم عند العودة للصفحة (بعد اختبار القفز مثلاً)
   useEffect(() => {
@@ -1052,76 +1052,72 @@ export default function Roadmap() {
     <Layout>
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
-          .roadmap-sticky-header { top: 44px; }
-          .roadmap-stats-bar { top: 8px; }
+          .roadmap-sticky-header { top: 46px; }
+          .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
           @media (max-width: 767px) {
-            .roadmap-sticky-header { top: calc(94px + env(safe-area-inset-top, 0px)); }
-            .roadmap-stats-bar { top: calc(58px + env(safe-area-inset-top, 0px)); }
+            .roadmap-stats-bar {
+              top: calc(56px + env(safe-area-inset-top, 0px));
+              padding-top: 8px; padding-bottom: 6px;
+            }
+            .roadmap-sticky-header { top: calc(98px + env(safe-area-inset-top, 0px)); }
           }
         `}</style>
 
-        {/* ── شريط البيانات المختصر (كله على اليسار) ── */}
+        {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
         <div className="roadmap-stats-bar" style={{
           position: "sticky", zIndex: 31, display: "flex", justifyContent: "flex-start",
-          alignItems: "center", gap: 8, padding: "4px 14px 0", flexWrap: "wrap",
+          alignItems: "center", gap: 16, padding: "6px 16px 0",
         }}>
-          {/* علم أمريكا (لغة التعلّم) */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 5,
-            background: "hsl(var(--card))", padding: "5px 10px", borderRadius: 12,
-            boxShadow: "0 2px 6px rgba(0,0,0,0.12)", border: "1.5px solid hsl(var(--border))",
-          }}>
-            <svg width="24" height="17" viewBox="0 0 24 17" style={{ borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }}>
-              <rect width="24" height="17" fill="#b22234"/>
-              {[1,3,5,7,9,11].map(i=>(<rect key={i} y={i*1.3} width="24" height="1.3" fill="white"/>))}
-              <rect width="10" height="9.1" fill="#3c3b6e"/>
-              {[...Array(15)].map((_,i)=>(<circle key={i} cx={1.3+(i%5)*1.9} cy={1.3+Math.floor(i/5)*2.6} r="0.5" fill="white"/>))}
-            </svg>
-            <span style={{ fontSize: 12, fontWeight: 800, color: "hsl(var(--foreground))" }}>EN</span>
-          </div>
-
-          {/* الستريك */}
-          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("streak");}} style={{
+          {/* القلوب */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("hearts");}} style={{
             display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: "linear-gradient(135deg, #fb923c, #f97316)",
-            padding: "5px 11px", borderRadius: 12,
-            boxShadow: "0 3px 0 #c2410c, 0 4px 10px rgba(249,115,22,0.35)", border: "1.5px solid #fdba74",
+            background: "none", border: "none", padding: 0,
           }}>
-            <span style={{ fontSize: 16 }}>🔥</span>
-            <span style={{ color: "white", fontWeight: 900, fontSize: 14, textShadow: "0 1px 2px #9a3412" }}>{streak}</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+              <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
+                fill={isPro ? "#3b82f6" : "#ef4444"} stroke={isPro ? "#1d4ed8" : "#b91c1c"} strokeWidth="1"/>
+            </svg>
+            <span style={{ color: isPro ? "#3b82f6" : "#ef4444", fontWeight: 900, fontSize: 15 }}>{isPro ? "∞" : "5"}</span>
           </button>
 
           {/* الجواهر */}
           <button onClick={(e)=>{e.stopPropagation(); setStatInfo("gems");}} style={{
             display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
-            padding: "5px 11px 5px 8px", borderRadius: 12,
-            boxShadow: "0 3px 0 #0369a1, 0 4px 10px rgba(14,165,233,0.35)", border: "1.5px solid #7dd3fc",
+            background: "none", border: "none", padding: 0,
           }}>
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#a5f3fc" stroke="#0891b2" strokeWidth="1"/>
-              <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#67e8f9" opacity="0.8"/>
-              <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#22d3ee" opacity="0.6"/>
-              <path d="M2 9 H22" stroke="#0891b2" strokeWidth="0.8"/>
+            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+              <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#38bdf8" stroke="#0284c7" strokeWidth="1"/>
+              <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#7dd3fc" opacity="0.9"/>
+              <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#0ea5e9" opacity="0.7"/>
+              <path d="M2 9 H22" stroke="#0284c7" strokeWidth="0.8"/>
             </svg>
-            <span style={{ color: "white", fontWeight: 900, fontSize: 14, textShadow: "0 1px 2px #0369a1" }}>{gemCount}</span>
+            <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 15 }}>{gemCount}</span>
           </button>
 
-          {/* القلوب */}
-          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("hearts");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: isPro ? "linear-gradient(135deg, #60a5fa, #2563eb)" : "linear-gradient(135deg, #fb7185, #e11d48)",
-            padding: "5px 11px", borderRadius: 12,
-            boxShadow: isPro ? "0 3px 0 #1e40af, 0 4px 10px rgba(37,99,235,0.35)" : "0 3px 0 #9f1239, 0 4px 10px rgba(225,29,72,0.35)",
-            border: isPro ? "1.5px solid #93c5fd" : "1.5px solid #fda4af",
+          {/* الستريك */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("streak");}} style={{
+            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
+            background: "none", border: "none", padding: 0,
           }}>
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
-                fill={isPro ? "#dbeafe" : "#ffe4e6"} stroke={isPro ? "#1d4ed8" : "#be123c"} strokeWidth="1.5"/>
+            <span style={{ color: "#f97316", fontWeight: 900, fontSize: 15 }}>{streak}</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+              <path d="M12 2 C12 6 8 8 8 13 C8 16 10 19 12 19 C14 19 16 16 16 13 C16 11 15 10 15 10 C15 13 13 14 13 12 C13 9 12 6 12 2 Z" fill="#f97316" stroke="#ea580c" strokeWidth="0.8"/>
+              <path d="M12 19 C10.5 19 9.5 17 9.5 15 C9.5 17 11 18 12 18 C13 18 14.5 17 14.5 15 C14.5 17 13.5 19 12 19 Z" fill="#fbbf24"/>
             </svg>
-            <span style={{ color: "white", fontWeight: 900, fontSize: 14, textShadow: isPro ? "0 1px 2px #1e40af" : "0 1px 2px #9f1239" }}>
-              {isPro ? "∞" : "5"}
-            </span>
+          </button>
+
+          {/* علم أمريكا */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("lang");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            background: "none", border: "none", padding: 0,
+          }}>
+            <span style={{ color: "hsl(var(--foreground))", fontWeight: 900, fontSize: 15 }}>10</span>
+            <svg width="26" height="18" viewBox="0 0 26 18" style={{ borderRadius: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>
+              <rect width="26" height="18" fill="#b22234"/>
+              {[1,3,5,7,9,11].map(i=>(<rect key={i} y={i*1.38} width="26" height="1.38" fill="white"/>))}
+              <rect width="11" height="9.7" fill="#3c3b6e"/>
+              {[...Array(15)].map((_,i)=>(<circle key={i} cx={1.4+(i%5)*2} cy={1.4+Math.floor(i/5)*2.8} r="0.55" fill="white"/>))}
+            </svg>
           </button>
         </div>
 
@@ -1135,16 +1131,18 @@ export default function Roadmap() {
                 onClick={e=>e.stopPropagation()}
                 style={{ background:"hsl(var(--card))", borderRadius:22, padding:"26px 22px", maxWidth:320, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
                 <div style={{ fontSize:48, marginBottom:12 }}>
-                  {statInfo==="streak" ? "🔥" : statInfo==="gems" ? "💎" : "❤️"}
+                  {statInfo==="streak" ? "🔥" : statInfo==="gems" ? "💎" : statInfo==="lang" ? "🇺🇸" : "❤️"}
                 </div>
                 <h3 style={{ fontWeight:900, fontSize:18, marginBottom:8, color:"hsl(var(--foreground))" }}>
-                  {statInfo==="streak" ? "سلسلة التعلّم" : statInfo==="gems" ? "جواهرك" : "قلوب التمارين"}
+                  {statInfo==="streak" ? "سلسلة التعلّم" : statInfo==="gems" ? "جواهرك" : statInfo==="lang" ? "لغة التعلّم" : "قلوب التمارين"}
                 </h3>
                 <p style={{ fontSize:14, color:"hsl(var(--muted-foreground))", lineHeight:1.7, direction:"rtl" }}>
                   {statInfo==="streak"
                     ? `لقد حافظت على تواصلك في التعلّم لمدة ${streak} ${streak===1?"يوم":"أيام"}! استمر يومياً لتكبر سلسلتك 🔥`
                     : statInfo==="gems"
                     ? `لديك ${gemCount} جوهرة 💎 اجمعها من فتح الكنوز وإكمال التحديات والدروس. قريباً ستتمكن من استخدامها!`
+                    : statInfo==="lang"
+                    ? "أنت تتعلّم اللغة الإنجليزية 🇺🇸 — لغة عالمية تفتح لك أبواب العمل والسفر والمعرفة. واصل التقدّم!"
                     : isPro
                     ? "لديك قلوب لا نهائية ♾️ بصفتك عضو Pro — تدرّب بلا حدود!"
                     : "لديك 5 قلوب للتمارين ❤️ كل إجابة خاطئة تكلّفك قلباً. اشترك في Pro للحصول على قلوب لا نهائية."}
