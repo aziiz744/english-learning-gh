@@ -1272,17 +1272,22 @@ export default function UnitLesson() {
         // درس داخلي عادي — وزّع أسئلة المحطة على 4 دروس مع توازن الأنماط
         const t = (tier as 0|1|2|3);
         const all = getAllStationExercises(meta.title);
-        // جمّع الأسئلة حسب النوع (translate, word_order, listen_select, fill_blank, matching, picture_match)
+        // جمّع الأسئلة حسب النوع
         const byType: Record<string, ExObj[]> = {};
         all.forEach(ex => { (byType[ex.type] ??= []).push(ex); });
-        // لكل نوع: وزّع أسئلته بالتناوب على الدروس الأربعة (الدرس t يأخذ كل رابع سؤال من النوع)
+        // وزّع كل نوع بالتناوب على الدروس الأربعة
         const slice: ExObj[] = [];
         Object.values(byType).forEach(list => {
           list.forEach((ex, i) => { if (i % 4 === t) slice.push(ex); });
         });
-        // أكمل لو قلّت عن 6 من باقي أسئلة المحطة (بدون تكرار)
-        raw = slice.length >= 6 ? slice.slice(0, 8)
-            : [...slice, ...all.filter(e => !slice.includes(e))].slice(0, 8);
+        // رتّب الشريحة: الأنماط النادرة (مثل الصور) أولاً حتى لا تُقصّ عند التحديد بـ 8
+        const RARITY: Record<string, number> = { picture_match: 0, matching: 1, listen_select: 2, fill_blank: 3, word_order: 4, translate: 5 };
+        slice.sort((a, b) => (RARITY[a.type] ?? 9) - (RARITY[b.type] ?? 9));
+        // خذ أول 8 (تضمن وجود الصور)، ثم اخلط الترتيب النهائي
+        let chosen = slice.length >= 6 ? slice.slice(0, 8)
+                   : [...slice, ...all.filter(e => !slice.includes(e))].slice(0, 8);
+        // اخلط الترتيب حتى لا تكون كل الصور في البداية دائماً
+        raw = chosen.sort(() => Math.random() - 0.5);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
@@ -1604,11 +1609,11 @@ export default function UnitLesson() {
           {/* Main content area */}
           <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
-            <AnimatePresence initial={false}>
+            <AnimatePresence mode="wait" initial={false}>
               {ex && (
                 <motion.div key={ex.id}
-                  initial={{opacity:0,x:24}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-24,position:"absolute"}}
-                  transition={{duration:0.15,ease:"easeOut"}}
+                  initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                  transition={{duration:0.18,ease:"easeInOut"}}
                   style={{width:"100%"}}>
                   {ex.type==="word_order"    && <WordOrderQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="translate"     && <TranslateQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}

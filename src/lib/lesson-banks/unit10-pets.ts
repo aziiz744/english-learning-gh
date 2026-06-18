@@ -12,6 +12,8 @@ export const unit10PetsBank: Record<string, TieredBank> = {
   // ── الدرس 1: أسماء الحيوانات ──
   "أسماء الحيوانات": {
     t0: [
+    { id:"pet-pic-1", type:"picture_match", word:"cat", arabic:"قطة", pictureOptions:[{emoji:"",label:"cat"},{emoji:"",label:"dog"},{emoji:"",label:"bird"},{emoji:"",label:"rabbit"}], correctAnswer:"cat", explanation:"قطة = cat", xp:10 },
+    { id:"pet-pic-2", type:"picture_match", word:"dog", arabic:"كلب", pictureOptions:[{emoji:"",label:"dog"},{emoji:"",label:"cat"},{emoji:"",label:"fish"},{emoji:"",label:"bird"}], correctAnswer:"dog", explanation:"كلب = dog", xp:10 },
       { id:"pe1-t0-1", type:"translate", arabic:"قطة", options:["cat","dog","bird","fish"], correctAnswer:"cat", explanation:"cat = قطة 🐱", xp:10 },
       { id:"pe1-t0-2", type:"listen_select", listenSentence:"dog", options:["dog","cat","bird","fish"], correctAnswer:"dog", explanation:"dog = كلب 🐶", xp:10 },
       { id:"pe1-t0-3", type:"translate", arabic:"طائر", options:["bird","fish","cat","rabbit"], correctAnswer:"bird", explanation:"bird = طائر 🐦", xp:10 },

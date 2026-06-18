@@ -34,6 +34,24 @@ function HotCup({ liquid, liquidTop, rim }: { liquid: string; liquidTop: string;
   );
 }
 
+// إيموجي معبّرة للكلمات البصرية في كل الوحدات (واضحة ومفهومة)
+const EMOJI_ART: Record<string, string> = {
+  // أماكن
+  school:"🏫", hospital:"🏥", market:"🏪", park:"🌳", bank:"🏦", city:"🏙️",
+  street:"🛣️", house:"🏠", restaurant:"🍽️", store:"🏬", mosque:"🕌", library:"📚",
+  // مطار وسفر
+  ticket:"🎫", passport:"🛂", gate:"🚪", plane:"✈️", bag:"🧳", airport:"🛫",
+  // طعام
+  rice:"🍚", chicken:"🍗", bread:"🍞", fish:"🐟", egg:"🥚", apple:"🍎",
+  meat:"🥩", soup:"🍲", salad:"🥗", cheese:"🧀", fruit:"🍇", cake:"🍰",
+  // طقس
+  sunny:"☀️", rainy:"🌧️", cloudy:"☁️", snowy:"❄️", windy:"💨", hot:"🔥", cold:"🧊",
+  // حيوانات
+  cat:"🐱", dog:"🐶", bird:"🐦", rabbit:"🐰", horse:"🐴", cow:"🐮", duck:"🦆",
+  // مهن
+  teacher:"👨‍🏫", doctor:"👨‍⚕️", driver:"🚗", cook:"👨‍🍳", nurse:"👩‍⚕️", police:"👮",
+};
+
 export const DRINK_ART: Record<string, ReactElement> = {
   tea: <HotCup liquid="#a16207" liquidTop="#ca8a04" rim="#d97706"/>,
   coffee: <HotCup liquid="#422006" liquidTop="#6b3a1a" rim="#7c4a2a"/>,
@@ -109,10 +127,22 @@ export const DRINK_ART: Record<string, ReactElement> = {
 
 export function DrinkArt({ label }: { label: string }): ReactElement {
   const key = label.toLowerCase().trim();
-  return DRINK_ART[key] ?? (
+  // المشروبات المرسومة بـ SVG
+  if (DRINK_ART[key]) return DRINK_ART[key];
+  // الكلمات البصرية بإيموجي كبيرة واضحة داخل دائرة
+  if (EMOJI_ART[key]) {
+    return (
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <circle cx="50" cy="50" r="42" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="2"/>
+        <text x="50" y="50" fontSize="48" textAnchor="middle" dominantBaseline="central">{EMOJI_ART[key]}</text>
+      </svg>
+    );
+  }
+  // افتراضي
+  return (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
       <circle cx="50" cy="50" r="38" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="3"/>
-      <text x="50" y="62" fontSize="34" textAnchor="middle">🥤</text>
+      <text x="50" y="62" fontSize="34" textAnchor="middle">📦</text>
     </svg>
   );
 }

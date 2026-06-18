@@ -13,6 +13,8 @@ export const unit4AirportBank: Record<string, TieredBank> = {
   // ── الدرس 1: في المطار ──
   "في المطار": {
     t0: [
+    { id:"air-pic-1", type:"picture_match", word:"ticket", arabic:"تذكرة", pictureOptions:[{emoji:"",label:"ticket"},{emoji:"",label:"passport"},{emoji:"",label:"gate"},{emoji:"",label:"bag"}], correctAnswer:"ticket", explanation:"تذكرة = ticket", xp:10 },
+    { id:"air-pic-2", type:"picture_match", word:"passport", arabic:"جواز سفر", pictureOptions:[{emoji:"",label:"passport"},{emoji:"",label:"ticket"},{emoji:"",label:"plane"},{emoji:"",label:"gate"}], correctAnswer:"passport", explanation:"جواز سفر = passport", xp:10 },
       { id:"ai1-t0-1", type:"translate", arabic:"تذكرة", options:["ticket","passport","gate","flight"], correctAnswer:"ticket", explanation:"ticket = تذكرة 🎫", xp:10 },
       { id:"ai1-t0-2", type:"listen_select", listenSentence:"passport", options:["passport","ticket","gate","flight"], correctAnswer:"passport", explanation:"passport = جواز سفر 🛂", xp:10 },
       { id:"ai1-t0-3", type:"translate", arabic:"بوابة", options:["gate","flight","ticket","seat"], correctAnswer:"gate", explanation:"gate = بوابة 🚪", xp:10 },

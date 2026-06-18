@@ -12,6 +12,8 @@ export const unit7JobsBank: Record<string, TieredBank> = {
   // ── الدرس 1: أفعال المهن ──
   "أفعال المهن": {
     t0: [
+    { id:"job-pic-1", type:"picture_match", word:"teacher", arabic:"معلم", pictureOptions:[{emoji:"",label:"teacher"},{emoji:"",label:"doctor"},{emoji:"",label:"driver"},{emoji:"",label:"cook"}], correctAnswer:"teacher", explanation:"معلم = teacher", xp:10 },
+    { id:"job-pic-2", type:"picture_match", word:"doctor", arabic:"طبيب", pictureOptions:[{emoji:"",label:"doctor"},{emoji:"",label:"teacher"},{emoji:"",label:"cook"},{emoji:"",label:"nurse"}], correctAnswer:"doctor", explanation:"طبيب = doctor", xp:10 },
       { id:"pj1-t0-1", type:"translate", arabic:"يُعلّم", options:["teach","drive","cook","build"], correctAnswer:"teach", explanation:"teach = يُعلّم 👨‍🏫", xp:10 },
       { id:"pj1-t0-2", type:"listen_select", listenSentence:"drive", options:["drive","teach","cook","write"], correctAnswer:"drive", explanation:"drive = يقود 🚗", xp:10 },
       { id:"pj1-t0-3", type:"translate", arabic:"يطبخ", options:["cook","build","teach","drive"], correctAnswer:"cook", explanation:"cook = يطبخ 👨‍🍳", xp:10 },

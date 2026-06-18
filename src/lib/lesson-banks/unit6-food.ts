@@ -12,6 +12,8 @@ export const unit6FoodBank: Record<string, TieredBank> = {
   // ── الدرس 1: أسماء الأطعمة ──
   "أسماء الأطعمة": {
     t0: [
+    { id:"foo-pic-1", type:"picture_match", word:"rice", arabic:"أرز", pictureOptions:[{emoji:"",label:"rice"},{emoji:"",label:"chicken"},{emoji:"",label:"bread"},{emoji:"",label:"fish"}], correctAnswer:"rice", explanation:"أرز = rice", xp:10 },
+    { id:"foo-pic-2", type:"picture_match", word:"chicken", arabic:"دجاج", pictureOptions:[{emoji:"",label:"chicken"},{emoji:"",label:"rice"},{emoji:"",label:"bread"},{emoji:"",label:"egg"}], correctAnswer:"chicken", explanation:"دجاج = chicken", xp:10 },
       { id:"fo1-t0-1", type:"translate", arabic:"أرز", options:["rice","chicken","bread","soup"], correctAnswer:"rice", explanation:"rice = أرز 🍚", xp:10 },
       { id:"fo1-t0-2", type:"listen_select", listenSentence:"chicken", options:["chicken","rice","bread","salad"], correctAnswer:"chicken", explanation:"chicken = دجاج 🍗", xp:10 },
       { id:"fo1-t0-3", type:"translate", arabic:"خبز", options:["bread","rice","soup","salad"], correctAnswer:"bread", explanation:"bread = خبز 🍞", xp:10 },
