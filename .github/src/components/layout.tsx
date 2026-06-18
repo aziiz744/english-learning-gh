@@ -8,22 +8,22 @@ import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Mascot } from "@/components/mascot";
+import { OwlMascot } from "@/components/owl-mascot";
+import owlImg from "@/assets/owl-mascot.png";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Bottom nav: 5 items max ──
 const BOTTOM_NAV = [
-  { name: "الرئيسية",  href: "/",          icon: LayoutDashboard },
-  { name: "خارطة",    href: "/roadmap",    icon: Route },
+  { name: "الخارطة",  href: "/",          icon: Route },
+  { name: "الإنجازات", href: "/achievements", icon: Trophy },
   { name: "معلم",      href: "/teacher",    icon: MessageCircle },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
 
 // ── Sidebar / drawer: full list ──
 const navigation = [
-  { name: "الرئيسية",       href: "/",            icon: LayoutDashboard },
-  { name: "خارطة التعلم",   href: "/roadmap",     icon: Route },
+  { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
   { name: "القواعد",        href: "/grammar",     icon: GraduationCap },
@@ -53,7 +53,7 @@ function SidebarMascot() {
   return (
     <button onClick={nextTip} className="w-full px-3 pb-3 flex items-end gap-2 cursor-pointer group" title="انقر للحصول على نصيحة جديدة">
       <div className="shrink-0 transition-transform group-hover:scale-110">
-        <Mascot state="idle" className="w-14 h-20" />
+        <OwlMascot state="auto" size={76} />
       </div>
       <AnimatePresence mode="wait">
         {visible && (
@@ -78,10 +78,10 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🎯</span>
+          <img src={owlImg} alt="English Spark" className="w-10 h-10 object-contain shrink-0" draggable={false} />
           <div>
-            <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
-            <span className="text-xs text-muted-foreground">EnglishPath</span>
+            <span className="font-bold text-lg text-primary tracking-tight leading-none block">English Spark</span>
+            <span className="text-xs text-muted-foreground">تعلّم، العب، تحدّث</span>
           </div>
         </div>
       </div>
@@ -291,8 +291,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1.5">
-          <span className="text-lg">🎯</span>
-          <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
+          <img src={owlImg} alt="English Spark" className="w-8 h-8 object-contain" draggable={false} />
+          <span className="font-bold text-sm text-primary">English Spark</span>
         </div>
         {stats && stats.streak > 0 ? (
           <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1">

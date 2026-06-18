@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
-const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; vocab?: {en:string;ar:string}[] }> = {
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; isPractice?: boolean; practiceTitles?: string[]; vocab?: {en:string;ar:string}[] }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-t": { title: "كنز المراجعة",     unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الكلمات الأساسية", "كلمات جديدة"] },
@@ -53,7 +53,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 4: تنقل في المطار ──
   "airport-1": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "✈️", color: "#0891b2" },
   "airport-2": { title: "جمل السفر",  unitTitle: "تنقل في المطار", emoji: "🧳", color: "#0891b2" },
-  "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" },
+  "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" , isPractice: true, practiceTitles: ["في المطار", "جمل السفر", "في الطائرة"] },
   "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"] },
   "airport-3": { title: "في الطائرة", unitTitle: "تنقل في المطار", emoji: "💺", color: "#0891b2" },
   "airport-c": { title: "تحدي الوحدة", unitTitle: "تنقل في المطار", emoji: "🏆", color: "#0891b2", isUnitFinal: true, isChallenge: true,
@@ -66,7 +66,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 5: استخدم الصفات لوصف الأسماء ──
   "adj-1": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e" },
   "adj-2": { title: "صف الأشياء",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🖌️", color: "#22a55e" },
-  "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" },
+  "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" , isPractice: true, practiceTitles: ["الصفات الأساسية", "صف الأشياء", "قارن بين الأشياء"] },
   "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"] },
   "adj-3": { title: "قارن بين الأشياء", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "⚖️", color: "#22a55e" },
   "adj-c": { title: "تحدي الوحدة",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏆", color: "#22a55e", isUnitFinal: true, isChallenge: true,
@@ -79,7 +79,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 6: اطلب الطعام والمشروبات ──
   "food-1": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777" },
   "food-2": { title: "في المطعم",       unitTitle: "اطلب الطعام والمشروبات", emoji: "🍴", color: "#db2777" },
-  "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" },
+  "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" , isPractice: true, practiceTitles: ["أسماء الأطعمة", "في المطعم", "المشروبات والحلويات"] },
   "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"] },
   "food-3": { title: "المشروبات والحلويات", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍰", color: "#db2777" },
   "food-c": { title: "تحدي الوحدة",     unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#db2777", isUnitFinal: true, isChallenge: true,
@@ -92,7 +92,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 7: استخدم الزمن المضارع للمهن ──
   "pj-1": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a" },
   "pj-2": { title: "جمل المضارع",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "✍️", color: "#16a34a" },
-  "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" },
+  "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" , isPractice: true, practiceTitles: ["أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
   "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"] },
   "pj-3": { title: "اسأل عن المهن", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "❓", color: "#16a34a" },
   "pj-c": { title: "تحدي الوحدة",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true,
@@ -100,6 +100,45 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
       {en:"teach",ar:"يُعلّم"},{en:"drive",ar:"يقود"},{en:"cook",ar:"يطبخ"},{en:"build",ar:"يبني"},{en:"write",ar:"يكتب"},
       {en:"teacher",ar:"معلّم"},{en:"driver",ar:"سائق"},{en:"doctor",ar:"طبيب"},{en:"work",ar:"يعمل"},
       {en:"What do you do",ar:"ما عملك"},{en:"Where do you work",ar:"أين تعمل"},{en:"job",ar:"وظيفة"},{en:"he teaches",ar:"هو يُعلّم"},{en:"she works",ar:"هي تعمل"},
+    ] },
+
+  // ── الوحدة 8: استخدم الزمن المضارع (الروتين اليومي) ──
+  "pr-1": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c" },
+  "pr-2": { title: "روتينك اليومي", unitTitle: "استخدم الزمن المضارع", emoji: "🌅", color: "#fb923c" },
+  "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" , isPractice: true, practiceTitles: ["أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
+  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"] },
+  "pr-3": { title: "الكلمات الزمنية", unitTitle: "استخدم الزمن المضارع", emoji: "📅", color: "#fb923c" },
+  "pr-c": { title: "تحدي الوحدة",   unitTitle: "استخدم الزمن المضارع", emoji: "🏆", color: "#fb923c", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"eat",ar:"يأكل"},{en:"sleep",ar:"ينام"},{en:"walk",ar:"يمشي"},{en:"read",ar:"يقرأ"},{en:"watch",ar:"يشاهد"},
+      {en:"wake up",ar:"يستيقظ"},{en:"go",ar:"يذهب"},{en:"play",ar:"يلعب"},
+      {en:"always",ar:"دائماً"},{en:"usually",ar:"عادةً"},{en:"sometimes",ar:"أحياناً"},{en:"never",ar:"أبداً"},{en:"every day",ar:"كل يوم"},{en:"breakfast",ar:"فطور"},
+    ] },
+
+  // ── الوحدة 9: تحدث عن الطقس ──
+  "wt-1": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🌤️", color: "#f87171" },
+  "wt-2": { title: "صف الطقس",      unitTitle: "تحدث عن الطقس", emoji: "🌡️", color: "#f87171" },
+  "wt-p": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🏋️", color: "#f87171" , isPractice: true, practiceTitles: ["كلمات الطقس", "صف الطقس", "الفصول الأربعة"] },
+  "wt-t": { title: "كنز المراجعة",  unitTitle: "تحدث عن الطقس", emoji: "💎", color: "#f87171", isReview: true, reviewTitles: ["كلمات الطقس", "صف الطقس"] },
+  "wt-3": { title: "الفصول الأربعة", unitTitle: "تحدث عن الطقس", emoji: "🍂", color: "#f87171" },
+  "wt-c": { title: "تحدي الوحدة",   unitTitle: "تحدث عن الطقس", emoji: "🏆", color: "#f87171", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"sunny",ar:"مشمس"},{en:"rainy",ar:"ممطر"},{en:"cloudy",ar:"غائم"},{en:"windy",ar:"عاصف"},{en:"snowy",ar:"مثلج"},
+      {en:"hot",ar:"حار"},{en:"cold",ar:"بارد"},{en:"weather",ar:"طقس"},{en:"today",ar:"اليوم"},
+      {en:"spring",ar:"ربيع"},{en:"summer",ar:"صيف"},{en:"autumn",ar:"خريف"},{en:"winter",ar:"شتاء"},{en:"season",ar:"فصل"},
+    ] },
+
+  // ── الوحدة 10: تحدث عن حيواناتك الأليفة ──
+  "pet-1": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐾", color: "#a78bfa" },
+  "pet-2": { title: "صف حيوانك",       unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐱", color: "#a78bfa" },
+  "pet-p": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏋️", color: "#a78bfa" , isPractice: true, practiceTitles: ["أسماء الحيوانات", "صف حيوانك", "العناية بالحيوان"] },
+  "pet-t": { title: "كنز المراجعة",    unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "💎", color: "#a78bfa", isReview: true, reviewTitles: ["أسماء الحيوانات", "صف حيوانك"] },
+  "pet-3": { title: "العناية بالحيوان", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🦴", color: "#a78bfa" },
+  "pet-c": { title: "تحدي الوحدة",     unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏆", color: "#a78bfa", isUnitFinal: true, isChallenge: true,
+    vocab: [
+      {en:"cat",ar:"قطة"},{en:"dog",ar:"كلب"},{en:"bird",ar:"طائر"},{en:"fish",ar:"سمكة"},{en:"rabbit",ar:"أرنب"},
+      {en:"fluffy",ar:"كثيف الفرو"},{en:"playful",ar:"مرح"},{en:"cute",ar:"لطيف"},{en:"gentle",ar:"لطيف"},
+      {en:"feed",ar:"يُطعم"},{en:"walk",ar:"يمشّي"},{en:"play",ar:"يلعب"},{en:"vet",ar:"طبيب بيطري"},{en:"pet",ar:"حيوان أليف"},
     ] },
 };
 
@@ -126,6 +165,12 @@ const JUMP_MAP: Record<string, { unitTitle: string; color: string; prevTitles: s
   // القفز لوحدة 8 = اختبار وحدات 1-7
   "unit-present": { unitTitle: "استخدم الزمن المضارع", color: "#fb923c",
     prevTitles: ["جمل كاملة", "عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
+  // القفز لوحدة 9 = اختبار وحدات 1-8
+  "unit-weather": { unitTitle: "تحدث عن الطقس", color: "#f87171",
+    prevTitles: ["عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "اسأل عن المهن", "أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
+  // القفز لوحدة 10 = اختبار وحدات 1-9
+  "unit-pets": { unitTitle: "تحدث عن حيواناتك الأليفة", color: "#a78bfa",
+    prevTitles: ["عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "اسأل عن المهن", "روتينك اليومي", "كلمات الطقس", "صف الطقس", "الفصول الأربعة"] },
 };
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
@@ -139,14 +184,45 @@ function lightColor(hex: string): string {
   } catch { return hex; }
 }
 
-function speak(text: string, rate = 0.85) {
+// أصوات متعددة — لكن صوت ثابت لكل سؤال (يُمرّر voiceKey)
+let _cachedVoices: SpeechSynthesisVoice[] = [];
+function loadVoices() {
+  if (!window.speechSynthesis) return;
+  const all = window.speechSynthesis.getVoices();
+  const preferred = all.filter(v =>
+    /en[-_]/i.test(v.lang) &&
+    /(female|woman|girl|child|kid|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
+  );
+  const englishVoices = all.filter(v => /en[-_]/i.test(v.lang));
+  _cachedVoices = (preferred.length >= 2 ? preferred : englishVoices).slice(0, 6);
+}
+if (typeof window !== "undefined" && window.speechSynthesis) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+// حوّل نصاً لرقم ثابت (عشان نفس السؤال = نفس الصوت)
+function _hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+
+function speak(text: string, rate = 0.85, voiceKey?: string) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
+  if (_cachedVoices.length === 0) loadVoices();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US"; u.rate = rate;
+  if (_cachedVoices.length > 0) {
+    // الصوت ثابت لكل سؤال (حسب voiceKey)، أو حسب النص إن لم يُمرّر
+    const idx = _hashStr(voiceKey ?? text) % _cachedVoices.length;
+    u.voice = _cachedVoices[idx];
+    u.pitch = 1.12;
+  }
   window.speechSynthesis.speak(u);
 }
-function speakSlow(text: string) { speak(text, 0.5); }
+function speakSlow(text: string, voiceKey?: string) { speak(text, 0.5, voiceKey); }
 
 // مؤثرات صوتية لفتح الكنز
 function playChestOpen() {
@@ -279,7 +355,7 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   const [remaining, setRemaining] = useState(wordBank);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(()=>{ const t = setTimeout(()=>speak(ex.correctAnswer), 350); return ()=>clearTimeout(t); },[]);
+  useEffect(()=>{ const t = setTimeout(()=>speak(ex.correctAnswer, 0.85, ex.id), 350); return ()=>clearTimeout(t); },[]);
 
   const add = (item:{w:string;i:number}, idx:number) => {
     if (submitted) return;
@@ -298,42 +374,65 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
-      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:20 }}>
-        {/* عادي */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer)}
-          style={{ width:72, height:72, borderRadius:20, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        </motion.button>
-        {/* سلحفاة بطيء */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer)}
-          style={{ width:58, height:58, borderRadius:18, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span style={{ fontSize:28 }}>🐢</span>
-        </motion.button>
+      {/* شارة كلمة جديدة + التعليمة */}
+      <div style={{ textAlign:"center", marginBottom:20 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
+          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"white" }}>✦</span>
+        </div>
+        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
+          رتّب الترجمة الصحيحة
+        </div>
       </div>
-      {/* Answer area */}
-      <div style={{ minHeight:52, background:"hsl(var(--background))", border:`2px solid hsl(var(--border))`, borderRadius:14, padding:"10px 14px", display:"flex", flexWrap:"wrap", gap:8, marginBottom:14 }}>
-        {selected.length === 0 && <span style={{ color:"hsl(var(--muted-foreground))", fontSize:13, margin:"auto" }}>اضغط على الكلمات لترتيبها هنا</span>}
+
+      {/* فقاعة الكلام + زر الصوت */}
+      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:10, marginBottom:24 }}>
+        <button onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
+          style={{ display:"flex", alignItems:"center", gap:10, background:"hsl(var(--card))", border:`2px solid hsl(var(--border))`, borderRadius:16, padding:"12px 18px", cursor:"pointer", boxShadow:"0 2px 0 hsl(var(--border))" }}>
+          <span style={{ width:30, height:30, borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          </span>
+          <span style={{ fontSize:17, fontWeight:800, color:"hsl(var(--foreground))" }}>{ex.correctAnswer}</span>
+        </button>
+        <button onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
+          style={{ width:46, height:46, borderRadius:14, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <span style={{ fontSize:22 }}>🐢</span>
+        </button>
+      </div>
+
+      {/* منطقة الإجابة — سطران بخطوط */}
+      <div style={{ minHeight:84, marginBottom:24, borderTop:"2px solid hsl(var(--border))", borderBottom:"2px solid hsl(var(--border))", padding:"12px 4px", display:"flex", flexWrap:"wrap", gap:8, alignContent:"flex-start" }}>
+        {selected.length === 0 && <span style={{ color:"hsl(var(--muted-foreground))", fontSize:13, margin:"auto", opacity:0.6 }}>اضغط على الكلمات بالأسفل لترتيبها</span>}
         {selected.map((item,i)=>(
-          <motion.button key={item.i} initial={{scale:0.8}} animate={{scale:1}} onClick={()=>remove(i)}
-            style={{ background:`${color}20`, border:`1.5px solid ${color}60`, borderRadius:8, padding:"6px 12px", fontSize:15, fontWeight:700, cursor:"pointer" }}>
+          <motion.button key={item.i} initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} onClick={()=>remove(i)} disabled={submitted}
+            style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:12, padding:"8px 16px", fontSize:16, fontWeight:700, cursor:submitted?"default":"pointer", boxShadow:"0 2px 0 hsl(var(--border))", color:"hsl(var(--foreground))" }}>
             {item.w}
           </motion.button>
         ))}
       </div>
-      {/* Word bank */}
-      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:20, justifyContent:"center" }}>
+
+      {/* بنك الكلمات */}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:10, marginBottom:8, justifyContent:"center" }}>
         {remaining.map((item,i)=>(
-          <motion.button key={item.i} initial={{opacity:0}} animate={{opacity:1}} onClick={()=>add(item,i)}
-            
-            style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:8, padding:"6px 14px", fontSize:15, fontWeight:700, cursor:"pointer" }}>
+          <motion.button key={item.i} initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} whileTap={{scale:0.94}} onClick={()=>add(item,i)} disabled={submitted}
+            style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:12, padding:"9px 18px", fontSize:16, fontWeight:700, cursor:submitted?"default":"pointer", boxShadow:"0 3px 0 hsl(var(--border))", color:"hsl(var(--foreground))" }}>
             {item.w}
           </motion.button>
         ))}
       </div>
-      {!submitted && selected.length > 0 && (
-        <button onClick={submit} style={{ width:"100%", padding:14, background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>تحقق ✓</button>
+
+      {/* زر تحقّق — رمادي ثم ملوّن */}
+      {!submitted && (
+        <button onClick={submit} disabled={selected.length===0}
+          style={{ width:"100%", padding:15, marginTop:20,
+            background:selected.length===0 ? "hsl(var(--muted))" : color,
+            color:selected.length===0 ? "hsl(var(--muted-foreground))" : "white",
+            border:"none", borderRadius:14, fontWeight:800, fontSize:16,
+            cursor:selected.length===0?"default":"pointer",
+            boxShadow:selected.length===0 ? "none" : `0 4px 0 ${color}99`,
+            transition:"all 0.2s" }}>
+          تحقّق
+        </button>
       )}
     </div>
   );
@@ -347,7 +446,7 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   const choose = (o: string) => {
     if (confirmed) return;
     setPicked(o);
-    speak(o);
+    speak(o, 0.85, ex.id);
   };
 
   const confirm = () => {
@@ -358,20 +457,24 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
-      <div style={{ textAlign:"center", fontSize:24, fontWeight:900, marginBottom:28, direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", marginBottom:22 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:10 }}>اختر الترجمة الصحيحة</div>
+        <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
+      </div>
       <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
         {(ex.options??[]).map(o=>{
-          const isCorrect = o===ex.correctAnswer, isPicked = o===picked;
-          let bg = "hsl(var(--card))", border = "2px solid hsl(var(--border))";
-          if (isPicked && !confirmed) { bg=`${color}20`; border=`2px solid ${color}`; }
+          const isPicked = o===picked;
+          let bg = "hsl(var(--card))", border = "2px solid hsl(var(--border))", shadow = "0 3px 0 hsl(var(--border))";
+          if (isPicked && !confirmed) { bg=`${color}14`; border=`2px solid ${color}`; shadow=`0 3px 0 ${color}`; }
           return (
-            <motion.button key={o} whileTap={{scale:0.97}} onClick={()=>choose(o)}
-              style={{ padding:"16px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
-                textAlign:"left", direction:"ltr", background:bg, border,
-                display:"flex", alignItems:"center", justifyContent:"space-between",
-                minHeight:56 }}>
+            <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={confirmed}
+              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
+                textAlign:"left", direction:"ltr", background:bg, border, boxShadow:shadow,
+                display:"flex", alignItems:"center", justifyContent:"space-between", minHeight:54,
+                color:"hsl(var(--foreground))" }}>
               <span>{o}</span>
-              <span onClick={e=>{e.stopPropagation();speak(o);}}
+              <span onClick={e=>{e.stopPropagation();speak(o, 0.85, ex.id);}}
                 style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
             </motion.button>
           );
@@ -379,8 +482,11 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       </div>
       {!confirmed && (
         <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed", transition:"all 0.2s" }}>
-          تحقق ✓
+          style={{ width:"100%", padding:15, marginTop:8,
+            background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))",
+            border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"default",
+            boxShadow:picked?`0 4px 0 ${color}99`:"none", transition:"all 0.2s" }}>
+          تحقّق
         </button>
       )}
     </div>
@@ -392,7 +498,7 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   const [picked, setPicked] = useState<string|null>(null);
   useEffect(()=>{
     // تشغيل تلقائي موثوق — ننتظر جاهزية المحرك
-    const play = () => speak(ex.listenSentence!);
+    const play = () => speak(ex.listenSentence!, 0.85, ex.id);
     const t = setTimeout(play, 400);
     return ()=>clearTimeout(t);
   },[]);
@@ -405,18 +511,20 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
 
   return (
     <div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>استمع واختر ما سمعته</div>
       {/* Audio buttons: عادي + سلحفاة بطيء */}
-      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:28 }}>
+      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:14 }}>
         {/* عادي — كبير */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!)}
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!, 0.85, ex.id)}
           style={{ width:96, height:96, borderRadius:24, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 24px ${color}55` }}>
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 0 ${color}99, 0 8px 22px ${color}40` }}>
           <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
         {/* سلحفاة — بطيء */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!)}
-          style={{ width:72, height:72, borderRadius:20, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!, ex.id)}
+          style={{ width:72, height:72, borderRadius:20, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 4px 0 ${color}30` }}>
           <span style={{ fontSize:34 }}>🐢</span>
         </motion.button>
       </div>
@@ -424,11 +532,13 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
+          const bc = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
           return (
-            <motion.button key={o} whileTap={{scale:0.97}} onClick={()=>choose(o)}
-              style={{ padding:"16px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:56,
-                background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
-                border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
+            <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={!!picked}
+              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:54,
+                color:"hsl(var(--foreground))",
+                background:isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))"),
+                border:`2px solid ${bc}`, boxShadow:`0 3px 0 ${bc==="hsl(var(--border))"?"hsl(var(--border))":bc}` }}>
               {o}
             </motion.button>
           );
@@ -438,32 +548,56 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   );
 }
 
-// ── Picture Match ─────────────────────────────────────────────────────────────
+// ── Picture Match (ستايل احترافي: بطاقات + أرقام + نص) ───────────────────────
+const PIC_AR: Record<string,string> = {
+  tea:"شاي", coffee:"قهوة", water:"ماء", juice:"عصير", milk:"حليب",
+};
 function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
   const [picked, setPicked] = useState<string|null>(null);
 
   const choose = (label: string) => {
     if (picked) return;
-    speak(label);
+    speak(label, 0.85, ex.id);
     setPicked(label);
     onAnswer(label===ex.correctAnswer, label);
   };
 
+  const arabicWord = PIC_AR[ex.word ?? ""] ?? ex.arabic ?? ex.word;
+
   return (
     <div>
-      <div style={{ textAlign:"center", marginBottom:24 }}>
-        <W word={ex.word!} color={color}/>
+      {/* شارة كلمة جديدة + السؤال */}
+      <div style={{ textAlign:"center", marginBottom:26 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:10 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
+          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11 }}>✦</span>
+        </div>
+        <div style={{ fontSize:21, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
+          أي واحدة من هذه "{arabicWord}"؟
+        </div>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-        {(ex.pictureOptions??[]).map(o=>{
+
+      {/* البطاقات */}
+      <div style={{ display:"grid", gridTemplateColumns:(ex.pictureOptions?.length??4)===3?"1fr 1fr 1fr":"1fr 1fr", gap:12 }}>
+        {(ex.pictureOptions??[]).map((o,i)=>{
           const isCorrect=o.label===ex.correctAnswer, isPicked=o.label===picked;
+          const borderC = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
+          const bgC = isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))");
           return (
-            <motion.button key={o.label} whileTap={{scale:0.95}} onClick={()=>choose(o.label)}
-              style={{ padding:"16px 10px", borderRadius:16, cursor:picked?"default":"pointer",
-                display:"flex", flexDirection:"column", alignItems:"center", gap:10,
-                background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
-                border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <div style={{ width:64, height:64 }}><DrinkArt label={o.label}/></div>
+            <motion.button key={o.label} whileTap={{scale:0.96}} onClick={()=>choose(o.label)}
+              style={{ position:"relative", padding:"16px 8px 10px", borderRadius:16, cursor:picked?"default":"pointer",
+                display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:140,
+                background:bgC, border:`2px solid ${borderC}`,
+                boxShadow:isPicked||(picked&&isCorrect)?`0 3px 0 ${borderC}`:"0 2px 0 hsl(var(--border))" }}>
+              {/* الصورة */}
+              <div style={{ width:74, height:74, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <DrinkArt label={o.label}/>
+              </div>
+              {/* النص الإنجليزي + الرقم */}
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", width:"100%", padding:"0 4px", marginTop:"auto" }}>
+                <span style={{ width:22, height:22, borderRadius:6, border:"1.5px solid hsl(var(--border))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"hsl(var(--muted-foreground))" }}>{i+1}</span>
+                <span style={{ fontSize:14, fontWeight:800, color:"hsl(var(--foreground))" }}>{o.label}</span>
+              </div>
             </motion.button>
           );
         })}
@@ -478,7 +612,7 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   const [confirmed, setConfirmed] = useState(false);
   const parts = (ex.blankSentence ?? "").split("___");
 
-  useEffect(()=>{ const t=setTimeout(()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer)), 300); return ()=>clearTimeout(t); },[]);
+  useEffect(()=>{ const t=setTimeout(()=>speak((ex.blankSentence??"").replace("___", ex.correctAnswer), 0.85, ex.id), 300); return ()=>clearTimeout(t); },[]);
 
   const confirm = () => {
     if (!picked || confirmed) return;
@@ -488,20 +622,22 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>أكمل الفراغ بالكلمة الصحيحة</div>
       {/* Audio */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:24 }}>
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer))}
-          style={{ width:64, height:64, borderRadius:18, background:color, border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), 0.85, ex.id)}
+          style={{ width:64, height:64, borderRadius:18, background:color, border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 0 ${color}99, 0 7px 18px ${color}40` }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer))}
-          style={{ width:52, height:52, borderRadius:16, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), ex.id)}
+          style={{ width:52, height:52, borderRadius:16, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 3px 0 ${color}30` }}>
           <span style={{ fontSize:26 }}>🐢</span>
         </motion.button>
       </div>
 
       {/* Sentence with blank */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:24, fontWeight:800, direction:"ltr", flexWrap:"wrap" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:24, fontWeight:800, direction:"ltr", flexWrap:"wrap", color:"hsl(var(--foreground))" }}>
         <span>{parts[0]}</span>
         <span style={{ minWidth:90, borderBottom:`3px solid ${picked?color:"hsl(var(--border))"}`, textAlign:"center", color:picked?color:"transparent", paddingBottom:2 }}>{picked ?? "__"}</span>
         <span>{parts[1]}</span>
@@ -510,17 +646,22 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       {/* Options */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:20 }}>
         {(ex.blankOptions??[]).map(o=>(
-          <motion.button key={o} whileTap={{scale:0.95}} onClick={()=>!confirmed && setPicked(o)}
-            style={{ padding:"12px 22px", borderRadius:14, fontSize:16, fontWeight:800, direction:"ltr", cursor:confirmed?"default":"pointer",
-              background: picked===o ? `${color}25` : "hsl(var(--card))",
-              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}` }}>{o}</motion.button>
+          <motion.button key={o} whileTap={{scale:0.96}} onClick={()=>!confirmed && setPicked(o)} disabled={confirmed}
+            style={{ padding:"11px 22px", borderRadius:12, fontSize:16, fontWeight:800, direction:"ltr", cursor:confirmed?"default":"pointer",
+              color:"hsl(var(--foreground))",
+              background: picked===o ? `${color}14` : "hsl(var(--card))",
+              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}`,
+              boxShadow: `0 3px 0 ${picked===o ? color : "hsl(var(--border))"}` }}>{o}</motion.button>
         ))}
       </div>
 
       {!confirmed && (
         <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed" }}>
-          تحقق ✓
+          style={{ width:"100%", padding:15, marginTop:8,
+            background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))",
+            border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"default",
+            boxShadow:picked?`0 4px 0 ${color}99`:"none", transition:"all 0.2s" }}>
+          تحقّق
         </button>
       )}
     </div>
@@ -550,7 +691,7 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
   const tryMatch = (col:"en"|"ar", en:string) => {
     if (matched.has(en)) return;
-    if (col === "en") speak(en);
+    if (col === "en") speak(en, 0.85, ex.id);
     if (!selected) { setSelected({ col, en }); return; }
     if (selected.col === col) { setSelected({ col, en }); return; }
     if (selected.en === en) {
@@ -609,30 +750,57 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
 // ── Chest Open Screen (فتح صندوق الكنز) ──────────────────────────────────────
 function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBack:()=>void }) {
-  const [phase, setPhase] = useState<"shaking"|"opening"|"done">("shaking");
-  useEffect(()=>{
-    const t1 = setTimeout(()=>{ setPhase("opening"); playChestOpen(); }, 900);
-    const t2 = setTimeout(()=>{ playGemSparkle(); }, 1100);
-    const t3 = setTimeout(()=>setPhase("done"), 1400);
-    return ()=>{ clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  },[]);
-  const opened = phase !== "shaking";
+  const [phase, setPhase] = useState<"intro"|"shaking"|"opening"|"done">("intro");
 
-  // جواهر متنوعة تتطاير
-  const gems = ["💎","💰","⭐","💎","✨","💎","🪙"];
+  const startOpening = () => {
+    setPhase("shaking");
+    setTimeout(()=>{ setPhase("opening"); playChestOpen(); }, 800);
+    setTimeout(()=>{ playGemSparkle(); }, 1000);
+    setTimeout(()=>setPhase("done"), 1500);
+  };
+
+  const opened = phase === "opening" || phase === "done";
+  const gems = ["💎","💰","⭐","💎","✨","💎","🪙","💎"];
+
+  // ── لوحة تمهيدية قبل فتح الكنز ──
+  if (phase === "intro") {
+    return (
+      <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} className="flex-1 flex items-center justify-center">
+        <div className="text-center max-w-sm mx-auto p-6">
+          {/* صندوق مقفل ثلاثي الأبعاد */}
+          <motion.div
+            animate={{ y:[0,-6,0] }} transition={{ repeat:Infinity, duration:2 }}
+            style={{ width:200, height:170, margin:"0 auto 20px" }}>
+            <OrnateChest opened={false} color={color} glow={false}/>
+          </motion.div>
+          <h2 className="text-2xl font-bold mb-2" style={{ color }}>💎 كنز المراجعة</h2>
+          <p className="text-muted-foreground text-sm mb-2" style={{ direction:"rtl", lineHeight:1.7 }}>
+            هذا الكنز يحوي أسئلة من <b>الدروس السابقة</b> لتختبر ما تعلّمته.
+          </p>
+          <p className="text-sm mb-6" style={{ direction:"rtl", color, fontWeight:700 }}>
+            هل تستطيع الإجابة وفتح الكنز؟ 🗝️
+          </p>
+          <button onClick={startOpening}
+            style={{ width:"100%", padding:"14px", background:`linear-gradient(135deg, ${lightColor(color)}, ${color})`, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 5px 0 ${color}99` }}>
+            افتح الكنز 💎
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
       <div className="text-center max-w-sm mx-auto p-6">
-        <div style={{ position:"relative", width:220, height:220, margin:"0 auto 24px" }}>
+        <div style={{ position:"relative", width:240, height:240, margin:"0 auto 24px" }}>
           {/* وهج خلفي ينبض */}
           <AnimatePresence>
             {opened && (
-              <motion.div initial={{opacity:0,scale:0.3}} animate={{opacity:[0,1,0.7],scale:[0.3,1.3,1]}}
-                transition={{ duration:0.8 }}
+              <motion.div initial={{opacity:0,scale:0.3}} animate={{opacity:[0,1,0.7],scale:[0.3,1.4,1.1]}}
+                transition={{ duration:0.9 }}
                 style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <div style={{ width:200, height:200, borderRadius:"50%",
-                  background:`radial-gradient(circle, ${color}55 0%, ${color}20 40%, transparent 70%)` }}/>
+                <div style={{ width:230, height:230, borderRadius:"50%",
+                  background:`radial-gradient(circle, #fde68a88 0%, ${color}30 45%, transparent 72%)` }}/>
               </motion.div>
             )}
           </AnimatePresence>
@@ -640,13 +808,13 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
           {/* أشعة دوّارة */}
           <AnimatePresence>
             {opened && (
-              <motion.div initial={{opacity:0,rotate:0}} animate={{opacity:[0,0.6,0.3],rotate:90}}
-                transition={{ duration:1.2 }}
+              <motion.div initial={{opacity:0,rotate:0}} animate={{opacity:[0,0.7,0.35],rotate:120}}
+                transition={{ duration:1.4 }}
                 style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <svg width="220" height="220" viewBox="0 0 220 220">
-                  {[...Array(8)].map((_,i)=>(
-                    <rect key={i} x="108" y="20" width="4" height="50" fill={color} opacity="0.35"
-                      transform={`rotate(${i*45} 110 110)`}/>
+                <svg width="240" height="240" viewBox="0 0 240 240">
+                  {[...Array(12)].map((_,i)=>(
+                    <rect key={i} x="117" y="14" width="5" height="58" fill="#fbbf24" opacity="0.4"
+                      transform={`rotate(${i*30} 120 120)`}/>
                   ))}
                 </svg>
               </motion.div>
@@ -656,75 +824,121 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
           {/* الجواهر تنفجر للأعلى */}
           <AnimatePresence>
             {opened && gems.map((gem,i)=>{
-              const angle = (i/gems.length)*Math.PI - Math.PI/2; // قوس علوي
-              const dist = 70 + (i%3)*15;
+              const angle = (i/(gems.length-1))*Math.PI - Math.PI; // قوس علوي كامل
+              const dist = 80 + (i%3)*16;
               return (
                 <motion.div key={i}
-                  initial={{ x:110, y:130, opacity:0, scale:0, rotate:0 }}
+                  initial={{ x:120, y:140, opacity:0, scale:0, rotate:0 }}
                   animate={{
-                    x:110 + Math.cos(angle)*dist,
-                    y:130 + Math.sin(angle)*dist - 20,
-                    opacity:[0,1,1,0.9], scale:[0,1.3,1], rotate:(i%2?360:-360),
+                    x:120 + Math.cos(angle)*dist,
+                    y:140 + Math.sin(angle)*dist - 10,
+                    opacity:[0,1,1,0.9], scale:[0,1.4,1], rotate:(i%2?360:-360),
                   }}
-                  transition={{ delay:0.1+i*0.05, duration:1, type:"spring", stiffness:80 }}
-                  style={{ position:"absolute", fontSize:30, zIndex:5 }}>
+                  transition={{ delay:0.15+i*0.05, duration:1.1, type:"spring", stiffness:75 }}
+                  style={{ position:"absolute", fontSize:32, zIndex:5 }}>
                   {gem}
                 </motion.div>
               );
             })}
           </AnimatePresence>
 
-          {/* الصندوق */}
+          {/* الصندوق الفخم */}
           <motion.div
             animate={
-              phase==="shaking" ? { rotate:[0,-5,5,-5,5,0], x:[0,-2,2,-2,2,0] } :
-              phase==="opening" ? { scale:[1,1.15,1], y:[0,-8,0] } : {}
+              phase==="shaking" ? { rotate:[0,-6,6,-6,6,0], x:[0,-3,3,-3,3,0] } :
+              phase==="opening" ? { scale:[1,1.18,1], y:[0,-10,0] } : {}
             }
-            transition={ phase==="shaking" ? { repeat:Infinity, duration:0.4 } : { duration:0.4 } }
-            style={{ position:"absolute", bottom:14, left:"50%", transform:"translateX(-50%)", zIndex:3 }}>
-            <svg width="130" height="120" viewBox="0 0 130 120">
-              <defs>
-                <linearGradient id="cBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a16207"/><stop offset="100%" stopColor="#5c3410"/></linearGradient>
-                <linearGradient id="cLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b45309"/><stop offset="100%" stopColor="#78350f"/></linearGradient>
-                <radialGradient id="cGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
-              </defs>
-              {/* توهج داخلي عند الفتح */}
-              {opened && <ellipse cx="65" cy="58" rx="40" ry="20" fill="url(#cGlow)"/>}
-              {/* جسم الصندوق */}
-              <rect x="20" y="56" width="90" height="50" rx="7" fill="url(#cBody)" stroke="#4a2a0a" strokeWidth="1.5"/>
-              {/* ألواح خشبية */}
-              <line x1="42" y1="56" x2="42" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
-              <line x1="65" y1="56" x2="65" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
-              <line x1="88" y1="56" x2="88" y2="106" stroke="#4a2a0a" strokeWidth="1" opacity="0.4"/>
-              {/* شريط معدني سفلي */}
-              <rect x="20" y="70" width="90" height="9" fill="#92400e"/>
-              {/* القفل */}
-              <rect x="57" y="72" width="16" height="14" rx="3" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-              {/* الغطاء — يفتح للخلف */}
-              <motion.g
-                animate={opened ? { rotate:-112 } : { rotate:0 }}
-                transition={{ type:"spring", stiffness:90, damping:11 }}
-                style={{ transformOrigin:"20px 56px" }}>
-                <rect x="20" y="32" width="90" height="28" rx="9" fill="url(#cLid)" stroke="#4a2a0a" strokeWidth="1.5"/>
-                <rect x="20" y="48" width="90" height="9" fill="#92400e"/>
-                <ellipse cx="65" cy="38" rx="32" ry="5" fill="white" opacity="0.18"/>
-              </motion.g>
-            </svg>
+            transition={ phase==="shaking" ? { repeat:Infinity, duration:0.4 } : { duration:0.45 } }
+            style={{ position:"absolute", bottom:20, left:"50%", transform:"translateX(-50%)", zIndex:3, width:210, height:180 }}>
+            <OrnateChest opened={opened} color={color} glow={opened}/>
           </motion.div>
         </div>
 
         <motion.div initial={{opacity:0,y:10}} animate={{opacity:phase==="done"?1:0,y:phase==="done"?0:10}} transition={{duration:0.4}}>
           <h2 className="text-2xl font-bold mb-2" style={{ color }}>🎉 أحسنت! فتحت الكنز</h2>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:`${color}20`, border:`2px solid ${color}50`, borderRadius:16, padding:"10px 24px", marginBottom:24 }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"linear-gradient(135deg,#38bdf8,#0ea5e9)", borderRadius:16, padding:"10px 24px", marginBottom:8, boxShadow:"0 4px 12px rgba(14,165,233,0.4)" }}>
             <span style={{ fontSize:24 }}>💎</span>
-            <span style={{ fontWeight:900, fontSize:20, color }}>+{xp} XP</span>
+            <span style={{ fontWeight:900, fontSize:20, color:"white" }}>+20 جوهرة</span>
           </div>
+          <div style={{ fontSize:13, color:"hsl(var(--muted-foreground))", marginBottom:20 }}>+{xp} XP</div>
           <button onClick={onBack} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>
             واصل الرحلة 🗺️
           </button>
         </motion.div>
       </div>
     </motion.div>
+  );
+}
+
+// ── صندوق كنز قديم فخم ثلاثي الأبعاد ──
+function OrnateChest({ opened, color, glow }: { opened:boolean; color:string; glow:boolean }) {
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 200 180">
+      <defs>
+        <linearGradient id="chestWoodFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a06a3a"/><stop offset="100%" stopColor="#7a4e28"/></linearGradient>
+        <linearGradient id="chestWoodTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b8814a"/><stop offset="100%" stopColor="#9a6838"/></linearGradient>
+        <linearGradient id="chestLidFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a06a3a"/><stop offset="100%" stopColor="#85572f"/></linearGradient>
+        <radialGradient id="chestGlow" cx="50%" cy="40%" r="60%"><stop offset="0%" stopColor="#fffbeb"/><stop offset="55%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
+      </defs>
+
+      {/* ظل أرضي */}
+      <ellipse cx="100" cy="166" rx="62" ry="9" fill="rgba(0,0,0,0.18)"/>
+
+      {/* ── جسم الصندوق (الصندوق السفلي) ── */}
+      {/* الجانب الأمامي */}
+      <rect x="44" y="96" width="112" height="60" rx="5" fill="url(#chestWoodFront)" stroke="#5c3a1c" strokeWidth="2.5"/>
+      {/* حافة علوية للصندوق (سماكة) */}
+      <rect x="44" y="92" width="112" height="12" rx="4" fill="url(#chestWoodTop)" stroke="#5c3a1c" strokeWidth="2"/>
+      {/* ألواح خشبية عمودية */}
+      <line x1="72" y1="104" x2="72" y2="153" stroke="#5c3a1c" strokeWidth="1.5" opacity="0.4"/>
+      <line x1="100" y1="104" x2="100" y2="153" stroke="#5c3a1c" strokeWidth="1.5" opacity="0.4"/>
+      <line x1="128" y1="104" x2="128" y2="153" stroke="#5c3a1c" strokeWidth="1.5" opacity="0.4"/>
+      {/* أحزمة معدنية أفقية */}
+      <rect x="44" y="118" width="112" height="9" fill="#6b4423" stroke="#4a2d15" strokeWidth="1"/>
+      <rect x="44" y="142" width="112" height="9" fill="#6b4423" stroke="#4a2d15" strokeWidth="1"/>
+      {/* أوتاد معدنية على الزوايا */}
+      {[52,148].map(x=>(<g key={x}>
+        <rect x={x-3} y="120" width="6" height="5" rx="1" fill="#8a6a48"/>
+        <rect x={x-3} y="144" width="6" height="5" rx="1" fill="#8a6a48"/>
+      </g>))}
+
+      {/* توهج وجواهر داخل الصندوق عند الفتح */}
+      {glow && <ellipse cx="100" cy="96" rx="50" ry="16" fill="url(#chestGlow)"/>}
+      {opened && (
+        <g>
+          <circle cx="80" cy="94" r="7" fill="#f472b6" stroke="#be185d" strokeWidth="1"/>
+          <circle cx="100" cy="90" r="8" fill="#38bdf8" stroke="#0369a1" strokeWidth="1"/>
+          <circle cx="120" cy="94" r="7" fill="#34d399" stroke="#047857" strokeWidth="1"/>
+          <rect x="92" y="88" width="9" height="9" rx="2" fill="#fbbf24" stroke="#b45309" strokeWidth="1" transform="rotate(45 96 92)"/>
+        </g>
+      )}
+
+      {/* القفل المعدني (يختفي عند الفتح) */}
+      {!opened && (
+        <g>
+          <rect x="91" y="106" width="18" height="20" rx="3" fill="#8a6a48" stroke="#4a2d15" strokeWidth="1.5"/>
+          <circle cx="100" cy="114" r="3.5" fill="#3a2410"/>
+          <rect x="98.5" y="114" width="3" height="7" fill="#3a2410"/>
+        </g>
+      )}
+
+      {/* ── الغطاء (يرتفع للأعلى عند الفتح) ── */}
+      <motion.g
+        animate={opened ? { y:-46, rotate:-8 } : { y:0, rotate:0 }}
+        transition={{ type:"spring", stiffness:90, damping:13 }}
+        style={{ transformOrigin:"100px 90px", transformBox:"fill-box" } as any}>
+        {/* الغطاء — شكل شبه منحرف مسطّح */}
+        <path d="M44 92 L44 74 Q44 66 54 66 L146 66 Q156 66 156 74 L156 92 Z" fill="url(#chestLidFront)" stroke="#5c3a1c" strokeWidth="2.5"/>
+        {/* السطح العلوي للغطاء */}
+        <path d="M50 68 L150 68 L156 76 L44 76 Z" fill="url(#chestWoodTop)" stroke="#5c3a1c" strokeWidth="1.5"/>
+        {/* حزام معدني على الغطاء */}
+        <rect x="44" y="80" width="112" height="8" fill="#6b4423" stroke="#4a2d15" strokeWidth="1"/>
+        {/* أوتاد على الغطاء */}
+        {[52,148].map(x=>(<rect key={"lp"+x} x={x-3} y="81.5" width="6" height="5" rx="1" fill="#8a6a48"/>))}
+        {/* لمعة */}
+        <path d="M55 72 L145 72" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none"/>
+      </motion.g>
+    </svg>
   );
 }
 
@@ -938,6 +1152,11 @@ export default function UnitLesson() {
   const [showStreakPop, setShowStreakPop] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone"|"jumpdone">("playing");
+  // لوحة تمهيدية لدرس الدمبل (practice) — تظهر مرة واحدة في البداية
+  const [showPracticeIntro, setShowPracticeIntro] = useState(false);
+  useEffect(() => {
+    if (meta?.isPractice && !isJumpMode) setShowPracticeIntro(true);
+  }, [meta, isJumpMode]);
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -976,6 +1195,20 @@ export default function UnitLesson() {
         seen.add(ex.id);
         return true;
       }).sort(() => Math.random() - 0.5).slice(0, 10);
+      } else if (meta.isPractice && meta.practiceTitles) {
+        // درس الدمبل — مراجعة شاملة: أسئلة متنوعة من كل دروس الوحدة
+        const pool: ExObj[] = [];
+        meta.practiceTitles.forEach((title: string) => {
+          pool.push(...getLessonMiniExercises(title, 4, 1));
+          pool.push(...getLessonMiniExercises(title, 4, 2));
+          pool.push(...getLessonMiniExercises(title, 3, 0));
+        });
+        const seen = new Set<string>();
+        raw = pool.filter(ex => {
+          if (seen.has(ex.id)) return false;
+          seen.add(ex.id);
+          return true;
+        }).sort(() => Math.random() - 0.5).slice(0, 10);
       } else if (meta.isReview && meta.reviewTitles) {
         // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
         raw = [];
@@ -1121,7 +1354,8 @@ export default function UnitLesson() {
         // خلصنا كل أسئلة الدرس الداخلي
         const isReview = !!meta.isReview;
         const isChallenge = !!meta.isChallenge;
-        const oneShot = isReview || isChallenge; // الكنز والتحدي = اختبار واحد
+        const isPractice = !!meta.isPractice;
+        const oneShot = isReview || isChallenge || isPractice; // الكنز والتحدي والدمبل = اختبار واحد
         const completedSub = oneShot ? 4 : subLesson + 1;
         const saveSub = Math.max(completedSub, maxSubReached);
         setMaxSubReached(saveSub);
@@ -1210,6 +1444,29 @@ export default function UnitLesson() {
           onRetry={()=>loadExercises(subLesson)}
           onBack={()=>setLocation("/roadmap")}/>}
 
+        {/* ── لوحة تمهيدية لدرس الدمبل (تمرين إضافي) ── */}
+        {showPracticeIntro && phase === "playing" && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}}
+            style={{ position:"fixed", inset:0, background:"hsl(var(--background))", zIndex:80, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+            <motion.div initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} className="text-center max-w-sm mx-auto">
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:12 }}>
+                <motion.div animate={{ y:[0,-8,0], rotate:[0,-5,5,0] }} transition={{ repeat:Infinity, duration:2 }} style={{ fontSize:64 }}>🏋️</motion.div>
+              </div>
+              <div style={{ display:"inline-block", background:`${meta.color}18`, color:meta.color, fontWeight:800, fontSize:13, padding:"5px 16px", borderRadius:20, marginBottom:14 }}>
+                🏋️ تمرين إضافي خاص بك
+              </div>
+              <h2 className="text-2xl font-bold mb-3" style={{ color:meta.color }}>قوِّ مهاراتك!</h2>
+              <p className="text-muted-foreground mb-7" style={{ direction:"rtl", lineHeight:1.8, fontSize:14.5 }}>
+                هذا التمرين الإضافي سيساعدك على اكتساب <b>كلمات جديدة</b> ويُمرّنك أكثر على <b>تكوين الجمل</b> في موضوع هذه الوحدة — حتى ترسّخ ما تعلّمته وتصبح أكثر إتقاناً. 💪
+              </p>
+              <button onClick={()=>setShowPracticeIntro(false)}
+                style={{ width:"100%", padding:"15px", background:`linear-gradient(135deg, ${lightColor(meta.color)}, ${meta.color})`, color:"white", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 5px 0 ${meta.color}99` }}>
+                هيا نبدأ التمرين 🚀
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
         {phase === "playing" && <>
           {/* Top bar */}
           <div style={{ display:"flex", alignItems:"center", gap:8, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
@@ -1230,11 +1487,12 @@ export default function UnitLesson() {
           {/* Main content area */}
           <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               {ex && (
-                <motion.div key={`${ex.id}-${queue.length}`}
-                  initial={{opacity:0,x:40}} animate={{opacity:1,x:0}}
-                  transition={{duration:0.22}}>
+                <motion.div key={ex.id}
+                  initial={{opacity:0,x:24}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-24,position:"absolute"}}
+                  transition={{duration:0.15,ease:"easeOut"}}
+                  style={{width:"100%"}}>
                   <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
                     {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":ex.type==="fill_blank"?"✏️ اتبع النمط":ex.type==="matching"?"🔗 الأزواج المتطابقة":"🖼️ طابق الصورة"}
                   </div>
@@ -1249,15 +1507,21 @@ export default function UnitLesson() {
             </AnimatePresence>
           </div>
 
-          {/* Streak popup — رسالة تحفيز */}
+          {/* Streak popup — رسالة تحفيز (موضع مناسب أعلى الشاشة) */}
           <AnimatePresence>
             {showStreakPop && (
               <motion.div
-                initial={{ opacity:0, scale:0.5, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.5 }}
-                style={{ position:"fixed", top:"30%", left:"50%", transform:"translateX(-50%)", zIndex:50,
-                  background:meta.color, color:"white", fontWeight:900, fontSize:20, padding:"12px 28px", borderRadius:20,
-                  whiteSpace:"nowrap", boxShadow:`0 8px 30px ${meta.color}70`, pointerEvents:"none" }}>
-                🔥 {streak} متتالية! رائع!
+                initial={{ opacity:0, scale:0.6, y:-10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.6, y:-10 }}
+                style={{ position:"fixed", top:"calc(76px + env(safe-area-inset-top, 0px))", left:0, right:0, zIndex:50,
+                  display:"flex", justifyContent:"center", pointerEvents:"none", padding:"0 16px" }}>
+                <div style={{
+                  background:`linear-gradient(135deg, ${lightColor(meta.color)}, ${meta.color})`,
+                  color:"white", fontWeight:900, fontSize:17, padding:"10px 22px", borderRadius:18,
+                  whiteSpace:"nowrap", boxShadow:`0 6px 22px ${meta.color}70`,
+                  border:"2px solid rgba(255,255,255,0.4)", display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:22 }}>🔥</span>
+                  <span>{streak} إجابات متتالية!</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

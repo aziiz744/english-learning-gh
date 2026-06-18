@@ -408,6 +408,12 @@ function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Treasure chest (improved) ───────────────────────────────────────────────
 function TreasureIcon({ unlocked }: { unlocked: boolean }) {
+  const woodFront = unlocked ? "#a06a3a" : "#4b5563";
+  const woodFrontD = unlocked ? "#7a4e28" : "#1f2937";
+  const woodTop = unlocked ? "#b8814a" : "#6b7280";
+  const band = unlocked ? "#6b4423" : "#374151";
+  const bandD = unlocked ? "#4a2d15" : "#1f2937";
+  const stud = unlocked ? "#8a6a48" : "#9ca3af";
   return (
     <div style={{ position: "relative", width: 76, height: 76 }}>
       {/* Ground shadow */}
@@ -417,79 +423,61 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
         background: "radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%)",
         filter: "blur(5px)",
       }}/>
-      <svg width="76" height="70" viewBox="0 0 76 70" fill="none">
+      <svg width="76" height="72" viewBox="0 0 76 72" fill="none">
         <defs>
-          <linearGradient id="chestBodyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#b45309" : "#4b5563"}/>
-            <stop offset="100%" stopColor={unlocked ? "#78350f" : "#1f2937"}/>
-          </linearGradient>
-          <linearGradient id="chestLidGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#d97706" : "#6b7280"}/>
-            <stop offset="100%" stopColor={unlocked ? "#92400e" : "#374151"}/>
-          </linearGradient>
-          <linearGradient id="chestBandGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#a16207" : "#9ca3af"}/>
-            <stop offset="100%" stopColor={unlocked ? "#713f12" : "#6b7280"}/>
-          </linearGradient>
           {unlocked && (
-            <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+            <radialGradient id="tGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#fef08a" stopOpacity="0.9"/>
               <stop offset="100%" stopColor="#eab308" stopOpacity="0"/>
             </radialGradient>
           )}
         </defs>
 
-        {/* Glow behind when unlocked */}
-        {unlocked && <ellipse cx="38" cy="38" rx="30" ry="28" fill="url(#glowGrad)" opacity="0.4"/>}
+        {unlocked && <ellipse cx="38" cy="40" rx="30" ry="22" fill="url(#tGlow)" opacity="0.45"/>}
 
-        {/* Chest body */}
-        <rect x="8" y="34" width="60" height="28" rx="5" fill="url(#chestBodyGrad)"/>
-        {/* Body side shadow */}
-        <rect x="8" y="34" width="60" height="8" rx="5" fill="black" opacity="0.2"/>
-        {/* Body highlight */}
-        <rect x="10" y="36" width="56" height="4" rx="3" fill="white" opacity="0.08"/>
+        {/* جسم الصندوق الأمامي */}
+        <rect x="10" y="40" width="56" height="26" rx="4" fill={woodFront} stroke={bandD} strokeWidth="1.5"/>
+        {/* الحافة العلوية */}
+        <rect x="10" y="37" width="56" height="7" rx="3" fill={woodTop} stroke={bandD} strokeWidth="1.2"/>
+        {/* ألواح عمودية */}
+        <line x1="28" y1="44" x2="28" y2="64" stroke={bandD} strokeWidth="1" opacity="0.4"/>
+        <line x1="48" y1="44" x2="48" y2="64" stroke={bandD} strokeWidth="1" opacity="0.4"/>
+        {/* حزام أفقي */}
+        <rect x="10" y="50" width="56" height="6" fill={band} stroke={bandD} strokeWidth="0.8"/>
+        {/* أوتاد */}
+        <rect x="15" y="51" width="4" height="4" rx="1" fill={stud}/>
+        <rect x="57" y="51" width="4" height="4" rx="1" fill={stud}/>
 
-        {/* Horizontal band */}
-        <rect x="8" y="44" width="60" height="7" fill="url(#chestBandGrad)"/>
-        <rect x="8" y="44" width="60" height="2" fill="white" opacity="0.15"/>
-
-        {/* Vertical band stripes */}
-        <rect x="34" y="34" width="8" height="28" fill="url(#chestBandGrad)" opacity="0.7"/>
-
-        {/* Lock */}
-        <rect x="31" y="40" width="14" height="11" rx="3" fill={unlocked ? "#fef08a" : "#9ca3af"}/>
-        <path d="M34 40 Q34 35 38 35 Q42 35 42 40" stroke={unlocked ? "#d97706" : "#6b7280"} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-        <circle cx="38" cy="45" r="2" fill={unlocked ? "#d97706" : "#4b5563"}/>
-
-        {/* Coins/gems inside when unlocked */}
+        {/* جواهر داخل الصندوق عند الفتح */}
         {unlocked && <>
-          <circle cx="24" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <circle cx="38" cy="38" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
-          <circle cx="52" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <text x="30" y="36" fontSize="11">💎</text>
+          <circle cx="28" cy="40" r="5" fill="#f472b6" stroke="#be185d" strokeWidth="0.8"/>
+          <circle cx="38" cy="37" r="6" fill="#38bdf8" stroke="#0369a1" strokeWidth="0.8"/>
+          <circle cx="48" cy="40" r="5" fill="#34d399" stroke="#047857" strokeWidth="0.8"/>
         </>}
 
-        {/* Lid — مفتوح إذا unlocked، مغلق إذا لا */}
-        {unlocked ? (
-          /* غطاء مفتوح (مائل للخلف) */
-          <g transform="rotate(-105 12 22)">
-            <rect x="8" y="12" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
-            <rect x="8" y="24" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
-            <ellipse cx="38" cy="13" rx="22" ry="3" fill="white" opacity="0.12"/>
-          </g>
-        ) : (
-          <>
-            <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
-            <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
-            <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
-            <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
-          </>
-        )}
+        {/* القفل (مغلق فقط) */}
+        {!unlocked && <>
+          <rect x="32" y="46" width="12" height="13" rx="2.5" fill={stud} stroke={bandD} strokeWidth="1"/>
+          <circle cx="38" cy="51" r="2.5" fill="#1f2937"/>
+        </>}
 
-        {/* Sparkles when unlocked */}
+        {/* الغطاء — يرتفع للأعلى إذا مفتوح */}
+        <g transform={unlocked ? "translate(0,-30) rotate(-6 38 37)" : ""} style={{ transition: "transform 0.4s" }}>
+          {/* واجهة الغطاء */}
+          <path d="M10 37 L10 24 Q10 19 16 19 L60 19 Q66 19 66 24 L66 37 Z" fill={woodFront} stroke={bandD} strokeWidth="1.5"/>
+          {/* سطح علوي */}
+          <path d="M15 20 L61 20 L66 26 L10 26 Z" fill={woodTop} stroke={bandD} strokeWidth="1"/>
+          {/* حزام على الغطاء */}
+          <rect x="10" y="29" width="56" height="5" fill={band} stroke={bandD} strokeWidth="0.8"/>
+          {/* أوتاد على الغطاء */}
+          <rect x="15" y="30" width="4" height="3.5" rx="1" fill={stud}/>
+          <rect x="57" y="30" width="4" height="3.5" rx="1" fill={stud}/>
+        </g>
+
+        {/* بريق عند الفتح */}
         {unlocked && <>
-          <text x="10" y="16" fontSize="10">✨</text>
-          <text x="58" y="14" fontSize="9">⭐</text>
+          <text x="12" y="20" fontSize="10">✨</text>
+          <text x="58" y="18" fontSize="9">⭐</text>
         </>}
       </svg>
     </div>
@@ -986,6 +974,34 @@ export default function Roadmap() {
 
   useEffect(() => { loadProgress(); }, [loadProgress]);
 
+  // عدد الجواهر = مجموع مكافآت الكنوز والتحديات المكتملة
+  const gemCount = (() => {
+    let g = 0;
+    chapter.units.forEach(u => {
+      u.lessons.forEach(l => {
+        const done = (progress[l.id] ?? 0) >= 4;
+        if (!done) return;
+        if (l.type === "treasure") g += 20;      // كنز المراجعة
+        else if (l.type === "challenge") g += 15; // تحدي الوحدة
+        else g += 5;                              // درس عادي
+      });
+    });
+    return g;
+  })();
+
+  const isPro = (user as any)?.isPro ?? false;
+
+  // جلب الستريك من user_stats
+  const [streak, setStreak] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_stats").select("streak").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data) setStreak(data.streak ?? 0); });
+  }, [user]);
+
+  // أي شارة مضغوطة لعرض توضيحها
+  const [statInfo, setStatInfo] = useState<null | "gems" | "hearts" | "streak" | "lang">(null);
+
   // أعد تحميل التقدم عند العودة للصفحة (بعد اختبار القفز مثلاً)
   useEffect(() => {
     const onFocus = () => loadProgress();
@@ -1024,11 +1040,109 @@ export default function Roadmap() {
     <Layout>
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
-          .roadmap-sticky-header { top: 8px; }
+          .roadmap-sticky-header { top: 46px; }
+          .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
           @media (max-width: 767px) {
-            .roadmap-sticky-header { top: calc(58px + env(safe-area-inset-top, 0px)); }
+            .roadmap-stats-bar {
+              top: calc(56px + env(safe-area-inset-top, 0px));
+              padding-top: 8px; padding-bottom: 6px;
+            }
+            .roadmap-sticky-header { top: calc(98px + env(safe-area-inset-top, 0px)); }
           }
         `}</style>
+
+        {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
+        <div className="roadmap-stats-bar" style={{
+          position: "sticky", zIndex: 31, display: "flex", justifyContent: "flex-start",
+          alignItems: "center", gap: 16, padding: "6px 16px 0",
+        }}>
+          {/* القلوب */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("hearts");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            background: "none", border: "none", padding: 0,
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+              <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
+                fill={isPro ? "#3b82f6" : "#ef4444"} stroke={isPro ? "#1d4ed8" : "#b91c1c"} strokeWidth="1"/>
+            </svg>
+            <span style={{ color: isPro ? "#3b82f6" : "#ef4444", fontWeight: 900, fontSize: 15 }}>{isPro ? "∞" : "5"}</span>
+          </button>
+
+          {/* الجواهر */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("gems");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            background: "none", border: "none", padding: 0,
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+              <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#38bdf8" stroke="#0284c7" strokeWidth="1"/>
+              <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#7dd3fc" opacity="0.9"/>
+              <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#0ea5e9" opacity="0.7"/>
+              <path d="M2 9 H22" stroke="#0284c7" strokeWidth="0.8"/>
+            </svg>
+            <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 15 }}>{gemCount}</span>
+          </button>
+
+          {/* الستريك */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("streak");}} style={{
+            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
+            background: "none", border: "none", padding: 0,
+          }}>
+            <span style={{ color: "#f97316", fontWeight: 900, fontSize: 15 }}>{streak}</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+              <path d="M12 2 C12 6 8 8 8 13 C8 16 10 19 12 19 C14 19 16 16 16 13 C16 11 15 10 15 10 C15 13 13 14 13 12 C13 9 12 6 12 2 Z" fill="#f97316" stroke="#ea580c" strokeWidth="0.8"/>
+              <path d="M12 19 C10.5 19 9.5 17 9.5 15 C9.5 17 11 18 12 18 C13 18 14.5 17 14.5 15 C14.5 17 13.5 19 12 19 Z" fill="#fbbf24"/>
+            </svg>
+          </button>
+
+          {/* علم أمريكا */}
+          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("lang");}} style={{
+            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            background: "none", border: "none", padding: 0,
+          }}>
+            <span style={{ color: "hsl(var(--foreground))", fontWeight: 900, fontSize: 15 }}>10</span>
+            <svg width="26" height="18" viewBox="0 0 26 18" style={{ borderRadius: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>
+              <rect width="26" height="18" fill="#b22234"/>
+              {[1,3,5,7,9,11].map(i=>(<rect key={i} y={i*1.38} width="26" height="1.38" fill="white"/>))}
+              <rect width="11" height="9.7" fill="#3c3b6e"/>
+              {[...Array(15)].map((_,i)=>(<circle key={i} cx={1.4+(i%5)*2} cy={1.4+Math.floor(i/5)*2.8} r="0.55" fill="white"/>))}
+            </svg>
+          </button>
+        </div>
+
+        {/* ── نافذة توضيح البيانات ── */}
+        <AnimatePresence>
+          {statInfo && (
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+              onClick={()=>setStatInfo(null)}
+              style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:70, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+              <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+                onClick={e=>e.stopPropagation()}
+                style={{ background:"hsl(var(--card))", borderRadius:22, padding:"26px 22px", maxWidth:320, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
+                <div style={{ fontSize:48, marginBottom:12 }}>
+                  {statInfo==="streak" ? "🔥" : statInfo==="gems" ? "💎" : statInfo==="lang" ? "🇺🇸" : "❤️"}
+                </div>
+                <h3 style={{ fontWeight:900, fontSize:18, marginBottom:8, color:"hsl(var(--foreground))" }}>
+                  {statInfo==="streak" ? "سلسلة التعلّم" : statInfo==="gems" ? "جواهرك" : statInfo==="lang" ? "لغة التعلّم" : "قلوب التمارين"}
+                </h3>
+                <p style={{ fontSize:14, color:"hsl(var(--muted-foreground))", lineHeight:1.7, direction:"rtl" }}>
+                  {statInfo==="streak"
+                    ? `لقد حافظت على تواصلك في التعلّم لمدة ${streak} ${streak===1?"يوم":"أيام"}! استمر يومياً لتكبر سلسلتك 🔥`
+                    : statInfo==="gems"
+                    ? `لديك ${gemCount} جوهرة 💎 اجمعها من فتح الكنوز وإكمال التحديات والدروس. قريباً ستتمكن من استخدامها!`
+                    : statInfo==="lang"
+                    ? "أنت تتعلّم اللغة الإنجليزية 🇺🇸 — لغة عالمية تفتح لك أبواب العمل والسفر والمعرفة. واصل التقدّم!"
+                    : isPro
+                    ? "لديك قلوب لا نهائية ♾️ بصفتك عضو Pro — تدرّب بلا حدود!"
+                    : "لديك 5 قلوب للتمارين ❤️ كل إجابة خاطئة تكلّفك قلباً. اشترك في Pro للحصول على قلوب لا نهائية."}
+                </p>
+                <button onClick={()=>setStatInfo(null)}
+                  style={{ marginTop:18, width:"100%", padding:"12px", background:activeSection.color, color:"white", border:"none", borderRadius:12, fontWeight:800, fontSize:15, cursor:"pointer" }}>
+                  حسناً
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
         <motion.div
