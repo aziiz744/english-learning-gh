@@ -1,8 +1,8 @@
 import { Link, useLocation } from "wouter";
 import {
-  LayoutDashboard, Route, Trophy, Flame,
-  Shield, LogIn, LogOut, User, Menu, X, Crown, GraduationCap,
-  Sparkles, MessageCircle, BookMarked, MoreHorizontal, ChevronRight, Activity,
+  Route, Trophy, Flame,
+  Shield, LogIn, LogOut, User, Menu, X,
+  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const BOTTOM_NAV = [
   { name: "الخارطة",  href: "/",          icon: Route },
   { name: "الإنجازات", href: "/achievements", icon: Trophy },
-  { name: "معلم",      href: "/teacher",    icon: MessageCircle },
+  { name: "القراءة",   href: "/reading",    icon: BookMarked },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
 
@@ -26,8 +26,6 @@ const navigation = [
   { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
-  { name: "القواعد",        href: "/grammar",     icon: GraduationCap },
-  { name: "تحدّث مع معلم",  href: "/teacher",     icon: MessageCircle },
   { name: "عضوية Pro",      href: "/pro",         icon: Sparkles },
 ];
 
@@ -186,7 +184,6 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
   const moreItems = [
     { name: "الإنجازات",  href: "/achievements", icon: Trophy },
     { name: "القراءة",    href: "/reading",       icon: BookMarked },
-    { name: "القواعد",    href: "/grammar",       icon: GraduationCap },
     { name: "عضوية Pro",  href: "/pro",           icon: Sparkles },
   ];
   if (user?.isAdmin) moreItems.push({ name: "لوحة الإدارة", href: "/admin", icon: Shield });
