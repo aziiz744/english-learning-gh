@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
-const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; isPractice?: boolean; vocab?: {en:string;ar:string}[] }> = {
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; isPractice?: boolean; practiceTitles?: string[]; vocab?: {en:string;ar:string}[] }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-t": { title: "كنز المراجعة",     unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الكلمات الأساسية", "كلمات جديدة"] },
@@ -53,7 +53,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 4: تنقل في المطار ──
   "airport-1": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "✈️", color: "#0891b2" },
   "airport-2": { title: "جمل السفر",  unitTitle: "تنقل في المطار", emoji: "🧳", color: "#0891b2" },
-  "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" , isPractice: true },
+  "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" , isPractice: true, practiceTitles: ["في المطار", "جمل السفر", "في الطائرة"] },
   "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"] },
   "airport-3": { title: "في الطائرة", unitTitle: "تنقل في المطار", emoji: "💺", color: "#0891b2" },
   "airport-c": { title: "تحدي الوحدة", unitTitle: "تنقل في المطار", emoji: "🏆", color: "#0891b2", isUnitFinal: true, isChallenge: true,
@@ -66,7 +66,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 5: استخدم الصفات لوصف الأسماء ──
   "adj-1": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e" },
   "adj-2": { title: "صف الأشياء",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🖌️", color: "#22a55e" },
-  "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" , isPractice: true },
+  "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" , isPractice: true, practiceTitles: ["الصفات الأساسية", "صف الأشياء", "قارن بين الأشياء"] },
   "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"] },
   "adj-3": { title: "قارن بين الأشياء", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "⚖️", color: "#22a55e" },
   "adj-c": { title: "تحدي الوحدة",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏆", color: "#22a55e", isUnitFinal: true, isChallenge: true,
@@ -79,7 +79,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 6: اطلب الطعام والمشروبات ──
   "food-1": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777" },
   "food-2": { title: "في المطعم",       unitTitle: "اطلب الطعام والمشروبات", emoji: "🍴", color: "#db2777" },
-  "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" , isPractice: true },
+  "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" , isPractice: true, practiceTitles: ["أسماء الأطعمة", "في المطعم", "المشروبات والحلويات"] },
   "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"] },
   "food-3": { title: "المشروبات والحلويات", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍰", color: "#db2777" },
   "food-c": { title: "تحدي الوحدة",     unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#db2777", isUnitFinal: true, isChallenge: true,
@@ -92,7 +92,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 7: استخدم الزمن المضارع للمهن ──
   "pj-1": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a" },
   "pj-2": { title: "جمل المضارع",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "✍️", color: "#16a34a" },
-  "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" , isPractice: true },
+  "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" , isPractice: true, practiceTitles: ["أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
   "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"] },
   "pj-3": { title: "اسأل عن المهن", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "❓", color: "#16a34a" },
   "pj-c": { title: "تحدي الوحدة",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true,
@@ -105,7 +105,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 8: استخدم الزمن المضارع (الروتين اليومي) ──
   "pr-1": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c" },
   "pr-2": { title: "روتينك اليومي", unitTitle: "استخدم الزمن المضارع", emoji: "🌅", color: "#fb923c" },
-  "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" , isPractice: true },
+  "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" , isPractice: true, practiceTitles: ["أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
   "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"] },
   "pr-3": { title: "الكلمات الزمنية", unitTitle: "استخدم الزمن المضارع", emoji: "📅", color: "#fb923c" },
   "pr-c": { title: "تحدي الوحدة",   unitTitle: "استخدم الزمن المضارع", emoji: "🏆", color: "#fb923c", isUnitFinal: true, isChallenge: true,
@@ -118,7 +118,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 9: تحدث عن الطقس ──
   "wt-1": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🌤️", color: "#f87171" },
   "wt-2": { title: "صف الطقس",      unitTitle: "تحدث عن الطقس", emoji: "🌡️", color: "#f87171" },
-  "wt-p": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🏋️", color: "#f87171" , isPractice: true },
+  "wt-p": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🏋️", color: "#f87171" , isPractice: true, practiceTitles: ["كلمات الطقس", "صف الطقس", "الفصول الأربعة"] },
   "wt-t": { title: "كنز المراجعة",  unitTitle: "تحدث عن الطقس", emoji: "💎", color: "#f87171", isReview: true, reviewTitles: ["كلمات الطقس", "صف الطقس"] },
   "wt-3": { title: "الفصول الأربعة", unitTitle: "تحدث عن الطقس", emoji: "🍂", color: "#f87171" },
   "wt-c": { title: "تحدي الوحدة",   unitTitle: "تحدث عن الطقس", emoji: "🏆", color: "#f87171", isUnitFinal: true, isChallenge: true,
@@ -131,7 +131,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 10: تحدث عن حيواناتك الأليفة ──
   "pet-1": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐾", color: "#a78bfa" },
   "pet-2": { title: "صف حيوانك",       unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐱", color: "#a78bfa" },
-  "pet-p": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏋️", color: "#a78bfa" , isPractice: true },
+  "pet-p": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏋️", color: "#a78bfa" , isPractice: true, practiceTitles: ["أسماء الحيوانات", "صف حيوانك", "العناية بالحيوان"] },
   "pet-t": { title: "كنز المراجعة",    unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "💎", color: "#a78bfa", isReview: true, reviewTitles: ["أسماء الحيوانات", "صف حيوانك"] },
   "pet-3": { title: "العناية بالحيوان", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🦴", color: "#a78bfa" },
   "pet-c": { title: "تحدي الوحدة",     unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏆", color: "#a78bfa", isUnitFinal: true, isChallenge: true,
@@ -808,68 +808,70 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
 // ── صندوق كنز قديم فخم ثلاثي الأبعاد ──
 function OrnateChest({ opened, color, glow }: { opened:boolean; color:string; glow:boolean }) {
   return (
-    <svg width="100%" height="100%" viewBox="0 0 210 180">
+    <svg width="100%" height="100%" viewBox="0 0 200 180">
       <defs>
-        <linearGradient id="chestWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b9803c"/><stop offset="50%" stopColor="#8a5a28"/><stop offset="100%" stopColor="#5c3410"/></linearGradient>
-        <linearGradient id="chestLidWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c98a45"/><stop offset="100%" stopColor="#7a4a1e"/></linearGradient>
-        <linearGradient id="chestGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fde047"/><stop offset="50%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#b45309"/></linearGradient>
-        <radialGradient id="chestInnerGlow" cx="50%" cy="40%" r="60%"><stop offset="0%" stopColor="#fffbeb"/><stop offset="60%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
+        <linearGradient id="chestWoodFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a06a3a"/><stop offset="100%" stopColor="#7a4e28"/></linearGradient>
+        <linearGradient id="chestWoodTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b8814a"/><stop offset="100%" stopColor="#9a6838"/></linearGradient>
+        <linearGradient id="chestLidFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a06a3a"/><stop offset="100%" stopColor="#85572f"/></linearGradient>
+        <radialGradient id="chestGlow" cx="50%" cy="40%" r="60%"><stop offset="0%" stopColor="#fffbeb"/><stop offset="55%" stopColor="#fde68a"/><stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/></radialGradient>
       </defs>
 
       {/* ظل أرضي */}
-      <ellipse cx="105" cy="168" rx="80" ry="10" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="100" cy="166" rx="62" ry="9" fill="rgba(0,0,0,0.18)"/>
 
       {/* ── جسم الصندوق (الصندوق السفلي) ── */}
-      <g>
-        {/* الجانب الأمامي */}
-        <path d="M30 95 L30 150 Q30 156 38 156 L172 156 Q180 156 180 150 L180 95 Z" fill="url(#chestWood)" stroke="#3d2208" strokeWidth="2.5"/>
-        {/* ألواح خشبية عمودية */}
-        <line x1="65" y1="95" x2="65" y2="156" stroke="#3d2208" strokeWidth="1.5" opacity="0.5"/>
-        <line x1="105" y1="95" x2="105" y2="156" stroke="#3d2208" strokeWidth="1.5" opacity="0.5"/>
-        <line x1="145" y1="95" x2="145" y2="156" stroke="#3d2208" strokeWidth="1.5" opacity="0.5"/>
-        {/* أحزمة معدنية ذهبية */}
-        <rect x="30" y="108" width="150" height="11" fill="url(#chestGold)" stroke="#92400e" strokeWidth="1"/>
-        <rect x="30" y="138" width="150" height="11" fill="url(#chestGold)" stroke="#92400e" strokeWidth="1"/>
-        {/* مسامير ذهبية */}
-        {[42,72,105,138,168].map(x=>(<circle key={x} cx={x} cy="113.5" r="2.5" fill="#fef3c7" stroke="#92400e" strokeWidth="0.6"/>))}
-        {[42,72,105,138,168].map(x=>(<circle key={"b"+x} cx={x} cy="143.5" r="2.5" fill="#fef3c7" stroke="#92400e" strokeWidth="0.6"/>))}
-        {/* توهج داخلي عند الفتح */}
-        {glow && <ellipse cx="105" cy="98" rx="68" ry="20" fill="url(#chestInnerGlow)"/>}
-        {/* جواهر داخل الصندوق تظهر عند الفتح */}
-        {opened && (
-          <g>
-            <circle cx="80" cy="96" r="7" fill="#f472b6" stroke="#be185d" strokeWidth="1"/>
-            <circle cx="105" cy="92" r="8" fill="#38bdf8" stroke="#0369a1" strokeWidth="1"/>
-            <circle cx="130" cy="96" r="7" fill="#34d399" stroke="#047857" strokeWidth="1"/>
-            <rect x="92" y="90" width="10" height="10" rx="2" fill="#fbbf24" stroke="#b45309" strokeWidth="1" transform="rotate(45 97 95)"/>
-          </g>
-        )}
-      </g>
+      {/* الجانب الأمامي */}
+      <rect x="44" y="96" width="112" height="60" rx="5" fill="url(#chestWoodFront)" stroke="#5c3a1c" strokeWidth="2.5"/>
+      {/* حافة علوية للصندوق (سماكة) */}
+      <rect x="44" y="92" width="112" height="12" rx="4" fill="url(#chestWoodTop)" stroke="#5c3a1c" strokeWidth="2"/>
+      {/* ألواح خشبية عمودية */}
+      <line x1="72" y1="104" x2="72" y2="153" stroke="#5c3a1c" strokeWidth="1.5" opacity="0.4"/>
+      <line x1="100" y1="104" x2="100" y2="153" stroke="#5c3a1c" strokeWidth="1.5" opacity="0.4"/>
+      <line x1="128" y1="104" x2="128" y2="153" stroke="#5c3a1c" strokeWidth="1.5" opacity="0.4"/>
+      {/* أحزمة معدنية أفقية */}
+      <rect x="44" y="118" width="112" height="9" fill="#6b4423" stroke="#4a2d15" strokeWidth="1"/>
+      <rect x="44" y="142" width="112" height="9" fill="#6b4423" stroke="#4a2d15" strokeWidth="1"/>
+      {/* أوتاد معدنية على الزوايا */}
+      {[52,148].map(x=>(<g key={x}>
+        <rect x={x-3} y="120" width="6" height="5" rx="1" fill="#8a6a48"/>
+        <rect x={x-3} y="144" width="6" height="5" rx="1" fill="#8a6a48"/>
+      </g>))}
 
-      {/* القفل الذهبي الكبير (يختفي عند الفتح) */}
-      {!opened && (
+      {/* توهج وجواهر داخل الصندوق عند الفتح */}
+      {glow && <ellipse cx="100" cy="96" rx="50" ry="16" fill="url(#chestGlow)"/>}
+      {opened && (
         <g>
-          <rect x="92" y="100" width="26" height="24" rx="4" fill="url(#chestGold)" stroke="#92400e" strokeWidth="1.5"/>
-          <circle cx="105" cy="110" r="4" fill="#5c3410"/>
-          <rect x="103" y="110" width="4" height="8" fill="#5c3410"/>
+          <circle cx="80" cy="94" r="7" fill="#f472b6" stroke="#be185d" strokeWidth="1"/>
+          <circle cx="100" cy="90" r="8" fill="#38bdf8" stroke="#0369a1" strokeWidth="1"/>
+          <circle cx="120" cy="94" r="7" fill="#34d399" stroke="#047857" strokeWidth="1"/>
+          <rect x="92" y="88" width="9" height="9" rx="2" fill="#fbbf24" stroke="#b45309" strokeWidth="1" transform="rotate(45 96 92)"/>
         </g>
       )}
 
-      {/* ── الغطاء (ينفتح للخلف عبر scaleY لتفادي مشاكل transformOrigin) ── */}
+      {/* القفل المعدني (يختفي عند الفتح) */}
+      {!opened && (
+        <g>
+          <rect x="91" y="106" width="18" height="20" rx="3" fill="#8a6a48" stroke="#4a2d15" strokeWidth="1.5"/>
+          <circle cx="100" cy="114" r="3.5" fill="#3a2410"/>
+          <rect x="98.5" y="114" width="3" height="7" fill="#3a2410"/>
+        </g>
+      )}
+
+      {/* ── الغطاء (يرتفع للأعلى عند الفتح) ── */}
       <motion.g
-        animate={opened ? { scaleY:-0.55, y:-2 } : { scaleY:1, y:0 }}
-        transition={{ type:"spring", stiffness:80, damping:12 }}
-        style={{ transformOrigin:"105px 92px", transformBox:"fill-box" } as any}>
-        {/* قبة الغطاء */}
-        <path d="M30 92 Q30 50 105 50 Q180 50 180 92 Z" fill="url(#chestLidWood)" stroke="#3d2208" strokeWidth="2.5"/>
-        {/* حزام ذهبي على الغطاء */}
-        <path d="M30 78 Q30 56 105 56 Q180 56 180 78" fill="none" stroke="url(#chestGold)" strokeWidth="9"/>
-        {/* حزام ذهبي وسطي عمودي */}
-        <path d="M105 50 L105 92" stroke="url(#chestGold)" strokeWidth="8"/>
-        {/* مسامير على الغطاء */}
-        {[55,80,130,155].map(x=>(<circle key={"l"+x} cx={x} cy="70" r="2.3" fill="#fef3c7" stroke="#92400e" strokeWidth="0.6"/>))}
-        {/* لمعة على الغطاء */}
-        <path d="M50 64 Q105 54 160 64" stroke="rgba(255,255,255,0.35)" strokeWidth="3" fill="none"/>
+        animate={opened ? { y:-46, rotate:-8 } : { y:0, rotate:0 }}
+        transition={{ type:"spring", stiffness:90, damping:13 }}
+        style={{ transformOrigin:"100px 90px", transformBox:"fill-box" } as any}>
+        {/* الغطاء — شكل شبه منحرف مسطّح */}
+        <path d="M44 92 L44 74 Q44 66 54 66 L146 66 Q156 66 156 74 L156 92 Z" fill="url(#chestLidFront)" stroke="#5c3a1c" strokeWidth="2.5"/>
+        {/* السطح العلوي للغطاء */}
+        <path d="M50 68 L150 68 L156 76 L44 76 Z" fill="url(#chestWoodTop)" stroke="#5c3a1c" strokeWidth="1.5"/>
+        {/* حزام معدني على الغطاء */}
+        <rect x="44" y="80" width="112" height="8" fill="#6b4423" stroke="#4a2d15" strokeWidth="1"/>
+        {/* أوتاد على الغطاء */}
+        {[52,148].map(x=>(<rect key={"lp"+x} x={x-3} y="81.5" width="6" height="5" rx="1" fill="#8a6a48"/>))}
+        {/* لمعة */}
+        <path d="M55 72 L145 72" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none"/>
       </motion.g>
     </svg>
   );
@@ -1128,6 +1130,20 @@ export default function UnitLesson() {
         seen.add(ex.id);
         return true;
       }).sort(() => Math.random() - 0.5).slice(0, 10);
+      } else if (meta.isPractice && meta.practiceTitles) {
+        // درس الدمبل — مراجعة شاملة: أسئلة متنوعة من كل دروس الوحدة
+        const pool: ExObj[] = [];
+        meta.practiceTitles.forEach((title: string) => {
+          pool.push(...getLessonMiniExercises(title, 4, 1));
+          pool.push(...getLessonMiniExercises(title, 4, 2));
+          pool.push(...getLessonMiniExercises(title, 3, 0));
+        });
+        const seen = new Set<string>();
+        raw = pool.filter(ex => {
+          if (seen.has(ex.id)) return false;
+          seen.add(ex.id);
+          return true;
+        }).sort(() => Math.random() - 0.5).slice(0, 10);
       } else if (meta.isReview && meta.reviewTitles) {
         // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
         raw = [];
@@ -1273,7 +1289,8 @@ export default function UnitLesson() {
         // خلصنا كل أسئلة الدرس الداخلي
         const isReview = !!meta.isReview;
         const isChallenge = !!meta.isChallenge;
-        const oneShot = isReview || isChallenge; // الكنز والتحدي = اختبار واحد
+        const isPractice = !!meta.isPractice;
+        const oneShot = isReview || isChallenge || isPractice; // الكنز والتحدي والدمبل = اختبار واحد
         const completedSub = oneShot ? 4 : subLesson + 1;
         const saveSub = Math.max(completedSub, maxSubReached);
         setMaxSubReached(saveSub);

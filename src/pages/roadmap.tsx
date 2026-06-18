@@ -408,6 +408,12 @@ function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Treasure chest (improved) ───────────────────────────────────────────────
 function TreasureIcon({ unlocked }: { unlocked: boolean }) {
+  const woodFront = unlocked ? "#a06a3a" : "#4b5563";
+  const woodFrontD = unlocked ? "#7a4e28" : "#1f2937";
+  const woodTop = unlocked ? "#b8814a" : "#6b7280";
+  const band = unlocked ? "#6b4423" : "#374151";
+  const bandD = unlocked ? "#4a2d15" : "#1f2937";
+  const stud = unlocked ? "#8a6a48" : "#9ca3af";
   return (
     <div style={{ position: "relative", width: 76, height: 76 }}>
       {/* Ground shadow */}
@@ -417,79 +423,61 @@ function TreasureIcon({ unlocked }: { unlocked: boolean }) {
         background: "radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%)",
         filter: "blur(5px)",
       }}/>
-      <svg width="76" height="70" viewBox="0 0 76 70" fill="none">
+      <svg width="76" height="72" viewBox="0 0 76 72" fill="none">
         <defs>
-          <linearGradient id="chestBodyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#b45309" : "#4b5563"}/>
-            <stop offset="100%" stopColor={unlocked ? "#78350f" : "#1f2937"}/>
-          </linearGradient>
-          <linearGradient id="chestLidGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#d97706" : "#6b7280"}/>
-            <stop offset="100%" stopColor={unlocked ? "#92400e" : "#374151"}/>
-          </linearGradient>
-          <linearGradient id="chestBandGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={unlocked ? "#a16207" : "#9ca3af"}/>
-            <stop offset="100%" stopColor={unlocked ? "#713f12" : "#6b7280"}/>
-          </linearGradient>
           {unlocked && (
-            <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+            <radialGradient id="tGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#fef08a" stopOpacity="0.9"/>
               <stop offset="100%" stopColor="#eab308" stopOpacity="0"/>
             </radialGradient>
           )}
         </defs>
 
-        {/* Glow behind when unlocked */}
-        {unlocked && <ellipse cx="38" cy="38" rx="30" ry="28" fill="url(#glowGrad)" opacity="0.4"/>}
+        {unlocked && <ellipse cx="38" cy="40" rx="30" ry="22" fill="url(#tGlow)" opacity="0.45"/>}
 
-        {/* Chest body */}
-        <rect x="8" y="34" width="60" height="28" rx="5" fill="url(#chestBodyGrad)"/>
-        {/* Body side shadow */}
-        <rect x="8" y="34" width="60" height="8" rx="5" fill="black" opacity="0.2"/>
-        {/* Body highlight */}
-        <rect x="10" y="36" width="56" height="4" rx="3" fill="white" opacity="0.08"/>
+        {/* جسم الصندوق الأمامي */}
+        <rect x="10" y="40" width="56" height="26" rx="4" fill={woodFront} stroke={bandD} strokeWidth="1.5"/>
+        {/* الحافة العلوية */}
+        <rect x="10" y="37" width="56" height="7" rx="3" fill={woodTop} stroke={bandD} strokeWidth="1.2"/>
+        {/* ألواح عمودية */}
+        <line x1="28" y1="44" x2="28" y2="64" stroke={bandD} strokeWidth="1" opacity="0.4"/>
+        <line x1="48" y1="44" x2="48" y2="64" stroke={bandD} strokeWidth="1" opacity="0.4"/>
+        {/* حزام أفقي */}
+        <rect x="10" y="50" width="56" height="6" fill={band} stroke={bandD} strokeWidth="0.8"/>
+        {/* أوتاد */}
+        <rect x="15" y="51" width="4" height="4" rx="1" fill={stud}/>
+        <rect x="57" y="51" width="4" height="4" rx="1" fill={stud}/>
 
-        {/* Horizontal band */}
-        <rect x="8" y="44" width="60" height="7" fill="url(#chestBandGrad)"/>
-        <rect x="8" y="44" width="60" height="2" fill="white" opacity="0.15"/>
-
-        {/* Vertical band stripes */}
-        <rect x="34" y="34" width="8" height="28" fill="url(#chestBandGrad)" opacity="0.7"/>
-
-        {/* Lock */}
-        <rect x="31" y="40" width="14" height="11" rx="3" fill={unlocked ? "#fef08a" : "#9ca3af"}/>
-        <path d="M34 40 Q34 35 38 35 Q42 35 42 40" stroke={unlocked ? "#d97706" : "#6b7280"} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-        <circle cx="38" cy="45" r="2" fill={unlocked ? "#d97706" : "#4b5563"}/>
-
-        {/* Coins/gems inside when unlocked */}
+        {/* جواهر داخل الصندوق عند الفتح */}
         {unlocked && <>
-          <circle cx="24" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <circle cx="38" cy="38" r="6" fill="#fef08a" stroke="#eab308" strokeWidth="1"/>
-          <circle cx="52" cy="40" r="5" fill="#fbbf24" stroke="#d97706" strokeWidth="1"/>
-          <text x="30" y="36" fontSize="11">💎</text>
+          <circle cx="28" cy="40" r="5" fill="#f472b6" stroke="#be185d" strokeWidth="0.8"/>
+          <circle cx="38" cy="37" r="6" fill="#38bdf8" stroke="#0369a1" strokeWidth="0.8"/>
+          <circle cx="48" cy="40" r="5" fill="#34d399" stroke="#047857" strokeWidth="0.8"/>
         </>}
 
-        {/* Lid — مفتوح إذا unlocked، مغلق إذا لا */}
-        {unlocked ? (
-          /* غطاء مفتوح (مائل للخلف) */
-          <g transform="rotate(-105 12 22)">
-            <rect x="8" y="12" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
-            <rect x="8" y="24" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
-            <ellipse cx="38" cy="13" rx="22" ry="3" fill="white" opacity="0.12"/>
-          </g>
-        ) : (
-          <>
-            <rect x="8" y="18" width="60" height="18" rx="6" fill="url(#chestLidGrad)"/>
-            <rect x="8" y="18" width="60" height="6" rx="6" fill="white" opacity="0.1"/>
-            <rect x="8" y="30" width="60" height="6" fill="url(#chestBandGrad)" opacity="0.8"/>
-            <ellipse cx="38" cy="19" rx="22" ry="3" fill="white" opacity="0.12"/>
-          </>
-        )}
+        {/* القفل (مغلق فقط) */}
+        {!unlocked && <>
+          <rect x="32" y="46" width="12" height="13" rx="2.5" fill={stud} stroke={bandD} strokeWidth="1"/>
+          <circle cx="38" cy="51" r="2.5" fill="#1f2937"/>
+        </>}
 
-        {/* Sparkles when unlocked */}
+        {/* الغطاء — يرتفع للأعلى إذا مفتوح */}
+        <g transform={unlocked ? "translate(0,-30) rotate(-6 38 37)" : ""} style={{ transition: "transform 0.4s" }}>
+          {/* واجهة الغطاء */}
+          <path d="M10 37 L10 24 Q10 19 16 19 L60 19 Q66 19 66 24 L66 37 Z" fill={woodFront} stroke={bandD} strokeWidth="1.5"/>
+          {/* سطح علوي */}
+          <path d="M15 20 L61 20 L66 26 L10 26 Z" fill={woodTop} stroke={bandD} strokeWidth="1"/>
+          {/* حزام على الغطاء */}
+          <rect x="10" y="29" width="56" height="5" fill={band} stroke={bandD} strokeWidth="0.8"/>
+          {/* أوتاد على الغطاء */}
+          <rect x="15" y="30" width="4" height="3.5" rx="1" fill={stud}/>
+          <rect x="57" y="30" width="4" height="3.5" rx="1" fill={stud}/>
+        </g>
+
+        {/* بريق عند الفتح */}
         {unlocked && <>
-          <text x="10" y="16" fontSize="10">✨</text>
-          <text x="58" y="14" fontSize="9">⭐</text>
+          <text x="12" y="20" fontSize="10">✨</text>
+          <text x="58" y="18" fontSize="9">⭐</text>
         </>}
       </svg>
     </div>
