@@ -160,6 +160,23 @@ export function getLessonBank(title: string): TieredBank {
 const TIER_KEYS = ["t0", "t1", "t2", "t3"] as const;
 
 /**
+ * يرجّع كل أسئلة المحطة (من المستويات الأربعة) بترتيب ثابت غير عشوائي،
+ * مرتّبة حسب id. يُستخدم لتوزيع الأسئلة على الدروس الأربعة بدون تكرار.
+ */
+export function getAllStationExercises(title: string): ExObj[] {
+  const bank = getLessonBank(title);
+  const all: ExObj[] = [];
+  const seen = new Set<string>();
+  for (const key of TIER_KEYS) {
+    for (const ex of bank[key] ?? []) {
+      if (!seen.has(ex.id)) { all.push(ex); seen.add(ex.id); }
+    }
+  }
+  // ترتيب ثابت حسب id (غير عشوائي) لضمان توزيع متّسق
+  return all.sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
  * Returns `count` exercises drawn from the requested tier ONLY, so every star
  * attempt (and the challenge test) is completely different and difficulty rises
  * with the tier. Properly authored tiers have >= count items; the adjacent-tier

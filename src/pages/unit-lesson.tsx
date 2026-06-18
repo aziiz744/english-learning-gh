@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
-import { getLessonMiniExercises } from "@/lib/lesson-exercises";
+import { getLessonMiniExercises, getAllStationExercises } from "@/lib/lesson-exercises";
 import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
 
@@ -1212,22 +1212,12 @@ export default function UnitLesson() {
         raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
       } else {
         // درس داخلي عادي — وزّع كل أسئلة المحطة على الدروس الأربعة بدون تكرار
-        // اجمع كل أسئلة المحطة من المستويات الأربعة
         const t = (tier as 0|1|2|3);
-        const allTiers: ExObj[] = [];
-        ([0,1,2,3] as (0|1|2|3)[]).forEach(tr => {
-          allTiers.push(...getLessonMiniExercises(meta.title, 9, tr));
-        });
-        // أزل التكرار
-        const seen = new Set<string>();
-        const unique = allTiers.filter(ex => {
-          if (seen.has(ex.id)) return false;
-          seen.add(ex.id); return true;
-        });
-        // رتّب ترتيباً ثابتاً (حسب id) ثم وزّع: الدرس t يأخذ كل رابع سؤال بإزاحة t
-        unique.sort((a,b) => a.id.localeCompare(b.id));
+        // كل أسئلة المحطة بترتيب ثابت (غير عشوائي) — التوزيع مضمون ومتّسق
+        const unique = getAllStationExercises(meta.title);
+        // الدرس t يأخذ كل رابع سؤال (إزاحة t) — لا تداخل بين الدروس الأربعة
         const slice = unique.filter((_, i) => i % 4 === t);
-        // إذا الشريحة قليلة، أكمل من الباقي
+        // إذا الشريحة قليلة، أكمل من الباقي بدون تكرار
         raw = slice.length >= 6 ? slice.slice(0, 8)
             : [...slice, ...unique.filter(e => !slice.includes(e))].slice(0, 8);
       }
