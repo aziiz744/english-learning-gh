@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
+import { OwlMascot } from "@/components/owl-mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -1112,7 +1113,7 @@ const MAX_HEARTS = 5;
 export default function UnitLesson() {
   const { id, unitId } = useParams<{ id: string; unitId: string }>();
   const [, setLocation] = useLocation();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, login } = useAuth();
   const { playCorrect, playWrong, playComplete } = useSound();
 
   // وضع القفز: المسار /jump/:unitId (نكتشفه عبر وجود unitId param)
@@ -1410,6 +1411,31 @@ export default function UnitLesson() {
   const progress = (doneCount / Math.max(doneCount + queue.length, 1)) * 100;
   const ex = queue[0];
 
+
+  // ── بوابة تسجيل الدخول — لا يمكن دخول الدروس بدون حساب ──
+  if (!authLoading && !user) return (
+    <Layout>
+      <div style={{ maxWidth:400, margin:"0 auto", padding:"40px 20px", minHeight:"calc(100svh - 160px)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
+        <div style={{ marginBottom:8 }}>
+          <OwlMascot state="thinking" size={120}/>
+        </div>
+        <div style={{ fontSize:54, marginBottom:4 }}>🔒</div>
+        <h2 style={{ fontWeight:900, fontSize:23, marginBottom:12, color:"hsl(var(--foreground))" }}>سجّل دخولك أولاً</h2>
+        <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:28 }}>
+          لبدء الدروس وحفظ تقدّمك وجمع الجواهر والحفاظ على سلسلتك اليومية، تحتاج إلى تسجيل الدخول. إنه مجاني وسريع! 🚀
+        </p>
+        <button onClick={login}
+          style={{ width:"100%", maxWidth:300, padding:"15px", background:meta?.color ?? "hsl(var(--primary))", color:"white", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 5px 0 ${meta?.color ?? "hsl(var(--primary))"}99`, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 11v2h5.59c-.5 2.3-2.5 4-5.59 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.5 0 2.85.55 3.9 1.45L17.4 5.4C15.95 4.05 14.07 3.2 12 3.2 7.03 3.2 3 7.23 3 12s4.03 8.8 9 8.8c5.2 0 8.6-3.65 8.6-8.8 0-.55-.05-1.1-.15-1.6H12z"/></svg>
+          تسجيل الدخول بـ Google
+        </button>
+        <button onClick={()=>setLocation("/")}
+          style={{ marginTop:14, padding:"10px 20px", background:"transparent", color:"hsl(var(--muted-foreground))", border:"none", fontWeight:700, fontSize:14, cursor:"pointer" }}>
+          العودة للخارطة
+        </button>
+      </div>
+    </Layout>
+  );
 
   if (!meta) return (
     <Layout>

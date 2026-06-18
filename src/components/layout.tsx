@@ -76,10 +76,10 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <img src={owlImg} alt="English Spark" className="w-10 h-10 object-contain shrink-0" draggable={false} />
+          <img src={owlImg} alt="مسار الإنجليزية" className="w-10 h-10 object-contain shrink-0" draggable={false} />
           <div>
-            <span className="font-bold text-lg text-primary tracking-tight leading-none block">English Spark</span>
-            <span className="text-xs text-muted-foreground">تعلّم، العب، تحدّث</span>
+            <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
+            <span className="text-xs text-muted-foreground">EnglishPath</span>
           </div>
         </div>
       </div>
@@ -288,8 +288,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1.5">
-          <img src={owlImg} alt="English Spark" className="w-8 h-8 object-contain" draggable={false} />
-          <span className="font-bold text-sm text-primary">English Spark</span>
+          <img src={owlImg} alt="مسار الإنجليزية" className="w-8 h-8 object-contain" draggable={false} />
+          <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
         </div>
         {stats && stats.streak > 0 ? (
           <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1">

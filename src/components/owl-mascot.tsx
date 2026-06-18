@@ -1,4 +1,4 @@
-// ── شخصية البومة "English Spark" — 6 وضعيات تتبدّل بسلاسة (تلاشي ناعم فقط) ──
+// ── شخصية البومة "مسار الإنجليزية" — 6 وضعيات تتبدّل بسلاسة (تلاشي ناعم فقط) ──
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import owlIdle from "@/assets/owl/owl-idle.png";
@@ -59,7 +59,7 @@ export function OwlMascot({ state = "auto", size = 120 }: { state?: OwlState; si
         <motion.img
           key={poseKey}
           src={POSE_IMG[poseKey]}
-          alt="English Spark"
+          alt="مسار الإنجليزية"
           draggable={false}
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
