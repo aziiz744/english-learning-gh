@@ -264,21 +264,14 @@ function playGemSparkle() {
 
 // ── Hearts ────────────────────────────────────────────────────────────────────
 function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
-  if (isPro) return (
-    <div className="flex items-center gap-1">
-      {[0,1,2,3,4].map(i => (
-        <Heart key={i} className="w-4 h-4 fill-blue-400 text-blue-400" />
-      ))}
-      <span className="text-xs text-blue-400 font-bold mr-1">∞</span>
-    </div>
-  );
   return (
-    <div className="flex items-center gap-1">
-      {[0,1,2,3,4].map(i => (
-        <motion.div key={i} animate={i === count ? { scale:[1,1.5,1] } : {}} transition={{ duration:0.3 }}>
-          <Heart className={cn("w-4 h-4 transition-all", i < count ? "fill-red-500 text-red-500" : "text-muted-foreground/20 fill-muted-foreground/10")} />
-        </motion.div>
-      ))}
+    <div className="flex items-center gap-1.5 flex-shrink-0">
+      <span className={cn("text-sm font-extrabold", isPro ? "text-blue-400" : "text-red-500")}>
+        {isPro ? "∞" : count}
+      </span>
+      <motion.div animate={{ scale:[1,1.15,1] }} transition={{ duration:0.3 }} key={count}>
+        <Heart className={cn("w-6 h-6", isPro ? "fill-blue-400 text-blue-400" : "fill-red-500 text-red-500")} />
+      </motion.div>
     </div>
   );
 }
@@ -374,42 +367,65 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
-      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:20 }}>
-        {/* عادي */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
-          style={{ width:72, height:72, borderRadius:20, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        </motion.button>
-        {/* سلحفاة بطيء */}
-        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
-          style={{ width:58, height:58, borderRadius:18, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span style={{ fontSize:28 }}>🐢</span>
-        </motion.button>
+      {/* شارة كلمة جديدة + التعليمة */}
+      <div style={{ textAlign:"center", marginBottom:20 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
+          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"white" }}>✦</span>
+        </div>
+        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
+          رتّب الترجمة الصحيحة
+        </div>
       </div>
-      {/* Answer area */}
-      <div style={{ minHeight:52, background:"hsl(var(--background))", border:`2px solid hsl(var(--border))`, borderRadius:14, padding:"10px 14px", display:"flex", flexWrap:"wrap", gap:8, marginBottom:14 }}>
-        {selected.length === 0 && <span style={{ color:"hsl(var(--muted-foreground))", fontSize:13, margin:"auto" }}>اضغط على الكلمات لترتيبها هنا</span>}
+
+      {/* فقاعة الكلام + زر الصوت */}
+      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:10, marginBottom:24 }}>
+        <button onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
+          style={{ display:"flex", alignItems:"center", gap:10, background:"hsl(var(--card))", border:`2px solid hsl(var(--border))`, borderRadius:16, padding:"12px 18px", cursor:"pointer", boxShadow:"0 2px 0 hsl(var(--border))" }}>
+          <span style={{ width:30, height:30, borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          </span>
+          <span style={{ fontSize:17, fontWeight:800, color:"hsl(var(--foreground))" }}>{ex.correctAnswer}</span>
+        </button>
+        <button onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
+          style={{ width:46, height:46, borderRadius:14, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <span style={{ fontSize:22 }}>🐢</span>
+        </button>
+      </div>
+
+      {/* منطقة الإجابة — سطران بخطوط */}
+      <div style={{ minHeight:84, marginBottom:24, borderTop:"2px solid hsl(var(--border))", borderBottom:"2px solid hsl(var(--border))", padding:"12px 4px", display:"flex", flexWrap:"wrap", gap:8, alignContent:"flex-start" }}>
+        {selected.length === 0 && <span style={{ color:"hsl(var(--muted-foreground))", fontSize:13, margin:"auto", opacity:0.6 }}>اضغط على الكلمات بالأسفل لترتيبها</span>}
         {selected.map((item,i)=>(
-          <motion.button key={item.i} initial={{scale:0.8}} animate={{scale:1}} onClick={()=>remove(i)}
-            style={{ background:`${color}20`, border:`1.5px solid ${color}60`, borderRadius:8, padding:"6px 12px", fontSize:15, fontWeight:700, cursor:"pointer" }}>
+          <motion.button key={item.i} initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} onClick={()=>remove(i)} disabled={submitted}
+            style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:12, padding:"8px 16px", fontSize:16, fontWeight:700, cursor:submitted?"default":"pointer", boxShadow:"0 2px 0 hsl(var(--border))", color:"hsl(var(--foreground))" }}>
             {item.w}
           </motion.button>
         ))}
       </div>
-      {/* Word bank */}
-      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:20, justifyContent:"center" }}>
+
+      {/* بنك الكلمات */}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:10, marginBottom:8, justifyContent:"center" }}>
         {remaining.map((item,i)=>(
-          <motion.button key={item.i} initial={{opacity:0}} animate={{opacity:1}} onClick={()=>add(item,i)}
-            
-            style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:8, padding:"6px 14px", fontSize:15, fontWeight:700, cursor:"pointer" }}>
+          <motion.button key={item.i} initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} whileTap={{scale:0.94}} onClick={()=>add(item,i)} disabled={submitted}
+            style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:12, padding:"9px 18px", fontSize:16, fontWeight:700, cursor:submitted?"default":"pointer", boxShadow:"0 3px 0 hsl(var(--border))", color:"hsl(var(--foreground))" }}>
             {item.w}
           </motion.button>
         ))}
       </div>
-      {!submitted && selected.length > 0 && (
-        <button onClick={submit} style={{ width:"100%", padding:14, background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer" }}>تحقق ✓</button>
+
+      {/* زر تحقّق — رمادي ثم ملوّن */}
+      {!submitted && (
+        <button onClick={submit} disabled={selected.length===0}
+          style={{ width:"100%", padding:15, marginTop:20,
+            background:selected.length===0 ? "hsl(var(--muted))" : color,
+            color:selected.length===0 ? "hsl(var(--muted-foreground))" : "white",
+            border:"none", borderRadius:14, fontWeight:800, fontSize:16,
+            cursor:selected.length===0?"default":"pointer",
+            boxShadow:selected.length===0 ? "none" : `0 4px 0 ${color}99`,
+            transition:"all 0.2s" }}>
+          تحقّق
+        </button>
       )}
     </div>
   );
@@ -434,18 +450,22 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
-      <div style={{ textAlign:"center", fontSize:24, fontWeight:900, marginBottom:28, direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", marginBottom:22 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:10 }}>اختر الترجمة الصحيحة</div>
+        <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
+      </div>
       <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
         {(ex.options??[]).map(o=>{
-          const isCorrect = o===ex.correctAnswer, isPicked = o===picked;
-          let bg = "hsl(var(--card))", border = "2px solid hsl(var(--border))";
-          if (isPicked && !confirmed) { bg=`${color}20`; border=`2px solid ${color}`; }
+          const isPicked = o===picked;
+          let bg = "hsl(var(--card))", border = "2px solid hsl(var(--border))", shadow = "0 3px 0 hsl(var(--border))";
+          if (isPicked && !confirmed) { bg=`${color}14`; border=`2px solid ${color}`; shadow=`0 3px 0 ${color}`; }
           return (
-            <motion.button key={o} whileTap={{scale:0.97}} onClick={()=>choose(o)}
-              style={{ padding:"16px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
-                textAlign:"left", direction:"ltr", background:bg, border,
-                display:"flex", alignItems:"center", justifyContent:"space-between",
-                minHeight:56 }}>
+            <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={confirmed}
+              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
+                textAlign:"left", direction:"ltr", background:bg, border, boxShadow:shadow,
+                display:"flex", alignItems:"center", justifyContent:"space-between", minHeight:54,
+                color:"hsl(var(--foreground))" }}>
               <span>{o}</span>
               <span onClick={e=>{e.stopPropagation();speak(o, 0.85, ex.id);}}
                 style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
@@ -455,8 +475,11 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       </div>
       {!confirmed && (
         <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed", transition:"all 0.2s" }}>
-          تحقق ✓
+          style={{ width:"100%", padding:15, marginTop:8,
+            background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))",
+            border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"default",
+            boxShadow:picked?`0 4px 0 ${color}99`:"none", transition:"all 0.2s" }}>
+          تحقّق
         </button>
       )}
     </div>
@@ -481,18 +504,20 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
 
   return (
     <div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>استمع واختر ما سمعته</div>
       {/* Audio buttons: عادي + سلحفاة بطيء */}
-      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:28 }}>
+      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:14 }}>
         {/* عادي — كبير */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!, 0.85, ex.id)}
           style={{ width:96, height:96, borderRadius:24, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 24px ${color}55` }}>
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 0 ${color}99, 0 8px 22px ${color}40` }}>
           <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
         {/* سلحفاة — بطيء */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!, ex.id)}
-          style={{ width:72, height:72, borderRadius:20, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center" }}>
+          style={{ width:72, height:72, borderRadius:20, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 4px 0 ${color}30` }}>
           <span style={{ fontSize:34 }}>🐢</span>
         </motion.button>
       </div>
@@ -500,11 +525,13 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
+          const bc = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
           return (
-            <motion.button key={o} whileTap={{scale:0.97}} onClick={()=>choose(o)}
-              style={{ padding:"16px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:56,
-                background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
-                border:`2px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
+            <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={!!picked}
+              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:54,
+                color:"hsl(var(--foreground))",
+                background:isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))"),
+                border:`2px solid ${bc}`, boxShadow:`0 3px 0 ${bc==="hsl(var(--border))"?"hsl(var(--border))":bc}` }}>
               {o}
             </motion.button>
           );
@@ -514,7 +541,10 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   );
 }
 
-// ── Picture Match ─────────────────────────────────────────────────────────────
+// ── Picture Match (ستايل احترافي: بطاقات + أرقام + نص) ───────────────────────
+const PIC_AR: Record<string,string> = {
+  tea:"شاي", coffee:"قهوة", water:"ماء", juice:"عصير", milk:"حليب",
+};
 function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
   const [picked, setPicked] = useState<string|null>(null);
 
@@ -525,21 +555,42 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
     onAnswer(label===ex.correctAnswer, label);
   };
 
+  const arabicWord = PIC_AR[ex.word ?? ""] ?? ex.arabic ?? ex.word;
+
   return (
     <div>
-      <div style={{ textAlign:"center", marginBottom:24 }}>
-        <W word={ex.word!} color={color}/>
+      {/* شارة كلمة جديدة + السؤال */}
+      <div style={{ textAlign:"center", marginBottom:26 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:10 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
+          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11 }}>✦</span>
+        </div>
+        <div style={{ fontSize:21, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
+          أي واحدة من هذه "{arabicWord}"؟
+        </div>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-        {(ex.pictureOptions??[]).map(o=>{
+
+      {/* البطاقات */}
+      <div style={{ display:"grid", gridTemplateColumns:(ex.pictureOptions?.length??4)===3?"1fr 1fr 1fr":"1fr 1fr", gap:12 }}>
+        {(ex.pictureOptions??[]).map((o,i)=>{
           const isCorrect=o.label===ex.correctAnswer, isPicked=o.label===picked;
+          const borderC = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
+          const bgC = isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))");
           return (
-            <motion.button key={o.label} whileTap={{scale:0.95}} onClick={()=>choose(o.label)}
-              style={{ padding:"14px 10px 10px", borderRadius:18, cursor:picked?"default":"pointer",
-                display:"flex", flexDirection:"column", alignItems:"center", gap:6,
-                background:isPicked?(isCorrect?"#16a34a20":"#dc262620"):(picked&&isCorrect?"#16a34a20":"hsl(var(--card))"),
-                border:`2.5px solid ${isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))")}` }}>
-              <div style={{ width:96, height:96 }}><DrinkArt label={o.label}/></div>
+            <motion.button key={o.label} whileTap={{scale:0.96}} onClick={()=>choose(o.label)}
+              style={{ position:"relative", padding:"16px 8px 10px", borderRadius:16, cursor:picked?"default":"pointer",
+                display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:140,
+                background:bgC, border:`2px solid ${borderC}`,
+                boxShadow:isPicked||(picked&&isCorrect)?`0 3px 0 ${borderC}`:"0 2px 0 hsl(var(--border))" }}>
+              {/* الصورة */}
+              <div style={{ width:74, height:74, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <DrinkArt label={o.label}/>
+              </div>
+              {/* النص الإنجليزي + الرقم */}
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", width:"100%", padding:"0 4px", marginTop:"auto" }}>
+                <span style={{ width:22, height:22, borderRadius:6, border:"1.5px solid hsl(var(--border))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"hsl(var(--muted-foreground))" }}>{i+1}</span>
+                <span style={{ fontSize:14, fontWeight:800, color:"hsl(var(--foreground))" }}>{o.label}</span>
+              </div>
             </motion.button>
           );
         })}
@@ -564,20 +615,22 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 
   return (
     <div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>أكمل الفراغ بالكلمة الصحيحة</div>
       {/* Audio */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:24 }}>
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), 0.85, ex.id)}
-          style={{ width:64, height:64, borderRadius:18, background:color, border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 18px ${color}50` }}>
+          style={{ width:64, height:64, borderRadius:18, background:color, border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 0 ${color}99, 0 7px 18px ${color}40` }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
         <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), ex.id)}
-          style={{ width:52, height:52, borderRadius:16, background:`${color}25`, border:`2px solid ${color}50`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          style={{ width:52, height:52, borderRadius:16, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 3px 0 ${color}30` }}>
           <span style={{ fontSize:26 }}>🐢</span>
         </motion.button>
       </div>
 
       {/* Sentence with blank */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:24, fontWeight:800, direction:"ltr", flexWrap:"wrap" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:28, fontSize:24, fontWeight:800, direction:"ltr", flexWrap:"wrap", color:"hsl(var(--foreground))" }}>
         <span>{parts[0]}</span>
         <span style={{ minWidth:90, borderBottom:`3px solid ${picked?color:"hsl(var(--border))"}`, textAlign:"center", color:picked?color:"transparent", paddingBottom:2 }}>{picked ?? "__"}</span>
         <span>{parts[1]}</span>
@@ -586,17 +639,22 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       {/* Options */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:20 }}>
         {(ex.blankOptions??[]).map(o=>(
-          <motion.button key={o} whileTap={{scale:0.95}} onClick={()=>!confirmed && setPicked(o)}
-            style={{ padding:"12px 22px", borderRadius:14, fontSize:16, fontWeight:800, direction:"ltr", cursor:confirmed?"default":"pointer",
-              background: picked===o ? `${color}25` : "hsl(var(--card))",
-              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}` }}>{o}</motion.button>
+          <motion.button key={o} whileTap={{scale:0.96}} onClick={()=>!confirmed && setPicked(o)} disabled={confirmed}
+            style={{ padding:"11px 22px", borderRadius:12, fontSize:16, fontWeight:800, direction:"ltr", cursor:confirmed?"default":"pointer",
+              color:"hsl(var(--foreground))",
+              background: picked===o ? `${color}14` : "hsl(var(--card))",
+              border: `2px solid ${picked===o ? color : "hsl(var(--border))"}`,
+              boxShadow: `0 3px 0 ${picked===o ? color : "hsl(var(--border))"}` }}>{o}</motion.button>
         ))}
       </div>
 
       {!confirmed && (
         <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:14, background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"not-allowed" }}>
-          تحقق ✓
+          style={{ width:"100%", padding:15, marginTop:8,
+            background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))",
+            border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"default",
+            boxShadow:picked?`0 4px 0 ${color}99`:"none", transition:"all 0.2s" }}>
+          تحقّق
         </button>
       )}
     </div>
@@ -1153,7 +1211,25 @@ export default function UnitLesson() {
         });
         raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
       } else {
-        raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
+        // درس داخلي عادي — وزّع كل أسئلة المحطة على الدروس الأربعة بدون تكرار
+        // اجمع كل أسئلة المحطة من المستويات الأربعة
+        const t = (tier as 0|1|2|3);
+        const allTiers: ExObj[] = [];
+        ([0,1,2,3] as (0|1|2|3)[]).forEach(tr => {
+          allTiers.push(...getLessonMiniExercises(meta.title, 9, tr));
+        });
+        // أزل التكرار
+        const seen = new Set<string>();
+        const unique = allTiers.filter(ex => {
+          if (seen.has(ex.id)) return false;
+          seen.add(ex.id); return true;
+        });
+        // رتّب ترتيباً ثابتاً (حسب id) ثم وزّع: الدرس t يأخذ كل رابع سؤال بإزاحة t
+        unique.sort((a,b) => a.id.localeCompare(b.id));
+        const slice = unique.filter((_, i) => i % 4 === t);
+        // إذا الشريحة قليلة، أكمل من الباقي
+        raw = slice.length >= 6 ? slice.slice(0, 8)
+            : [...slice, ...unique.filter(e => !slice.includes(e))].slice(0, 8);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
@@ -1403,20 +1479,19 @@ export default function UnitLesson() {
         )}
 
         {phase === "playing" && <>
-          {/* Top bar */}
-          <div style={{ display:"flex", alignItems:"center", gap:8, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
-            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>✕</button>
-            <div style={{ flex:1, height:12, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
-              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 8px ${meta.color}80` }} transition={{ duration:0.4 }}/>
-            </div>
-            {/* Show hearts only when pro status is loaded */}
+          {/* Top bar — قلب يسار · شريط أخضر · X يمين (ستايل Duolingo) */}
+          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
+            {/* القلوب — يسار */}
             {proLoaded && <Hearts count={hearts} isPro={isPro}/>}
-          </div>
-
-          {/* Lesson label */}
-          <div style={{ textAlign:"center", marginBottom:20, flexShrink:0 }}>
-            <div style={{ fontSize:12, color:"hsl(var(--muted-foreground))", marginBottom:3 }}>{meta.unitTitle} {meta.emoji}</div>
-            <div style={{ fontWeight:900, fontSize:19, color:meta.color }}>{meta.title}</div>
+            {/* شريط التقدم */}
+            <div style={{ flex:1, height:14, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
+              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10 }} transition={{ duration:0.4 }}>
+                {/* لمعة علوية */}
+                <div style={{ height:"40%", margin:"2px 6px 0", background:"rgba(255,255,255,0.35)", borderRadius:6 }}/>
+              </motion.div>
+            </div>
+            {/* زر الإغلاق — يمين */}
+            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20, color:"hsl(var(--muted-foreground))" }}>✕</button>
           </div>
 
           {/* Main content area */}
@@ -1428,9 +1503,6 @@ export default function UnitLesson() {
                   initial={{opacity:0,x:24}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-24,position:"absolute"}}
                   transition={{duration:0.15,ease:"easeOut"}}
                   style={{width:"100%"}}>
-                  <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
-                    {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":ex.type==="fill_blank"?"✏️ اتبع النمط":ex.type==="matching"?"🔗 الأزواج المتطابقة":"🖼️ طابق الصورة"}
-                  </div>
                   {ex.type==="word_order"    && <WordOrderQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="translate"     && <TranslateQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
