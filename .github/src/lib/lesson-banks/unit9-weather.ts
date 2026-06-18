@@ -12,6 +12,8 @@ export const unit9WeatherBank: Record<string, TieredBank> = {
   // ── الدرس 1: كلمات الطقس ──
   "كلمات الطقس": {
     t0: [
+    { id:"wea-pic-1", type:"picture_match", word:"sunny", arabic:"مشمس", pictureOptions:[{emoji:"",label:"sunny"},{emoji:"",label:"rainy"},{emoji:"",label:"cloudy"},{emoji:"",label:"snowy"}], correctAnswer:"sunny", explanation:"مشمس = sunny", xp:10 },
+    { id:"wea-pic-2", type:"picture_match", word:"rainy", arabic:"ممطر", pictureOptions:[{emoji:"",label:"rainy"},{emoji:"",label:"sunny"},{emoji:"",label:"windy"},{emoji:"",label:"cloudy"}], correctAnswer:"rainy", explanation:"ممطر = rainy", xp:10 },
       { id:"wt1-t0-1", type:"translate", arabic:"مشمس", options:["sunny","rainy","cloudy","windy"], correctAnswer:"sunny", explanation:"sunny = مشمس ☀️", xp:10 },
       { id:"wt1-t0-2", type:"listen_select", listenSentence:"rainy", options:["rainy","sunny","cloudy","snowy"], correctAnswer:"rainy", explanation:"rainy = ممطر 🌧️", xp:10 },
       { id:"wt1-t0-3", type:"translate", arabic:"غائم", options:["cloudy","sunny","windy","snowy"], correctAnswer:"cloudy", explanation:"cloudy = غائم ☁️", xp:10 },

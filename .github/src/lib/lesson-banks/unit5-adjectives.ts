@@ -13,6 +13,7 @@ export const unit5AdjectivesBank: Record<string, TieredBank> = {
   // ── الدرس 1: الصفات الأساسية ──
   "الصفات الأساسية": {
     t0: [
+    { id:"adj-pic-1", type:"picture_match", word:"hot", arabic:"حار", pictureOptions:[{emoji:"",label:"hot"},{emoji:"",label:"cold"},{emoji:"",label:"sunny"},{emoji:"",label:"snowy"}], correctAnswer:"hot", explanation:"حار = hot", xp:10 },
       { id:"ad1-t0-1", type:"translate", arabic:"كبير", options:["big","small","fast","slow"], correctAnswer:"big", explanation:"big = كبير", xp:10 },
       { id:"ad1-t0-2", type:"listen_select", listenSentence:"small", options:["small","big","fast","old"], correctAnswer:"small", explanation:"small = صغير", xp:10 },
       { id:"ad1-t0-3", type:"translate", arabic:"سريع", options:["fast","slow","big","new"], correctAnswer:"fast", explanation:"fast = سريع", xp:10 },

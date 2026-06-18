@@ -1,122 +1,179 @@
-// رسوم SVG واضحة جداً للمفردات — بديل الإيموجي
+// رسوم SVG احترافية واضحة للمشروبات — بديل الإيموجي
 import type { ReactElement } from "react";
 
-function Cup({ liquid, liquidTop, steam = false }: { liquid: string; liquidTop: string; steam?: boolean }) {
+// كوب مشروب ساخن (شاي/قهوة) — بطبق وبخار ومقبض
+function HotCup({ liquid, liquidTop, rim }: { liquid: string; liquidTop: string; rim: string }) {
   return (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
-      {steam && (
-        <>
-          <path d="M40 22 Q34 14 40 6" stroke="#cbd5e1" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.6"/>
-          <path d="M52 22 Q58 14 52 6" stroke="#cbd5e1" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.6"/>
-        </>
-      )}
-      <ellipse cx="50" cy="88" rx="34" ry="7" fill="#cbd5e1"/>
-      <ellipse cx="50" cy="86" rx="34" ry="6" fill="#e2e8f0"/>
-      <path d="M24 34 L28 76 Q28 82 36 82 L64 82 Q72 82 72 76 L76 34 Z" fill="#ffffff" stroke="#94a3b8" strokeWidth="2.5"/>
-      <path d="M27 38 L30 74 Q30 78 36 78 L64 78 Q70 78 70 74 L73 38 Z" fill={liquid}/>
-      <ellipse cx="50" cy="38" rx="22" ry="5" fill={liquidTop}/>
-      <path d="M76 42 Q90 42 90 54 Q90 66 74 64" stroke="#94a3b8" strokeWidth="4" fill="none"/>
-      <path d="M34 42 L37 70" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round"/>
+      <defs>
+        <linearGradient id={`hc-${liquid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={liquidTop}/>
+          <stop offset="100%" stopColor={liquid}/>
+        </linearGradient>
+      </defs>
+      {/* بخار */}
+      <path d="M40 20 Q34 13 40 6 Q44 11 40 20" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" opacity="0.65"/>
+      <path d="M52 20 Q58 13 52 6 Q48 11 52 20" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" opacity="0.65"/>
+      <path d="M60 22 Q65 16 60 10" fill="none" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+      {/* طبق */}
+      <ellipse cx="50" cy="90" rx="36" ry="7" fill="#cbd5e1"/>
+      <ellipse cx="50" cy="88" rx="36" ry="6" fill="#eef2f6"/>
+      {/* المقبض */}
+      <path d="M74 44 Q90 44 90 58 Q90 70 73 67" stroke="#cbd5e1" strokeWidth="6" fill="none"/>
+      <path d="M74 46 Q86 46 86 58 Q86 67 73 65" stroke="#ffffff" strokeWidth="3" fill="none"/>
+      {/* جسم الكوب */}
+      <path d="M24 34 L28 78 Q29 84 38 84 L62 84 Q71 84 72 78 L76 34 Z" fill="#ffffff" stroke="#94a3b8" strokeWidth="2.5"/>
+      {/* السائل */}
+      <path d="M27 38 L30 76 Q31 80 38 80 L62 80 Q69 80 70 76 L73 38 Z" fill={`url(#hc-${liquid})`}/>
+      {/* سطح السائل */}
+      <ellipse cx="50" cy="38" rx="23" ry="5.5" fill={rim}/>
+      <ellipse cx="50" cy="37" rx="18" ry="3.5" fill={liquidTop} opacity="0.6"/>
+      {/* لمعة */}
+      <path d="M34 44 L37 72" stroke="rgba(255,255,255,0.55)" strokeWidth="3.5" strokeLinecap="round"/>
     </svg>
   );
 }
 
+// إيموجي معبّرة للكلمات البصرية في كل الوحدات (واضحة ومفهومة)
+const EMOJI_ART: Record<string, string> = {
+  // مشروبات
+  tea:"🍵", coffee:"☕", water:"💧", juice:"🧃", milk:"🥛",
+  // أماكن
+  school:"🏫", hospital:"🏥", market:"🏪", park:"🌳", bank:"🏦", city:"🏙️",
+  street:"🛣️", house:"🏠", restaurant:"🍽️", store:"🏬", mosque:"🕌", library:"📚",
+  // مطار وسفر
+  ticket:"🎫", passport:"🛂", gate:"🚪", plane:"✈️", bag:"🧳", airport:"🛫",
+  // طعام
+  rice:"🍚", chicken:"🍗", bread:"🍞", fish:"🐟", egg:"🥚", apple:"🍎",
+  meat:"🥩", soup:"🍲", salad:"🥗", cheese:"🧀", fruit:"🍇", cake:"🍰",
+  // طقس
+  sunny:"☀️", rainy:"🌧️", cloudy:"☁️", snowy:"❄️", windy:"💨", hot:"🔥", cold:"🧊",
+  // حيوانات
+  cat:"🐱", dog:"🐶", bird:"🐦", rabbit:"🐰", horse:"🐴", cow:"🐮", duck:"🦆",
+  // مهن
+  teacher:"👨‍🏫", doctor:"👨‍⚕️", driver:"🚗", cook:"👨‍🍳", nurse:"👩‍⚕️", police:"👮",
+};
+
 export const DRINK_ART: Record<string, ReactElement> = {
-  tea: <Cup liquid="#b45309" liquidTop="#d97706" steam />,
-  coffee: <Cup liquid="#3b2414" liquidTop="#5c3a21" steam />,
+  tea: <HotCup liquid="#a16207" liquidTop="#ca8a04" rim="#d97706"/>,
+  coffee: <HotCup liquid="#422006" liquidTop="#6b3a1a" rim="#7c4a2a"/>,
   water: (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <path d="M32 18 L36 84 Q36 88 42 88 L58 88 Q64 88 64 84 L68 18 Z" fill="#dbeafe" stroke="#60a5fa" strokeWidth="2.5" opacity="0.5"/>
-      <path d="M34 32 L37 82 Q37 85 42 85 L58 85 Q63 85 63 82 L66 32 Z" fill="#3b82f6" opacity="0.55"/>
-      <ellipse cx="50" cy="32" rx="16" ry="3.5" fill="#60a5fa"/>
-      <circle cx="45" cy="55" r="2.5" fill="#bfdbfe"/>
-      <circle cx="55" cy="65" r="2" fill="#bfdbfe"/>
-      <circle cx="48" cy="72" r="1.8" fill="#bfdbfe"/>
-      <path d="M40 36 L43 80" stroke="rgba(255,255,255,0.6)" strokeWidth="3" strokeLinecap="round"/>
+      <defs>
+        <linearGradient id="water-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#60a5fa"/>
+          <stop offset="100%" stopColor="#2563eb"/>
+        </linearGradient>
+      </defs>
+      {/* كأس */}
+      <path d="M30 16 L35 86 Q35 90 42 90 L58 90 Q65 90 65 86 L70 16 Z" fill="#eff6ff" stroke="#93c5fd" strokeWidth="2.5"/>
+      {/* الماء */}
+      <path d="M33 34 L37 83 Q37 86 42 86 L58 86 Q63 86 63 83 L67 34 Z" fill="url(#water-g)" opacity="0.75"/>
+      <ellipse cx="50" cy="34" rx="17" ry="3.5" fill="#93c5fd"/>
+      {/* فقاعات */}
+      <circle cx="44" cy="54" r="3" fill="#dbeafe" opacity="0.9"/>
+      <circle cx="56" cy="64" r="2.3" fill="#dbeafe" opacity="0.9"/>
+      <circle cx="47" cy="74" r="2" fill="#dbeafe" opacity="0.9"/>
+      {/* لمعة */}
+      <path d="M39 38 L43 82" stroke="rgba(255,255,255,0.7)" strokeWidth="3.5" strokeLinecap="round"/>
     </svg>
   ),
   juice: (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <path d="M30 26 L34 84 Q34 88 40 88 L60 88 Q66 88 66 84 L70 26 Z" fill="#fed7aa" stroke="#fb923c" strokeWidth="2.5" opacity="0.6"/>
-      <path d="M32 38 L35 82 Q35 85 40 85 L60 85 Q65 85 65 82 L68 38 Z" fill="#f97316"/>
-      <ellipse cx="50" cy="38" rx="18" ry="4" fill="#fb923c"/>
-      <rect x="56" y="14" width="5" height="40" rx="2.5" fill="#ef4444" transform="rotate(12 58 34)"/>
-      <circle cx="68" cy="32" r="9" fill="#fb923c" stroke="#ea580c" strokeWidth="1.5"/>
-      <path d="M68 23 L68 41 M59 32 L77 32 M62 26 L74 38 M74 26 L62 38" stroke="#fed7aa" strokeWidth="1.2"/>
+      <defs>
+        <linearGradient id="juice-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fb923c"/>
+          <stop offset="100%" stopColor="#ea580c"/>
+        </linearGradient>
+      </defs>
+      {/* كأس */}
+      <path d="M28 26 L33 86 Q33 90 40 90 L60 90 Q67 90 67 86 L72 26 Z" fill="#fff7ed" stroke="#fdba74" strokeWidth="2.5"/>
+      {/* العصير */}
+      <path d="M31 38 L35 84 Q35 87 40 87 L60 87 Q65 87 65 84 L69 38 Z" fill="url(#juice-g)"/>
+      <ellipse cx="50" cy="38" rx="19" ry="4" fill="#fb923c"/>
+      {/* شفّاطة */}
+      <rect x="56" y="12" width="5.5" height="42" rx="2.75" fill="#ef4444" transform="rotate(12 58 33)"/>
+      <rect x="56" y="12" width="2" height="42" rx="1" fill="#fca5a5" transform="rotate(12 58 33)"/>
+      {/* شريحة برتقال */}
+      <circle cx="70" cy="30" r="10" fill="#fb923c" stroke="#ea580c" strokeWidth="1.5"/>
+      <circle cx="70" cy="30" r="10" fill="none" stroke="#fed7aa" strokeWidth="1"/>
+      <path d="M70 20 L70 40 M60 30 L80 30 M63 23 L77 37 M77 23 L63 37" stroke="#fff7ed" strokeWidth="1.3"/>
+      {/* لمعة */}
+      <path d="M37 42 L40 82" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round"/>
     </svg>
   ),
   milk: (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <ellipse cx="50" cy="88" rx="32" ry="6" fill="#e2e8f0"/>
-      <path d="M28 30 L32 80 Q32 85 38 85 L62 85 Q68 85 68 80 L72 30 Z" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2.5"/>
-      <path d="M31 36 L34 78 Q34 82 38 82 L62 82 Q66 82 66 78 L69 36 Z" fill="#ffffff"/>
-      <ellipse cx="50" cy="36" rx="19" ry="4.5" fill="#f1f5f9"/>
-      <ellipse cx="50" cy="36" rx="10" ry="2.5" fill="#fdfdfd"/>
-      <path d="M38 40 L41 76" stroke="rgba(203,213,225,0.5)" strokeWidth="3" strokeLinecap="round"/>
-    </svg>
-  ),
-  yes: (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#dcfce7" stroke="#22c55e" strokeWidth="3"/>
-      <path d="M32 52 L45 66 L70 36" stroke="#16a34a" strokeWidth="9" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  no: (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#fee2e2" stroke="#ef4444" strokeWidth="3"/>
-      <path d="M36 36 L64 64 M64 36 L36 64" stroke="#dc2626" strokeWidth="9" fill="none" strokeLinecap="round"/>
-    </svg>
-  ),
-  please: (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#fef3c7" stroke="#f59e0b" strokeWidth="3"/>
-      <circle cx="40" cy="46" r="4" fill="#92400e"/>
-      <circle cx="60" cy="46" r="4" fill="#92400e"/>
-      <path d="M36 62 Q50 72 64 62" stroke="#92400e" strokeWidth="4" fill="none" strokeLinecap="round"/>
-    </svg>
-  ),
-  "thank you": (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#fce7f3" stroke="#ec4899" strokeWidth="3"/>
-      <path d="M50 70 C30 54 32 38 44 38 C50 38 50 44 50 46 C50 44 50 38 56 38 C68 38 70 54 50 70 Z" fill="#ec4899"/>
-    </svg>
-  ),
-  sorry: (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#e0e7ff" stroke="#6366f1" strokeWidth="3"/>
-      <circle cx="40" cy="44" r="4" fill="#3730a3"/>
-      <circle cx="60" cy="44" r="4" fill="#3730a3"/>
-      <path d="M36 66 Q50 56 64 66" stroke="#3730a3" strokeWidth="4" fill="none" strokeLinecap="round"/>
-    </svg>
-  ),
-  more: (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#dbeafe" stroke="#3b82f6" strokeWidth="3"/>
-      <path d="M50 30 L50 70 M30 50 L70 50" stroke="#2563eb" strokeWidth="10" strokeLinecap="round"/>
-    </svg>
-  ),
-  some: (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#f3e8ff" stroke="#a855f7" strokeWidth="3"/>
-      <circle cx="36" cy="50" r="6" fill="#9333ea"/>
-      <circle cx="50" cy="50" r="6" fill="#9333ea"/>
-      <circle cx="64" cy="50" r="6" fill="#9333ea"/>
-    </svg>
-  ),
-  "would like": (
-    <svg viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="38" fill="#d1fae5" stroke="#10b981" strokeWidth="3"/>
-      <path d="M50 32 C44 32 42 38 42 44 L42 58 L38 54 C35 51 31 55 34 58 L44 70 Q48 74 54 74 L62 74 Q68 74 68 66 L68 48 Q68 44 64 44 Q60 44 60 48 L60 44 Q60 40 56 40 Q52 40 52 44 L52 38 Q52 32 50 32 Z" fill="#34d399" stroke="#059669" strokeWidth="1.5"/>
+      <defs>
+        <linearGradient id="milk-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff"/>
+          <stop offset="100%" stopColor="#f1f5f9"/>
+        </linearGradient>
+      </defs>
+      {/* طبق */}
+      <ellipse cx="50" cy="90" rx="32" ry="6" fill="#e2e8f0"/>
+      {/* كوب */}
+      <path d="M28 30 L32 82 Q33 87 42 87 L58 87 Q67 87 68 82 L72 30 Z" fill="url(#milk-g)" stroke="#cbd5e1" strokeWidth="2.5"/>
+      {/* الحليب */}
+      <path d="M31 40 L34 80 Q35 84 42 84 L58 84 Q65 84 66 80 L69 40 Z" fill="#ffffff"/>
+      <ellipse cx="50" cy="40" rx="19" ry="4.5" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1"/>
+      {/* قطرات */}
+      <ellipse cx="44" cy="52" rx="3" ry="4" fill="#f1f5f9"/>
+      {/* لمعة */}
+      <path d="M37 44 L40 78" stroke="rgba(203,213,225,0.6)" strokeWidth="3" strokeLinecap="round"/>
+      {/* حافة زرقاء */}
+      <path d="M28 30 L72 30" stroke="#bfdbfe" strokeWidth="2.5" strokeLinecap="round"/>
     </svg>
   ),
 };
 
+// حوّل إيموجي إلى رمز يونيكود لرابط Twemoji
+function emojiToCodepoint(emoji: string): string {
+  const cps: string[] = [];
+  for (const ch of emoji) {
+    const cp = ch.codePointAt(0);
+    if (cp && cp !== 0xFE0F) cps.push(cp.toString(16)); // تجاهل variation selector
+  }
+  return cps.join("-");
+}
+
+// مكوّن صورة Twemoji واضحة (PNG من CDN)
+function TwemojiImg({ emoji }: { emoji: string }) {
+  const code = emojiToCodepoint(emoji);
+  const url = `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`;
+  return (
+    <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <img src={url} alt="" draggable={false}
+        style={{ width:"82%", height:"82%", objectFit:"contain" }}
+        onError={(e)=>{ // لو فشل التحميل، اعرض الإيموجي العادي
+          const t = e.currentTarget; t.style.display="none";
+          const span = t.nextElementSibling as HTMLElement; if (span) span.style.display="flex";
+        }}/>
+      <span style={{ display:"none", fontSize:46, alignItems:"center", justifyContent:"center", width:"100%", height:"100%" }}>{emoji}</span>
+    </div>
+  );
+}
+
 export function DrinkArt({ label }: { label: string }): ReactElement {
   const key = label.toLowerCase().trim();
-  return DRINK_ART[key] ?? (
+  // كل الكلمات البصرية (مشروبات وغيرها) بصور Twemoji واضحة عالية الجودة
+  if (EMOJI_ART[key]) {
+    return (
+      <svg viewBox="0 0 100 100" width="100%" height="100%" style={{ overflow:"visible" }}>
+        <circle cx="50" cy="50" r="44" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="2"/>
+        <foreignObject x="14" y="14" width="72" height="72">
+          <TwemojiImg emoji={EMOJI_ART[key]}/>
+        </foreignObject>
+      </svg>
+    );
+  }
+  // المشروبات المرسومة بـ SVG (احتياطي لو ما فيه إيموجي)
+  if (DRINK_ART[key]) return DRINK_ART[key];
+  // افتراضي
+  return (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
       <circle cx="50" cy="50" r="38" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="3"/>
-      <text x="50" y="62" fontSize="34" textAnchor="middle">🥤</text>
+      <text x="50" y="62" fontSize="34" textAnchor="middle">📦</text>
     </svg>
   );
 }

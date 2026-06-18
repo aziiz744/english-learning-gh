@@ -1,15 +1,14 @@
 import { Link, useLocation } from "wouter";
 import {
-  LayoutDashboard, Route, Trophy, Flame,
-  Shield, LogIn, LogOut, User, Menu, X, Crown, GraduationCap,
-  Sparkles, MessageCircle, BookMarked, MoreHorizontal, ChevronRight, Activity,
+  Route, Trophy, Flame,
+  Shield, LogIn, LogOut, User, Menu, X,
+  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { OwlMascot } from "@/components/owl-mascot";
-import owlImg from "@/assets/owl-mascot.png";
+import { Mascot } from "@/components/mascot";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const BOTTOM_NAV = [
   { name: "الخارطة",  href: "/",          icon: Route },
   { name: "الإنجازات", href: "/achievements", icon: Trophy },
-  { name: "معلم",      href: "/teacher",    icon: MessageCircle },
+  { name: "القراءة",   href: "/reading",    icon: BookMarked },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
 
@@ -26,8 +25,6 @@ const navigation = [
   { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
-  { name: "القواعد",        href: "/grammar",     icon: GraduationCap },
-  { name: "تحدّث مع معلم",  href: "/teacher",     icon: MessageCircle },
   { name: "عضوية Pro",      href: "/pro",         icon: Sparkles },
 ];
 
@@ -53,7 +50,7 @@ function SidebarMascot() {
   return (
     <button onClick={nextTip} className="w-full px-3 pb-3 flex items-end gap-2 cursor-pointer group" title="انقر للحصول على نصيحة جديدة">
       <div className="shrink-0 transition-transform group-hover:scale-110">
-        <OwlMascot state="auto" size={76} />
+        <Mascot state="idle" className="w-16 h-20" />
       </div>
       <AnimatePresence mode="wait">
         {visible && (
@@ -78,10 +75,20 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <img src={owlImg} alt="English Spark" className="w-10 h-10 object-contain shrink-0" draggable={false} />
+          <svg width="32" height="32" viewBox="0 0 48 48" className="shrink-0">
+            {/* دائرة التصويب */}
+            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
+            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
+            {/* السهم */}
+            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
+            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
+            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
+          </svg>
           <div>
-            <span className="font-bold text-lg text-primary tracking-tight leading-none block">English Spark</span>
-            <span className="text-xs text-muted-foreground">تعلّم، العب، تحدّث</span>
+            <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
+            <span className="text-xs text-muted-foreground">EnglishPath</span>
           </div>
         </div>
       </div>
@@ -186,7 +193,6 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
   const moreItems = [
     { name: "الإنجازات",  href: "/achievements", icon: Trophy },
     { name: "القراءة",    href: "/reading",       icon: BookMarked },
-    { name: "القواعد",    href: "/grammar",       icon: GraduationCap },
     { name: "عضوية Pro",  href: "/pro",           icon: Sparkles },
   ];
   if (user?.isAdmin) moreItems.push({ name: "لوحة الإدارة", href: "/admin", icon: Shield });
@@ -291,8 +297,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1.5">
-          <img src={owlImg} alt="English Spark" className="w-8 h-8 object-contain" draggable={false} />
-          <span className="font-bold text-sm text-primary">English Spark</span>
+          <svg width="24" height="24" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
+            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
+            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
+            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
+            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
+          </svg>
+          <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
         </div>
         {stats && stats.streak > 0 ? (
           <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1">

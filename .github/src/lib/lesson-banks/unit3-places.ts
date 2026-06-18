@@ -14,6 +14,8 @@ export const unit3PlacesBank: Record<string, TieredBank> = {
   // ── الدرس 1: أماكن في المدينة ──
   "أماكن في المدينة": {
     t0: [
+    { id:"pla-pic-1", type:"picture_match", word:"school", arabic:"مدرسة", pictureOptions:[{emoji:"",label:"school"},{emoji:"",label:"hospital"},{emoji:"",label:"market"},{emoji:"",label:"bank"}], correctAnswer:"school", explanation:"مدرسة = school", xp:10 },
+    { id:"pla-pic-2", type:"picture_match", word:"hospital", arabic:"مستشفى", pictureOptions:[{emoji:"",label:"hospital"},{emoji:"",label:"school"},{emoji:"",label:"park"},{emoji:"",label:"market"}], correctAnswer:"hospital", explanation:"مستشفى = hospital", xp:10 },
       { id:"pl1-t0-1", type:"translate", arabic:"مدرسة", options:["school","hospital","market","park"], correctAnswer:"school", explanation:"school = مدرسة 🏫", xp:10 },
       { id:"pl1-t0-2", type:"listen_select", listenSentence:"hospital", options:["hospital","school","market","bank"], correctAnswer:"hospital", explanation:"hospital = مستشفى 🏥", xp:10 },
       { id:"pl1-t0-3", type:"translate", arabic:"سوق", options:["market","park","bank","school"], correctAnswer:"market", explanation:"market = سوق 🛒", xp:10 },

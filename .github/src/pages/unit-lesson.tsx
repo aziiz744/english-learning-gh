@@ -2,19 +2,20 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
-import { getLessonMiniExercises } from "@/lib/lesson-exercises";
+import { getLessonMiniExercises, getAllStationExercises } from "@/lib/lesson-exercises";
 import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
+import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ── Lesson map ────────────────────────────────────────────────────────────────
 // كل نجمة = bank عنوانه، فيها 4 دروس داخلية (t0..t3)، كل درس 7 أسئلة
-const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; isPractice?: boolean; practiceTitles?: string[]; vocab?: {en:string;ar:string}[] }> = {
+const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: string; color: string; isReview?: boolean; reviewTitles?: string[]; crossReviewTitles?: string[]; isUnitFinal?: boolean; isChallenge?: boolean; isPractice?: boolean; practiceTitles?: string[]; vocab?: {en:string;ar:string}[] }> = {
   "drinks-1": { title: "الكلمات الأساسية", unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-2": { title: "كلمات جديدة",      unitTitle: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e" },
   "drinks-t": { title: "كنز المراجعة",     unitTitle: "قدّم واقبل المشروبات", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الكلمات الأساسية", "كلمات جديدة"] },
@@ -29,7 +30,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 2: قدّم نفسك وعائلتك ──
   "intro-1": { title: "ما اسمك؟",       unitTitle: "قدّم نفسك وعائلتك", emoji: "👋", color: "#7c3aed" },
   "intro-2": { title: "من أين أنت؟",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🌍", color: "#7c3aed" },
-  "intro-t": { title: "كنز المراجعة",   unitTitle: "قدّم نفسك وعائلتك", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["ما اسمك؟", "من أين أنت؟"] },
+  "intro-t": { title: "كنز المراجعة",   unitTitle: "قدّم نفسك وعائلتك", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["ما اسمك؟", "من أين أنت؟"], crossReviewTitles: ["الكلمات الأساسية"] },
   "intro-3": { title: "عائلتك",         unitTitle: "قدّم نفسك وعائلتك", emoji: "👨‍👩‍👧", color: "#7c3aed" },
   "intro-c": { title: "تحدي الوحدة",    unitTitle: "قدّم نفسك وعائلتك", emoji: "🏆", color: "#7c3aed", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -41,7 +42,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 3: قل من أين أنت؟ (الأماكن والاتجاهات) ──
   "places-1": { title: "أماكن في المدينة", unitTitle: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a" },
   "places-2": { title: "أين تقع؟",         unitTitle: "قل من أين أنت؟", emoji: "📍", color: "#d4622a" },
-  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"] },
+  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"], crossReviewTitles: ["الكلمات الأساسية", "ما اسمك؟"] },
   "places-3": { title: "الاتجاهات",        unitTitle: "قل من أين أنت؟", emoji: "🧭", color: "#d4622a" },
   "places-c": { title: "تحدي الوحدة",      unitTitle: "قل من أين أنت؟", emoji: "🏆", color: "#d4622a", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -54,7 +55,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "airport-1": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "✈️", color: "#0891b2" },
   "airport-2": { title: "جمل السفر",  unitTitle: "تنقل في المطار", emoji: "🧳", color: "#0891b2" },
   "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" , isPractice: true, practiceTitles: ["في المطار", "جمل السفر", "في الطائرة"] },
-  "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"] },
+  "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"], crossReviewTitles: ["ما اسمك؟", "أماكن في المدينة"] },
   "airport-3": { title: "في الطائرة", unitTitle: "تنقل في المطار", emoji: "💺", color: "#0891b2" },
   "airport-c": { title: "تحدي الوحدة", unitTitle: "تنقل في المطار", emoji: "🏆", color: "#0891b2", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -67,7 +68,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "adj-1": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e" },
   "adj-2": { title: "صف الأشياء",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🖌️", color: "#22a55e" },
   "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" , isPractice: true, practiceTitles: ["الصفات الأساسية", "صف الأشياء", "قارن بين الأشياء"] },
-  "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"] },
+  "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"], crossReviewTitles: ["أماكن في المدينة", "في المطار"] },
   "adj-3": { title: "قارن بين الأشياء", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "⚖️", color: "#22a55e" },
   "adj-c": { title: "تحدي الوحدة",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏆", color: "#22a55e", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -80,7 +81,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "food-1": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777" },
   "food-2": { title: "في المطعم",       unitTitle: "اطلب الطعام والمشروبات", emoji: "🍴", color: "#db2777" },
   "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" , isPractice: true, practiceTitles: ["أسماء الأطعمة", "في المطعم", "المشروبات والحلويات"] },
-  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"] },
+  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"], crossReviewTitles: ["في المطار", "الصفات الأساسية"] },
   "food-3": { title: "المشروبات والحلويات", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍰", color: "#db2777" },
   "food-c": { title: "تحدي الوحدة",     unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#db2777", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -93,7 +94,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pj-1": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a" },
   "pj-2": { title: "جمل المضارع",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "✍️", color: "#16a34a" },
   "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" , isPractice: true, practiceTitles: ["أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
-  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"] },
+  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"], crossReviewTitles: ["الصفات الأساسية", "أسماء الأطعمة"] },
   "pj-3": { title: "اسأل عن المهن", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "❓", color: "#16a34a" },
   "pj-c": { title: "تحدي الوحدة",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -106,7 +107,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pr-1": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c" },
   "pr-2": { title: "روتينك اليومي", unitTitle: "استخدم الزمن المضارع", emoji: "🌅", color: "#fb923c" },
   "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" , isPractice: true, practiceTitles: ["أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
-  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"] },
+  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"], crossReviewTitles: ["أسماء الأطعمة", "أفعال المهن"] },
   "pr-3": { title: "الكلمات الزمنية", unitTitle: "استخدم الزمن المضارع", emoji: "📅", color: "#fb923c" },
   "pr-c": { title: "تحدي الوحدة",   unitTitle: "استخدم الزمن المضارع", emoji: "🏆", color: "#fb923c", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -119,7 +120,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "wt-1": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🌤️", color: "#f87171" },
   "wt-2": { title: "صف الطقس",      unitTitle: "تحدث عن الطقس", emoji: "🌡️", color: "#f87171" },
   "wt-p": { title: "كلمات الطقس",   unitTitle: "تحدث عن الطقس", emoji: "🏋️", color: "#f87171" , isPractice: true, practiceTitles: ["كلمات الطقس", "صف الطقس", "الفصول الأربعة"] },
-  "wt-t": { title: "كنز المراجعة",  unitTitle: "تحدث عن الطقس", emoji: "💎", color: "#f87171", isReview: true, reviewTitles: ["كلمات الطقس", "صف الطقس"] },
+  "wt-t": { title: "كنز المراجعة",  unitTitle: "تحدث عن الطقس", emoji: "💎", color: "#f87171", isReview: true, reviewTitles: ["كلمات الطقس", "صف الطقس"], crossReviewTitles: ["أفعال المهن", "أفعال يومية"] },
   "wt-3": { title: "الفصول الأربعة", unitTitle: "تحدث عن الطقس", emoji: "🍂", color: "#f87171" },
   "wt-c": { title: "تحدي الوحدة",   unitTitle: "تحدث عن الطقس", emoji: "🏆", color: "#f87171", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -132,7 +133,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pet-1": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐾", color: "#a78bfa" },
   "pet-2": { title: "صف حيوانك",       unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🐱", color: "#a78bfa" },
   "pet-p": { title: "أسماء الحيوانات", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏋️", color: "#a78bfa" , isPractice: true, practiceTitles: ["أسماء الحيوانات", "صف حيوانك", "العناية بالحيوان"] },
-  "pet-t": { title: "كنز المراجعة",    unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "💎", color: "#a78bfa", isReview: true, reviewTitles: ["أسماء الحيوانات", "صف حيوانك"] },
+  "pet-t": { title: "كنز المراجعة",    unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "💎", color: "#a78bfa", isReview: true, reviewTitles: ["أسماء الحيوانات", "صف حيوانك"], crossReviewTitles: ["أفعال يومية", "كلمات الطقس"] },
   "pet-3": { title: "العناية بالحيوان", unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🦴", color: "#a78bfa" },
   "pet-c": { title: "تحدي الوحدة",     unitTitle: "تحدث عن حيواناتك الأليفة", emoji: "🏆", color: "#a78bfa", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -264,21 +265,14 @@ function playGemSparkle() {
 
 // ── Hearts ────────────────────────────────────────────────────────────────────
 function Hearts({ count, isPro }: { count: number; isPro: boolean }) {
-  if (isPro) return (
-    <div className="flex items-center gap-1">
-      {[0,1,2,3,4].map(i => (
-        <Heart key={i} className="w-4 h-4 fill-blue-400 text-blue-400" />
-      ))}
-      <span className="text-xs text-blue-400 font-bold mr-1">∞</span>
-    </div>
-  );
   return (
-    <div className="flex items-center gap-1">
-      {[0,1,2,3,4].map(i => (
-        <motion.div key={i} animate={i === count ? { scale:[1,1.5,1] } : {}} transition={{ duration:0.3 }}>
-          <Heart className={cn("w-4 h-4 transition-all", i < count ? "fill-red-500 text-red-500" : "text-muted-foreground/20 fill-muted-foreground/10")} />
-        </motion.div>
-      ))}
+    <div className="flex items-center gap-1.5 flex-shrink-0">
+      <span className={cn("text-sm font-extrabold", isPro ? "text-blue-400" : "text-red-500")}>
+        {isPro ? "∞" : count}
+      </span>
+      <motion.div animate={{ scale:[1,1.15,1] }} transition={{ duration:0.3 }} key={count}>
+        <Heart className={cn("w-6 h-6", isPro ? "fill-blue-400 text-blue-400" : "fill-red-500 text-red-500")} />
+      </motion.div>
     </div>
   );
 }
@@ -298,30 +292,43 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
   correct: boolean; explanation: string; correctAnswer?: string;
   onNext: () => void; color: string;
 }) {
+  // رسائل تشجيع متنوّعة
+  const okMsgs = ["إجابة صحيحة! 🎉", "ممتاز! 🌟", "أحسنت! 👏", "رائع! 💪", "بالضبط! ✨"];
+  const noMsgs = ["لا بأس، تعلّمنا شيئاً! 💪", "قريب! حاول التذكّر 🤔", "لا تيأس، المحاولة القادمة! 🌱"];
+  const msg = correct
+    ? okMsgs[Math.floor(Math.random()*okMsgs.length)]
+    : noMsgs[Math.floor(Math.random()*noMsgs.length)];
   return (
     <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
       className={cn("rounded-2xl border-2 overflow-hidden", correct ? "bg-green-500/10 border-green-500/40" : "bg-red-500/10 border-red-500/40")}>
       {/* Top bar */}
-      <div className={cn("px-4 py-2.5 flex items-center gap-2", correct ? "bg-green-500/15" : "bg-red-500/15")}>
-        <span className="text-xl">{correct ? "✅" : "❌"}</span>
-        <h4 className={cn("font-bold text-base", correct ? "text-green-400" : "text-red-400")}>
-          {correct ? "إجابة صحيحة! أحسنت 🎉" : "إجابة خاطئة — لا تيأس!"}
-        </h4>
+      <div className={cn("px-4 py-3 flex items-center gap-2.5", correct ? "bg-green-500/15" : "bg-red-500/15")}>
+        <span className="text-2xl">{correct ? "✅" : "❌"}</span>
+        <h4 className={cn("font-extrabold text-base", correct ? "text-green-400" : "text-red-400")}>{msg}</h4>
       </div>
       {/* Body */}
-      <div className="px-4 py-3 space-y-2">
+      <div className="px-4 py-3 space-y-2.5">
         {!correct && correctAnswer && (
           <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
-            <Check className="w-4 h-4 text-green-400 shrink-0" />
-            <span className="text-sm text-muted-foreground">الإجابة الصحيحة: </span>
-            <span className="text-green-400 font-bold">{correctAnswer}</span>
+            <Check className="w-5 h-5 text-green-400 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة</div>
+              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>{correctAnswer}</div>
+            </div>
+            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:38, height:38, borderRadius:10, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:18, flexShrink:0 }}>🔊</button>
           </div>
         )}
-        {explanation && <p className="text-xs text-muted-foreground leading-relaxed">{explanation}</p>}
+        {explanation && (
+          <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background:`${color}10`, border:`1px solid ${color}30` }}>
+            <span style={{ fontSize:16 }}>💡</span>
+            <p className="text-sm leading-relaxed flex-1" style={{ color:"hsl(var(--foreground))", direction:"rtl" }}>{explanation}</p>
+          </div>
+        )}
         <button onClick={onNext}
-          style={{ width:"100%", padding:"13px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
-            background: correct ? "#22c55e" : "hsl(var(--primary))", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-          التالي <ArrowRight size={18}/>
+          style={{ width:"100%", padding:"14px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
+            background: correct ? "#22c55e" : color, color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+            boxShadow: correct ? "0 4px 0 #16a34a" : `0 4px 0 ${color}99` }}>
+          متابعة <ArrowRight size={18}/>
         </button>
       </div>
     </motion.div>
@@ -377,27 +384,27 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       {/* شارة كلمة جديدة + التعليمة */}
       <div style={{ textAlign:"center", marginBottom:20 }}>
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
-          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
-          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"white" }}>✦</span>
+          <span style={{ fontSize:13, fontWeight:800, color }}>🔤 ترتيب الجملة</span>
         </div>
-        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
-          رتّب الترجمة الصحيحة
+        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", marginBottom:4 }}>
+          رتّب الكلمات لتكوين الجملة الصحيحة
+        </div>
+        <div style={{ fontSize:12.5, color:"hsl(var(--muted-foreground))", direction:"rtl" }}>
+          استمع للجملة 🔊 ثم اضغط الكلمات بالترتيب الصحيح
         </div>
       </div>
 
-      {/* فقاعة الكلام + زر الصوت */}
-      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:10, marginBottom:24 }}>
-        <button onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
-          style={{ display:"flex", alignItems:"center", gap:10, background:"hsl(var(--card))", border:`2px solid hsl(var(--border))`, borderRadius:16, padding:"12px 18px", cursor:"pointer", boxShadow:"0 2px 0 hsl(var(--border))" }}>
-          <span style={{ width:30, height:30, borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          </span>
-          <span style={{ fontSize:17, fontWeight:800, color:"hsl(var(--foreground))" }}>{ex.correctAnswer}</span>
-        </button>
-        <button onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
-          style={{ width:46, height:46, borderRadius:14, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span style={{ fontSize:22 }}>🐢</span>
-        </button>
+      {/* أزرار الصوت فقط — بدون عرض الجملة (حتى يستمع المتعلّم) */}
+      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:14, marginBottom:24 }}>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
+          style={{ width:84, height:84, borderRadius:22, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 0 ${color}99, 0 8px 20px ${color}40` }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </motion.button>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
+          style={{ width:64, height:64, borderRadius:18, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 4px 0 ${color}30` }}>
+          <span style={{ fontSize:30 }}>🐢</span>
+        </motion.button>
       </div>
 
       {/* منطقة الإجابة — سطران بخطوط */}
@@ -459,7 +466,8 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
     <div>
       {/* التعليمة */}
       <div style={{ textAlign:"center", marginBottom:22 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:10 }}>اختر الترجمة الصحيحة</div>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔄 الترجمة</div>
+        <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:12, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة للكلمة التالية</div>
         <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
@@ -512,7 +520,10 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>استمع واختر ما سمعته</div>
+      <div style={{ textAlign:"center", marginBottom:18 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🎧 الاستماع</div>
+        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
+      </div>
       {/* Audio buttons: عادي + سلحفاة بطيء */}
       <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:14 }}>
         {/* عادي — كبير */}
@@ -568,10 +579,10 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
     <div>
       {/* شارة كلمة جديدة + السؤال */}
       <div style={{ textAlign:"center", marginBottom:26 }}>
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:10 }}>
-          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
-          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11 }}>✦</span>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>🖼️ مطابقة الصورة</span>
         </div>
+        <div style={{ fontSize:12.5, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:8, direction:"rtl" }}>اختر الصورة التي تدل على الكلمة</div>
         <div style={{ fontSize:21, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
           أي واحدة من هذه "{arabicWord}"؟
         </div>
@@ -623,7 +634,10 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>أكمل الفراغ بالكلمة الصحيحة</div>
+      <div style={{ textAlign:"center", marginBottom:18 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>✏️ إكمال الفراغ</div>
+        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>اختر الكلمة المناسبة لإكمال الجملة</div>
+      </div>
       {/* Audio */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:24 }}>
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), 0.85, ex.id)}
@@ -707,6 +721,11 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
   return (
     <div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", marginBottom:18 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔗 المطابقة</div>
+        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>اضغط الكلمة الإنجليزية ثم معناها بالعربية</div>
+      </div>
       <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
         <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:8 }}>
           {enCol.map(p=>{
@@ -1114,12 +1133,33 @@ function GameOverScreen({ score, total, isPro, onRetry, onBack }: {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
+// ── نصائح القواعد المبسّطة لكل وحدة (تظهر قبل بداية الدرس) ──
+const GRAMMAR_TIPS: Record<string, { title: string; tip: string; example: string }> = {
+  drinks:  { title: "الطلب بأدب", tip: "نستخدم please للطلب بأدب، وthank you للشكر. نضعها عادة في نهاية الجملة.", example: "Tea, please. — شاي، من فضلك" },
+  intro:   { title: "فعل الكينونة am/is/are", tip: "مع I نستخدم am، ومع he/she/it نستخدم is، ومع you/we/they نستخدم are.", example: "I am Ali. — He is a teacher." },
+  places:  { title: "السؤال بـ Where", tip: "نبدأ سؤال المكان بـ Where (أين)، ونستخدم in/at للموقع.", example: "Where is the school? — أين المدرسة؟" },
+  airport: { title: "أداة التعريف the", tip: "نستخدم the عند الحديث عن شيء محدّد معروف للطرفين.", example: "Where is the gate? — أين البوابة؟" },
+  adj:     { title: "موضع الصفة", tip: "في الإنجليزية الصفة تأتي قبل الاسم، عكس العربية.", example: "a big house — بيت كبير (الصفة أولاً)" },
+  food:    { title: "طلب الطعام", tip: "نستخدم I would like (أودّ) للطلب المهذّب في المطعم.", example: "I would like rice. — أودّ أرزاً" },
+  pj:      { title: "إضافة s للغائب", tip: "مع he/she/it نضيف s إلى الفعل في المضارع.", example: "He works. — She teaches." },
+  pr:      { title: "ظروف التكرار", tip: "always (دائماً)، usually (عادة)، sometimes (أحياناً)، never (أبداً) تأتي قبل الفعل.", example: "I always eat breakfast." },
+  wt:      { title: "وصف الطقس بـ It is", tip: "نبدأ وصف الطقس بـ It is (الجو...).", example: "It is sunny. — الجو مشمس" },
+  pet:     { title: "الملكية بـ have/has", tip: "نستخدم have مع I/you/we/they، وhas مع he/she/it.", example: "I have a cat. — She has a dog." },
+};
+function grammarTipForLesson(lessonId: string): { title: string; tip: string; example: string } | null {
+  const sorted = Object.keys(GRAMMAR_TIPS).sort((a,b)=>b.length-a.length);
+  for (const pre of sorted) {
+    if (lessonId.startsWith(pre + "-")) return GRAMMAR_TIPS[pre];
+  }
+  return null;
+}
+
 const MAX_HEARTS = 5;
 
 export default function UnitLesson() {
   const { id, unitId } = useParams<{ id: string; unitId: string }>();
   const [, setLocation] = useLocation();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, login } = useAuth();
   const { playCorrect, playWrong, playComplete } = useSound();
 
   // وضع القفز: المسار /jump/:unitId (نكتشفه عبر وجود unitId param)
@@ -1157,6 +1197,13 @@ export default function UnitLesson() {
   useEffect(() => {
     if (meta?.isPractice && !isJumpMode) setShowPracticeIntro(true);
   }, [meta, isJumpMode]);
+  // نصيحة القواعد — تظهر مرة عند بداية الدرس الأول في الوحدة
+  const grammarTip = id ? grammarTipForLesson(id) : null;
+  const [showGrammarTip, setShowGrammarTip] = useState(false);
+  useEffect(() => {
+    // اعرضها فقط في الدرس الأول من الوحدة (ينتهي بـ -1) وليس في القفز
+    if (id && /-1$/.test(id) && grammarTip && !isJumpMode) setShowGrammarTip(true);
+  }, [id, isJumpMode]);
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
   const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -1210,15 +1257,48 @@ export default function UnitLesson() {
           return true;
         }).sort(() => Math.random() - 0.5).slice(0, 10);
       } else if (meta.isReview && meta.reviewTitles) {
-        // كنز المراجعة — اجمع أسئلة سهلة (t0,t1) من الدروس السابقة
+        // كنز المراجعة — أسئلة من الوحدة الحالية + مراجعة تراكمية من وحدات سابقة
         raw = [];
+        // 6 أسئلة سهلة من الوحدة الحالية
         meta.reviewTitles.forEach((title: string) => {
-          raw.push(...getLessonMiniExercises(title, 4, 0));
-          raw.push(...getLessonMiniExercises(title, 3, 1));
+          raw.push(...getLessonMiniExercises(title, 3, 0));
+          raw.push(...getLessonMiniExercises(title, 2, 1));
         });
-        raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
+        let current = raw.sort(() => Math.random() - 0.5).slice(0, 6);
+        // 3 أسئلة تراكمية من وحدات سابقة (تثبيت ومنع النسيان)
+        let crossReview: ExObj[] = [];
+        if (meta.crossReviewTitles && meta.crossReviewTitles.length > 0) {
+          meta.crossReviewTitles.forEach((title: string) => {
+            crossReview.push(...getLessonMiniExercises(title, 2, 0));
+          });
+          crossReview = crossReview.sort(() => Math.random() - 0.5).slice(0, 3);
+        }
+        // ادمج: أسئلة الوحدة + المراجعة التراكمية، بدون تكرار
+        const seen = new Set<string>();
+        raw = [...current, ...crossReview].filter(ex => {
+          if (seen.has(ex.id)) return false;
+          seen.add(ex.id); return true;
+        });
       } else {
-        raw = getLessonMiniExercises(meta.title, 7, tier as 0|1|2|3);
+        // درس داخلي عادي — وزّع أسئلة المحطة على 4 دروس مع توازن الأنماط
+        const t = (tier as 0|1|2|3);
+        const all = getAllStationExercises(meta.title);
+        // جمّع الأسئلة حسب النوع
+        const byType: Record<string, ExObj[]> = {};
+        all.forEach(ex => { (byType[ex.type] ??= []).push(ex); });
+        // وزّع كل نوع بالتناوب على الدروس الأربعة
+        const slice: ExObj[] = [];
+        Object.values(byType).forEach(list => {
+          list.forEach((ex, i) => { if (i % 4 === t) slice.push(ex); });
+        });
+        // رتّب الشريحة: الأنماط النادرة (مثل الصور) أولاً حتى لا تُقصّ عند التحديد بـ 8
+        const RARITY: Record<string, number> = { picture_match: 0, matching: 1, listen_select: 2, fill_blank: 3, word_order: 4, translate: 5 };
+        slice.sort((a, b) => (RARITY[a.type] ?? 9) - (RARITY[b.type] ?? 9));
+        // خذ أول 8 (تضمن وجود الصور)، ثم اخلط الترتيب النهائي
+        let chosen = slice.length >= 6 ? slice.slice(0, 8)
+                   : [...slice, ...all.filter(e => !slice.includes(e))].slice(0, 8);
+        // اخلط الترتيب حتى لا تكون كل الصور في البداية دائماً
+        raw = chosen.sort(() => Math.random() - 0.5);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
@@ -1405,6 +1485,31 @@ export default function UnitLesson() {
   const ex = queue[0];
 
 
+  // ── بوابة تسجيل الدخول — لا يمكن دخول الدروس بدون حساب ──
+  if (!authLoading && !user) return (
+    <Layout>
+      <div style={{ maxWidth:400, margin:"0 auto", padding:"40px 20px", minHeight:"calc(100svh - 160px)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
+        <div style={{ marginBottom:8 }}>
+          <Mascot state="thinking" className="w-28 h-32"/>
+        </div>
+        <div style={{ fontSize:54, marginBottom:4 }}>🔒</div>
+        <h2 style={{ fontWeight:900, fontSize:23, marginBottom:12, color:"hsl(var(--foreground))" }}>سجّل دخولك أولاً</h2>
+        <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:28 }}>
+          لبدء الدروس وحفظ تقدّمك وجمع الجواهر والحفاظ على سلسلتك اليومية، تحتاج إلى تسجيل الدخول. إنه مجاني وسريع! 🚀
+        </p>
+        <button onClick={login}
+          style={{ width:"100%", maxWidth:300, padding:"15px", background:meta?.color ?? "hsl(var(--primary))", color:"white", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 5px 0 ${meta?.color ?? "hsl(var(--primary))"}99`, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 11v2h5.59c-.5 2.3-2.5 4-5.59 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.5 0 2.85.55 3.9 1.45L17.4 5.4C15.95 4.05 14.07 3.2 12 3.2 7.03 3.2 3 7.23 3 12s4.03 8.8 9 8.8c5.2 0 8.6-3.65 8.6-8.8 0-.55-.05-1.1-.15-1.6H12z"/></svg>
+          تسجيل الدخول بـ Google
+        </button>
+        <button onClick={()=>setLocation("/")}
+          style={{ marginTop:14, padding:"10px 20px", background:"transparent", color:"hsl(var(--muted-foreground))", border:"none", fontWeight:700, fontSize:14, cursor:"pointer" }}>
+          العودة للخارطة
+        </button>
+      </div>
+    </Layout>
+  );
+
   if (!meta) return (
     <Layout>
       <div style={{ textAlign:"center", padding:60 }}>
@@ -1444,6 +1549,35 @@ export default function UnitLesson() {
           onRetry={()=>loadExercises(subLesson)}
           onBack={()=>setLocation("/roadmap")}/>}
 
+        {/* ── لوحة نصيحة القواعد (بداية الوحدة) ── */}
+        {showGrammarTip && grammarTip && phase === "playing" && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}}
+            style={{ position:"fixed", inset:0, background:"hsl(var(--background))", zIndex:81, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+            <motion.div initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} className="max-w-sm mx-auto" style={{ width:"100%" }}>
+              <div style={{ textAlign:"center", marginBottom:18 }}>
+                <div style={{ fontSize:52, marginBottom:8 }}>💡</div>
+                <div style={{ display:"inline-block", background:`${meta.color}18`, color:meta.color, fontWeight:800, fontSize:13, padding:"5px 16px", borderRadius:20, marginBottom:10 }}>
+                  قاعدة سريعة
+                </div>
+                <h2 style={{ fontWeight:900, fontSize:21, color:meta.color, marginBottom:14, direction:"rtl" }}>{grammarTip.title}</h2>
+              </div>
+              {/* النصيحة */}
+              <div style={{ background:"hsl(var(--card))", border:`2px solid hsl(var(--border))`, borderRadius:16, padding:"18px 20px", marginBottom:14, direction:"rtl" }}>
+                <p style={{ fontSize:15, lineHeight:1.8, color:"hsl(var(--foreground))", margin:0 }}>{grammarTip.tip}</p>
+              </div>
+              {/* المثال */}
+              <div style={{ background:`${meta.color}10`, border:`2px solid ${meta.color}40`, borderRadius:16, padding:"14px 20px", marginBottom:24, textAlign:"center" }}>
+                <div style={{ fontSize:11, fontWeight:700, color:meta.color, marginBottom:6 }}>مثال</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"hsl(var(--foreground))", direction:"ltr" }}>{grammarTip.example}</div>
+              </div>
+              <button onClick={()=>setShowGrammarTip(false)}
+                style={{ width:"100%", padding:"15px", background:`linear-gradient(135deg, ${lightColor(meta.color)}, ${meta.color})`, color:"white", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 5px 0 ${meta.color}99` }}>
+                فهمت، لنبدأ! 🚀
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* ── لوحة تمهيدية لدرس الدمبل (تمرين إضافي) ── */}
         {showPracticeIntro && phase === "playing" && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}}
@@ -1468,34 +1602,30 @@ export default function UnitLesson() {
         )}
 
         {phase === "playing" && <>
-          {/* Top bar */}
-          <div style={{ display:"flex", alignItems:"center", gap:8, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
-            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>✕</button>
-            <div style={{ flex:1, height:12, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
-              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 8px ${meta.color}80` }} transition={{ duration:0.4 }}/>
-            </div>
-            {/* Show hearts only when pro status is loaded */}
+          {/* Top bar — قلب يسار · شريط أخضر · X يمين (ستايل Duolingo) */}
+          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
+            {/* القلوب — يسار */}
             {proLoaded && <Hearts count={hearts} isPro={isPro}/>}
-          </div>
-
-          {/* Lesson label */}
-          <div style={{ textAlign:"center", marginBottom:20, flexShrink:0 }}>
-            <div style={{ fontSize:12, color:"hsl(var(--muted-foreground))", marginBottom:3 }}>{meta.unitTitle} {meta.emoji}</div>
-            <div style={{ fontWeight:900, fontSize:19, color:meta.color }}>{meta.title}</div>
+            {/* شريط التقدم */}
+            <div style={{ flex:1, height:14, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
+              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10 }} transition={{ duration:0.4 }}>
+                {/* لمعة علوية */}
+                <div style={{ height:"40%", margin:"2px 6px 0", background:"rgba(255,255,255,0.35)", borderRadius:6 }}/>
+              </motion.div>
+            </div>
+            {/* زر الإغلاق — يمين */}
+            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20, color:"hsl(var(--muted-foreground))" }}>✕</button>
           </div>
 
           {/* Main content area */}
           <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
-            <AnimatePresence initial={false}>
+            <AnimatePresence mode="wait" initial={false}>
               {ex && (
                 <motion.div key={ex.id}
-                  initial={{opacity:0,x:24}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-24,position:"absolute"}}
-                  transition={{duration:0.15,ease:"easeOut"}}
+                  initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                  transition={{duration:0.18,ease:"easeInOut"}}
                   style={{width:"100%"}}>
-                  <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.08em" }}>
-                    {ex.type==="word_order"?"🔤 رتّب الكلمات":ex.type==="translate"?"🔄 اختر الترجمة":ex.type==="listen_select"?"🎧 استمع واختر":ex.type==="fill_blank"?"✏️ اتبع النمط":ex.type==="matching"?"🔗 الأزواج المتطابقة":"🖼️ طابق الصورة"}
-                  </div>
                   {ex.type==="word_order"    && <WordOrderQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="translate"     && <TranslateQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
