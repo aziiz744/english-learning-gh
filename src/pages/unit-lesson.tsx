@@ -371,11 +371,13 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       {/* شارة كلمة جديدة + التعليمة */}
       <div style={{ textAlign:"center", marginBottom:20 }}>
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
-          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
-          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"white" }}>✦</span>
+          <span style={{ fontSize:13, fontWeight:800, color }}>🔤 ترتيب الجملة</span>
         </div>
-        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
-          رتّب الترجمة الصحيحة
+        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", marginBottom:4 }}>
+          رتّب الكلمات لتكوين الجملة الصحيحة
+        </div>
+        <div style={{ fontSize:12.5, color:"hsl(var(--muted-foreground))", direction:"rtl" }}>
+          استمع للجملة 🔊 ثم اضغط الكلمات بالترتيب الصحيح
         </div>
       </div>
 
@@ -453,7 +455,8 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
     <div>
       {/* التعليمة */}
       <div style={{ textAlign:"center", marginBottom:22 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:10 }}>اختر الترجمة الصحيحة</div>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔄 الترجمة</div>
+        <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:12, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة للكلمة التالية</div>
         <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
@@ -506,7 +509,10 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>استمع واختر ما سمعته</div>
+      <div style={{ textAlign:"center", marginBottom:18 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🎧 الاستماع</div>
+        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
+      </div>
       {/* Audio buttons: عادي + سلحفاة بطيء */}
       <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:14 }}>
         {/* عادي — كبير */}
@@ -562,10 +568,10 @@ function PictureQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer:
     <div>
       {/* شارة كلمة جديدة + السؤال */}
       <div style={{ textAlign:"center", marginBottom:26 }}>
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:10 }}>
-          <span style={{ fontSize:13, fontWeight:800, color }}>كلمة جديدة</span>
-          <span style={{ width:20, height:20, borderRadius:"50%", background:color, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:11 }}>✦</span>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>🖼️ مطابقة الصورة</span>
         </div>
+        <div style={{ fontSize:12.5, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:8, direction:"rtl" }}>اختر الصورة التي تدل على الكلمة</div>
         <div style={{ fontSize:21, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl" }}>
           أي واحدة من هذه "{arabicWord}"؟
         </div>
@@ -617,7 +623,10 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", fontSize:13, fontWeight:800, color, marginBottom:18 }}>أكمل الفراغ بالكلمة الصحيحة</div>
+      <div style={{ textAlign:"center", marginBottom:18 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>✏️ إكمال الفراغ</div>
+        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>اختر الكلمة المناسبة لإكمال الجملة</div>
+      </div>
       {/* Audio */}
       <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:24 }}>
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak((ex.blankSentence??"").replace("___", picked ?? ex.correctAnswer), 0.85, ex.id)}
@@ -701,6 +710,11 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
 
   return (
     <div>
+      {/* التعليمة */}
+      <div style={{ textAlign:"center", marginBottom:18 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔗 المطابقة</div>
+        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>اضغط الكلمة الإنجليزية ثم معناها بالعربية</div>
+      </div>
       <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
         <div style={{ flex:1, maxWidth:200, display:"flex", flexDirection:"column", gap:8 }}>
           {enCol.map(p=>{
