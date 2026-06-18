@@ -308,13 +308,15 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
           <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
             <Check className="w-4 h-4 text-green-400 shrink-0" />
             <span className="text-sm text-muted-foreground">الإجابة الصحيحة: </span>
-            <span className="text-green-400 font-bold">{correctAnswer}</span>
+            <span className="text-green-400 font-bold flex-1">{correctAnswer}</span>
+            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:18, opacity:0.7 }}>🔊</button>
           </div>
         )}
         {explanation && <p className="text-xs text-muted-foreground leading-relaxed">{explanation}</p>}
         <button onClick={onNext}
-          style={{ width:"100%", padding:"13px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
-            background: correct ? "#22c55e" : "hsl(var(--primary))", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+          style={{ width:"100%", padding:"14px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
+            background: correct ? "#22c55e" : "hsl(var(--primary))", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+            boxShadow: correct ? "0 4px 0 #16a34a" : "0 4px 0 rgba(0,0,0,0.2)" }}>
           التالي <ArrowRight size={18}/>
         </button>
       </div>
@@ -381,19 +383,17 @@ function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
         </div>
       </div>
 
-      {/* فقاعة الكلام + زر الصوت */}
-      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:10, marginBottom:24 }}>
-        <button onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
-          style={{ display:"flex", alignItems:"center", gap:10, background:"hsl(var(--card))", border:`2px solid hsl(var(--border))`, borderRadius:16, padding:"12px 18px", cursor:"pointer", boxShadow:"0 2px 0 hsl(var(--border))" }}>
-          <span style={{ width:30, height:30, borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          </span>
-          <span style={{ fontSize:17, fontWeight:800, color:"hsl(var(--foreground))" }}>{ex.correctAnswer}</span>
-        </button>
-        <button onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
-          style={{ width:46, height:46, borderRadius:14, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span style={{ fontSize:22 }}>🐢</span>
-        </button>
+      {/* أزرار الصوت فقط — بدون عرض الجملة (حتى يستمع المتعلّم) */}
+      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:14, marginBottom:24 }}>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.correctAnswer, 0.85, ex.id)}
+          style={{ width:84, height:84, borderRadius:22, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 0 ${color}99, 0 8px 20px ${color}40` }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </motion.button>
+        <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.correctAnswer, ex.id)}
+          style={{ width:64, height:64, borderRadius:18, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 4px 0 ${color}30` }}>
+          <span style={{ fontSize:30 }}>🐢</span>
+        </motion.button>
       </div>
 
       {/* منطقة الإجابة — سطران بخطوط */}
