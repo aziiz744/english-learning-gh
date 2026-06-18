@@ -15,7 +15,32 @@ interface UserData {
   last_sign_in_at: string;
   stats?: { total_xp: number; streak: number; exercises_completed: number; is_pro: boolean };
   progress_count?: number;
+  gems?: number;
+  current_unit?: number;
+  current_unit_title?: string;
   is_online?: boolean;
+}
+
+// ترتيب الوحدات (prefix → رقم الوحدة + الاسم)
+const UNIT_ORDER: { prefix: string; num: number; title: string }[] = [
+  { prefix: "drinks", num: 1,  title: "المشروبات" },
+  { prefix: "intro",  num: 2,  title: "التعريف بالنفس" },
+  { prefix: "places", num: 3,  title: "الأماكن" },
+  { prefix: "airport",num: 4,  title: "المطار" },
+  { prefix: "adj",    num: 5,  title: "الصفات" },
+  { prefix: "food",   num: 6,  title: "الطعام" },
+  { prefix: "pj",     num: 7,  title: "المهن" },
+  { prefix: "pr",     num: 8,  title: "المضارع" },
+  { prefix: "wt",     num: 9,  title: "الطقس" },
+  { prefix: "pet",    num: 10, title: "الحيوانات" },
+];
+function unitFromLessonId(lessonId: string): { num: number; title: string } | null {
+  // طابق أطول prefix أولاً (pj قبل p مثلاً)
+  const sorted = [...UNIT_ORDER].sort((a,b)=>b.prefix.length-a.prefix.length);
+  for (const u of sorted) {
+    if (lessonId.startsWith(u.prefix + "-")) return { num: u.num, title: u.title };
+  }
+  return null;
 }
 
 export default function Admin() {
@@ -39,22 +64,37 @@ export default function Admin() {
     setLoading(true);
     try {
       const { data: stats } = await supabase.from("user_stats").select("*");
-      const { data: progress } = await supabase.from("user_progress").select("user_id, lesson_id, stars");
+      // التقدم الفعلي في جدول unit_progress (sub_progress 0-4 لكل درس)
+      const { data: progress } = await supabase.from("unit_progress").select("user_id, lesson_id, sub_progress");
       const { data: sessions } = await supabase.from("user_sessions").select("*");
 
-      // Count online (last 5 min)
+      // Count online (last 10 min)
       const fiveMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
       const online = sessions?.filter((s: any) => s.last_seen > fiveMinAgo) ?? [];
       setOnlineCount(online.length);
 
-      const progressMap: Record<string, number> = {};
-      const progressSet: Record<string, Set<string>> = {};
+      // لكل مستخدم: عدد الدروس المكتملة + الجواهر + أبعد وحدة وصلها
+      const progressMap: Record<string, number> = {};   // دروس مكتملة (sub_progress>=4)
+      const gemsMap: Record<string, number> = {};        // مجموع الجواهر
+      const unitMap: Record<string, number> = {};        // أعلى رقم وحدة فيها تقدم
       progress?.forEach((p: any) => {
-        if (!progressSet[p.user_id]) progressSet[p.user_id] = new Set();
-        progressSet[p.user_id].add(p.lesson_id);
-      });
-      Object.keys(progressSet).forEach(uid => {
-        progressMap[uid] = progressSet[uid].size;
+        const done = (p.sub_progress ?? 0) >= 4;
+        // الجواهر: كنز=20، تحدي=15، درس عادي=5 (حسب نوع الدرس من lesson_id)
+        if (done) {
+          progressMap[p.user_id] = (progressMap[p.user_id] ?? 0) + 1;
+          const lid = p.lesson_id as string;
+          let g = 5;
+          if (lid.endsWith("-t")) g = 20;       // كنز المراجعة
+          else if (lid.endsWith("-c")) g = 15;  // تحدي الوحدة
+          gemsMap[p.user_id] = (gemsMap[p.user_id] ?? 0) + g;
+        }
+        // أبعد وحدة فيها أي تقدم
+        if ((p.sub_progress ?? 0) > 0) {
+          const u = unitFromLessonId(p.lesson_id);
+          if (u && (!unitMap[p.user_id] || u.num > unitMap[p.user_id])) {
+            unitMap[p.user_id] = u.num;
+          }
+        }
       });
 
       const statsMap: Record<string, any> = {};
@@ -65,6 +105,8 @@ export default function Admin() {
 
       const userList: UserData[] = (authUsers ?? []).map((u: any) => {
         const s = statsMap[u.id];
+        const unitNum = unitMap[u.id] ?? 0;
+        const unitTitle = UNIT_ORDER.find(x => x.num === unitNum)?.title;
         return {
           id: u.id,
           email: u.email ?? `مستخدم-${u.id.slice(0, 8)}`,
@@ -72,6 +114,9 @@ export default function Admin() {
           last_sign_in_at: u.last_sign_in_at,
           stats: s,
           progress_count: progressMap[u.id] ?? 0,
+          gems: gemsMap[u.id] ?? 0,
+          current_unit: unitNum,
+          current_unit_title: unitTitle,
           is_online: online.some((o: any) => o.user_id === u.id),
         };
       });
@@ -209,10 +254,16 @@ export default function Admin() {
                           {u.email}
                           {u.stats?.is_pro && <Badge className="bg-amber-500/20 text-amber-400 text-xs">Pro</Badge>}
                         </div>
-                        <div className="text-xs text-muted-foreground flex gap-3 mt-0.5">
+                        <div className="text-xs text-muted-foreground flex gap-3 mt-0.5 flex-wrap">
                           <span>⚡ {u.stats?.total_xp ?? 0} XP</span>
-                          <span>📚 {u.progress_count} درس مكتمل</span>
+                          <span>💎 {u.gems ?? 0} جوهرة</span>
+                          <span>📚 {u.progress_count} درس</span>
                           <span>🔥 {u.stats?.streak ?? 0} يوم</span>
+                          {u.current_unit && u.current_unit > 0 ? (
+                            <span className="text-primary font-bold">📍 الوحدة {u.current_unit} ({u.current_unit_title})</span>
+                          ) : (
+                            <span className="opacity-60">📍 لم يبدأ</span>
+                          )}
                         </div>
                       </div>
                     </div>

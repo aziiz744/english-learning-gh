@@ -75,9 +75,16 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <svg width="30" height="30" viewBox="0 0 24 24" className="shrink-0">
-            <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
-              fill="#ef4444" stroke="#b91c1c" strokeWidth="1"/>
+          <svg width="32" height="32" viewBox="0 0 48 48" className="shrink-0">
+            {/* دائرة التصويب */}
+            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
+            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
+            {/* السهم */}
+            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
+            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
+            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
           </svg>
           <div>
             <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
@@ -290,9 +297,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1.5">
-          <svg width="22" height="22" viewBox="0 0 24 24">
-            <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
-              fill="#ef4444" stroke="#b91c1c" strokeWidth="1"/>
+          <svg width="24" height="24" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
+            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
+            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
+            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
+            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
+            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
           </svg>
           <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
         </div>

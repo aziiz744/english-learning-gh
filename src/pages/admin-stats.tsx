@@ -47,7 +47,7 @@ export default function AdminStats() {
       ] = await Promise.all([
         supabase.rpc("get_all_users"),
         supabase.from("user_stats").select("*"),
-        supabase.from("user_progress").select("user_id, lesson_id"),
+        supabase.from("unit_progress").select("user_id, lesson_id, sub_progress"),
         supabase.from("user_sessions").select("user_id, last_seen"),
       ]);
 
@@ -72,6 +72,7 @@ export default function AdminStats() {
       // Lesson completions (unique per user)
       const progressSet = new Map<string, Set<string>>();
       (progress as any[])?.forEach((p: any) => {
+        if ((p.sub_progress ?? 0) < 4) return; // المكتمل فقط
         if (!progressSet.has(p.user_id)) progressSet.set(p.user_id, new Set());
         progressSet.get(p.user_id)!.add(p.lesson_id);
       });
