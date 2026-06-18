@@ -36,6 +36,8 @@ function HotCup({ liquid, liquidTop, rim }: { liquid: string; liquidTop: string;
 
 // إيموجي معبّرة للكلمات البصرية في كل الوحدات (واضحة ومفهومة)
 const EMOJI_ART: Record<string, string> = {
+  // مشروبات
+  tea:"🍵", coffee:"☕", water:"💧", juice:"🧃", milk:"🥛",
   // أماكن
   school:"🏫", hospital:"🏥", market:"🏪", park:"🌳", bank:"🏦", city:"🏙️",
   street:"🛣️", house:"🏠", restaurant:"🍽️", store:"🏬", mosque:"🕌", library:"📚",
@@ -125,19 +127,48 @@ export const DRINK_ART: Record<string, ReactElement> = {
   ),
 };
 
+// حوّل إيموجي إلى رمز يونيكود لرابط Twemoji
+function emojiToCodepoint(emoji: string): string {
+  const cps: string[] = [];
+  for (const ch of emoji) {
+    const cp = ch.codePointAt(0);
+    if (cp && cp !== 0xFE0F) cps.push(cp.toString(16)); // تجاهل variation selector
+  }
+  return cps.join("-");
+}
+
+// مكوّن صورة Twemoji واضحة (PNG من CDN)
+function TwemojiImg({ emoji }: { emoji: string }) {
+  const code = emojiToCodepoint(emoji);
+  const url = `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`;
+  return (
+    <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <img src={url} alt="" draggable={false}
+        style={{ width:"82%", height:"82%", objectFit:"contain" }}
+        onError={(e)=>{ // لو فشل التحميل، اعرض الإيموجي العادي
+          const t = e.currentTarget; t.style.display="none";
+          const span = t.nextElementSibling as HTMLElement; if (span) span.style.display="flex";
+        }}/>
+      <span style={{ display:"none", fontSize:46, alignItems:"center", justifyContent:"center", width:"100%", height:"100%" }}>{emoji}</span>
+    </div>
+  );
+}
+
 export function DrinkArt({ label }: { label: string }): ReactElement {
   const key = label.toLowerCase().trim();
-  // المشروبات المرسومة بـ SVG
-  if (DRINK_ART[key]) return DRINK_ART[key];
-  // الكلمات البصرية بإيموجي كبيرة واضحة داخل دائرة
+  // كل الكلمات البصرية (مشروبات وغيرها) بصور Twemoji واضحة عالية الجودة
   if (EMOJI_ART[key]) {
     return (
-      <svg viewBox="0 0 100 100" width="100%" height="100%">
-        <circle cx="50" cy="50" r="42" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="2"/>
-        <text x="50" y="50" fontSize="48" textAnchor="middle" dominantBaseline="central">{EMOJI_ART[key]}</text>
+      <svg viewBox="0 0 100 100" width="100%" height="100%" style={{ overflow:"visible" }}>
+        <circle cx="50" cy="50" r="44" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="2"/>
+        <foreignObject x="14" y="14" width="72" height="72">
+          <TwemojiImg emoji={EMOJI_ART[key]}/>
+        </foreignObject>
       </svg>
     );
   }
+  // المشروبات المرسومة بـ SVG (احتياطي لو ما فيه إيموجي)
+  if (DRINK_ART[key]) return DRINK_ART[key];
   // افتراضي
   return (
     <svg viewBox="0 0 100 100" width="100%" height="100%">

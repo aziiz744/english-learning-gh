@@ -292,32 +292,43 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
   correct: boolean; explanation: string; correctAnswer?: string;
   onNext: () => void; color: string;
 }) {
+  // رسائل تشجيع متنوّعة
+  const okMsgs = ["إجابة صحيحة! 🎉", "ممتاز! 🌟", "أحسنت! 👏", "رائع! 💪", "بالضبط! ✨"];
+  const noMsgs = ["لا بأس، تعلّمنا شيئاً! 💪", "قريب! حاول التذكّر 🤔", "لا تيأس، المحاولة القادمة! 🌱"];
+  const msg = correct
+    ? okMsgs[Math.floor(Math.random()*okMsgs.length)]
+    : noMsgs[Math.floor(Math.random()*noMsgs.length)];
   return (
     <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
       className={cn("rounded-2xl border-2 overflow-hidden", correct ? "bg-green-500/10 border-green-500/40" : "bg-red-500/10 border-red-500/40")}>
       {/* Top bar */}
-      <div className={cn("px-4 py-2.5 flex items-center gap-2", correct ? "bg-green-500/15" : "bg-red-500/15")}>
-        <span className="text-xl">{correct ? "✅" : "❌"}</span>
-        <h4 className={cn("font-bold text-base", correct ? "text-green-400" : "text-red-400")}>
-          {correct ? "إجابة صحيحة! أحسنت 🎉" : "إجابة خاطئة — لا تيأس!"}
-        </h4>
+      <div className={cn("px-4 py-3 flex items-center gap-2.5", correct ? "bg-green-500/15" : "bg-red-500/15")}>
+        <span className="text-2xl">{correct ? "✅" : "❌"}</span>
+        <h4 className={cn("font-extrabold text-base", correct ? "text-green-400" : "text-red-400")}>{msg}</h4>
       </div>
       {/* Body */}
-      <div className="px-4 py-3 space-y-2">
+      <div className="px-4 py-3 space-y-2.5">
         {!correct && correctAnswer && (
           <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
-            <Check className="w-4 h-4 text-green-400 shrink-0" />
-            <span className="text-sm text-muted-foreground">الإجابة الصحيحة: </span>
-            <span className="text-green-400 font-bold flex-1">{correctAnswer}</span>
-            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:18, opacity:0.7 }}>🔊</button>
+            <Check className="w-5 h-5 text-green-400 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة</div>
+              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>{correctAnswer}</div>
+            </div>
+            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:38, height:38, borderRadius:10, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:18, flexShrink:0 }}>🔊</button>
           </div>
         )}
-        {explanation && <p className="text-xs text-muted-foreground leading-relaxed">{explanation}</p>}
+        {explanation && (
+          <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background:`${color}10`, border:`1px solid ${color}30` }}>
+            <span style={{ fontSize:16 }}>💡</span>
+            <p className="text-sm leading-relaxed flex-1" style={{ color:"hsl(var(--foreground))", direction:"rtl" }}>{explanation}</p>
+          </div>
+        )}
         <button onClick={onNext}
           style={{ width:"100%", padding:"14px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
-            background: correct ? "#22c55e" : "hsl(var(--primary))", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8,
-            boxShadow: correct ? "0 4px 0 #16a34a" : "0 4px 0 rgba(0,0,0,0.2)" }}>
-          التالي <ArrowRight size={18}/>
+            background: correct ? "#22c55e" : color, color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+            boxShadow: correct ? "0 4px 0 #16a34a" : `0 4px 0 ${color}99` }}>
+          متابعة <ArrowRight size={18}/>
         </button>
       </div>
     </motion.div>
@@ -1269,25 +1280,33 @@ export default function UnitLesson() {
           seen.add(ex.id); return true;
         });
       } else {
-        // درس داخلي عادي — وزّع أسئلة المحطة على 4 دروس مع توازن الأنماط
+        // درس داخلي عادي — كل درس يحوي نمطاً واحداً على الأقل من كل نوع متوفر،
+        // ثم يُملأ الباقي عشوائياً (حتى يجرّب المتعلّم كل الأنماط في كل درس)
         const t = (tier as 0|1|2|3);
         const all = getAllStationExercises(meta.title);
-        // جمّع الأسئلة حسب النوع
+        // جمّع حسب النوع
         const byType: Record<string, ExObj[]> = {};
         all.forEach(ex => { (byType[ex.type] ??= []).push(ex); });
-        // وزّع كل نوع بالتناوب على الدروس الأربعة
-        const slice: ExObj[] = [];
+        // لكل نوع، رتّب أسئلته بإزاحة الدرس (حتى تختلف بين الدروس الأربعة بدون تكرار)
+        const TARGET = 8;
+        const picked: ExObj[] = [];
+        const usedIds = new Set<string>();
+        // الجولة 1: نمط واحد من كل نوع (مضمون ظهور كل الأنماط)
         Object.values(byType).forEach(list => {
-          list.forEach((ex, i) => { if (i % 4 === t) slice.push(ex); });
+          if (list.length === 0) return;
+          // اختر سؤالاً بإزاحة t (يدور داخل النوع) لتنويع بين الدروس
+          const idx = t % list.length;
+          const ex = list[idx];
+          if (!usedIds.has(ex.id)) { picked.push(ex); usedIds.add(ex.id); }
         });
-        // رتّب الشريحة: الأنماط النادرة (مثل الصور) أولاً حتى لا تُقصّ عند التحديد بـ 8
-        const RARITY: Record<string, number> = { picture_match: 0, matching: 1, listen_select: 2, fill_blank: 3, word_order: 4, translate: 5 };
-        slice.sort((a, b) => (RARITY[a.type] ?? 9) - (RARITY[b.type] ?? 9));
-        // خذ أول 8 (تضمن وجود الصور)، ثم اخلط الترتيب النهائي
-        let chosen = slice.length >= 6 ? slice.slice(0, 8)
-                   : [...slice, ...all.filter(e => !slice.includes(e))].slice(0, 8);
-        // اخلط الترتيب حتى لا تكون كل الصور في البداية دائماً
-        raw = chosen.sort(() => Math.random() - 0.5);
+        // الجولة 2: املأ الباقي عشوائياً من كل الأسئلة المتبقية
+        const remaining = all.filter(ex => !usedIds.has(ex.id)).sort(() => Math.random() - 0.5);
+        for (const ex of remaining) {
+          if (picked.length >= TARGET) break;
+          picked.push(ex); usedIds.add(ex.id);
+        }
+        // اخلط الترتيب النهائي حتى لا تكون الأنماط بنفس التسلسل دائماً
+        raw = picked.sort(() => Math.random() - 0.5);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
