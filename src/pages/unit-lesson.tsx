@@ -1211,15 +1211,20 @@ export default function UnitLesson() {
         });
         raw = raw.sort(() => Math.random() - 0.5).slice(0, 8);
       } else {
-        // درس داخلي عادي — وزّع كل أسئلة المحطة على الدروس الأربعة بدون تكرار
+        // درس داخلي عادي — وزّع أسئلة المحطة على 4 دروس مع توازن الأنماط
         const t = (tier as 0|1|2|3);
-        // كل أسئلة المحطة بترتيب ثابت (غير عشوائي) — التوزيع مضمون ومتّسق
-        const unique = getAllStationExercises(meta.title);
-        // الدرس t يأخذ كل رابع سؤال (إزاحة t) — لا تداخل بين الدروس الأربعة
-        const slice = unique.filter((_, i) => i % 4 === t);
-        // إذا الشريحة قليلة، أكمل من الباقي بدون تكرار
+        const all = getAllStationExercises(meta.title);
+        // جمّع الأسئلة حسب النوع (translate, word_order, listen_select, fill_blank, matching, picture_match)
+        const byType: Record<string, ExObj[]> = {};
+        all.forEach(ex => { (byType[ex.type] ??= []).push(ex); });
+        // لكل نوع: وزّع أسئلته بالتناوب على الدروس الأربعة (الدرس t يأخذ كل رابع سؤال من النوع)
+        const slice: ExObj[] = [];
+        Object.values(byType).forEach(list => {
+          list.forEach((ex, i) => { if (i % 4 === t) slice.push(ex); });
+        });
+        // أكمل لو قلّت عن 6 من باقي أسئلة المحطة (بدون تكرار)
         raw = slice.length >= 6 ? slice.slice(0, 8)
-            : [...slice, ...unique.filter(e => !slice.includes(e))].slice(0, 8);
+            : [...slice, ...all.filter(e => !slice.includes(e))].slice(0, 8);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
