@@ -74,31 +74,6 @@ const CHAPTERS: Chapter[] = [
       },
       // ── الوحدة 3: قل من أين أنت؟ ──
       {
-        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a",
-        sectionTitle: "قل من أين أنت؟",
-        lessons: [
-          { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
-          { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
-          { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
-          { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
-          { id: "places-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل للوحدة الثالثة!", words: [] },
-        ],
-      },
-      // ── الوحدة 4: تنقل في المطار — سماوي ──
-      {
-        id: "unit-airport", title: "تنقل في المطار", emoji: "✈️", color: "#0891b2",
-        sectionTitle: "تنقل في المطار",
-        lessons: [
-          { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
-          { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
-          { id: "airport-p", type: "practice",  title: "تمرين المطار",     description: "تمرين مكثف على كل كلمات وجمل المطار قبل الكنز!", words: [] },
-          { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
-          { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
-          { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
-        ],
-      },
-      // ── الوحدة 5: استخدم الصفات — أخضر ──
-      {
         id: "unit-adjectives", title: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e",
         sectionTitle: "استخدم الصفات لوصف الأسماء",
         pathVariant: "zigzag",
@@ -113,6 +88,18 @@ const CHAPTERS: Chapter[] = [
       },
       // ── الوحدة 6: اطلب الطعام والمشروبات — وردي ──
       {
+        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a",
+        sectionTitle: "قل من أين أنت؟",
+        lessons: [
+          { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
+          { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
+          { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
+          { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
+          { id: "places-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل للوحدة الثالثة!", words: [] },
+        ],
+      },
+      // ── الوحدة 4: تنقل في المطار — سماوي ──
+      {
         id: "unit-food", title: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777",
         sectionTitle: "اطلب الطعام والمشروبات",
         lessons: [
@@ -125,6 +112,19 @@ const CHAPTERS: Chapter[] = [
         ],
       },
       // ── الوحدة 7: استخدم الزمن المضارع للمهن — أخضر ──
+      {
+        id: "unit-airport", title: "تنقل في المطار", emoji: "✈️", color: "#0891b2",
+        sectionTitle: "تنقل في المطار",
+        lessons: [
+          { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
+          { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
+          { id: "airport-p", type: "practice",  title: "تمرين المطار",     description: "تمرين مكثف على كل كلمات وجمل المطار قبل الكنز!", words: [] },
+          { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
+          { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
+          { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 5: استخدم الصفات — أخضر ──
       {
         id: "unit-present-jobs", title: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a",
         sectionTitle: "استخدم الزمن المضارع للمهن",

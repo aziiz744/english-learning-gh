@@ -42,7 +42,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 3: قل من أين أنت؟ (الأماكن والاتجاهات) ──
   "places-1": { title: "أماكن في المدينة", unitTitle: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a" },
   "places-2": { title: "أين تقع؟",         unitTitle: "قل من أين أنت؟", emoji: "📍", color: "#d4622a" },
-  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"], crossReviewTitles: ["الكلمات الأساسية", "ما اسمك؟"] },
+  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"], crossReviewTitles: ["ما اسمك؟", "الصفات الأساسية"] },
   "places-3": { title: "الاتجاهات",        unitTitle: "قل من أين أنت؟", emoji: "🧭", color: "#d4622a" },
   "places-c": { title: "تحدي الوحدة",      unitTitle: "قل من أين أنت؟", emoji: "🏆", color: "#d4622a", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -55,7 +55,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "airport-1": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "✈️", color: "#0891b2" },
   "airport-2": { title: "جمل السفر",  unitTitle: "تنقل في المطار", emoji: "🧳", color: "#0891b2" },
   "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" , isPractice: true, practiceTitles: ["في المطار", "جمل السفر", "في الطائرة"] },
-  "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"], crossReviewTitles: ["ما اسمك؟", "أماكن في المدينة"] },
+  "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"], crossReviewTitles: ["أماكن في المدينة", "أسماء الأطعمة"] },
   "airport-3": { title: "في الطائرة", unitTitle: "تنقل في المطار", emoji: "💺", color: "#0891b2" },
   "airport-c": { title: "تحدي الوحدة", unitTitle: "تنقل في المطار", emoji: "🏆", color: "#0891b2", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -68,7 +68,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "adj-1": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e" },
   "adj-2": { title: "صف الأشياء",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🖌️", color: "#22a55e" },
   "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" , isPractice: true, practiceTitles: ["الصفات الأساسية", "صف الأشياء", "قارن بين الأشياء"] },
-  "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"], crossReviewTitles: ["أماكن في المدينة", "في المطار"] },
+  "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"], crossReviewTitles: ["الكلمات الأساسية", "ما اسمك؟"] },
   "adj-3": { title: "قارن بين الأشياء", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "⚖️", color: "#22a55e" },
   "adj-c": { title: "تحدي الوحدة",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏆", color: "#22a55e", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -81,7 +81,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "food-1": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777" },
   "food-2": { title: "في المطعم",       unitTitle: "اطلب الطعام والمشروبات", emoji: "🍴", color: "#db2777" },
   "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" , isPractice: true, practiceTitles: ["أسماء الأطعمة", "في المطعم", "المشروبات والحلويات"] },
-  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"], crossReviewTitles: ["في المطار", "الصفات الأساسية"] },
+  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"], crossReviewTitles: ["الصفات الأساسية", "أماكن في المدينة"] },
   "food-3": { title: "المشروبات والحلويات", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍰", color: "#db2777" },
   "food-c": { title: "تحدي الوحدة",     unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#db2777", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -94,7 +94,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pj-1": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a" },
   "pj-2": { title: "جمل المضارع",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "✍️", color: "#16a34a" },
   "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" , isPractice: true, practiceTitles: ["أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
-  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"], crossReviewTitles: ["الصفات الأساسية", "أسماء الأطعمة"] },
+  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"], crossReviewTitles: ["أسماء الأطعمة", "في المطار"] },
   "pj-3": { title: "اسأل عن المهن", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "❓", color: "#16a34a" },
   "pj-c": { title: "تحدي الوحدة",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -107,7 +107,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pr-1": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c" },
   "pr-2": { title: "روتينك اليومي", unitTitle: "استخدم الزمن المضارع", emoji: "🌅", color: "#fb923c" },
   "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" , isPractice: true, practiceTitles: ["أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
-  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"], crossReviewTitles: ["أسماء الأطعمة", "أفعال المهن"] },
+  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"], crossReviewTitles: ["في المطار", "أفعال المهن"] },
   "pr-3": { title: "الكلمات الزمنية", unitTitle: "استخدم الزمن المضارع", emoji: "📅", color: "#fb923c" },
   "pr-c": { title: "تحدي الوحدة",   unitTitle: "استخدم الزمن المضارع", emoji: "🏆", color: "#fb923c", isUnitFinal: true, isChallenge: true,
     vocab: [
