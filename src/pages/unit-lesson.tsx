@@ -1047,7 +1047,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
             ))}
           </div>
           <p style={{ fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:4 }}>
-            الدرس {subLesson} من 4
+            الدرس {subLesson} من 4 {subLesson >= 1 && subLesson <= 4 ? `· ${STAGE_NAMES[subLesson-1]}` : ""}
           </p>
           <div className="flex gap-1 mt-2">
             {[0,1,2].map(i=>(
@@ -1153,6 +1153,10 @@ function grammarTipForLesson(lessonId: string): { title: string; tip: string; ex
   }
   return null;
 }
+
+// أسماء مراحل التدرّج التعليمي (حسب رقم الدرس الداخلي)
+const STAGE_NAMES = ["تعرّف", "استخدم", "كوّن", "أتقن"];
+const STAGE_DESC = ["تعرّف على الكلمات الجديدة", "استخدمها في عبارات", "كوّن جملاً كاملة", "أتقن واختبر نفسك"];
 
 const MAX_HEARTS = 5;
 
@@ -1280,33 +1284,45 @@ export default function UnitLesson() {
           seen.add(ex.id); return true;
         });
       } else {
-        // درس داخلي عادي — كل درس يحوي نمطاً واحداً على الأقل من كل نوع متوفر،
-        // ثم يُملأ الباقي عشوائياً (حتى يجرّب المتعلّم كل الأنماط في كل درس)
+        // ── نظام التدرّج التعليمي (بدون تكرار) ──
+        // المحطة فيها ~27 سؤال (3 مستويات). نوزّعها على 4 دروس تدرّجياً:
+        //   الدرس 1: تعرّف (أسهل) · الدرس 2: استخدم · الدرس 3: كوّن · الدرس 4: أتقن (أصعب)
         const t = (tier as 0|1|2|3);
+        // كل أسئلة المحطة مرتّبة من الأسهل للأصعب (t0→t1→t2→t3) بترتيب ثابت
         const all = getAllStationExercises(meta.title);
-        // جمّع حسب النوع
-        const byType: Record<string, ExObj[]> = {};
-        all.forEach(ex => { (byType[ex.type] ??= []).push(ex); });
-        // لكل نوع، رتّب أسئلته بإزاحة الدرس (حتى تختلف بين الدروس الأربعة بدون تكرار)
-        const TARGET = 8;
-        const picked: ExObj[] = [];
-        const usedIds = new Set<string>();
-        // الجولة 1: نمط واحد من كل نوع (مضمون ظهور كل الأنماط)
-        Object.values(byType).forEach(list => {
-          if (list.length === 0) return;
-          // اختر سؤالاً بإزاحة t (يدور داخل النوع) لتنويع بين الدروس
-          const idx = t % list.length;
-          const ex = list[idx];
-          if (!usedIds.has(ex.id)) { picked.push(ex); usedIds.add(ex.id); }
+        // رتّب حسب المستوى المستخرج من id (t0/t1/t2/t3) ثم حسب id
+        const tierOf = (ex: ExObj) => {
+          const m = ex.id.match(/-t(\d)-/);
+          return m ? parseInt(m[1]) : 0;
+        };
+        const ordered = [...all].sort((a, b) => {
+          const ta = tierOf(a), tb = tierOf(b);
+          if (ta !== tb) return ta - tb;       // الأسهل أولاً
+          return a.id.localeCompare(b.id);
         });
-        // الجولة 2: املأ الباقي عشوائياً من كل الأسئلة المتبقية
-        const remaining = all.filter(ex => !usedIds.has(ex.id)).sort(() => Math.random() - 0.5);
-        for (const ex of remaining) {
-          if (picked.length >= TARGET) break;
-          picked.push(ex); usedIds.add(ex.id);
+        // وزّع تدرّجياً: الدرس t يأخذ شريحة متتالية (تدرّج طبيعي بالصعوبة)
+        // 4 دروس، كل درس يأخذ ربع الأسئلة بالترتيب التصاعدي
+        const perLesson = Math.ceil(ordered.length / 4);
+        let slice = ordered.slice(t * perLesson, (t + 1) * perLesson);
+
+        // اضمن وجود نمط الصور في كل درس (إن وُجدت في المحطة)
+        const usedIds = new Set(slice.map(e => e.id));
+        const hasPic = slice.some(e => e.type === "picture_match");
+        if (!hasPic) {
+          const pic = ordered.find(e => e.type === "picture_match");
+          if (pic) {
+            // أضف نسخة الصورة (التكرار الوحيد المسموح — لضمان النمط)
+            slice = [pic, ...slice];
+          }
         }
-        // اخلط الترتيب النهائي حتى لا تكون الأنماط بنفس التسلسل دائماً
-        raw = picked.sort(() => Math.random() - 0.5);
+        // اضمن 6-8 أسئلة: لو قلّت، أكمل من غير المستخدم
+        if (slice.length < 6) {
+          for (const ex of ordered) {
+            if (slice.length >= 7) break;
+            if (!usedIds.has(ex.id)) { slice.push(ex); usedIds.add(ex.id); }
+          }
+        }
+        raw = slice.slice(0, 8).sort(() => Math.random() - 0.5);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
@@ -1624,6 +1640,18 @@ export default function UnitLesson() {
             {/* زر الإغلاق — يمين */}
             <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20, color:"hsl(var(--muted-foreground))" }}>✕</button>
           </div>
+
+          {/* شارة مرحلة التدرّج (للدروس العادية فقط) */}
+          {!meta.isReview && !meta.isChallenge && !meta.isPractice && !isJumpMode && subLesson >= 0 && subLesson <= 3 && (
+            <div style={{ display:"flex", justifyContent:"center", marginBottom:14, flexShrink:0 }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:`${meta.color}14`, border:`1.5px solid ${meta.color}35`, borderRadius:20, padding:"5px 14px" }}>
+                <span style={{ fontSize:13, fontWeight:800, color:meta.color }}>
+                  {["①","②","③","④"][subLesson]} {STAGE_NAMES[subLesson]}
+                </span>
+                <span style={{ fontSize:11, color:"hsl(var(--muted-foreground))" }}>· {STAGE_DESC[subLesson]}</span>
+              </div>
+            </div>
+          )}
 
           {/* Main content area */}
           <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
