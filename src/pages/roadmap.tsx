@@ -961,6 +961,8 @@ export default function Roadmap() {
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   // Load unit progress from Supabase
+  const [showSyncMsg, setShowSyncMsg] = useState(false);
+  const didScrollToProgress = useRef(false);
   const loadProgress = useCallback(() => {
     if (!user) return;
     supabase.from("unit_progress").select("lesson_id, sub_progress").eq("user_id", user.id)
@@ -969,10 +971,33 @@ export default function Roadmap() {
         const map: Record<string, number> = {};
         data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; });
         setProgress(map);
+        // أظهر رسالة المزامنة مرة واحدة للمتعلّم المتقدّم (أكمل درساً واحداً على الأقل)
+        const completedCount = Object.values(map).filter(v => v >= 4).length;
+        if (completedCount >= 1 && !sessionStorage.getItem("syncMsgShown")) {
+          setShowSyncMsg(true);
+          sessionStorage.setItem("syncMsgShown", "1");
+        }
       });
   }, [user]);
 
   useEffect(() => { loadProgress(); }, [loadProgress]);
+
+  // مرّر تلقائياً لآخر درس وصل له المتعلّم (مرة واحدة بعد تحميل التقدم)
+  useEffect(() => {
+    if (didScrollToProgress.current) return;
+    if (Object.keys(progress).length === 0) return; // انتظر تحميل التقدم
+    const completedCount = Object.values(progress).filter(v => v >= 4).length;
+    if (completedCount < 1) return; // مبتدئ — يبقى بالأعلى
+    // انتظر رسم الدروس ثم مرّر للدرس الحالي
+    const timer = setTimeout(() => {
+      const el = document.querySelector('[data-is-current="1"]');
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        didScrollToProgress.current = true;
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [progress]);
 
   // عدد الجواهر = مجموع مكافآت الكنوز والتحديات المكتملة
   const gemCount = (() => {
@@ -1038,6 +1063,29 @@ export default function Roadmap() {
 
   return (
     <Layout>
+      {/* ── رسالة مزامنة التقدّم (للمتعلّم المتقدّم) ── */}
+      <AnimatePresence>
+        {showSyncMsg && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            onClick={()=>setShowSyncMsg(false)}
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:90, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+            <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+              onClick={e=>e.stopPropagation()}
+              style={{ background:"hsl(var(--card))", borderRadius:24, padding:"32px 24px", maxWidth:360, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
+              <motion.div animate={{ rotate:[0,-10,10,-10,0] }} transition={{ duration:0.6, delay:0.2 }} style={{ fontSize:56, marginBottom:14 }}>🔄</motion.div>
+              <h2 style={{ fontWeight:900, fontSize:20, marginBottom:12, color:"hsl(var(--foreground))" }}>تم تحديث المنهج! ✨</h2>
+              <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:24 }}>
+                لقد قمنا بمزامنة تقدّمك ليتناسب مع محتوى منهج الإنجليزية الجديد والمطوّر. واصل من حيث توقّفت! 🚀
+              </p>
+              <button onClick={()=>setShowSyncMsg(false)}
+                style={{ width:"100%", padding:"14px", background:activeSection.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 4px 0 ${activeSection.color}99` }}>
+                رائع، لنكمل! 🎯
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
           .roadmap-sticky-header { top: 46px; }
@@ -1332,7 +1380,10 @@ export default function Roadmap() {
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
 
                     return (
-                      <div key={lesson.id} style={{
+                      <div key={lesson.id}
+                        data-lesson-id={lesson.id}
+                        data-is-current={allLessons[currentIdx]?.id === lesson.id ? "1" : undefined}
+                        style={{
                         position: "absolute",
                         left: x - SIZE / 2,
                         top: y - SIZE / 2,
