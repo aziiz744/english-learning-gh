@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import {
-  Route, Trophy, Flame,
+  Route, Trophy, Flame, Zap,
   Shield, LogIn, LogOut, User, Menu, X,
   Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity,
 } from "lucide-react";
@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const BOTTOM_NAV = [
   { name: "الخارطة",  href: "/",          icon: Route },
   { name: "الإنجازات", href: "/achievements", icon: Trophy },
-  { name: "القراءة",   href: "/reading",    icon: BookMarked },
+  { name: "المسابقات", href: "/competitions", icon: Zap },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
 
@@ -24,6 +24,7 @@ const BOTTOM_NAV = [
 const navigation = [
   { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
+  { name: "المسابقات",      href: "/competitions",icon: Zap },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
   { name: "عضوية Pro",      href: "/pro",         icon: Sparkles },
 ];

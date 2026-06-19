@@ -1090,6 +1090,13 @@ export default function Roadmap() {
         <style>{`
           .roadmap-sticky-header { top: 46px; }
           .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
+          .roadmap-side-widgets { display: none; }
+          @media (min-width: 1100px) {
+            .roadmap-side-widgets {
+              display: flex; flex-direction: column; gap: 16px;
+              position: fixed; left: 24px; top: 96px; width: 260px; z-index: 25;
+            }
+          }
           @media (max-width: 767px) {
             .roadmap-stats-bar {
               top: calc(56px + env(safe-area-inset-top, 0px));
@@ -1098,6 +1105,31 @@ export default function Roadmap() {
             .roadmap-sticky-header { top: calc(98px + env(safe-area-inset-top, 0px)); }
           }
         `}</style>
+
+        {/* ── اللوحات الجانبية (كمبيوتر فقط) ── */}
+        <div className="roadmap-side-widgets">
+          {/* لوحة المسابقات اليومية */}
+          <div style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:18, padding:16 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, direction:"rtl" }}>
+              <span style={{ fontWeight:800, fontSize:14, color:"hsl(var(--foreground))" }}>المسابقات اليومية</span>
+              <button onClick={()=>setLocation("/competitions")} style={{ background:"none", border:"none", color:activeSection.color, fontSize:12, fontWeight:700, cursor:"pointer" }}>عرض الكل</button>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:10, direction:"rtl" }}>
+              {/* أيقونة البرق */}
+              <div style={{ width:40, height:40, borderRadius:12, background:"linear-gradient(135deg, #fbbf24, #f59e0b)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M13 2 L3 14 h7 l-1 8 L19 10 h-7 z"/></svg>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:12, fontWeight:800, color:"hsl(var(--foreground))", marginBottom:4, textAlign:"right" }}>احصل على 10 XP</div>
+                <div style={{ height:18, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", position:"relative" }}>
+                  <div style={{ height:"100%", width:"0%", background:"linear-gradient(90deg, #fbbf24, #f59e0b)", borderRadius:10 }}/>
+                  <span style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"hsl(var(--foreground))" }}>0 / 10</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
         <div className="roadmap-stats-bar" style={{
