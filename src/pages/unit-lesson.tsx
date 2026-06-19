@@ -1141,8 +1141,8 @@ const GRAMMAR_TIPS: Record<string, { title: string; tip: string; example: string
   airport: { title: "أداة التعريف the", tip: "نستخدم the عند الحديث عن شيء محدّد معروف للطرفين.", example: "Where is the gate? — أين البوابة؟" },
   adj:     { title: "موضع الصفة", tip: "في الإنجليزية الصفة تأتي قبل الاسم، عكس العربية.", example: "a big house — بيت كبير (الصفة أولاً)" },
   food:    { title: "طلب الطعام", tip: "نستخدم I would like (أودّ) للطلب المهذّب في المطعم.", example: "I would like rice. — أودّ أرزاً" },
-  pj:      { title: "إضافة s للغائب", tip: "مع he/she/it نضيف s إلى الفعل في المضارع.", example: "He works. — She teaches." },
-  pr:      { title: "ظروف التكرار", tip: "always (دائماً)، usually (عادة)، sometimes (أحياناً)، never (أبداً) تأتي قبل الفعل.", example: "I always eat breakfast." },
+  pj:      { title: "الفعل في المضارع", tip: "الفعل يبقى كما هو مع I/you/we/they. لكن مع he/she/it نضيف s أو es في النهاية.", example: "I work ✓ — He works ✓ (أضفنا s)" },
+  pr:      { title: "ظروف التكرار", tip: "always (دائماً)، usually (عادة)، sometimes (أحياناً)، never (أبداً) تأتي قبل الفعل الأساسي.", example: "I always eat breakfast. — أتناول الفطور دائماً" },
   wt:      { title: "وصف الطقس بـ It is", tip: "نبدأ وصف الطقس بـ It is (الجو...).", example: "It is sunny. — الجو مشمس" },
   pet:     { title: "الملكية بـ have/has", tip: "نستخدم have مع I/you/we/they، وhas مع he/she/it.", example: "I have a cat. — She has a dog." },
 };

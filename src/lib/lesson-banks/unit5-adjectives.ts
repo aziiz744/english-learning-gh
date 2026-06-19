@@ -60,6 +60,11 @@ export const unit5AdjectivesBank: Record<string, TieredBank> = {
   // ── الدرس 2: صف الأشياء ──
   "صف الأشياء": {
     t0: [
+    { id:"ad-col-1", type:"translate", arabic:"أزرق", options:["blue","red","green","yellow"], correctAnswer:"blue", explanation:"أزرق = blue", xp:10 },
+    { id:"ad-col-2", type:"translate", arabic:"أخضر", options:["green","blue","red","black"], correctAnswer:"green", explanation:"أخضر = green", xp:10 },
+    { id:"ad-col-3", type:"translate", arabic:"أصفر", options:["yellow","green","blue","white"], correctAnswer:"yellow", explanation:"أصفر = yellow", xp:10 },
+    { id:"ad-col-4", type:"translate", arabic:"أسود", options:["black","white","red","blue"], correctAnswer:"black", explanation:"أسود = black", xp:10 },
+    { id:"ad-col-5", type:"translate", arabic:"أبيض", options:["white","black","blue","green"], correctAnswer:"white", explanation:"أبيض = white", xp:10 },
       { id:"ad2-t0-1", type:"translate", arabic:"طويل", options:["tall","short","big","fast"], correctAnswer:"tall", explanation:"tall = طويل/عالٍ", xp:10 },
       { id:"ad2-t0-2", type:"listen_select", listenSentence:"short", options:["short","tall","big","old"], correctAnswer:"short", explanation:"short = قصير", xp:10 },
       { id:"ad2-t0-3", type:"translate", arabic:"حار", options:["hot","cold","big","new"], correctAnswer:"hot", explanation:"hot = حار", xp:10 },

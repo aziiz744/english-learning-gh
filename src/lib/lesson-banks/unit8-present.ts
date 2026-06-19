@@ -104,6 +104,11 @@ export const unit8PresentBank: Record<string, TieredBank> = {
   // ── الدرس 3: الكلمات الزمنية ──
   "الكلمات الزمنية": {
     t0: [
+    { id:"pr-day-1", type:"translate", arabic:"الإثنين", options:["Monday","Sunday","Friday","Tuesday"], correctAnswer:"Monday", explanation:"الإثنين = Monday", xp:10 },
+    { id:"pr-day-2", type:"translate", arabic:"الجمعة", options:["Friday","Monday","Sunday","Saturday"], correctAnswer:"Friday", explanation:"الجمعة = Friday", xp:10 },
+    { id:"pr-day-3", type:"translate", arabic:"الأحد", options:["Sunday","Monday","Friday","Tuesday"], correctAnswer:"Sunday", explanation:"الأحد = Sunday", xp:10 },
+    { id:"pr-day-4", type:"translate", arabic:"يوم", options:["day","week","month","year"], correctAnswer:"day", explanation:"يوم = day", xp:10 },
+    { id:"pr-day-5", type:"translate", arabic:"أسبوع", options:["week","day","month","hour"], correctAnswer:"week", explanation:"أسبوع = week", xp:10 },
       { id:"pr3-t0-1", type:"translate", arabic:"دائماً", options:["always","usually","sometimes","never"], correctAnswer:"always", explanation:"always = دائماً", xp:10 },
       { id:"pr3-t0-2", type:"listen_select", listenSentence:"usually", options:["usually","always","never","often"], correctAnswer:"usually", explanation:"usually = عادةً", xp:10 },
       { id:"pr3-t0-3", type:"translate", arabic:"أحياناً", options:["sometimes","always","never","usually"], correctAnswer:"sometimes", explanation:"sometimes = أحياناً", xp:10 },
