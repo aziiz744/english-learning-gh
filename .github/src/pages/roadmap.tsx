@@ -69,35 +69,10 @@ const CHAPTERS: Chapter[] = [
           { id: "intro-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
           { id: "intro-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته!", words: [] },
           { id: "intro-3", type: "lesson",    title: "عائلتك",         description: "تعلّم كلمات العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
-          { id: "intro-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني!", words: [] },
+          { id: "intro-c", type: "challenge", title: "تحدي الوحدة",     description: "اختبار شامل لكل ما تعلمته في هذه الوحدة!", words: [] },
         ],
       },
       // ── الوحدة 3: قل من أين أنت؟ ──
-      {
-        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a",
-        sectionTitle: "قل من أين أنت؟",
-        lessons: [
-          { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
-          { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
-          { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
-          { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
-          { id: "places-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل للوحدة الثالثة!", words: [] },
-        ],
-      },
-      // ── الوحدة 4: تنقل في المطار — سماوي ──
-      {
-        id: "unit-airport", title: "تنقل في المطار", emoji: "✈️", color: "#0891b2",
-        sectionTitle: "تنقل في المطار",
-        lessons: [
-          { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
-          { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
-          { id: "airport-p", type: "practice",  title: "تمرين المطار",     description: "تمرين مكثف على كل كلمات وجمل المطار قبل الكنز!", words: [] },
-          { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
-          { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
-          { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
-        ],
-      },
-      // ── الوحدة 5: استخدم الصفات — أخضر ──
       {
         id: "unit-adjectives", title: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e",
         sectionTitle: "استخدم الصفات لوصف الأسماء",
@@ -113,6 +88,18 @@ const CHAPTERS: Chapter[] = [
       },
       // ── الوحدة 6: اطلب الطعام والمشروبات — وردي ──
       {
+        id: "unit-places", title: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a",
+        sectionTitle: "قل من أين أنت؟",
+        lessons: [
+          { id: "places-1", type: "lesson",    title: "أماكن في المدينة", description: "تعلّم: school وhospital وmarket وpark.", words: ["school","hospital","market","park","bank"] },
+          { id: "places-2", type: "lesson",    title: "أين تقع؟",         description: "next to وbehind وin front of.", words: ["next","behind","front","between","near"] },
+          { id: "places-t", type: "treasure",  title: "كنز المراجعة",     description: "لعبة بكل كلمات الأماكن!", words: [] },
+          { id: "places-3", type: "lesson",    title: "الاتجاهات",        description: "turn left وgo straight وturn right.", words: ["turn","left","right","straight","go"] },
+          { id: "places-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل للوحدة الثالثة!", words: [] },
+        ],
+      },
+      // ── الوحدة 4: تنقل في المطار — سماوي ──
+      {
         id: "unit-food", title: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777",
         sectionTitle: "اطلب الطعام والمشروبات",
         lessons: [
@@ -125,6 +112,19 @@ const CHAPTERS: Chapter[] = [
         ],
       },
       // ── الوحدة 7: استخدم الزمن المضارع للمهن — أخضر ──
+      {
+        id: "unit-airport", title: "تنقل في المطار", emoji: "✈️", color: "#0891b2",
+        sectionTitle: "تنقل في المطار",
+        lessons: [
+          { id: "airport-1", type: "lesson",    title: "في المطار",        description: "تعلّم كلمات المطار: ticket وpassport وgate وflight.", words: ["ticket","passport","gate","flight","boarding"] },
+          { id: "airport-2", type: "lesson",    title: "جمل السفر",        description: "تعلّم جمل: Where is the gate? وWhat time does it board?", words: ["where","gate","time","board","depart"] },
+          { id: "airport-p", type: "practice",  title: "تمرين المطار",     description: "تمرين مكثف على كل كلمات وجمل المطار قبل الكنز!", words: [] },
+          { id: "airport-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المطار في لعبة ممتعة!", words: [] },
+          { id: "airport-3", type: "lesson",    title: "في الطائرة",       description: "تعلّم جمل داخل الطائرة: window seat وaisle seat وseat belt.", words: ["window","aisle","seat","belt","landing"] },
+          { id: "airport-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تنقّل في المطار بثقة!", words: [] },
+        ],
+      },
+      // ── الوحدة 5: استخدم الصفات — أخضر ──
       {
         id: "unit-present-jobs", title: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a",
         sectionTitle: "استخدم الزمن المضارع للمهن",
@@ -512,8 +512,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330";
   const starColor = isGold ? "#ffffff" : isActive ? "#ffffff" : "#566578";
 
-  // المسار الرمادي المفرّغ يظهر على الدائرة الحالية (ابدأ) أو المكتملة
-  const showTrack = isCurrent || isGold || (progress > 0 && progress < 4);
+  // المسار الدائري يظهر فقط على الدائرة الحالية (آخر درس وقف عنده / يقدر يبدأ منه)
+  const showTrack = isCurrent;
   const fillColor = isGold ? "#f59e0b" : color; // لون الجزء الممتلئ
   // كم يمتلئ (ربع لكل درس)
   const fillFraction = isGold ? 1 : Math.min(progress / 4, 1);
@@ -961,6 +961,8 @@ export default function Roadmap() {
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
 
   // Load unit progress from Supabase
+  const [showSyncMsg, setShowSyncMsg] = useState(false);
+  const didScrollToProgress = useRef(false);
   const loadProgress = useCallback(() => {
     if (!user) return;
     supabase.from("unit_progress").select("lesson_id, sub_progress").eq("user_id", user.id)
@@ -969,10 +971,33 @@ export default function Roadmap() {
         const map: Record<string, number> = {};
         data.forEach((r: any) => { map[r.lesson_id] = r.sub_progress ?? 0; });
         setProgress(map);
+        // أظهر رسالة المزامنة مرة واحدة للمتعلّم المتقدّم (أكمل درساً واحداً على الأقل)
+        const completedCount = Object.values(map).filter(v => v >= 4).length;
+        if (completedCount >= 1 && !sessionStorage.getItem("syncMsgShown")) {
+          setShowSyncMsg(true);
+          sessionStorage.setItem("syncMsgShown", "1");
+        }
       });
   }, [user]);
 
   useEffect(() => { loadProgress(); }, [loadProgress]);
+
+  // مرّر تلقائياً لآخر درس وصل له المتعلّم (مرة واحدة بعد تحميل التقدم)
+  useEffect(() => {
+    if (didScrollToProgress.current) return;
+    if (Object.keys(progress).length === 0) return; // انتظر تحميل التقدم
+    const completedCount = Object.values(progress).filter(v => v >= 4).length;
+    if (completedCount < 1) return; // مبتدئ — يبقى بالأعلى
+    // انتظر رسم الدروس ثم مرّر للدرس الحالي
+    const timer = setTimeout(() => {
+      const el = document.querySelector('[data-is-current="1"]');
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        didScrollToProgress.current = true;
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [progress]);
 
   // عدد الجواهر = مجموع مكافآت الكنوز والتحديات المكتملة
   const gemCount = (() => {
@@ -991,12 +1016,18 @@ export default function Roadmap() {
 
   const isPro = (user as any)?.isPro ?? false;
 
-  // جلب الستريك من user_stats
+  // جلب الستريك + حالة فتح القسم من user_stats
   const [streak, setStreak] = useState(0);
+  const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
   useEffect(() => {
     if (!user) return;
-    supabase.from("user_stats").select("streak").eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => { if (data) setStreak(data.streak ?? 0); });
+    supabase.from("user_stats").select("streak, section_unlocked").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setStreak(data.streak ?? 0);
+          setSectionUnlocked((data as any).section_unlocked ?? 1);
+        }
+      });
   }, [user]);
 
   // أي شارة مضغوطة لعرض توضيحها
@@ -1038,10 +1069,40 @@ export default function Roadmap() {
 
   return (
     <Layout>
+      {/* ── رسالة مزامنة التقدّم (للمتعلّم المتقدّم) ── */}
+      <AnimatePresence>
+        {showSyncMsg && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            onClick={()=>setShowSyncMsg(false)}
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:90, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+            <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+              onClick={e=>e.stopPropagation()}
+              style={{ background:"hsl(var(--card))", borderRadius:24, padding:"32px 24px", maxWidth:360, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
+              <motion.div animate={{ rotate:[0,-10,10,-10,0] }} transition={{ duration:0.6, delay:0.2 }} style={{ fontSize:56, marginBottom:14 }}>🔄</motion.div>
+              <h2 style={{ fontWeight:900, fontSize:20, marginBottom:12, color:"hsl(var(--foreground))" }}>تم تحديث المنهج! ✨</h2>
+              <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:24 }}>
+                لقد قمنا بمزامنة تقدّمك ليتناسب مع محتوى منهج الإنجليزية الجديد والمطوّر. واصل من حيث توقّفت! 🚀
+              </p>
+              <button onClick={()=>setShowSyncMsg(false)}
+                style={{ width:"100%", padding:"14px", background:activeSection.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 4px 0 ${activeSection.color}99` }}>
+                رائع، لنكمل! 🎯
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
           .roadmap-sticky-header { top: 46px; }
           .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
+          .roadmap-side-widgets { display: none; }
+          @media (min-width: 1100px) {
+            .roadmap-side-widgets {
+              display: flex; flex-direction: column; gap: 16px;
+              position: fixed; left: 24px; top: 96px; width: 260px; z-index: 25;
+            }
+          }
           @media (max-width: 767px) {
             .roadmap-stats-bar {
               top: calc(56px + env(safe-area-inset-top, 0px));
@@ -1050,6 +1111,31 @@ export default function Roadmap() {
             .roadmap-sticky-header { top: calc(98px + env(safe-area-inset-top, 0px)); }
           }
         `}</style>
+
+        {/* ── اللوحات الجانبية (كمبيوتر فقط) ── */}
+        <div className="roadmap-side-widgets">
+          {/* لوحة المسابقات اليومية */}
+          <div style={{ background:"hsl(var(--card))", border:"2px solid hsl(var(--border))", borderRadius:18, padding:16 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, direction:"rtl" }}>
+              <span style={{ fontWeight:800, fontSize:14, color:"hsl(var(--foreground))" }}>المسابقات اليومية</span>
+              <button onClick={()=>setLocation("/competitions")} style={{ background:"none", border:"none", color:activeSection.color, fontSize:12, fontWeight:700, cursor:"pointer" }}>عرض الكل</button>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:10, direction:"rtl" }}>
+              {/* أيقونة البرق */}
+              <div style={{ width:40, height:40, borderRadius:12, background:"linear-gradient(135deg, #fbbf24, #f59e0b)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M13 2 L3 14 h7 l-1 8 L19 10 h-7 z"/></svg>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:12, fontWeight:800, color:"hsl(var(--foreground))", marginBottom:4, textAlign:"right" }}>احصل على 10 XP</div>
+                <div style={{ height:18, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", position:"relative" }}>
+                  <div style={{ height:"100%", width:"0%", background:"linear-gradient(90deg, #fbbf24, #f59e0b)", borderRadius:10 }}/>
+                  <span style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"hsl(var(--foreground))" }}>0 / 10</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
         <div className="roadmap-stats-bar" style={{
@@ -1225,6 +1311,22 @@ export default function Roadmap() {
         <motion.div key={activeChapter} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
+          {/* لو فُتح القسم الثاني — يظهر بانره ويُخفى القسم الأول */}
+          {sectionUnlocked >= 2 ? (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              style={{ margin: "20px 16px", background: "linear-gradient(135deg, #1e3a8a, #4338ca)", borderRadius: 24, padding: "40px 24px", textAlign: "center" }}>
+              <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
+              <div style={{ display: "inline-block", background: "rgba(255,255,255,0.2)", color: "white", fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 20, marginBottom: 14 }}>القسم الثاني</div>
+              <h2 style={{ fontSize: 24, fontWeight: 900, color: "white", marginBottom: 12 }}>أهلاً بك في القسم الثاني!</h2>
+              <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 15, lineHeight: 1.8, direction: "rtl", marginBottom: 8 }}>
+                لقد أتقنت القسم الأول بنجاح 🏆 محتوى القسم الثاني قيد الإعداد وسيكون متاحاً قريباً جداً.
+              </p>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, direction: "rtl" }}>
+                ترقّب كلمات وعبارات ومحادثات أكثر تقدّماً! 🚀
+              </p>
+            </motion.div>
+          ) : (
+          <>
           {chapter.units.map((unit, unitIdx) => {
             const positions = buildPath(unit.lessons.length, unit.pathVariant);
             const svgH = 60 + (unit.lessons.length - 1) * STEP_Y + 80;
@@ -1332,7 +1434,10 @@ export default function Roadmap() {
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
 
                     return (
-                      <div key={lesson.id} style={{
+                      <div key={lesson.id}
+                        data-lesson-id={lesson.id}
+                        data-is-current={allLessons[currentIdx]?.id === lesson.id ? "1" : undefined}
+                        style={{
                         position: "absolute",
                         left: x - SIZE / 2,
                         top: y - SIZE / 2,
@@ -1457,52 +1562,47 @@ export default function Roadmap() {
             );
           })}
 
-          {/* Next chapter card */}
+          {/* بوابة القسم الثاني — اختبار القسم */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             style={{
               margin: "48px 16px 32px",
-              background: "hsl(var(--card))",
-              border: "1.5px solid hsl(var(--border))",
+              background: "linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted)))",
+              border: "2px solid hsl(var(--border))",
               borderRadius: 20,
-              padding: "24px 20px",
+              padding: "28px 20px",
               textAlign: "center",
             }}>
-            {/* التالي badge */}
+            <div style={{ fontSize: 44, marginBottom: 10 }}>🎓</div>
             <div style={{
-              display: "inline-block",
-              background: "hsl(var(--muted))",
-              color: "hsl(var(--muted-foreground))",
-              fontSize: 12, fontWeight: 700,
-              padding: "3px 14px", borderRadius: 20,
-              marginBottom: 14,
-            }}>التالي</div>
+              display: "inline-block", background: "#10b98122", color: "#10b981",
+              fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 20, marginBottom: 14,
+            }}>بوابة القسم الثاني</div>
 
-            {/* العنوان مع قفل */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: "hsl(var(--foreground))" }}>القسم 2</span>
-              <span style={{ fontSize: 20 }}>🔒</span>
-            </div>
-
-            {/* الوصف */}
-            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}>
-              تعلّم كلمات، وعبارات، ومبادئ نحوية للتعاملات البسيطة
+            <h3 style={{ fontSize: 20, fontWeight: 900, color: "hsl(var(--foreground))", marginBottom: 10 }}>
+              اختبار القسم الأول
+            </h3>
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.7, marginBottom: 8, direction: "rtl" }}>
+              جاهز للقسم الثاني؟ اجتز الاختبار الشامل لتثبت إتقانك وتفتح المستوى التالي.
+            </p>
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 12, marginBottom: 20, direction: "rtl", opacity: 0.8 }}>
+              💡 متمكّن من المواضيع؟ يمكنك الاختبار مباشرة دون إكمال كل الدروس.
             </p>
 
-            {/* زر القفز */}
-            <button style={{
-              width: "100%", padding: "13px 0",
-              background: "transparent",
-              border: "1.5px solid hsl(var(--border))",
-              borderRadius: 14,
-              color: "#38bdf8",
-              fontWeight: 800, fontSize: 15,
-              cursor: "pointer",
-            }}>
-              القفز إلى هنا؟
+            <button onClick={() => setLocation("/section-test")}
+              style={{
+                width: "100%", padding: "15px 0",
+                background: "linear-gradient(135deg, #34d399, #059669)",
+                border: "none", borderRadius: 14, color: "white",
+                fontWeight: 800, fontSize: 16, cursor: "pointer",
+                boxShadow: "0 5px 0 #047857",
+              }}>
+              ابدأ اختبار القسم 🚀
             </button>
           </motion.div>
+          </>
+          )}
           <div className="h-8"/>
         </motion.div>
       </div>

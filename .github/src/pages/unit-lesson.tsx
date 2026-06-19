@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
+import { translateWord } from "@/lib/word-glossary";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,7 +43,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   // ── الوحدة 3: قل من أين أنت؟ (الأماكن والاتجاهات) ──
   "places-1": { title: "أماكن في المدينة", unitTitle: "قل من أين أنت؟", emoji: "🏙️", color: "#d4622a" },
   "places-2": { title: "أين تقع؟",         unitTitle: "قل من أين أنت؟", emoji: "📍", color: "#d4622a" },
-  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"], crossReviewTitles: ["الكلمات الأساسية", "ما اسمك؟"] },
+  "places-t": { title: "كنز المراجعة",     unitTitle: "قل من أين أنت؟", emoji: "💎", color: "#d4622a", isReview: true, reviewTitles: ["أماكن في المدينة", "أين تقع؟"], crossReviewTitles: ["ما اسمك؟", "الصفات الأساسية"] },
   "places-3": { title: "الاتجاهات",        unitTitle: "قل من أين أنت؟", emoji: "🧭", color: "#d4622a" },
   "places-c": { title: "تحدي الوحدة",      unitTitle: "قل من أين أنت؟", emoji: "🏆", color: "#d4622a", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -55,7 +56,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "airport-1": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "✈️", color: "#0891b2" },
   "airport-2": { title: "جمل السفر",  unitTitle: "تنقل في المطار", emoji: "🧳", color: "#0891b2" },
   "airport-p": { title: "في المطار",  unitTitle: "تنقل في المطار", emoji: "🏋️", color: "#0891b2" , isPractice: true, practiceTitles: ["في المطار", "جمل السفر", "في الطائرة"] },
-  "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"], crossReviewTitles: ["ما اسمك؟", "أماكن في المدينة"] },
+  "airport-t": { title: "كنز المراجعة", unitTitle: "تنقل في المطار", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["في المطار", "جمل السفر"], crossReviewTitles: ["أماكن في المدينة", "أسماء الأطعمة"] },
   "airport-3": { title: "في الطائرة", unitTitle: "تنقل في المطار", emoji: "💺", color: "#0891b2" },
   "airport-c": { title: "تحدي الوحدة", unitTitle: "تنقل في المطار", emoji: "🏆", color: "#0891b2", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -68,7 +69,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "adj-1": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🎨", color: "#22a55e" },
   "adj-2": { title: "صف الأشياء",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🖌️", color: "#22a55e" },
   "adj-p": { title: "الصفات الأساسية", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏋️", color: "#22a55e" , isPractice: true, practiceTitles: ["الصفات الأساسية", "صف الأشياء", "قارن بين الأشياء"] },
-  "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"], crossReviewTitles: ["أماكن في المدينة", "في المطار"] },
+  "adj-t": { title: "كنز المراجعة",    unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "💎", color: "#22a55e", isReview: true, reviewTitles: ["الصفات الأساسية", "صف الأشياء"], crossReviewTitles: ["الكلمات الأساسية", "ما اسمك؟"] },
   "adj-3": { title: "قارن بين الأشياء", unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "⚖️", color: "#22a55e" },
   "adj-c": { title: "تحدي الوحدة",     unitTitle: "استخدم الصفات لوصف الأسماء", emoji: "🏆", color: "#22a55e", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -81,7 +82,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "food-1": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#db2777" },
   "food-2": { title: "في المطعم",       unitTitle: "اطلب الطعام والمشروبات", emoji: "🍴", color: "#db2777" },
   "food-p": { title: "أسماء الأطعمة",   unitTitle: "اطلب الطعام والمشروبات", emoji: "🏋️", color: "#db2777" , isPractice: true, practiceTitles: ["أسماء الأطعمة", "في المطعم", "المشروبات والحلويات"] },
-  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"], crossReviewTitles: ["في المطار", "الصفات الأساسية"] },
+  "food-t": { title: "كنز المراجعة",    unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#db2777", isReview: true, reviewTitles: ["أسماء الأطعمة", "في المطعم"], crossReviewTitles: ["الصفات الأساسية", "أماكن في المدينة"] },
   "food-3": { title: "المشروبات والحلويات", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍰", color: "#db2777" },
   "food-c": { title: "تحدي الوحدة",     unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#db2777", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -94,7 +95,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pj-1": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💼", color: "#16a34a" },
   "pj-2": { title: "جمل المضارع",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "✍️", color: "#16a34a" },
   "pj-p": { title: "أفعال المهن",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏋️", color: "#16a34a" , isPractice: true, practiceTitles: ["أفعال المهن", "جمل المضارع", "اسأل عن المهن"] },
-  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"], crossReviewTitles: ["الصفات الأساسية", "أسماء الأطعمة"] },
+  "pj-t": { title: "كنز المراجعة", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["أفعال المهن", "جمل المضارع"], crossReviewTitles: ["أسماء الأطعمة", "في المطار"] },
   "pj-3": { title: "اسأل عن المهن", unitTitle: "استخدم الزمن المضارع للمهن", emoji: "❓", color: "#16a34a" },
   "pj-c": { title: "تحدي الوحدة",  unitTitle: "استخدم الزمن المضارع للمهن", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -107,7 +108,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "pr-1": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "⏰", color: "#fb923c" },
   "pr-2": { title: "روتينك اليومي", unitTitle: "استخدم الزمن المضارع", emoji: "🌅", color: "#fb923c" },
   "pr-p": { title: "أفعال يومية",   unitTitle: "استخدم الزمن المضارع", emoji: "🏋️", color: "#fb923c" , isPractice: true, practiceTitles: ["أفعال يومية", "روتينك اليومي", "الكلمات الزمنية"] },
-  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"], crossReviewTitles: ["أسماء الأطعمة", "أفعال المهن"] },
+  "pr-t": { title: "كنز المراجعة",  unitTitle: "استخدم الزمن المضارع", emoji: "💎", color: "#fb923c", isReview: true, reviewTitles: ["أفعال يومية", "روتينك اليومي"], crossReviewTitles: ["في المطار", "أفعال المهن"] },
   "pr-3": { title: "الكلمات الزمنية", unitTitle: "استخدم الزمن المضارع", emoji: "📅", color: "#fb923c" },
   "pr-c": { title: "تحدي الوحدة",   unitTitle: "استخدم الزمن المضارع", emoji: "🏆", color: "#fb923c", isUnitFinal: true, isChallenge: true,
     vocab: [
@@ -312,8 +313,15 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
           <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
             <Check className="w-5 h-5 text-green-400 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة</div>
-              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>{correctAnswer}</div>
+              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة <span style={{ opacity:0.7 }}>· اضغط الكلمة لمعناها</span></div>
+              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>
+                {correctAnswer.split(" ").map((w, i) => (
+                  <span key={i}>
+                    <WordChip word={w} color="#22c55e" isNew={isNewWord(w)} />
+                    {i < correctAnswer.split(" ").length - 1 ? " " : ""}
+                  </span>
+                ))}
+              </div>
             </div>
             <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:38, height:38, borderRadius:10, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:18, flexShrink:0 }}>🔊</button>
           </div>
@@ -343,6 +351,71 @@ function shuffleArr<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// ── نظام تتبّع الكلمات الجديدة على المتعلّم ──
+const SEEN_WORDS_KEY = "seenWords";
+function getSeenWords(): Set<string> {
+  try {
+    const raw = localStorage.getItem(SEEN_WORDS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch { return new Set(); }
+}
+function markWordSeen(word: string) {
+  try {
+    const key = word.toLowerCase().replace(/[.,!?]/g, "").trim();
+    if (!key) return;
+    const seen = getSeenWords();
+    if (!seen.has(key)) {
+      seen.add(key);
+      localStorage.setItem(SEEN_WORDS_KEY, JSON.stringify([...seen]));
+    }
+  } catch { /* ignore */ }
+}
+function isNewWord(word: string): boolean {
+  const key = word.toLowerCase().replace(/[.,!?]/g, "").trim();
+  if (!key || !translateWord(key)) return false; // فقط الكلمات اللي لها ترجمة
+  return !getSeenWords().has(key);
+}
+
+// ── كلمة قابلة للنقر: تعرض الترجمة + لون مميّز لو جديدة ──
+function WordChip({ word, color, isNew, onSpeak }: { word: string; color: string; isNew: boolean; onSpeak?: () => void }) {
+  const [showTip, setShowTip] = useState(false);
+  const translation = translateWord(word);
+  const handleClick = () => {
+    if (translation) setShowTip(v => !v);
+    if (onSpeak) onSpeak();
+    if (isNew) markWordSeen(word);
+  };
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <span onClick={handleClick}
+        style={{
+          cursor: translation ? "pointer" : "default",
+          borderBottom: translation ? `2px dotted ${isNew ? "#f59e0b" : color + "70"}` : "none",
+          color: isNew ? "#d97706" : "inherit",
+          fontWeight: isNew ? 800 : "inherit",
+          padding: "0 1px",
+        }}>
+        {word}
+        {isNew && <span style={{ fontSize: 9, verticalAlign: "super", color: "#f59e0b" }}>✦</span>}
+      </span>
+      <AnimatePresence>
+        {showTip && translation && (
+          <motion.span initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            onClick={() => setShowTip(false)}
+            style={{
+              position: "absolute", bottom: "100%", left: "50%", transform: "translateX(-50%)",
+              marginBottom: 6, background: "hsl(var(--popover))", color: "hsl(var(--popover-foreground))",
+              border: `2px solid ${color}`, borderRadius: 10, padding: "5px 12px", fontSize: 14, fontWeight: 700,
+              whiteSpace: "nowrap", zIndex: 50, boxShadow: "0 4px 12px rgba(0,0,0,0.2)", direction: "rtl",
+            }}>
+            {translation}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
+  );
 }
 
 function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
@@ -467,6 +540,11 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       {/* التعليمة */}
       <div style={{ textAlign:"center", marginBottom:22 }}>
         <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔄 الترجمة</div>
+        {isNewWord(ex.correctAnswer ?? "") && (
+          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#f59e0b18", border:"1.5px solid #f59e0b55", borderRadius:14, padding:"3px 12px", marginBottom:8 }}>
+            <span style={{ fontSize:12, fontWeight:800, color:"#d97706" }}>✦ كلمة جديدة</span>
+          </div>
+        )}
         <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:12, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة للكلمة التالية</div>
         <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
       </div>
@@ -1047,7 +1125,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
             ))}
           </div>
           <p style={{ fontSize:13, color:"hsl(var(--muted-foreground))", marginTop:4 }}>
-            الدرس {subLesson} من 4
+            الدرس {subLesson} من 4 {subLesson >= 1 && subLesson <= 4 ? `· ${STAGE_NAMES[subLesson-1]}` : ""}
           </p>
           <div className="flex gap-1 mt-2">
             {[0,1,2].map(i=>(
@@ -1141,8 +1219,8 @@ const GRAMMAR_TIPS: Record<string, { title: string; tip: string; example: string
   airport: { title: "أداة التعريف the", tip: "نستخدم the عند الحديث عن شيء محدّد معروف للطرفين.", example: "Where is the gate? — أين البوابة؟" },
   adj:     { title: "موضع الصفة", tip: "في الإنجليزية الصفة تأتي قبل الاسم، عكس العربية.", example: "a big house — بيت كبير (الصفة أولاً)" },
   food:    { title: "طلب الطعام", tip: "نستخدم I would like (أودّ) للطلب المهذّب في المطعم.", example: "I would like rice. — أودّ أرزاً" },
-  pj:      { title: "إضافة s للغائب", tip: "مع he/she/it نضيف s إلى الفعل في المضارع.", example: "He works. — She teaches." },
-  pr:      { title: "ظروف التكرار", tip: "always (دائماً)، usually (عادة)، sometimes (أحياناً)، never (أبداً) تأتي قبل الفعل.", example: "I always eat breakfast." },
+  pj:      { title: "الفعل في المضارع", tip: "الفعل يبقى كما هو مع I/you/we/they. لكن مع he/she/it نضيف s أو es في النهاية.", example: "I work ✓ — He works ✓ (أضفنا s)" },
+  pr:      { title: "ظروف التكرار", tip: "always (دائماً)، usually (عادة)، sometimes (أحياناً)، never (أبداً) تأتي قبل الفعل الأساسي.", example: "I always eat breakfast. — أتناول الفطور دائماً" },
   wt:      { title: "وصف الطقس بـ It is", tip: "نبدأ وصف الطقس بـ It is (الجو...).", example: "It is sunny. — الجو مشمس" },
   pet:     { title: "الملكية بـ have/has", tip: "نستخدم have مع I/you/we/they، وhas مع he/she/it.", example: "I have a cat. — She has a dog." },
 };
@@ -1153,6 +1231,10 @@ function grammarTipForLesson(lessonId: string): { title: string; tip: string; ex
   }
   return null;
 }
+
+// أسماء مراحل التدرّج التعليمي (حسب رقم الدرس الداخلي)
+const STAGE_NAMES = ["تعرّف", "استخدم", "كوّن", "أتقن"];
+const STAGE_DESC = ["تعرّف على الكلمات الجديدة", "استخدمها في عبارات", "كوّن جملاً كاملة", "أتقن واختبر نفسك"];
 
 const MAX_HEARTS = 5;
 
@@ -1280,25 +1362,45 @@ export default function UnitLesson() {
           seen.add(ex.id); return true;
         });
       } else {
-        // درس داخلي عادي — وزّع أسئلة المحطة على 4 دروس مع توازن الأنماط
+        // ── نظام التدرّج التعليمي (بدون تكرار) ──
+        // المحطة فيها ~27 سؤال (3 مستويات). نوزّعها على 4 دروس تدرّجياً:
+        //   الدرس 1: تعرّف (أسهل) · الدرس 2: استخدم · الدرس 3: كوّن · الدرس 4: أتقن (أصعب)
         const t = (tier as 0|1|2|3);
+        // كل أسئلة المحطة مرتّبة من الأسهل للأصعب (t0→t1→t2→t3) بترتيب ثابت
         const all = getAllStationExercises(meta.title);
-        // جمّع الأسئلة حسب النوع
-        const byType: Record<string, ExObj[]> = {};
-        all.forEach(ex => { (byType[ex.type] ??= []).push(ex); });
-        // وزّع كل نوع بالتناوب على الدروس الأربعة
-        const slice: ExObj[] = [];
-        Object.values(byType).forEach(list => {
-          list.forEach((ex, i) => { if (i % 4 === t) slice.push(ex); });
+        // رتّب حسب المستوى المستخرج من id (t0/t1/t2/t3) ثم حسب id
+        const tierOf = (ex: ExObj) => {
+          const m = ex.id.match(/-t(\d)-/);
+          return m ? parseInt(m[1]) : 0;
+        };
+        const ordered = [...all].sort((a, b) => {
+          const ta = tierOf(a), tb = tierOf(b);
+          if (ta !== tb) return ta - tb;       // الأسهل أولاً
+          return a.id.localeCompare(b.id);
         });
-        // رتّب الشريحة: الأنماط النادرة (مثل الصور) أولاً حتى لا تُقصّ عند التحديد بـ 8
-        const RARITY: Record<string, number> = { picture_match: 0, matching: 1, listen_select: 2, fill_blank: 3, word_order: 4, translate: 5 };
-        slice.sort((a, b) => (RARITY[a.type] ?? 9) - (RARITY[b.type] ?? 9));
-        // خذ أول 8 (تضمن وجود الصور)، ثم اخلط الترتيب النهائي
-        let chosen = slice.length >= 6 ? slice.slice(0, 8)
-                   : [...slice, ...all.filter(e => !slice.includes(e))].slice(0, 8);
-        // اخلط الترتيب حتى لا تكون كل الصور في البداية دائماً
-        raw = chosen.sort(() => Math.random() - 0.5);
+        // وزّع تدرّجياً: الدرس t يأخذ شريحة متتالية (تدرّج طبيعي بالصعوبة)
+        // 4 دروس، كل درس يأخذ ربع الأسئلة بالترتيب التصاعدي
+        const perLesson = Math.ceil(ordered.length / 4);
+        let slice = ordered.slice(t * perLesson, (t + 1) * perLesson);
+
+        // اضمن وجود نمط الصور في كل درس (إن وُجدت في المحطة)
+        const usedIds = new Set(slice.map(e => e.id));
+        const hasPic = slice.some(e => e.type === "picture_match");
+        if (!hasPic) {
+          const pic = ordered.find(e => e.type === "picture_match");
+          if (pic) {
+            // أضف نسخة الصورة (التكرار الوحيد المسموح — لضمان النمط)
+            slice = [pic, ...slice];
+          }
+        }
+        // اضمن 6-8 أسئلة: لو قلّت، أكمل من غير المستخدم
+        if (slice.length < 6) {
+          for (const ex of ordered) {
+            if (slice.length >= 7) break;
+            if (!usedIds.has(ex.id)) { slice.push(ex); usedIds.add(ex.id); }
+          }
+        }
+        raw = slice.slice(0, 8).sort(() => Math.random() - 0.5);
       }
     } catch (err) {
       console.error("loadExercises error:", err);
@@ -1364,6 +1466,10 @@ export default function UnitLesson() {
   const handleAnswer = (ok: boolean, answer: string) => {
     const ex = queue[0];
     setTotalCount(t => t + 1);
+    // علّم كلمات الإجابة الصحيحة كـ"مرئية" (تنتقل من جديدة لمعروفة بعد تعلّمها)
+    if (ex.correctAnswer) {
+      ex.correctAnswer.split(" ").forEach(w => markWordSeen(w));
+    }
     if (ok) {
       const newStreak = streak + 1;
       setStreak(newStreak);
@@ -1616,6 +1722,18 @@ export default function UnitLesson() {
             {/* زر الإغلاق — يمين */}
             <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20, color:"hsl(var(--muted-foreground))" }}>✕</button>
           </div>
+
+          {/* شارة مرحلة التدرّج (للدروس العادية فقط) */}
+          {!meta.isReview && !meta.isChallenge && !meta.isPractice && !isJumpMode && subLesson >= 0 && subLesson <= 3 && (
+            <div style={{ display:"flex", justifyContent:"center", marginBottom:14, flexShrink:0 }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:`${meta.color}14`, border:`1.5px solid ${meta.color}35`, borderRadius:20, padding:"5px 14px" }}>
+                <span style={{ fontSize:13, fontWeight:800, color:meta.color }}>
+                  {["①","②","③","④"][subLesson]} {STAGE_NAMES[subLesson]}
+                </span>
+                <span style={{ fontSize:11, color:"hsl(var(--muted-foreground))" }}>· {STAGE_DESC[subLesson]}</span>
+              </div>
+            </div>
+          )}
 
           {/* Main content area */}
           <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>

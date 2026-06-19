@@ -15,6 +15,10 @@ export const unit2IntroBank: Record<string, TieredBank> = {
   // ── الدرس 1: ما اسمك؟ ──
   "ما اسمك؟": {
     t0: [
+    { id:"in-greet-1", type:"translate", arabic:"صباح الخير", options:["good morning","good night","goodbye","hello"], correctAnswer:"good morning", explanation:"صباح الخير = good morning", xp:10 },
+    { id:"in-greet-2", type:"translate", arabic:"تصبح على خير", options:["good night","good morning","goodbye","welcome"], correctAnswer:"good night", explanation:"تصبح على خير = good night", xp:10 },
+    { id:"in-greet-3", type:"translate", arabic:"مع السلامة", options:["goodbye","hello","good morning","please"], correctAnswer:"goodbye", explanation:"مع السلامة = goodbye", xp:10 },
+    { id:"in-greet-4", type:"translate", arabic:"أهلاً وسهلاً", options:["welcome","goodbye","sorry","good night"], correctAnswer:"welcome", explanation:"أهلاً وسهلاً = welcome", xp:10 },
       { id:"in1-t0-1", type:"translate", arabic:"اسم", options:["name","from","where","family"], correctAnswer:"name", explanation:"name = اسم", xp:10 },
       { id:"in1-t0-2", type:"listen_select", listenSentence:"hello", options:["hello","name","what","you"], correctAnswer:"hello", explanation:"hello = مرحباً 👋", xp:10 },
       { id:"in1-t0-3", type:"translate", arabic:"ما", options:["what","where","who","why"], correctAnswer:"what", explanation:"what = ما/ماذا", xp:10 },
