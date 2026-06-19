@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
+import { translateWord } from "@/lib/word-glossary";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -312,8 +313,15 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
           <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
             <Check className="w-5 h-5 text-green-400 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة</div>
-              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>{correctAnswer}</div>
+              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة <span style={{ opacity:0.7 }}>· اضغط الكلمة لمعناها</span></div>
+              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>
+                {correctAnswer.split(" ").map((w, i) => (
+                  <span key={i}>
+                    <WordChip word={w} color="#22c55e" isNew={isNewWord(w)} />
+                    {i < correctAnswer.split(" ").length - 1 ? " " : ""}
+                  </span>
+                ))}
+              </div>
             </div>
             <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:38, height:38, borderRadius:10, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:18, flexShrink:0 }}>🔊</button>
           </div>
@@ -343,6 +351,71 @@ function shuffleArr<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// ── نظام تتبّع الكلمات الجديدة على المتعلّم ──
+const SEEN_WORDS_KEY = "seenWords";
+function getSeenWords(): Set<string> {
+  try {
+    const raw = localStorage.getItem(SEEN_WORDS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch { return new Set(); }
+}
+function markWordSeen(word: string) {
+  try {
+    const key = word.toLowerCase().replace(/[.,!?]/g, "").trim();
+    if (!key) return;
+    const seen = getSeenWords();
+    if (!seen.has(key)) {
+      seen.add(key);
+      localStorage.setItem(SEEN_WORDS_KEY, JSON.stringify([...seen]));
+    }
+  } catch { /* ignore */ }
+}
+function isNewWord(word: string): boolean {
+  const key = word.toLowerCase().replace(/[.,!?]/g, "").trim();
+  if (!key || !translateWord(key)) return false; // فقط الكلمات اللي لها ترجمة
+  return !getSeenWords().has(key);
+}
+
+// ── كلمة قابلة للنقر: تعرض الترجمة + لون مميّز لو جديدة ──
+function WordChip({ word, color, isNew, onSpeak }: { word: string; color: string; isNew: boolean; onSpeak?: () => void }) {
+  const [showTip, setShowTip] = useState(false);
+  const translation = translateWord(word);
+  const handleClick = () => {
+    if (translation) setShowTip(v => !v);
+    if (onSpeak) onSpeak();
+    if (isNew) markWordSeen(word);
+  };
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <span onClick={handleClick}
+        style={{
+          cursor: translation ? "pointer" : "default",
+          borderBottom: translation ? `2px dotted ${isNew ? "#f59e0b" : color + "70"}` : "none",
+          color: isNew ? "#d97706" : "inherit",
+          fontWeight: isNew ? 800 : "inherit",
+          padding: "0 1px",
+        }}>
+        {word}
+        {isNew && <span style={{ fontSize: 9, verticalAlign: "super", color: "#f59e0b" }}>✦</span>}
+      </span>
+      <AnimatePresence>
+        {showTip && translation && (
+          <motion.span initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            onClick={() => setShowTip(false)}
+            style={{
+              position: "absolute", bottom: "100%", left: "50%", transform: "translateX(-50%)",
+              marginBottom: 6, background: "hsl(var(--popover))", color: "hsl(var(--popover-foreground))",
+              border: `2px solid ${color}`, borderRadius: 10, padding: "5px 12px", fontSize: 14, fontWeight: 700,
+              whiteSpace: "nowrap", zIndex: 50, boxShadow: "0 4px 12px rgba(0,0,0,0.2)", direction: "rtl",
+            }}>
+            {translation}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
+  );
 }
 
 function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
@@ -467,6 +540,11 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
       {/* التعليمة */}
       <div style={{ textAlign:"center", marginBottom:22 }}>
         <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔄 الترجمة</div>
+        {isNewWord(ex.correctAnswer ?? "") && (
+          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#f59e0b18", border:"1.5px solid #f59e0b55", borderRadius:14, padding:"3px 12px", marginBottom:8 }}>
+            <span style={{ fontSize:12, fontWeight:800, color:"#d97706" }}>✦ كلمة جديدة</span>
+          </div>
+        )}
         <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:12, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة للكلمة التالية</div>
         <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
       </div>
@@ -1388,6 +1466,10 @@ export default function UnitLesson() {
   const handleAnswer = (ok: boolean, answer: string) => {
     const ex = queue[0];
     setTotalCount(t => t + 1);
+    // علّم كلمات الإجابة الصحيحة كـ"مرئية" (تنتقل من جديدة لمعروفة بعد تعلّمها)
+    if (ex.correctAnswer) {
+      ex.correctAnswer.split(" ").forEach(w => markWordSeen(w));
+    }
     if (ok) {
       const newStreak = streak + 1;
       setStreak(newStreak);
