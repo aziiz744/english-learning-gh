@@ -512,8 +512,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const sideColor = isGold ? "#b45309" : isActive ? shadeColor(color, -60) : "#1a2330";
   const starColor = isGold ? "#ffffff" : isActive ? "#ffffff" : "#566578";
 
-  // المسار الرمادي المفرّغ يظهر على الدائرة الحالية (ابدأ) أو المكتملة
-  const showTrack = isCurrent || isGold || (progress > 0 && progress < 4);
+  // المسار الدائري يظهر فقط على الدائرة الحالية (آخر درس وقف عنده / يقدر يبدأ منه)
+  const showTrack = isCurrent;
   const fillColor = isGold ? "#f59e0b" : color; // لون الجزء الممتلئ
   // كم يمتلئ (ربع لكل درس)
   const fillFraction = isGold ? 1 : Math.min(progress / 4, 1);
