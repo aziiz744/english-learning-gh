@@ -177,6 +177,37 @@ export function getAllStationExercises(title: string): ExObj[] {
 }
 
 /**
+ * اختبار القسم الشامل — يجمع أهم الأسئلة من كل وحدات القسم الأول.
+ * سؤالان من كل وحدة (متوسط/صعب) = اختبار حقيقي يثبت فهم كل القسم.
+ */
+const SECTION1_STATIONS: string[] = [
+  "الكلمات الأساسية", "جمل كاملة",        // و1 مشروبات
+  "ما اسمك؟", "عائلتك",                    // و2 تعريف
+  "الصفات الأساسية", "قارن بين الأشياء",   // و3 صفات
+  "أماكن في المدينة", "الاتجاهات",          // و4 أماكن
+  "أسماء الأطعمة", "في المطعم",            // و5 طعام
+  "في المطار", "في الطائرة",               // و6 مطار
+  "أفعال المهن", "جمل المضارع",            // و7 مهن
+  "أفعال يومية", "روتينك اليومي",          // و8 مضارع
+  "كلمات الطقس", "صف الطقس",               // و9 طقس
+  "أسماء الحيوانات", "صف حيوانك",          // و10 حيوانات
+];
+
+export function getSectionTestExercises(): ExObj[] {
+  const test: ExObj[] = [];
+  const seen = new Set<string>();
+  for (const title of SECTION1_STATIONS) {
+    const all = getAllStationExercises(title);
+    // خذ سؤالاً متوسطاً (t1) — يثبت الفهم بدون أن يكون سهلاً جداً
+    const mid = all.filter(e => /-t1-/.test(e.id) && e.type !== "picture_match");
+    const pick = mid.length > 0 ? mid[Math.floor(Math.random() * mid.length)] : all[0];
+    if (pick && !seen.has(pick.id)) { test.push(pick); seen.add(pick.id); }
+  }
+  // اخلط الترتيب — اختبار حقيقي غير متوقّع
+  return test.sort(() => Math.random() - 0.5);
+}
+
+/**
  * Returns `count` exercises drawn from the requested tier ONLY, so every star
  * attempt (and the challenge test) is completely different and difficulty rises
  * with the tier. Properly authored tiers have >= count items; the adjacent-tier

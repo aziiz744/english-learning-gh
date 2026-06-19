@@ -18,6 +18,7 @@ import LevelTest from "@/pages/level-test";
 import Admin from "@/pages/admin";
 import Reading from "@/pages/reading";
 import Competitions from "@/pages/competitions";
+import SectionTest from "@/pages/section-test";
 import Grammar from "@/pages/grammar";
 import Pro from "@/pages/pro";
 import ResetPassword from "@/pages/reset-password";
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/reading" component={Reading} />
       <Route path="/competitions" component={Competitions} />
+      <Route path="/section-test" component={SectionTest} />
       <Route path="/grammar" component={Grammar} />
       <Route path="/pro" component={Pro} />
       <Route path="/reset-password" component={ResetPassword} />

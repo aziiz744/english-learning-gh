@@ -69,7 +69,7 @@ const CHAPTERS: Chapter[] = [
           { id: "intro-2", type: "lesson",    title: "من أين أنت؟",    description: "تعلّم كيف تذكر بلدك وتسأل الآخرين.", words: ["from","where","are","you","I"] },
           { id: "intro-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كل ما تعلمته!", words: [] },
           { id: "intro-3", type: "lesson",    title: "عائلتك",         description: "تعلّم كلمات العائلة: mother وfather وbrother وsister.", words: ["mother","father","brother","sister","family"] },
-          { id: "intro-c", type: "challenge", title: "تحدي القسم",     description: "اختبار شامل للقسم الثاني!", words: [] },
+          { id: "intro-c", type: "challenge", title: "تحدي الوحدة",     description: "اختبار شامل لكل ما تعلمته في هذه الوحدة!", words: [] },
         ],
       },
       // ── الوحدة 3: قل من أين أنت؟ ──
@@ -1016,12 +1016,18 @@ export default function Roadmap() {
 
   const isPro = (user as any)?.isPro ?? false;
 
-  // جلب الستريك من user_stats
+  // جلب الستريك + حالة فتح القسم من user_stats
   const [streak, setStreak] = useState(0);
+  const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
   useEffect(() => {
     if (!user) return;
-    supabase.from("user_stats").select("streak").eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => { if (data) setStreak(data.streak ?? 0); });
+    supabase.from("user_stats").select("streak, section_unlocked").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setStreak(data.streak ?? 0);
+          setSectionUnlocked((data as any).section_unlocked ?? 1);
+        }
+      });
   }, [user]);
 
   // أي شارة مضغوطة لعرض توضيحها
@@ -1305,6 +1311,22 @@ export default function Roadmap() {
         <motion.div key={activeChapter} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
+          {/* لو فُتح القسم الثاني — يظهر بانره ويُخفى القسم الأول */}
+          {sectionUnlocked >= 2 ? (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              style={{ margin: "20px 16px", background: "linear-gradient(135deg, #1e3a8a, #4338ca)", borderRadius: 24, padding: "40px 24px", textAlign: "center" }}>
+              <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
+              <div style={{ display: "inline-block", background: "rgba(255,255,255,0.2)", color: "white", fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 20, marginBottom: 14 }}>القسم الثاني</div>
+              <h2 style={{ fontSize: 24, fontWeight: 900, color: "white", marginBottom: 12 }}>أهلاً بك في القسم الثاني!</h2>
+              <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 15, lineHeight: 1.8, direction: "rtl", marginBottom: 8 }}>
+                لقد أتقنت القسم الأول بنجاح 🏆 محتوى القسم الثاني قيد الإعداد وسيكون متاحاً قريباً جداً.
+              </p>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, direction: "rtl" }}>
+                ترقّب كلمات وعبارات ومحادثات أكثر تقدّماً! 🚀
+              </p>
+            </motion.div>
+          ) : (
+          <>
           {chapter.units.map((unit, unitIdx) => {
             const positions = buildPath(unit.lessons.length, unit.pathVariant);
             const svgH = 60 + (unit.lessons.length - 1) * STEP_Y + 80;
@@ -1540,52 +1562,47 @@ export default function Roadmap() {
             );
           })}
 
-          {/* Next chapter card */}
+          {/* بوابة القسم الثاني — اختبار القسم */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             style={{
               margin: "48px 16px 32px",
-              background: "hsl(var(--card))",
-              border: "1.5px solid hsl(var(--border))",
+              background: "linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted)))",
+              border: "2px solid hsl(var(--border))",
               borderRadius: 20,
-              padding: "24px 20px",
+              padding: "28px 20px",
               textAlign: "center",
             }}>
-            {/* التالي badge */}
+            <div style={{ fontSize: 44, marginBottom: 10 }}>🎓</div>
             <div style={{
-              display: "inline-block",
-              background: "hsl(var(--muted))",
-              color: "hsl(var(--muted-foreground))",
-              fontSize: 12, fontWeight: 700,
-              padding: "3px 14px", borderRadius: 20,
-              marginBottom: 14,
-            }}>التالي</div>
+              display: "inline-block", background: "#10b98122", color: "#10b981",
+              fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 20, marginBottom: 14,
+            }}>بوابة القسم الثاني</div>
 
-            {/* العنوان مع قفل */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: "hsl(var(--foreground))" }}>القسم 2</span>
-              <span style={{ fontSize: 20 }}>🔒</span>
-            </div>
-
-            {/* الوصف */}
-            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}>
-              تعلّم كلمات، وعبارات، ومبادئ نحوية للتعاملات البسيطة
+            <h3 style={{ fontSize: 20, fontWeight: 900, color: "hsl(var(--foreground))", marginBottom: 10 }}>
+              اختبار القسم الأول
+            </h3>
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.7, marginBottom: 8, direction: "rtl" }}>
+              جاهز للقسم الثاني؟ اجتز الاختبار الشامل لتثبت إتقانك وتفتح المستوى التالي.
+            </p>
+            <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 12, marginBottom: 20, direction: "rtl", opacity: 0.8 }}>
+              💡 متمكّن من المواضيع؟ يمكنك الاختبار مباشرة دون إكمال كل الدروس.
             </p>
 
-            {/* زر القفز */}
-            <button style={{
-              width: "100%", padding: "13px 0",
-              background: "transparent",
-              border: "1.5px solid hsl(var(--border))",
-              borderRadius: 14,
-              color: "#38bdf8",
-              fontWeight: 800, fontSize: 15,
-              cursor: "pointer",
-            }}>
-              القفز إلى هنا؟
+            <button onClick={() => setLocation("/section-test")}
+              style={{
+                width: "100%", padding: "15px 0",
+                background: "linear-gradient(135deg, #34d399, #059669)",
+                border: "none", borderRadius: 14, color: "white",
+                fontWeight: 800, fontSize: 16, cursor: "pointer",
+                boxShadow: "0 5px 0 #047857",
+              }}>
+              ابدأ اختبار القسم 🚀
             </button>
           </motion.div>
+          </>
+          )}
           <div className="h-8"/>
         </motion.div>
       </div>
