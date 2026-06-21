@@ -142,6 +142,42 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
       {en:"fluffy",ar:"كثيف الفرو"},{en:"playful",ar:"مرح"},{en:"cute",ar:"لطيف"},{en:"gentle",ar:"لطيف"},
       {en:"feed",ar:"يُطعم"},{en:"walk",ar:"يمشّي"},{en:"play",ar:"يلعب"},{en:"vet",ar:"طبيب بيطري"},{en:"pet",ar:"حيوان أليف"},
     ] },
+
+  // ══════════ القسم الثاني ══════════
+  // الوحدة 11: تسوّق لشراء الملابس
+  "clothes-1": { title: "أسماء الملابس", unitTitle: "تسوّق لشراء الملابس", emoji: "👕", color: "#0ea5e9" },
+  "clothes-2": { title: "في متجر الملابس", unitTitle: "تسوّق لشراء الملابس", emoji: "🛍️", color: "#0ea5e9" },
+  "clothes-t": { title: "كنز المراجعة", unitTitle: "تسوّق لشراء الملابس", emoji: "💎", color: "#0ea5e9", isReview: true, reviewTitles: ["أسماء الملابس", "في متجر الملابس"] },
+  "clothes-3": { title: "اطلب الملابس", unitTitle: "تسوّق لشراء الملابس", emoji: "🧥", color: "#0ea5e9" },
+  "clothes-c": { title: "تحدي الوحدة", unitTitle: "تسوّق لشراء الملابس", emoji: "🏆", color: "#0ea5e9", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 12: قم بجولة في منزلك
+  "house-1": { title: "غرف المنزل", unitTitle: "قم بجولة في منزلك", emoji: "🏠", color: "#f97316" },
+  "house-2": { title: "الأثاث", unitTitle: "قم بجولة في منزلك", emoji: "🛋️", color: "#f97316" },
+  "house-t": { title: "كنز المراجعة", unitTitle: "قم بجولة في منزلك", emoji: "💎", color: "#f97316", isReview: true, reviewTitles: ["غرف المنزل", "الأثاث"], crossReviewTitles: ["أسماء الملابس"] },
+  "house-3": { title: "أين الأشياء", unitTitle: "قم بجولة في منزلك", emoji: "📦", color: "#f97316" },
+  "house-c": { title: "تحدي الوحدة", unitTitle: "قم بجولة في منزلك", emoji: "🏆", color: "#f97316", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 13: المضارع من "يكون"
+  "tobe-1": { title: "أنا أكون، أنت تكون", unitTitle: "استخدم المضارع من يكون", emoji: "📝", color: "#8b5cf6" },
+  "tobe-2": { title: "جمل مع يكون", unitTitle: "استخدم المضارع من يكون", emoji: "✍️", color: "#8b5cf6" },
+  "tobe-t": { title: "كنز المراجعة", unitTitle: "استخدم المضارع من يكون", emoji: "💎", color: "#8b5cf6", isReview: true, reviewTitles: ["أنا أكون، أنت تكون", "جمل مع يكون"], crossReviewTitles: ["غرف المنزل"] },
+  "tobe-3": { title: "يكون مع الصفات", unitTitle: "استخدم المضارع من يكون", emoji: "🎯", color: "#8b5cf6" },
+  "tobe-c": { title: "تحدي الوحدة", unitTitle: "استخدم المضارع من يكون", emoji: "🏆", color: "#8b5cf6", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 14: اختصارات المضارع من "يكون"
+  "contr-1": { title: "الاختصارات الأساسية", unitTitle: "اختصارات المضارع من يكون", emoji: "✂️", color: "#ec4899" },
+  "contr-2": { title: "الاختصارات في جمل", unitTitle: "اختصارات المضارع من يكون", emoji: "💬", color: "#ec4899" },
+  "contr-t": { title: "كنز المراجعة", unitTitle: "اختصارات المضارع من يكون", emoji: "💎", color: "#ec4899", isReview: true, reviewTitles: ["الاختصارات الأساسية", "الاختصارات في جمل"], crossReviewTitles: ["أنا أكون، أنت تكون"] },
+  "contr-3": { title: "اختصارات النفي", unitTitle: "اختصارات المضارع من يكون", emoji: "🚫", color: "#ec4899" },
+  "contr-c": { title: "تحدي الوحدة", unitTitle: "اختصارات المضارع من يكون", emoji: "🏆", color: "#ec4899", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 15: اطلب الطعام والمشروبات
+  "order-1": { title: "قائمة الطعام", unitTitle: "اطلب الطعام والمشروبات", emoji: "📋", color: "#14b8a6" },
+  "order-2": { title: "اطلب بأدب", unitTitle: "اطلب الطعام والمشروبات", emoji: "🙏", color: "#14b8a6" },
+  "order-t": { title: "كنز المراجعة", unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#14b8a6", isReview: true, reviewTitles: ["قائمة الطعام", "اطلب بأدب"], crossReviewTitles: ["الاختصارات الأساسية"] },
+  "order-3": { title: "في المطعم", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
+  "order-c": { title: "تحدي الوحدة", unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#14b8a6", isUnitFinal: true, isChallenge: true },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──

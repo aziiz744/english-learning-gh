@@ -180,6 +180,74 @@ const CHAPTERS: Chapter[] = [
       },
     ],
   },
+  // ═══════════════ القسم الثاني — المتوسط ═══════════════
+  {
+    id: "intermediate", title: "المتوسط", emoji: "🚀",
+    units: [
+      // الوحدة 11: تسوّق لشراء الملابس
+      {
+        id: "unit-clothes", title: "تسوّق لشراء الملابس", emoji: "👕", color: "#0ea5e9",
+        sectionTitle: "",
+        lessons: [
+          { id: "clothes-1", type: "lesson",    title: "أسماء الملابس",   description: "تعلّم: shirt وpants وdress وshoes وhat.", words: ["shirt","pants","dress","shoes","hat"] },
+          { id: "clothes-2", type: "lesson",    title: "في متجر الملابس", description: "تعلّم: size وcolor وprice وbuy.", words: ["size","color","price","buy"] },
+          { id: "clothes-t", type: "treasure",  title: "كنز المراجعة",    description: "راجع كلمات الملابس!", words: [] },
+          { id: "clothes-3", type: "lesson",    title: "اطلب الملابس",     description: "تعلّم: I want وHow much وtoo big.", words: ["want","price","big","small"] },
+          { id: "clothes-c", type: "challenge", title: "تحدي الوحدة",     description: "اختبار شامل: تسوّق للملابس بثقة!", words: [] },
+        ],
+      },
+      // الوحدة 12: قم بجولة في منزلك
+      {
+        id: "unit-house", title: "قم بجولة في منزلك", emoji: "🏠", color: "#f97316",
+        sectionTitle: "قم بجولة في منزلك",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "house-1", type: "lesson",    title: "غرف المنزل", description: "تعلّم: kitchen وbedroom وbathroom.", words: ["kitchen","bedroom","bathroom","door"] },
+          { id: "house-2", type: "lesson",    title: "الأثاث",     description: "تعلّم: table وchair وbed وsofa.", words: ["table","chair","bed","sofa"] },
+          { id: "house-t", type: "treasure",  title: "كنز المراجعة", description: "راجع كلمات المنزل!", words: [] },
+          { id: "house-3", type: "lesson",    title: "أين الأشياء", description: "تعلّم: in وon وunder وnear.", words: ["in","on","under","near"] },
+          { id: "house-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل: قم بجولة في منزلك!", words: [] },
+        ],
+      },
+      // الوحدة 13: المضارع من "يكون"
+      {
+        id: "unit-tobe", title: "استخدم المضارع من يكون", emoji: "📝", color: "#8b5cf6",
+        sectionTitle: "استخدم المضارع من يكون",
+        lessons: [
+          { id: "tobe-1", type: "lesson",    title: "أنا أكون، أنت تكون", description: "تعلّم: am وis وare.", words: ["am","is","are"] },
+          { id: "tobe-2", type: "lesson",    title: "جمل مع يكون",        description: "تعلّم جملاً كاملة مع am/is/are.", words: ["am","is","are"] },
+          { id: "tobe-t", type: "treasure",  title: "كنز المراجعة",       description: "راجع المضارع من يكون!", words: [] },
+          { id: "tobe-3", type: "lesson",    title: "يكون مع الصفات",     description: "تعلّم: I am happy. He is tall.", words: ["happy","tall","busy","tired"] },
+          { id: "tobe-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: استخدم am/is/are!", words: [] },
+        ],
+      },
+      // الوحدة 14: اختصارات المضارع من "يكون"
+      {
+        id: "unit-contr", title: "اختصارات المضارع من يكون", emoji: "✂️", color: "#ec4899",
+        sectionTitle: "اختصارات المضارع من يكون",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "contr-1", type: "lesson",    title: "الاختصارات الأساسية", description: "تعلّم: I'm وyou're وhe's.", words: ["I'm","you're","he's"] },
+          { id: "contr-2", type: "lesson",    title: "الاختصارات في جمل",  description: "استخدم الاختصارات في جمل.", words: ["I'm","it's","we're"] },
+          { id: "contr-t", type: "treasure",  title: "كنز المراجعة",       description: "راجع الاختصارات!", words: [] },
+          { id: "contr-3", type: "lesson",    title: "اختصارات النفي",     description: "تعلّم: isn't وaren't.", words: ["isn't","aren't"] },
+          { id: "contr-c", type: "challenge", title: "تحدي الوحدة",        description: "اختبار شامل: استخدم الاختصارات!", words: [] },
+        ],
+      },
+      // الوحدة 15: اطلب الطعام والمشروبات
+      {
+        id: "unit-order", title: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6",
+        sectionTitle: "اطلب الطعام والمشروبات",
+        lessons: [
+          { id: "order-1", type: "lesson",    title: "قائمة الطعام", description: "تعلّم: menu وwaiter وbill وorder.", words: ["menu","waiter","bill","order"] },
+          { id: "order-2", type: "lesson",    title: "اطلب بأدب",     description: "تعلّم: I would like وCan I have.", words: ["would","like","please","have"] },
+          { id: "order-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع كلمات المطعم!", words: [] },
+          { id: "order-3", type: "lesson",    title: "في المطعم",     description: "تعلّم: table for two وthe bill وtip.", words: ["table","bill","tip","meal"] },
+          { id: "order-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: اطلب الطعام بثقة!", words: [] },
+        ],
+      },
+    ],
+  },
 ];
 
 
@@ -954,8 +1022,7 @@ export default function Roadmap() {
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const chapter = CHAPTERS[activeChapter];
-  const sections = getSections(chapter);
+  // chapter/sections يُحسبان لاحقاً بعد معرفة sectionUnlocked
 
   const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
@@ -1019,6 +1086,9 @@ export default function Roadmap() {
   // جلب الستريك + حالة فتح القسم من user_stats
   const [streak, setStreak] = useState(0);
   const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
+  // اعرض القسم الثاني لو فُتح، وإلا القسم الأول
+  const chapter = CHAPTERS[sectionUnlocked >= 2 && CHAPTERS.length > 1 ? 1 : 0];
+  const sections = getSections(chapter);
   useEffect(() => {
     if (!user) return;
     supabase.from("user_stats").select("streak, section_unlocked").eq("user_id", user.id).maybeSingle()
@@ -1308,24 +1378,20 @@ export default function Roadmap() {
         </div>
 
         {/* Map */}
-        <motion.div key={activeChapter} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+        <motion.div key={chapter.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
-          {/* لو فُتح القسم الثاني — يظهر بانره ويُخفى القسم الأول */}
-          {sectionUnlocked >= 2 ? (
+          {/* ترحيب القسم الثاني (يظهر فقط لو في القسم الثاني) */}
+          {sectionUnlocked >= 2 && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              style={{ margin: "20px 16px", background: "linear-gradient(135deg, #1e3a8a, #4338ca)", borderRadius: 24, padding: "40px 24px", textAlign: "center" }}>
-              <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
-              <div style={{ display: "inline-block", background: "rgba(255,255,255,0.2)", color: "white", fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 20, marginBottom: 14 }}>القسم الثاني</div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, color: "white", marginBottom: 12 }}>أهلاً بك في القسم الثاني!</h2>
-              <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 15, lineHeight: 1.8, direction: "rtl", marginBottom: 8 }}>
-                لقد أتقنت القسم الأول بنجاح 🏆 محتوى القسم الثاني قيد الإعداد وسيكون متاحاً قريباً جداً.
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, direction: "rtl" }}>
-                ترقّب كلمات وعبارات ومحادثات أكثر تقدّماً! 🚀
+              style={{ margin: "16px 16px 8px", background: "linear-gradient(135deg, #1e3a8a, #4338ca)", borderRadius: 20, padding: "20px", textAlign: "center" }}>
+              <div style={{ fontSize: 40, marginBottom: 6 }}>🚀</div>
+              <h2 style={{ fontSize: 19, fontWeight: 900, color: "white", marginBottom: 6 }}>القسم الثاني — المتوسط</h2>
+              <p style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, direction: "rtl" }}>
+                أتقنت الأساسيات! حان وقت كلمات وعبارات أكثر تقدّماً. 🎯
               </p>
             </motion.div>
-          ) : (
+          )}
           <>
           {chapter.units.map((unit, unitIdx) => {
             const positions = buildPath(unit.lessons.length, unit.pathVariant);
@@ -1562,7 +1628,8 @@ export default function Roadmap() {
             );
           })}
 
-          {/* بوابة القسم الثاني — اختبار القسم */}
+          {/* بوابة القسم الثاني — اختبار القسم (في القسم الأول فقط) */}
+          {sectionUnlocked < 2 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -1601,8 +1668,8 @@ export default function Roadmap() {
               ابدأ اختبار القسم 🚀
             </button>
           </motion.div>
-          </>
           )}
+          </>
           <div className="h-8"/>
         </motion.div>
       </div>
