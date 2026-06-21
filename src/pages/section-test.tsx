@@ -35,13 +35,36 @@ export default function SectionTest() {
 
   const ex: ExObj | undefined = questions[idx];
   const total = questions.length;
-  const options: string[] = (ex?.options ?? ex?.blankOptions ?? []) as string[];
   const answer = ex?.correctAnswer ?? "";
+  // اخلط الخيارات (ثابت لكل سؤال عبر id) — لمنع أن تكون الإجابة دائماً الأولى
+  const options: string[] = useMemo(() => {
+    const raw = (ex?.options ?? ex?.blankOptions ?? []) as string[];
+    const id = ex?.id ?? "";
+    // بذرة من id السؤال
+    let seed = 0;
+    for (let i = 0; i < id.length; i++) seed = (seed * 31 + id.charCodeAt(i)) >>> 0;
+    // مولّد أرقام شبه عشوائي حتمي (mulberry32)
+    const rand = () => {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    const arr = [...raw];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [ex]);
 
   const confirm = () => {
     if (!picked) return;
     setConfirmed(true);
-    if (picked === answer) setCorrect((c) => c + 1);
+    const isCorrect = picked === answer;
+    if (isCorrect) setCorrect((c) => c + 1);
+    // انطق الإجابة الصحيحة دائماً (تعليم بالصوت)
+    setTimeout(() => speak(answer), 200);
   };
 
   const next = () => {
