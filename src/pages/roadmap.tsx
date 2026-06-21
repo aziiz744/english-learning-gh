@@ -247,6 +247,68 @@ const CHAPTERS: Chapter[] = [
           { id: "order-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: اطلب الطعام بثقة!", words: [] },
         ],
       },
+      // الوحدة 16: تواصل في العمل
+      {
+        id: "unit-work", title: "تواصل في العمل", emoji: "🏢", color: "#0284c7",
+        sectionTitle: "تواصل في العمل",
+        lessons: [
+          { id: "work-1", type: "lesson",    title: "كلمات العمل",   description: "تعلّم: office وmeeting وemail وboss.", words: ["office","meeting","email","boss"] },
+          { id: "work-2", type: "lesson",    title: "في الاجتماع",   description: "تعلّم: report وproject وdeadline.", words: ["report","project","deadline","plan"] },
+          { id: "work-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع كلمات العمل!", words: [] },
+          { id: "work-3", type: "lesson",    title: "التواصل المهني", description: "تعلّم: Could you وI'll send وLet me know.", words: ["could","send","know","help"] },
+          { id: "work-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: تواصل في العمل بثقة!", words: [] },
+        ],
+      },
+      // الوحدة 17: المضارع للمشاعر
+      {
+        id: "unit-feel", title: "استخدم المضارع للمشاعر", emoji: "😊", color: "#eab308",
+        sectionTitle: "استخدم المضارع للمشاعر",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "feel-1", type: "lesson",    title: "المشاعر",          description: "تعلّم: happy وsad وangry وtired.", words: ["happy","sad","angry","tired"] },
+          { id: "feel-2", type: "lesson",    title: "كيف تشعر",         description: "تعلّم: I feel وHow do you feel.", words: ["feel","fine","better","well"] },
+          { id: "feel-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المشاعر!", words: [] },
+          { id: "feel-3", type: "lesson",    title: "التعبير عن المشاعر", description: "تعلّم: because وwhen وmakes me.", words: ["because","when","makes","so"] },
+          { id: "feel-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: عبّر عن مشاعرك!", words: [] },
+        ],
+      },
+      // الوحدة 18: اطلب المساعدة في الصف
+      {
+        id: "unit-class", title: "اطلب المساعدة في الصف", emoji: "📚", color: "#16a34a",
+        sectionTitle: "اطلب المساعدة في الصف",
+        lessons: [
+          { id: "class-1", type: "lesson",    title: "كلمات الصف",   description: "تعلّم: teacher وquestion وanswer وbook.", words: ["teacher","question","answer","book"] },
+          { id: "class-2", type: "lesson",    title: "اطلب المساعدة", description: "تعلّم: Can you help وI don't understand.", words: ["help","understand","repeat","slowly"] },
+          { id: "class-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع كلمات الصف!", words: [] },
+          { id: "class-3", type: "lesson",    title: "في الدرس",     description: "تعلّم: How do you say وWhat does it mean.", words: ["say","mean","spell","word"] },
+          { id: "class-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: اطلب المساعدة في الصف!", words: [] },
+        ],
+      },
+      // الوحدة 19: اطلب المساعدة أثناء التسوق
+      {
+        id: "unit-shop", title: "اطلب المساعدة أثناء التسوق", emoji: "🛒", color: "#dc2626",
+        sectionTitle: "اطلب المساعدة أثناء التسوق",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "shop-1", type: "lesson",    title: "كلمات التسوق",     description: "تعلّم: store وcart وcashier وaisle.", words: ["store","cart","cashier","aisle"] },
+          { id: "shop-2", type: "lesson",    title: "اسأل عن المنتجات", description: "تعلّم: Where can I find وDo you have.", words: ["find","have","looking","available"] },
+          { id: "shop-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات التسوق!", words: [] },
+          { id: "shop-3", type: "lesson",    title: "الدفع والمساعدة",  description: "تعلّم: How much وcash or card وreceipt.", words: ["cash","card","receipt","change"] },
+          { id: "shop-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تسوّق واطلب المساعدة!", words: [] },
+        ],
+      },
+      // الوحدة 20: تعابير الوقت
+      {
+        id: "unit-time", title: "استخدم تعابير الوقت", emoji: "🕐", color: "#9333ea",
+        sectionTitle: "استخدم تعابير الوقت",
+        lessons: [
+          { id: "time-1", type: "lesson",    title: "كم الساعة",    description: "تعلّم: o'clock وhalf past وquarter.", words: ["time","hour","minute","clock"] },
+          { id: "time-2", type: "lesson",    title: "أوقات اليوم",  description: "تعلّم: morning وafternoon وevening وnight.", words: ["morning","afternoon","evening","night"] },
+          { id: "time-t", type: "treasure",  title: "كنز المراجعة", description: "راجع تعابير الوقت!", words: [] },
+          { id: "time-3", type: "lesson",    title: "تعابير الوقت", description: "تعلّم: at وon وin وtoday وtomorrow.", words: ["today","tomorrow","at","on"] },
+          { id: "time-c", type: "challenge", title: "تحدي الوحدة",  description: "اختبار شامل: استخدم تعابير الوقت!", words: [] },
+        ],
+      },
     ],
   },
 ];

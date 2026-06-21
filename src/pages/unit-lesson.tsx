@@ -178,6 +178,42 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "order-t": { title: "كنز المراجعة", unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#14b8a6", isReview: true, reviewTitles: ["قائمة الطعام", "اطلب بأدب"], crossReviewTitles: ["الاختصارات الأساسية"] },
   "order-3": { title: "في المطعم", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
   "order-c": { title: "تحدي الوحدة", unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#14b8a6", isUnitFinal: true, isChallenge: true },
+
+  // ── الدفعة 2 (الوحدات 16-20) ──
+  // الوحدة 16: تواصل في العمل
+  "work-1": { title: "كلمات العمل", unitTitle: "تواصل في العمل", emoji: "🏢", color: "#0284c7" },
+  "work-2": { title: "في الاجتماع", unitTitle: "تواصل في العمل", emoji: "📊", color: "#0284c7" },
+  "work-t": { title: "كنز المراجعة", unitTitle: "تواصل في العمل", emoji: "💎", color: "#0284c7", isReview: true, reviewTitles: ["كلمات العمل", "في الاجتماع"], crossReviewTitles: ["قائمة الطعام"] },
+  "work-3": { title: "التواصل المهني", unitTitle: "تواصل في العمل", emoji: "📧", color: "#0284c7" },
+  "work-c": { title: "تحدي الوحدة", unitTitle: "تواصل في العمل", emoji: "🏆", color: "#0284c7", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 17: المضارع للمشاعر
+  "feel-1": { title: "المشاعر", unitTitle: "استخدم المضارع للمشاعر", emoji: "😊", color: "#eab308" },
+  "feel-2": { title: "كيف تشعر", unitTitle: "استخدم المضارع للمشاعر", emoji: "💭", color: "#eab308" },
+  "feel-t": { title: "كنز المراجعة", unitTitle: "استخدم المضارع للمشاعر", emoji: "💎", color: "#eab308", isReview: true, reviewTitles: ["المشاعر", "كيف تشعر"], crossReviewTitles: ["كلمات العمل"] },
+  "feel-3": { title: "التعبير عن المشاعر", unitTitle: "استخدم المضارع للمشاعر", emoji: "❤️", color: "#eab308" },
+  "feel-c": { title: "تحدي الوحدة", unitTitle: "استخدم المضارع للمشاعر", emoji: "🏆", color: "#eab308", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 18: اطلب المساعدة في الصف
+  "class-1": { title: "كلمات الصف", unitTitle: "اطلب المساعدة في الصف", emoji: "📚", color: "#16a34a" },
+  "class-2": { title: "اطلب المساعدة", unitTitle: "اطلب المساعدة في الصف", emoji: "🙋", color: "#16a34a" },
+  "class-t": { title: "كنز المراجعة", unitTitle: "اطلب المساعدة في الصف", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["كلمات الصف", "اطلب المساعدة"], crossReviewTitles: ["المشاعر"] },
+  "class-3": { title: "في الدرس", unitTitle: "اطلب المساعدة في الصف", emoji: "✏️", color: "#16a34a" },
+  "class-c": { title: "تحدي الوحدة", unitTitle: "اطلب المساعدة في الصف", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 19: اطلب المساعدة أثناء التسوق
+  "shop-1": { title: "كلمات التسوق", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "🛒", color: "#dc2626" },
+  "shop-2": { title: "اسأل عن المنتجات", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "🔍", color: "#dc2626" },
+  "shop-t": { title: "كنز المراجعة", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "💎", color: "#dc2626", isReview: true, reviewTitles: ["كلمات التسوق", "اسأل عن المنتجات"], crossReviewTitles: ["كلمات الصف"] },
+  "shop-3": { title: "الدفع والمساعدة", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "💳", color: "#dc2626" },
+  "shop-c": { title: "تحدي الوحدة", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "🏆", color: "#dc2626", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 20: تعابير الوقت
+  "time-1": { title: "كم الساعة", unitTitle: "استخدم تعابير الوقت", emoji: "🕐", color: "#9333ea" },
+  "time-2": { title: "أوقات اليوم", unitTitle: "استخدم تعابير الوقت", emoji: "🌅", color: "#9333ea" },
+  "time-t": { title: "كنز المراجعة", unitTitle: "استخدم تعابير الوقت", emoji: "💎", color: "#9333ea", isReview: true, reviewTitles: ["كم الساعة", "أوقات اليوم"], crossReviewTitles: ["كلمات التسوق"] },
+  "time-3": { title: "تعابير الوقت", unitTitle: "استخدم تعابير الوقت", emoji: "📅", color: "#9333ea" },
+  "time-c": { title: "تحدي الوحدة", unitTitle: "استخدم تعابير الوقت", emoji: "🏆", color: "#9333ea", isUnitFinal: true, isChallenge: true },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──

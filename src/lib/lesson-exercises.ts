@@ -25,6 +25,11 @@ import { unit12HouseBank } from "./lesson-banks/unit12-house";
 import { unit13ToBeBank } from "./lesson-banks/unit13-tobe";
 import { unit14ContractionsBank } from "./lesson-banks/unit14-contractions";
 import { unit15OrderFoodBank } from "./lesson-banks/unit15-orderfood";
+import { unit16WorkBank } from "./lesson-banks/unit16-work";
+import { unit17FeelingsBank } from "./lesson-banks/unit17-feelings";
+import { unit18ClassroomBank } from "./lesson-banks/unit18-classroom";
+import { unit19ShopHelpBank } from "./lesson-banks/unit19-shophelp";
+import { unit20TimeBank } from "./lesson-banks/unit20-time";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -50,6 +55,11 @@ const B: Record<string, TieredBank> = {
   ...unit13ToBeBank,
   ...unit14ContractionsBank,
   ...unit15OrderFoodBank,
+  ...unit16WorkBank,
+  ...unit17FeelingsBank,
+  ...unit18ClassroomBank,
+  ...unit19ShopHelpBank,
+  ...unit20TimeBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.
