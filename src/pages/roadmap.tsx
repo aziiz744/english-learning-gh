@@ -183,6 +183,7 @@ const CHAPTERS: Chapter[] = [
   // ═══════════════ القسم الثاني — المتوسط ═══════════════
   {
     id: "intermediate", title: "المتوسط", emoji: "🚀",
+    gradient: "from-indigo-600 to-purple-700", color: "#6366f1",
     units: [
       // الوحدة 11: تسوّق لشراء الملابس
       {
@@ -1086,8 +1087,13 @@ export default function Roadmap() {
   // جلب الستريك + حالة فتح القسم من user_stats
   const [streak, setStreak] = useState(0);
   const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
-  // اعرض القسم الثاني لو فُتح، وإلا القسم الأول
-  const chapter = CHAPTERS[sectionUnlocked >= 2 && CHAPTERS.length > 1 ? 1 : 0];
+  // تجاوز المدير: يتنقّل بين الأقسام بحرية للفحص (null = الوضع الطبيعي)
+  const [adminViewSection, setAdminViewSection] = useState<number | null>(null);
+  // القسم المعروض: المدير يتحكّم، وإلا حسب الفتح
+  const viewSectionIdx = adminViewSection !== null
+    ? adminViewSection
+    : (sectionUnlocked >= 2 && CHAPTERS.length > 1 ? 1 : 0);
+  const chapter = CHAPTERS[Math.min(Math.max(viewSectionIdx, 0), CHAPTERS.length - 1)];
   const sections = getSections(chapter);
   useEffect(() => {
     if (!user) return;
@@ -1377,12 +1383,48 @@ export default function Roadmap() {
           <p className="text-muted-foreground mt-1 text-sm">طريقك من الصفر حتى إتقان الإنجليزية</p>
         </div>
 
+        {/* ── شريط تنقّل المدير بين الأقسام (للمدير فقط) ── */}
+        {user?.isAdmin && (
+          <div style={{ maxWidth: 380, margin: "0 auto 12px", padding: "0 16px" }}>
+            <div style={{ background: "linear-gradient(135deg, #7c3aed, #4338ca)", borderRadius: 14, padding: "10px 12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                <span style={{ fontSize: 14 }}>🛠️</span>
+                <span style={{ fontSize: 12, fontWeight: 800, color: "white" }}>وضع المدير — تنقّل بين الأقسام</span>
+              </div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {CHAPTERS.map((ch, i) => {
+                  const active = viewSectionIdx === i;
+                  return (
+                    <button key={ch.id} onClick={() => setAdminViewSection(i)}
+                      style={{
+                        flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 10, border: "none",
+                        background: active ? "white" : "rgba(255,255,255,0.18)",
+                        color: active ? "#4338ca" : "white",
+                        fontWeight: 800, fontSize: 12, cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                      }}>
+                      {ch.emoji} {ch.title}
+                    </button>
+                  );
+                })}
+                {adminViewSection !== null && (
+                  <button onClick={() => setAdminViewSection(null)}
+                    style={{ padding: "8px 10px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.4)",
+                      background: "transparent", color: "white", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
+                    ↺ تلقائي
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Map */}
         <motion.div key={chapter.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
 
-          {/* ترحيب القسم الثاني (يظهر فقط لو في القسم الثاني) */}
-          {sectionUnlocked >= 2 && (
+          {/* ترحيب القسم الثاني (يظهر فقط لو نعرض القسم الثاني) */}
+          {viewSectionIdx >= 1 && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               style={{ margin: "16px 16px 8px", background: "linear-gradient(135deg, #1e3a8a, #4338ca)", borderRadius: 20, padding: "20px", textAlign: "center" }}>
               <div style={{ fontSize: 40, marginBottom: 6 }}>🚀</div>
@@ -1494,7 +1536,9 @@ export default function Roadmap() {
                     // القفز متاح: الوحدة مقفلة (ما وصلتها طبيعي) + ما اجتاز القفز بعد
                     const canJump = isJumpStation && sectionLocked && !jumpPassed;
                     // الدائرة قابلة للضغط: jump station يحتاج canJump، البقية حسب القفل
-                    const effectiveLocked = isJumpStation ? !canJump : isLocked;
+                    // وضع المدير: كل الدروس مفتوحة للفحص
+                    const adminBrowsing = !!user?.isAdmin && adminViewSection !== null;
+                    const effectiveLocked = adminBrowsing ? false : (isJumpStation ? !canJump : isLocked);
 
                     // lesson number (only count type=lesson)
                     const lessonNum = lessonStations.findIndex(l => l.id === lesson.id) + 1;
@@ -1629,7 +1673,7 @@ export default function Roadmap() {
           })}
 
           {/* بوابة القسم الثاني — اختبار القسم (في القسم الأول فقط) */}
-          {sectionUnlocked < 2 && (
+          {viewSectionIdx === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
