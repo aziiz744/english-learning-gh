@@ -1023,7 +1023,17 @@ export default function Roadmap() {
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  // chapter/sections يُحسبان لاحقاً بعد معرفة sectionUnlocked
+
+  // ── القسم المعروض (يجب تعريفه قبل allLessons لأنه يعتمد على chapter) ──
+  const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
+  // تجاوز المدير: يتنقّل بين الأقسام بحرية للفحص (null = الوضع الطبيعي)
+  const [adminViewSection, setAdminViewSection] = useState<number | null>(null);
+  // القسم المعروض: المدير يتحكّم، وإلا حسب الفتح
+  const viewSectionIdx = adminViewSection !== null
+    ? adminViewSection
+    : (sectionUnlocked >= 2 && CHAPTERS.length > 1 ? 1 : 0);
+  const chapter = CHAPTERS[Math.min(Math.max(viewSectionIdx, 0), CHAPTERS.length - 1)];
+  const sections = getSections(chapter);
 
   const allLessons = chapter.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id, unitColor: u.color })));
   const currentIdx = allLessons.findIndex(l => (progress[l.id] ?? 0) < 4);
@@ -1086,15 +1096,6 @@ export default function Roadmap() {
 
   // جلب الستريك + حالة فتح القسم من user_stats
   const [streak, setStreak] = useState(0);
-  const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
-  // تجاوز المدير: يتنقّل بين الأقسام بحرية للفحص (null = الوضع الطبيعي)
-  const [adminViewSection, setAdminViewSection] = useState<number | null>(null);
-  // القسم المعروض: المدير يتحكّم، وإلا حسب الفتح
-  const viewSectionIdx = adminViewSection !== null
-    ? adminViewSection
-    : (sectionUnlocked >= 2 && CHAPTERS.length > 1 ? 1 : 0);
-  const chapter = CHAPTERS[Math.min(Math.max(viewSectionIdx, 0), CHAPTERS.length - 1)];
-  const sections = getSections(chapter);
   useEffect(() => {
     if (!user) return;
     supabase.from("user_stats").select("streak, section_unlocked").eq("user_id", user.id).maybeSingle()
