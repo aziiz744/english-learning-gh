@@ -198,12 +198,17 @@ export function getSectionTestExercises(): ExObj[] {
   const seen = new Set<string>();
   for (const title of SECTION1_STATIONS) {
     const all = getAllStationExercises(title);
-    // خذ سؤالاً متوسطاً (t1) — يثبت الفهم بدون أن يكون سهلاً جداً
-    const mid = all.filter(e => /-t1-/.test(e.id) && e.type !== "picture_match");
-    const pick = mid.length > 0 ? mid[Math.floor(Math.random() * mid.length)] : all[0];
+    // استخدم فقط أسئلة الترجمة والملء (اختيار من متعدد واضح) — تثبت الفهم بلا غموض
+    const usable = all.filter(e =>
+      (e.type === "translate" || e.type === "fill_blank") &&
+      Array.isArray((e as any).options ?? (e as any).blankOptions) &&
+      ((e as any).options ?? (e as any).blankOptions).length >= 2 &&
+      e.correctAnswer
+    );
+    if (usable.length === 0) continue;
+    const pick = usable[Math.floor(Math.random() * usable.length)];
     if (pick && !seen.has(pick.id)) { test.push(pick); seen.add(pick.id); }
   }
-  // اخلط الترتيب — اختبار حقيقي غير متوقّع
   return test.sort(() => Math.random() - 0.5);
 }
 
