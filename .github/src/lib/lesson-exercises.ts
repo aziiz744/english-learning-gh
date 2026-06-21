@@ -25,6 +25,21 @@ import { unit12HouseBank } from "./lesson-banks/unit12-house";
 import { unit13ToBeBank } from "./lesson-banks/unit13-tobe";
 import { unit14ContractionsBank } from "./lesson-banks/unit14-contractions";
 import { unit15OrderFoodBank } from "./lesson-banks/unit15-orderfood";
+import { unit16WorkBank } from "./lesson-banks/unit16-work";
+import { unit17FeelingsBank } from "./lesson-banks/unit17-feelings";
+import { unit18ClassroomBank } from "./lesson-banks/unit18-classroom";
+import { unit19ShopHelpBank } from "./lesson-banks/unit19-shophelp";
+import { unit20TimeBank } from "./lesson-banks/unit20-time";
+import { unit21SportsBank } from "./lesson-banks/unit21-sports";
+import { unit22AdverbsBank } from "./lesson-banks/unit22-adverbs";
+import { unit23RoutineBank } from "./lesson-banks/unit23-routine";
+import { unit24HotelBank } from "./lesson-banks/unit24-hotel";
+import { unit25ArticlesBank } from "./lesson-banks/unit25-articles";
+import { unit26FamilyBank } from "./lesson-banks/unit26-family";
+import { unit27PossessionsBank } from "./lesson-banks/unit27-possessions";
+import { unit28LostFoundBank } from "./lesson-banks/unit28-lostfound";
+import { unit29ClothesShopBank } from "./lesson-banks/unit29-clothesshop";
+import { unit30PluralsBank } from "./lesson-banks/unit30-plurals";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -50,6 +65,21 @@ const B: Record<string, TieredBank> = {
   ...unit13ToBeBank,
   ...unit14ContractionsBank,
   ...unit15OrderFoodBank,
+  ...unit16WorkBank,
+  ...unit17FeelingsBank,
+  ...unit18ClassroomBank,
+  ...unit19ShopHelpBank,
+  ...unit20TimeBank,
+  ...unit21SportsBank,
+  ...unit22AdverbsBank,
+  ...unit23RoutineBank,
+  ...unit24HotelBank,
+  ...unit25ArticlesBank,
+  ...unit26FamilyBank,
+  ...unit27PossessionsBank,
+  ...unit28LostFoundBank,
+  ...unit29ClothesShopBank,
+  ...unit30PluralsBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.

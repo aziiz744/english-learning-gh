@@ -178,6 +178,114 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "order-t": { title: "كنز المراجعة", unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#14b8a6", isReview: true, reviewTitles: ["قائمة الطعام", "اطلب بأدب"], crossReviewTitles: ["الاختصارات الأساسية"] },
   "order-3": { title: "في المطعم", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
   "order-c": { title: "تحدي الوحدة", unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#14b8a6", isUnitFinal: true, isChallenge: true },
+
+  // ── الدفعة 2 (الوحدات 16-20) ──
+  // الوحدة 16: تواصل في العمل
+  "work-1": { title: "كلمات العمل", unitTitle: "تواصل في العمل", emoji: "🏢", color: "#0284c7" },
+  "work-2": { title: "في الاجتماع", unitTitle: "تواصل في العمل", emoji: "📊", color: "#0284c7" },
+  "work-t": { title: "كنز المراجعة", unitTitle: "تواصل في العمل", emoji: "💎", color: "#0284c7", isReview: true, reviewTitles: ["كلمات العمل", "في الاجتماع"], crossReviewTitles: ["قائمة الطعام"] },
+  "work-3": { title: "التواصل المهني", unitTitle: "تواصل في العمل", emoji: "📧", color: "#0284c7" },
+  "work-c": { title: "تحدي الوحدة", unitTitle: "تواصل في العمل", emoji: "🏆", color: "#0284c7", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 17: المضارع للمشاعر
+  "feel-1": { title: "المشاعر", unitTitle: "استخدم المضارع للمشاعر", emoji: "😊", color: "#eab308" },
+  "feel-2": { title: "كيف تشعر", unitTitle: "استخدم المضارع للمشاعر", emoji: "💭", color: "#eab308" },
+  "feel-t": { title: "كنز المراجعة", unitTitle: "استخدم المضارع للمشاعر", emoji: "💎", color: "#eab308", isReview: true, reviewTitles: ["المشاعر", "كيف تشعر"], crossReviewTitles: ["كلمات العمل"] },
+  "feel-3": { title: "التعبير عن المشاعر", unitTitle: "استخدم المضارع للمشاعر", emoji: "❤️", color: "#eab308" },
+  "feel-c": { title: "تحدي الوحدة", unitTitle: "استخدم المضارع للمشاعر", emoji: "🏆", color: "#eab308", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 18: اطلب المساعدة في الصف
+  "class-1": { title: "كلمات الصف", unitTitle: "اطلب المساعدة في الصف", emoji: "📚", color: "#16a34a" },
+  "class-2": { title: "اطلب المساعدة", unitTitle: "اطلب المساعدة في الصف", emoji: "🙋", color: "#16a34a" },
+  "class-t": { title: "كنز المراجعة", unitTitle: "اطلب المساعدة في الصف", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["كلمات الصف", "اطلب المساعدة"], crossReviewTitles: ["المشاعر"] },
+  "class-3": { title: "في الدرس", unitTitle: "اطلب المساعدة في الصف", emoji: "✏️", color: "#16a34a" },
+  "class-c": { title: "تحدي الوحدة", unitTitle: "اطلب المساعدة في الصف", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 19: اطلب المساعدة أثناء التسوق
+  "shop-1": { title: "كلمات التسوق", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "🛒", color: "#dc2626" },
+  "shop-2": { title: "اسأل عن المنتجات", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "🔍", color: "#dc2626" },
+  "shop-t": { title: "كنز المراجعة", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "💎", color: "#dc2626", isReview: true, reviewTitles: ["كلمات التسوق", "اسأل عن المنتجات"], crossReviewTitles: ["كلمات الصف"] },
+  "shop-3": { title: "الدفع والمساعدة", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "💳", color: "#dc2626" },
+  "shop-c": { title: "تحدي الوحدة", unitTitle: "اطلب المساعدة أثناء التسوق", emoji: "🏆", color: "#dc2626", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 20: تعابير الوقت
+  "time-1": { title: "كم الساعة", unitTitle: "استخدم تعابير الوقت", emoji: "🕐", color: "#9333ea" },
+  "time-2": { title: "أوقات اليوم", unitTitle: "استخدم تعابير الوقت", emoji: "🌅", color: "#9333ea" },
+  "time-t": { title: "كنز المراجعة", unitTitle: "استخدم تعابير الوقت", emoji: "💎", color: "#9333ea", isReview: true, reviewTitles: ["كم الساعة", "أوقات اليوم"], crossReviewTitles: ["كلمات التسوق"] },
+  "time-3": { title: "تعابير الوقت", unitTitle: "استخدم تعابير الوقت", emoji: "📅", color: "#9333ea" },
+  "time-c": { title: "تحدي الوحدة", unitTitle: "استخدم تعابير الوقت", emoji: "🏆", color: "#9333ea", isUnitFinal: true, isChallenge: true },
+
+  // ── الدفعة 3 (الوحدات 21-25) ──
+  // الوحدة 21: ناقش الرياضات
+  "sport-1": { title: "أنواع الرياضات", unitTitle: "ناقش الرياضات", emoji: "⚽", color: "#65a30d" },
+  "sport-2": { title: "ممارسة الرياضة", unitTitle: "ناقش الرياضات", emoji: "🏀", color: "#65a30d" },
+  "sport-t": { title: "كنز المراجعة", unitTitle: "ناقش الرياضات", emoji: "💎", color: "#65a30d", isReview: true, reviewTitles: ["أنواع الرياضات", "ممارسة الرياضة"], crossReviewTitles: ["كم الساعة"] },
+  "sport-3": { title: "ناقش الرياضة", unitTitle: "ناقش الرياضات", emoji: "🏆", color: "#65a30d" },
+  "sport-c": { title: "تحدي الوحدة", unitTitle: "ناقش الرياضات", emoji: "🏆", color: "#65a30d", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 22: ظروف التكرار والوقت
+  "adv-1": { title: "ظروف التكرار", unitTitle: "ظروف التكرار والوقت", emoji: "🔄", color: "#0d9488" },
+  "adv-2": { title: "عبارات التكرار", unitTitle: "ظروف التكرار والوقت", emoji: "📆", color: "#0d9488" },
+  "adv-t": { title: "كنز المراجعة", unitTitle: "ظروف التكرار والوقت", emoji: "💎", color: "#0d9488", isReview: true, reviewTitles: ["ظروف التكرار", "عبارات التكرار"], crossReviewTitles: ["أنواع الرياضات"] },
+  "adv-3": { title: "استخدامها في جمل", unitTitle: "ظروف التكرار والوقت", emoji: "✍️", color: "#0d9488" },
+  "adv-c": { title: "تحدي الوحدة", unitTitle: "ظروف التكرار والوقت", emoji: "🏆", color: "#0d9488", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 23: صف روتينك اليومي
+  "rout-1": { title: "روتين الصباح", unitTitle: "صف روتينك اليومي", emoji: "🌅", color: "#ea580c" },
+  "rout-2": { title: "روتين المساء", unitTitle: "صف روتينك اليومي", emoji: "🌙", color: "#ea580c" },
+  "rout-t": { title: "كنز المراجعة", unitTitle: "صف روتينك اليومي", emoji: "💎", color: "#ea580c", isReview: true, reviewTitles: ["روتين الصباح", "روتين المساء"], crossReviewTitles: ["ظروف التكرار"] },
+  "rout-3": { title: "صف يومك", unitTitle: "صف روتينك اليومي", emoji: "📝", color: "#ea580c" },
+  "rout-c": { title: "تحدي الوحدة", unitTitle: "صف روتينك اليومي", emoji: "🏆", color: "#ea580c", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 24: احجز غرفة في فندق
+  "hotel-1": { title: "كلمات الفندق", unitTitle: "احجز غرفة في فندق", emoji: "🏨", color: "#0369a1" },
+  "hotel-2": { title: "احجز غرفة", unitTitle: "احجز غرفة في فندق", emoji: "🛏️", color: "#0369a1" },
+  "hotel-t": { title: "كنز المراجعة", unitTitle: "احجز غرفة في فندق", emoji: "💎", color: "#0369a1", isReview: true, reviewTitles: ["كلمات الفندق", "احجز غرفة"], crossReviewTitles: ["روتين الصباح"] },
+  "hotel-3": { title: "في الفندق", unitTitle: "احجز غرفة في فندق", emoji: "🛎️", color: "#0369a1" },
+  "hotel-c": { title: "تحدي الوحدة", unitTitle: "احجز غرفة في فندق", emoji: "🏆", color: "#0369a1", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 25: أدوات التعريف
+  "art-1": { title: "a و an", unitTitle: "استخدم أدوات التعريف", emoji: "🔤", color: "#7c3aed" },
+  "art-2": { title: "أداة the", unitTitle: "استخدم أدوات التعريف", emoji: "📌", color: "#7c3aed" },
+  "art-t": { title: "كنز المراجعة", unitTitle: "استخدم أدوات التعريف", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["a و an", "أداة the"], crossReviewTitles: ["كلمات الفندق"] },
+  "art-3": { title: "استخدامها معاً", unitTitle: "استخدم أدوات التعريف", emoji: "🎯", color: "#7c3aed" },
+  "art-c": { title: "تحدي الوحدة", unitTitle: "استخدم أدوات التعريف", emoji: "🏆", color: "#7c3aed", isUnitFinal: true, isChallenge: true },
+
+  // ── الدفعة 4 (الوحدات 26-30) ──
+  // الوحدة 26: صف أفراد عائلتك
+  "fam-1": { title: "أفراد العائلة", unitTitle: "صف أفراد عائلتك", emoji: "👪", color: "#e11d48" },
+  "fam-2": { title: "صف شخصيتهم", unitTitle: "صف أفراد عائلتك", emoji: "💖", color: "#e11d48" },
+  "fam-t": { title: "كنز المراجعة", unitTitle: "صف أفراد عائلتك", emoji: "💎", color: "#e11d48", isReview: true, reviewTitles: ["أفراد العائلة", "صف شخصيتهم"], crossReviewTitles: ["a و an"] },
+  "fam-3": { title: "تحدث عن عائلتك", unitTitle: "صف أفراد عائلتك", emoji: "🗣️", color: "#e11d48" },
+  "fam-c": { title: "تحدي الوحدة", unitTitle: "صف أفراد عائلتك", emoji: "🏆", color: "#e11d48", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 27: صف ممتلكاتك
+  "poss-1": { title: "الملكية", unitTitle: "صف ممتلكاتك", emoji: "🔑", color: "#0891b2" },
+  "poss-2": { title: "ممتلكات", unitTitle: "صف ممتلكاتك", emoji: "📱", color: "#0891b2" },
+  "poss-t": { title: "كنز المراجعة", unitTitle: "صف ممتلكاتك", emoji: "💎", color: "#0891b2", isReview: true, reviewTitles: ["الملكية", "ممتلكات"], crossReviewTitles: ["أفراد العائلة"] },
+  "poss-3": { title: "لمن هذا", unitTitle: "صف ممتلكاتك", emoji: "❓", color: "#0891b2" },
+  "poss-c": { title: "تحدي الوحدة", unitTitle: "صف ممتلكاتك", emoji: "🏆", color: "#0891b2", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 28: افرز الأشياء المفقودة
+  "lost-1": { title: "المفقودات", unitTitle: "افرز الأشياء المفقودة", emoji: "🔍", color: "#b45309" },
+  "lost-2": { title: "صف الشيء المفقود", unitTitle: "افرز الأشياء المفقودة", emoji: "📋", color: "#b45309" },
+  "lost-t": { title: "كنز المراجعة", unitTitle: "افرز الأشياء المفقودة", emoji: "💎", color: "#b45309", isReview: true, reviewTitles: ["المفقودات", "صف الشيء المفقود"], crossReviewTitles: ["الملكية"] },
+  "lost-3": { title: "في مكتب المفقودات", unitTitle: "افرز الأشياء المفقودة", emoji: "🏢", color: "#b45309" },
+  "lost-c": { title: "تحدي الوحدة", unitTitle: "افرز الأشياء المفقودة", emoji: "🏆", color: "#b45309", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 29: تسوق للملابس
+  "wear-1": { title: "ملابس متنوّعة", unitTitle: "تسوّق للملابس", emoji: "🧥", color: "#7c2d12" },
+  "wear-2": { title: "المقاسات والقياس", unitTitle: "تسوّق للملابس", emoji: "📏", color: "#7c2d12" },
+  "wear-t": { title: "كنز المراجعة", unitTitle: "تسوّق للملابس", emoji: "💎", color: "#7c2d12", isReview: true, reviewTitles: ["ملابس متنوّعة", "المقاسات والقياس"], crossReviewTitles: ["المفقودات"] },
+  "wear-3": { title: "اتخاذ القرار", unitTitle: "تسوّق للملابس", emoji: "✅", color: "#7c2d12" },
+  "wear-c": { title: "تحدي الوحدة", unitTitle: "تسوّق للملابس", emoji: "🏆", color: "#7c2d12", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 30: جمع التكسير
+  "plur-1": { title: "جموع شاذة شائعة", unitTitle: "كوّن جمع التكسير", emoji: "🔢", color: "#4f46e5" },
+  "plur-2": { title: "المزيد من الجموع", unitTitle: "كوّن جمع التكسير", emoji: "📚", color: "#4f46e5" },
+  "plur-t": { title: "كنز المراجعة", unitTitle: "كوّن جمع التكسير", emoji: "💎", color: "#4f46e5", isReview: true, reviewTitles: ["جموع شاذة شائعة", "المزيد من الجموع"], crossReviewTitles: ["ملابس متنوّعة"] },
+  "plur-3": { title: "استخدامها في جمل", unitTitle: "كوّن جمع التكسير", emoji: "✍️", color: "#4f46e5" },
+  "plur-c": { title: "تحدي الوحدة", unitTitle: "كوّن جمع التكسير", emoji: "🏆", color: "#4f46e5", isUnitFinal: true, isChallenge: true },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──
