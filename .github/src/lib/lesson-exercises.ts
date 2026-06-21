@@ -20,6 +20,11 @@ import { unit7JobsBank } from "./lesson-banks/unit7-jobs";
 import { unit8PresentBank } from "./lesson-banks/unit8-present";
 import { unit9WeatherBank } from "./lesson-banks/unit9-weather";
 import { unit10PetsBank } from "./lesson-banks/unit10-pets";
+import { unit11ClothesBank } from "./lesson-banks/unit11-clothes";
+import { unit12HouseBank } from "./lesson-banks/unit12-house";
+import { unit13ToBeBank } from "./lesson-banks/unit13-tobe";
+import { unit14ContractionsBank } from "./lesson-banks/unit14-contractions";
+import { unit15OrderFoodBank } from "./lesson-banks/unit15-orderfood";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -40,6 +45,11 @@ const B: Record<string, TieredBank> = {
   ...unit8PresentBank,
   ...unit9WeatherBank,
   ...unit10PetsBank,
+  ...unit11ClothesBank,
+  ...unit12HouseBank,
+  ...unit13ToBeBank,
+  ...unit14ContractionsBank,
+  ...unit15OrderFoodBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.
@@ -196,15 +206,15 @@ const SECTION1_STATIONS: string[] = [
 export function getSectionTestExercises(): ExObj[] {
   const test: ExObj[] = [];
   const seen = new Set<string>();
+  const isUsable = (e: ExObj) =>
+    (e.type === "translate" || e.type === "fill_blank") &&
+    Array.isArray((e as any).options ?? (e as any).blankOptions) &&
+    ((e as any).options ?? (e as any).blankOptions).length >= 2 &&
+    !!e.correctAnswer;
+
+  // سؤال واحد من كل محطة (تغطية شاملة للقسم)
   for (const title of SECTION1_STATIONS) {
-    const all = getAllStationExercises(title);
-    // استخدم فقط أسئلة الترجمة والملء (اختيار من متعدد واضح) — تثبت الفهم بلا غموض
-    const usable = all.filter(e =>
-      (e.type === "translate" || e.type === "fill_blank") &&
-      Array.isArray((e as any).options ?? (e as any).blankOptions) &&
-      ((e as any).options ?? (e as any).blankOptions).length >= 2 &&
-      e.correctAnswer
-    );
+    const usable = getAllStationExercises(title).filter(isUsable);
     if (usable.length === 0) continue;
     const pick = usable[Math.floor(Math.random() * usable.length)];
     if (pick && !seen.has(pick.id)) { test.push(pick); seen.add(pick.id); }
