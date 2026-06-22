@@ -40,6 +40,11 @@ import { unit27PossessionsBank } from "./lesson-banks/unit27-possessions";
 import { unit28LostFoundBank } from "./lesson-banks/unit28-lostfound";
 import { unit29ClothesShopBank } from "./lesson-banks/unit29-clothesshop";
 import { unit30PluralsBank } from "./lesson-banks/unit30-plurals";
+import { unit31CityBank } from "./lesson-banks/unit31-city";
+import { unit32NegationBank } from "./lesson-banks/unit32-negation";
+import { unit33SymptomsBank } from "./lesson-banks/unit33-symptoms";
+import { unit34ToBeQBank } from "./lesson-banks/unit34-tobeq";
+import { unit35ContinuousBank } from "./lesson-banks/unit35-continuous";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -80,6 +85,11 @@ const B: Record<string, TieredBank> = {
   ...unit28LostFoundBank,
   ...unit29ClothesShopBank,
   ...unit30PluralsBank,
+  ...unit31CityBank,
+  ...unit32NegationBank,
+  ...unit33SymptomsBank,
+  ...unit34ToBeQBank,
+  ...unit35ContinuousBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.

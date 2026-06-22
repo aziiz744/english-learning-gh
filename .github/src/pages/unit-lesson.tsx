@@ -286,6 +286,42 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "plur-t": { title: "كنز المراجعة", unitTitle: "كوّن جمع التكسير", emoji: "💎", color: "#4f46e5", isReview: true, reviewTitles: ["جموع شاذة شائعة", "المزيد من الجموع"], crossReviewTitles: ["ملابس متنوّعة"] },
   "plur-3": { title: "استخدامها في جمل", unitTitle: "كوّن جمع التكسير", emoji: "✍️", color: "#4f46e5" },
   "plur-c": { title: "تحدي الوحدة", unitTitle: "كوّن جمع التكسير", emoji: "🏆", color: "#4f46e5", isUnitFinal: true, isChallenge: true },
+
+  // ── الدفعة 5 (الوحدات 31-35) ──
+  // الوحدة 31: تنقّل في مدينة غير مألوفة
+  "city-1": { title: "أماكن المدينة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🏙️", color: "#0e7490" },
+  "city-2": { title: "الاتجاهات", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🧭", color: "#0e7490" },
+  "city-t": { title: "كنز المراجعة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "💎", color: "#0e7490", isReview: true, reviewTitles: ["أماكن المدينة", "الاتجاهات"], crossReviewTitles: ["جموع شاذة شائعة"] },
+  "city-3": { title: "اسأل عن الطريق", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🗺️", color: "#0e7490" },
+  "city-c": { title: "تحدي الوحدة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🏆", color: "#0e7490", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 32: النفي في المضارع
+  "neg-1": { title: "النفي بـ don't", unitTitle: "كوّن النفي في المضارع", emoji: "🚫", color: "#be123c" },
+  "neg-2": { title: "النفي بـ doesn't", unitTitle: "كوّن النفي في المضارع", emoji: "❌", color: "#be123c" },
+  "neg-t": { title: "كنز المراجعة", unitTitle: "كوّن النفي في المضارع", emoji: "💎", color: "#be123c", isReview: true, reviewTitles: ["النفي بـ don't", "النفي بـ doesn't"], crossReviewTitles: ["أماكن المدينة"] },
+  "neg-3": { title: "النفي في جمل", unitTitle: "كوّن النفي في المضارع", emoji: "✍️", color: "#be123c" },
+  "neg-c": { title: "تحدي الوحدة", unitTitle: "كوّن النفي في المضارع", emoji: "🏆", color: "#be123c", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 33: تحدّث عن الأعراض
+  "symp-1": { title: "الجسم والألم", unitTitle: "تحدّث عن الأعراض", emoji: "🤕", color: "#0f766e" },
+  "symp-2": { title: "الأعراض", unitTitle: "تحدّث عن الأعراض", emoji: "🤒", color: "#0f766e" },
+  "symp-t": { title: "كنز المراجعة", unitTitle: "تحدّث عن الأعراض", emoji: "💎", color: "#0f766e", isReview: true, reviewTitles: ["الجسم والألم", "الأعراض"], crossReviewTitles: ["النفي بـ don't"] },
+  "symp-3": { title: "عند الطبيب", unitTitle: "تحدّث عن الأعراض", emoji: "👨‍⚕️", color: "#0f766e" },
+  "symp-c": { title: "تحدي الوحدة", unitTitle: "تحدّث عن الأعراض", emoji: "🏆", color: "#0f766e", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 34: أسئلة بـ"يكون"
+  "beq-1": { title: "أسئلة Are/Is", unitTitle: "كوّن أسئلة بيكون", emoji: "❓", color: "#9333ea" },
+  "beq-2": { title: "أسئلة الاستفهام", unitTitle: "كوّن أسئلة بيكون", emoji: "🔍", color: "#9333ea" },
+  "beq-t": { title: "كنز المراجعة", unitTitle: "كوّن أسئلة بيكون", emoji: "💎", color: "#9333ea", isReview: true, reviewTitles: ["أسئلة Are/Is", "أسئلة بكلمات الاستفهام"], crossReviewTitles: ["الجسم والألم"] },
+  "beq-3": { title: "إجابات قصيرة", unitTitle: "كوّن أسئلة بيكون", emoji: "💬", color: "#9333ea" },
+  "beq-c": { title: "تحدي الوحدة", unitTitle: "كوّن أسئلة بيكون", emoji: "🏆", color: "#9333ea", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 35: المضارع المستمر
+  "cont-1": { title: "تكوين ing", unitTitle: "استخدم المضارع المستمر", emoji: "⏳", color: "#c026d3" },
+  "cont-2": { title: "أفعال شائعة", unitTitle: "استخدم المضارع المستمر", emoji: "🏃", color: "#c026d3" },
+  "cont-t": { title: "كنز المراجعة", unitTitle: "استخدم المضارع المستمر", emoji: "💎", color: "#c026d3", isReview: true, reviewTitles: ["تكوين ing", "أفعال شائعة"], crossReviewTitles: ["أسئلة Are/Is"] },
+  "cont-3": { title: "استخدامه الآن", unitTitle: "استخدم المضارع المستمر", emoji: "⌛", color: "#c026d3" },
+  "cont-c": { title: "تحدي الوحدة", unitTitle: "استخدم المضارع المستمر", emoji: "🏆", color: "#c026d3", isUnitFinal: true, isChallenge: true },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──

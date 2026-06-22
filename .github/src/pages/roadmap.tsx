@@ -433,6 +433,69 @@ const CHAPTERS: Chapter[] = [
           { id: "plur-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: جمع التكسير!", words: [] },
         ],
       },
+      // الوحدة 31: تنقّل في مدينة غير مألوفة
+      {
+        id: "unit-city", title: "تنقّل في مدينة غير مألوفة", emoji: "🏙️", color: "#0e7490",
+        sectionTitle: "تنقّل في مدينة غير مألوفة",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "city-1", type: "lesson",    title: "أماكن المدينة", description: "تعلّم: bank وstation وsquare وbridge.", words: ["bank","station","square","bridge"] },
+          { id: "city-2", type: "lesson",    title: "الاتجاهات",     description: "تعلّم: turn left وgo straight وnext to.", words: ["left","right","straight","across"] },
+          { id: "city-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع كلمات المدينة!", words: [] },
+          { id: "city-3", type: "lesson",    title: "اسأل عن الطريق", description: "تعلّم: How do I get to وExcuse me وfar.", words: ["excuse","get","far","map"] },
+          { id: "city-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: تنقّل في المدينة!", words: [] },
+        ],
+      },
+      // الوحدة 32: النفي في المضارع
+      {
+        id: "unit-neg", title: "كوّن النفي في المضارع", emoji: "🚫", color: "#be123c",
+        sectionTitle: "كوّن النفي في المضارع",
+        lessons: [
+          { id: "neg-1", type: "lesson",    title: "النفي بـ don't",   description: "تعلّم: I don't وyou don't وthey don't.", words: ["don't","do not","like","want"] },
+          { id: "neg-2", type: "lesson",    title: "النفي بـ doesn't", description: "تعلّم: he doesn't وshe doesn't.", words: ["doesn't","does not","like","work"] },
+          { id: "neg-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع النفي في المضارع!", words: [] },
+          { id: "neg-3", type: "lesson",    title: "النفي في جمل",     description: "تعلّم متى don't ومتى doesn't.", words: ["don't","doesn't"] },
+          { id: "neg-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: كوّن النفي!", words: [] },
+        ],
+      },
+      // الوحدة 33: تحدّث عن الأعراض
+      {
+        id: "unit-symp", title: "تحدّث عن الأعراض", emoji: "🤒", color: "#0f766e",
+        sectionTitle: "تحدّث عن الأعراض",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "symp-1", type: "lesson",    title: "الجسم والألم", description: "تعلّم: head وstomach وthroat وpain.", words: ["head","stomach","throat","pain"] },
+          { id: "symp-2", type: "lesson",    title: "الأعراض",      description: "تعلّم: fever وcough وcold وsick.", words: ["fever","cough","cold","sick"] },
+          { id: "symp-t", type: "treasure",  title: "كنز المراجعة", description: "راجع كلمات الأعراض!", words: [] },
+          { id: "symp-3", type: "lesson",    title: "عند الطبيب",   description: "تعلّم: I have a وtake medicine وrest.", words: ["medicine","rest","doctor","appointment"] },
+          { id: "symp-c", type: "challenge", title: "تحدي الوحدة",  description: "اختبار شامل: تحدّث عن الأعراض!", words: [] },
+        ],
+      },
+      // الوحدة 34: أسئلة بـ"يكون"
+      {
+        id: "unit-beq", title: "كوّن أسئلة بيكون", emoji: "❓", color: "#9333ea",
+        sectionTitle: "كوّن أسئلة بيكون",
+        lessons: [
+          { id: "beq-1", type: "lesson",    title: "أسئلة Are/Is",   description: "تعلّم: Are you? وIs he?", words: ["are","is","am"] },
+          { id: "beq-2", type: "lesson",    title: "أسئلة الاستفهام", description: "تعلّم: Where is? وWhat are?", words: ["where","what","who","when"] },
+          { id: "beq-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع أسئلة يكون!", words: [] },
+          { id: "beq-3", type: "lesson",    title: "إجابات قصيرة",   description: "تعلّم: Yes I am وNo he isn't.", words: ["yes","no","isn't","aren't"] },
+          { id: "beq-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: كوّن أسئلة بيكون!", words: [] },
+        ],
+      },
+      // الوحدة 35: المضارع المستمر
+      {
+        id: "unit-cont", title: "استخدم المضارع المستمر", emoji: "⏳", color: "#c026d3",
+        sectionTitle: "استخدم المضارع المستمر",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "cont-1", type: "lesson",    title: "تكوين ing",     description: "تعلّم: am/is/are + verb-ing.", words: ["reading","playing","eating","working"] },
+          { id: "cont-2", type: "lesson",    title: "أفعال شائعة",   description: "تعلّم: eating وreading وwatching.", words: ["eating","reading","watching","playing"] },
+          { id: "cont-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع المضارع المستمر!", words: [] },
+          { id: "cont-3", type: "lesson",    title: "استخدامه الآن", description: "تعلّم: now وat the moment وright now.", words: ["now","currently","moment","these days"] },
+          { id: "cont-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: المضارع المستمر!", words: [] },
+        ],
+      },
     ],
   },
 ];
