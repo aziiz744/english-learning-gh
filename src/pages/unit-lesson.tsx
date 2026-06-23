@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSound } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
+import { hapticSuccess, hapticError } from "@/lib/native";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -1695,6 +1696,7 @@ export default function UnitLesson() {
         setTimeout(() => setShowStreakPop(false), 2000);
       }
       playCorrect();
+      hapticSuccess();
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
@@ -1702,6 +1704,7 @@ export default function UnitLesson() {
     } else {
       setStreak(0); // كسر الستريك
       playWrong();
+      hapticError();
       setMascotFor("wrong");
       if (isPro === false) {
         const newH = hearts - 1;
