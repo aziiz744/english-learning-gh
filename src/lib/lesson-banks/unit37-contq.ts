@@ -81,7 +81,7 @@ export const unit37ContQBank: Record<string, TieredBank> = {
     t3: [],
   },
 
-  "إجابات قصيرة": {
+  "إجابات المستمر القصيرة": {
     t0: [
       { id:"cq3-t0-1", type:"translate", arabic:"نعم، أنا كذلك", options:["Yes, I am","Yes, I do","Yes, I is","Yes, am I"], correctAnswer:"Yes, I am", explanation:"Yes, I am = نعم (للمستمر)", xp:10 },
       { id:"cq3-t0-2", type:"word_order", sentence:"Yes she is", correctAnswer:"Yes she is", explanation:"نعم، هي كذلك", xp:12 },

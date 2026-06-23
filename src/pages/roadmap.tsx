@@ -683,7 +683,7 @@ function FloatingMascot({ color, chapterId }: { color: string; chapterId: string
 
 // ─── Practice/Dumbbell Icon ──────────────────────────────────────────────────
 function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 76;
+  const SIZE = 62;
   const r = SIZE / 2;
   const faceColor = locked ? "#2d3a4a" : color;
   const darkColor = locked ? "#151f2b" : shadeColor(color, -50);
@@ -733,7 +733,7 @@ function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Crown icon for challenge stations ───────────────────────────────────────
 function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 76;
+  const SIZE = 62;
   const r = SIZE / 2;
   const depth = SIZE * 0.11;
   const pad = 5;
@@ -875,7 +875,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   isJumpStation?: boolean;
   canJump?: boolean;
 }) {
-  const SIZE   = type === "challenge" ? 90 : 76;
+  const SIZE   = type === "challenge" ? 76 : 62;
   const r      = SIZE / 2;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
   const pad = 16; // مساحة إضافية للخط الخارجي
@@ -1149,7 +1149,7 @@ function PathConnector({ fromX, fromY, toX, toY, color, bothDone, anyDone }: {
 
 // ─── S-curve positions ────────────────────────────────────────────────────────
 const CANVAS_W = 300;
-const STEP_Y   = 110;
+const STEP_Y   = 92;
 const SIDE_PAD = 65;
 
 function buildPath(count: number, variant?: string): { x: number; y: number }[] {
@@ -1671,42 +1671,42 @@ export default function Roadmap() {
           style={{
             position: "sticky",
             zIndex: 30,
-            padding: "8px 16px",
+            padding: "5px 12px",
           }}
         >
-          <div style={{ maxWidth: 360, margin: "0 auto", position: "relative" }}>
+          <div style={{ maxWidth: 340, margin: "0 auto", position: "relative" }}>
             {/* الطبقة السفلية (العمق ثلاثي الأبعاد) */}
             <div style={{
-              position: "absolute", inset: 0, top: 6,
+              position: "absolute", inset: 0, top: 4,
               background: shadeColor(activeSection.color, -55),
-              borderRadius: 18,
+              borderRadius: 14,
             }}/>
             {/* الوجه العلوي */}
             <div style={{
               position: "relative",
               background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 25)}, ${activeSection.color} 55%, ${shadeColor(activeSection.color, -20)})`,
-              borderRadius: 18,
-              padding: "12px 16px",
-              boxShadow: `0 6px 0 ${shadeColor(activeSection.color, -55)}, 0 10px 22px ${activeSection.color}55`,
-              border: `1.5px solid ${lightenColor(activeSection.color, 35)}`,
+              borderRadius: 14,
+              padding: "8px 12px",
+              boxShadow: `0 4px 0 ${shadeColor(activeSection.color, -55)}, 0 6px 14px ${activeSection.color}44`,
+              border: `1px solid ${lightenColor(activeSection.color, 35)}`,
             }}>
               {/* لمعة علوية */}
               <div style={{
-                position: "absolute", top: 4, left: 12, right: 12, height: 14,
+                position: "absolute", top: 3, left: 10, right: 10, height: 10,
                 background: "linear-gradient(180deg, rgba(255,255,255,0.35), transparent)",
-                borderRadius: 12, pointerEvents: "none",
+                borderRadius: 10, pointerEvents: "none",
               }}/>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 {/* Title — center */}
-                <div style={{ flex: 1, textAlign: "center", padding: "0 4px" }}>
-                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 700, marginBottom: 2 }}>
+                <div style={{ flex: 1, textAlign: "center", padding: "0 2px" }}>
+                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
                     القسم 1 · الوحدة {activeSectionIdx + 1} {activeSection.emoji}
                   </div>
-                  <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
+                  <div style={{ color: "white", fontWeight: 900, fontSize: 13.5, lineHeight: 1.15, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
                     {activeSection.title}
                   </div>
                   {/* دليل مختصر */}
-                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 10.5, fontWeight: 600, marginTop: 3, lineHeight: 1.35 }}>
+                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 9, fontWeight: 600, marginTop: 2, lineHeight: 1.3 }}>
                     {UNIT_GUIDES[activeSection.unitId] ?? "تعلّم كلمات وجمل جديدة خطوة بخطوة"}
                   </div>
                 </div>
@@ -1716,14 +1716,14 @@ export default function Roadmap() {
                   onClick={e => { e.stopPropagation(); setShowGuide(true); }}
                   style={{
                     background: "rgba(255,255,255,0.25)",
-                    border: "1.5px solid rgba(255,255,255,0.5)",
-                    borderRadius: 12, padding: "7px 10px",
-                    color: "white", fontWeight: 800, fontSize: 12,
-                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    borderRadius: 10, padding: "5px 8px",
+                    color: "white", fontWeight: 800, fontSize: 10.5,
+                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
                     flexShrink: 0, whiteSpace: "nowrap",
-                    boxShadow: `0 3px 0 ${shadeColor(activeSection.color, -50)}`,
+                    boxShadow: `0 2px 0 ${shadeColor(activeSection.color, -50)}`,
                   }}>
-                  <span style={{ fontSize: 16 }}>📖</span>
+                  <span style={{ fontSize: 14 }}>📖</span>
                   <span>الدليل</span>
                 </button>
               </div>

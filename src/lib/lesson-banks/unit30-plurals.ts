@@ -81,7 +81,7 @@ export const unit30PluralsBank: Record<string, TieredBank> = {
     t3: [],
   },
 
-  "استخدامها في جمل": {
+  "الجموع في جمل": {
     t0: [
       { id:"pl3-t0-1", type:"translate", arabic:"هؤلاء (للقريب)", options:["these","those","this","that"], correctAnswer:"these", explanation:"these = هؤلاء/هذه (جمع قريب)", xp:10 },
       { id:"pl3-t0-2", type:"translate", arabic:"أولئك (للبعيد)", options:["those","these","this","that"], correctAnswer:"those", explanation:"those = أولئك/تلك (جمع بعيد)", xp:10 },

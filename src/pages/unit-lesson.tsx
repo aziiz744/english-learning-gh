@@ -176,7 +176,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "order-1": { title: "قائمة الطعام", unitTitle: "اطلب الطعام والمشروبات", emoji: "📋", color: "#14b8a6" },
   "order-2": { title: "اطلب بأدب", unitTitle: "اطلب الطعام والمشروبات", emoji: "🙏", color: "#14b8a6" },
   "order-t": { title: "كنز المراجعة", unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#14b8a6", isReview: true, reviewTitles: ["قائمة الطعام", "اطلب بأدب"], crossReviewTitles: ["الاختصارات الأساسية"] },
-  "order-3": { title: "في المطعم", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
+  "order-3": { title: "في المطعم والطلب", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
   "order-c": { title: "تحدي الوحدة", unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#14b8a6", isUnitFinal: true, isChallenge: true },
 
   // ── الدفعة 2 (الوحدات 16-20) ──
@@ -284,14 +284,14 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "plur-1": { title: "جموع شاذة شائعة", unitTitle: "كوّن جمع التكسير", emoji: "🔢", color: "#4f46e5" },
   "plur-2": { title: "المزيد من الجموع", unitTitle: "كوّن جمع التكسير", emoji: "📚", color: "#4f46e5" },
   "plur-t": { title: "كنز المراجعة", unitTitle: "كوّن جمع التكسير", emoji: "💎", color: "#4f46e5", isReview: true, reviewTitles: ["جموع شاذة شائعة", "المزيد من الجموع"], crossReviewTitles: ["ملابس متنوّعة"] },
-  "plur-3": { title: "استخدامها في جمل", unitTitle: "كوّن جمع التكسير", emoji: "✍️", color: "#4f46e5" },
+  "plur-3": { title: "الجموع في جمل", unitTitle: "كوّن جمع التكسير", emoji: "✍️", color: "#4f46e5" },
   "plur-c": { title: "تحدي الوحدة", unitTitle: "كوّن جمع التكسير", emoji: "🏆", color: "#4f46e5", isUnitFinal: true, isChallenge: true },
 
   // ── الدفعة 5 (الوحدات 31-35) ──
   // الوحدة 31: تنقّل في مدينة غير مألوفة
   "city-1": { title: "أماكن المدينة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🏙️", color: "#0e7490" },
-  "city-2": { title: "الاتجاهات", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🧭", color: "#0e7490" },
-  "city-t": { title: "كنز المراجعة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "💎", color: "#0e7490", isReview: true, reviewTitles: ["أماكن المدينة", "الاتجاهات"], crossReviewTitles: ["جموع شاذة شائعة"] },
+  "city-2": { title: "اتجاهات المدينة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🧭", color: "#0e7490" },
+  "city-t": { title: "كنز المراجعة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "💎", color: "#0e7490", isReview: true, reviewTitles: ["أماكن المدينة", "اتجاهات المدينة"], crossReviewTitles: ["جموع شاذة شائعة"] },
   "city-3": { title: "اسأل عن الطريق", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🗺️", color: "#0e7490" },
   "city-c": { title: "تحدي الوحدة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🏆", color: "#0e7490", isUnitFinal: true, isChallenge: true },
 
@@ -335,7 +335,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "cq-1": { title: "أسئلة المستمر", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "❓", color: "#7c3aed" },
   "cq-2": { title: "أسئلة الاستفهام", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "🔍", color: "#7c3aed" },
   "cq-t": { title: "كنز المراجعة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["أسئلة المستمر", "أسئلة الاستفهام"], crossReviewTitles: ["الطقس"] },
-  "cq-3": { title: "إجابات قصيرة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "💬", color: "#7c3aed" },
+  "cq-3": { title: "إجابات المستمر القصيرة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "💬", color: "#7c3aed" },
   "cq-c": { title: "تحدي الوحدة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "🏆", color: "#7c3aed", isUnitFinal: true, isChallenge: true },
 
   // الوحدة 38: تحدّث عن المدرسة

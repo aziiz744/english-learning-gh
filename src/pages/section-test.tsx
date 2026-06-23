@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Layout } from "@/components/layout";
 import { Mascot } from "@/components/mascot";
@@ -11,16 +11,39 @@ import { Check, X, ArrowRight, Volume2 } from "lucide-react";
 
 const PASS_PERCENT = 80;
 
-// نطق بسيط
-function speak(text: string) {
+// ── نظام الأصوات: نجمع كل أصوات الإنجليزية المتاحة ونتيح التبديل بينها ──
+function getEnglishVoices(): SpeechSynthesisVoice[] {
+  try {
+    if (!window.speechSynthesis) return [];
+    const all = window.speechSynthesis.getVoices();
+    // أصوات الإنجليزية فقط (en-US, en-GB, en-AU ...)
+    const en = all.filter(v => /^en(-|_|$)/i.test(v.lang));
+    return en.length > 0 ? en : all;
+  } catch { return []; }
+}
+
+// نطق نص بصوت محدّد (أو الافتراضي)
+function speak(text: string, voice?: SpeechSynthesisVoice | null) {
   try {
     if (!window.speechSynthesis) return;
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
+    if (voice) { u.voice = voice; u.lang = voice.lang; }
+    else u.lang = "en-US";
     u.rate = 0.9;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   } catch { /* ignore */ }
+}
+
+// اسم ودّي مختصر للصوت (للعرض في الزر)
+function voiceLabel(v: SpeechSynthesisVoice): string {
+  const region = v.lang.toUpperCase().includes("GB") ? "🇬🇧 بريطاني"
+    : v.lang.toUpperCase().includes("AU") ? "🇦🇺 أسترالي"
+    : v.lang.toUpperCase().includes("IN") ? "🇮🇳 هندي"
+    : "🇺🇸 أمريكي";
+  // بعض المتصفّحات تعطي اسماً مثل "Google US English" أو "Samantha"
+  const short = v.name.replace(/Google|Microsoft|English|\(.*?\)/gi, "").trim() || v.name;
+  return `${region} · ${short}`;
 }
 
 export default function SectionTest() {
@@ -32,6 +55,26 @@ export default function SectionTest() {
   const [confirmed, setConfirmed] = useState(false);
   const [correct, setCorrect] = useState(0);
   const [phase, setPhase] = useState<"intro" | "playing" | "result">("intro");
+
+  // ── حالة الأصوات: قائمة الأصوات + الصوت الحالي (يتغيّر مع كل سؤال) ──
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [voiceIdx, setVoiceIdx] = useState(0);
+  const [autoRotate, setAutoRotate] = useState(true); // تبديل تلقائي بين الأسئلة
+
+  // حمّل الأصوات (تأتي غير متزامنة في بعض المتصفّحات)
+  useEffect(() => {
+    const load = () => {
+      const v = getEnglishVoices();
+      if (v.length > 0) setVoices(v);
+    };
+    load();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = load;
+    }
+    return () => { if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = null; };
+  }, []);
+
+  const currentVoice = voices.length > 0 ? voices[voiceIdx % voices.length] : null;
 
   const ex: ExObj | undefined = questions[idx];
   const total = questions.length;
@@ -63,8 +106,8 @@ export default function SectionTest() {
     setConfirmed(true);
     const isCorrect = picked === answer;
     if (isCorrect) setCorrect((c) => c + 1);
-    // انطق الإجابة الصحيحة دائماً (تعليم بالصوت)
-    setTimeout(() => speak(answer), 200);
+    // انطق الإجابة الصحيحة بالصوت الحالي (تعليم بالصوت)
+    setTimeout(() => speak(answer, currentVoice), 200);
   };
 
   const next = () => {
@@ -77,7 +120,16 @@ export default function SectionTest() {
       setIdx((i) => i + 1);
       setPicked(null);
       setConfirmed(false);
+      // بدّل الصوت تلقائياً للسؤال التالي (لو مفعّل) — تنويع اللهجات
+      if (autoRotate && voices.length > 1) {
+        setVoiceIdx((v) => (v + 1) % voices.length);
+      }
     }
+  };
+
+  // تبديل الصوت يدوياً
+  const cycleVoice = () => {
+    if (voices.length > 1) setVoiceIdx((v) => (v + 1) % voices.length);
   };
 
   const passed = (correct / total) * 100 >= PASS_PERCENT;
@@ -178,6 +230,44 @@ export default function SectionTest() {
           <span className="text-sm font-bold text-muted-foreground">{idx + 1}/{total}</span>
         </div>
 
+        {/* ── شريط تغيير الصوت ── */}
+        {voices.length > 0 && (
+          <div className="flex items-center justify-center gap-2 pb-1" style={{ direction: "rtl" }}>
+            <button
+              onClick={cycleVoice}
+              disabled={voices.length < 2}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "5px 12px", borderRadius: 999,
+                background: "hsl(var(--muted))", border: "1px solid hsl(var(--border))",
+                fontSize: 12.5, fontWeight: 700, color: "hsl(var(--foreground))",
+                cursor: voices.length < 2 ? "default" : "pointer", opacity: voices.length < 2 ? 0.6 : 1,
+              }}
+              title="اضغط لتغيير الصوت"
+            >
+              <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{currentVoice ? voiceLabel(currentVoice) : "الصوت الافتراضي"}</span>
+              {voices.length > 1 && <ArrowRight className="w-3.5 h-3.5" style={{ transform: "scaleX(-1)", opacity: 0.6 }} />}
+            </button>
+            {voices.length > 1 && (
+              <button
+                onClick={() => setAutoRotate((a) => !a)}
+                style={{
+                  padding: "5px 10px", borderRadius: 999,
+                  background: autoRotate ? "#05966922" : "hsl(var(--muted))",
+                  border: `1px solid ${autoRotate ? "#059669" : "hsl(var(--border))"}`,
+                  fontSize: 11.5, fontWeight: 700,
+                  color: autoRotate ? "#059669" : "hsl(var(--muted-foreground))",
+                  cursor: "pointer",
+                }}
+                title="تبديل الصوت تلقائياً بين الأسئلة"
+              >
+                {autoRotate ? "🔄 تلقائي" : "🔇 ثابت"}
+              </button>
+            )}
+          </div>
+        )}
+
         {/* بطاقة السؤال */}
         <div className="flex-1 flex flex-col justify-center py-6">
           <AnimatePresence mode="wait">
@@ -200,7 +290,7 @@ export default function SectionTest() {
                 </span>
                 {/* زر صوت — للجمل الإنجليزية (fill_blank) */}
                 {isFill && (
-                  <button onClick={() => speak((ex.blankSentence ?? "").replace(/_+/g, answer))}
+                  <button onClick={() => speak((ex.blankSentence ?? "").replace(/_+/g, answer), currentVoice)}
                     style={{ width: 42, height: 42, borderRadius: 12, background: "#05966922", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Volume2 className="w-5 h-5 text-emerald-600" />
                   </button>
@@ -217,7 +307,7 @@ export default function SectionTest() {
                     else if (isP) { bg = "#ef444422"; border = "2px solid #ef4444"; }
                   } else if (isP) { bg = "#34d39922"; border = "2px solid #34d399"; }
                   return (
-                    <button key={o} onClick={() => { if (!confirmed) { setPicked(o); speak(o); } }} disabled={confirmed}
+                    <button key={o} onClick={() => { if (!confirmed) { setPicked(o); speak(o, currentVoice); } }} disabled={confirmed}
                       style={{ padding: "16px 18px", borderRadius: 14, fontSize: 17, fontWeight: 700, background: bg, border,
                         display: "flex", alignItems: "center", justifyContent: "space-between", direction: "ltr",
                         cursor: confirmed ? "default" : "pointer", color: "hsl(var(--foreground))" }}>
