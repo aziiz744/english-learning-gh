@@ -306,6 +306,116 @@ export const WORD_GLOSSARY: Record<string, string> = {
   "your": "خاصتك",
   "your job": "وظيفتك",
   "your name": "اسمك",
+
+  // ═══════ القسم الثاني — مفردات أساسية ═══════
+  // ملابس
+  "shirt": "قميص", "dress": "فستان", "shoes": "حذاء", "jacket": "سترة",
+  "sweater": "كنزة", "jeans": "جينز", "scarf": "وشاح", "gloves": "قفازات",
+  "boots": "حذاء طويل", "hat": "قبعة", "socks": "جوارب", "coat": "معطف",
+  "size": "مقاس", "color": "لون", "wear": "يرتدي", "fit": "يناسب",
+  "tight": "ضيّق", "loose": "واسع", "wool": "صوف", "cotton": "قطن",
+  // منزل
+  "house": "منزل", "room": "غرفة", "kitchen": "مطبخ", "bedroom": "غرفة نوم",
+  "bathroom": "حمّام", "living room": "غرفة المعيشة", "door": "باب", "window": "نافذة",
+  "table": "طاولة", "chair": "كرسي", "bed": "سرير", "sofa": "أريكة",
+  "wall": "جدار", "floor": "أرضية", "garden": "حديقة", "garage": "كراج",
+  // فعل to be
+  "am": "أكون", "is": "يكون", "are": "يكونون", "be": "يكون",
+  "isn't": "ليس", "aren't": "ليسوا", "i'm": "أنا", "you're": "أنت",
+  "he's": "هو", "she's": "هي", "it's": "إنه", "we're": "نحن", "they're": "هم",
+  // المطعم
+  "menu": "قائمة طعام", "order": "يطلب", "waiter": "نادل", "bill": "فاتورة",
+  "meal": "وجبة", "appetizer": "مقبّلات", "dessert": "حلوى", "drink": "مشروب",
+  "delicious": "لذيذ", "fork": "شوكة", "knife": "سكين", "spoon": "ملعقة",
+  "plate": "طبق", "glass": "كوب", "napkin": "منديل",
+  // العمل
+  "office": "مكتب", "meeting": "اجتماع", "email": "بريد إلكتروني", "boss": "مدير",
+  "colleague": "زميل", "client": "عميل", "report": "تقرير", "project": "مشروع",
+  "deadline": "موعد نهائي", "task": "مهمة", "plan": "خطة", "employee": "موظف",
+  // المشاعر
+  "happy": "سعيد", "sad": "حزين", "angry": "غاضب", "tired": "متعب",
+  "scared": "خائف", "excited": "متحمس", "bored": "ملول", "worried": "قلق",
+  "calm": "هادئ", "nervous": "متوتر", "proud": "فخور", "feel": "يشعر",
+  "because": "لأن", "when": "عندما", "makes": "يجعل",
+  // الصف
+  "teacher": "معلّم", "student": "طالب", "question": "سؤال", "answer": "إجابة",
+  "book": "كتاب", "pen": "قلم", "paper": "ورقة", "lesson": "درس",
+  "understand": "يفهم", "repeat": "يكرّر", "explain": "يشرح", "spell": "يتهجّى",
+  // الوقت
+  "time": "وقت", "hour": "ساعة", "minute": "دقيقة", "clock": "ساعة حائط",
+  "morning": "صباح", "afternoon": "بعد الظهر", "evening": "مساء", "night": "ليل",
+  "today": "اليوم", "tomorrow": "غداً", "yesterday": "أمس", "now": "الآن",
+  "noon": "ظهر", "midnight": "منتصف الليل", "early": "مبكّر", "late": "متأخّر",
+  // الرياضة
+  "football": "كرة قدم", "basketball": "كرة سلة", "tennis": "تنس", "swimming": "سباحة",
+  "running": "جري", "team": "فريق", "match": "مباراة", "game": "لعبة",
+  "player": "لاعب", "coach": "مدرّب", "goal": "هدف", "win": "يفوز", "lose": "يخسر",
+  "score": "نتيجة", "favorite": "مفضّل",
+  // ظروف التكرار
+  "always": "دائماً", "usually": "عادةً", "sometimes": "أحياناً", "never": "أبداً",
+  "often": "غالباً", "rarely": "نادراً", "every": "كل", "once": "مرة", "twice": "مرتين",
+  // الروتين
+  "wake up": "يستيقظ", "breakfast": "فطور", "lunch": "غداء", "dinner": "عشاء",
+  "shower": "دش", "work": "عمل", "sleep": "ينام", "first": "أولاً",
+  "then": "ثم", "after": "بعد", "finally": "أخيراً", "relax": "يسترخي",
+  // الفندق
+  "hotel": "فندق", "reception": "استقبال", "key": "مفتاح", "booking": "حجز",
+  "guest": "نزيل", "single": "فردي", "double": "مزدوج", "available": "متاح",
+  "reserve": "يحجز", "luggage": "أمتعة", "check in": "تسجيل وصول", "check out": "تسجيل مغادرة",
+  // أدوات التعريف
+  "the": "الـ (التعريف)", "an": "أداة نكرة",
+  // العائلة
+  "father": "أب", "mother": "أم", "brother": "أخ", "sister": "أخت",
+  "grandfather": "جدّ", "grandmother": "جدّة", "uncle": "عمّ/خال", "aunt": "عمّة/خالة",
+  "cousin": "ابن العم", "parents": "والدان", "family": "عائلة", "son": "ابن", "daughter": "ابنة",
+  "kind": "لطيف", "funny": "مضحك", "smart": "ذكي", "friendly": "ودود",
+  // الملكية
+  "my": "خاصتي", "his": "خاصته", "her": "خاصتها", "our": "خاصتنا", "their": "خاصتهم",
+  "mine": "ملكي", "yours": "ملكك", "whose": "لمن", "phone": "هاتف",
+  "watch": "ساعة يد", "bag": "حقيبة", "keys": "مفاتيح", "wallet": "محفظة",
+  "glasses": "نظارة", "umbrella": "مظلّة", "laptop": "حاسوب محمول",
+  // المفقودات
+  "lost": "مفقود", "found": "وُجد", "missing": "ناقص", "describe": "يصف",
+  "shape": "شكل", "leather": "جلد", "plastic": "بلاستيك", "metal": "معدن",
+  // الجموع
+  "men": "رجال", "women": "نساء", "children": "أطفال", "feet": "أقدام",
+  "teeth": "أسنان", "people": "أشخاص", "mice": "فئران",
+  "these": "هؤلاء", "those": "أولئك", "many": "كثير",
+  // المدينة
+  "bank": "بنك", "station": "محطة", "square": "ساحة", "corner": "زاوية",
+  "bridge": "جسر", "street": "شارع", "left": "يسار", "right": "يمين",
+  "straight": "مستقيم", "far": "بعيد", "near": "قريب", "map": "خريطة",
+  // النفي
+  "don't": "لا (نفي)", "doesn't": "لا (نفي)", "not": "ليس",
+  // الأعراض
+  "head": "رأس", "stomach": "معدة", "throat": "حلق", "pain": "ألم",
+  "fever": "حُمّى", "cough": "سعال", "cold": "زكام", "sick": "مريض",
+  "medicine": "دواء", "rest": "راحة", "doctor": "طبيب", "headache": "صداع",
+  "hurts": "يؤلم", "dizzy": "دائخ",
+  // المضارع المستمر
+  "reading": "يقرأ", "playing": "يلعب", "eating": "يأكل", "working": "يعمل",
+  "watching": "يشاهد", "writing": "يكتب", "cooking": "يطبخ", "sleeping": "ينام",
+  "doing": "يفعل", "going": "يذهب", "currently": "حالياً",
+  // الطقس والطبيعة
+  "sunny": "مشمس", "rainy": "ممطر", "cloudy": "غائم", "windy": "عاصف",
+  "snowy": "مثلج", "hot": "حارّ", "warm": "دافئ", "cool": "منعش",
+  "weather": "طقس", "season": "فصل", "summer": "صيف", "winter": "شتاء",
+  "spring": "ربيع", "autumn": "خريف", "mountain": "جبل", "river": "نهر",
+  "forest": "غابة", "beach": "شاطئ", "lake": "بحيرة", "sea": "بحر", "nature": "طبيعة",
+  // المدرسة
+  "math": "رياضيات", "science": "علوم", "history": "تاريخ", "art": "فنون",
+  "music": "موسيقى", "homework": "واجب", "exam": "امتحان", "grade": "درجة",
+  "classroom": "صف", "library": "مكتبة", "subject": "مادة", "study": "يدرس",
+  "learn": "يتعلّم", "geography": "جغرافيا", "chemistry": "كيمياء", "biology": "أحياء",
+  // أفعال الأمر
+  "sit": "اجلس", "stand": "قف", "open": "افتح", "close": "أغلق",
+  "listen": "استمع", "look": "انظر", "come": "تعال", "wait": "انتظر",
+  "press": "اضغط", "put": "ضع", "take": "خذ", "follow": "اتبع",
+  "please": "من فضلك", "pull": "اسحب", "push": "ادفع",
+  // السلامة
+  "danger": "خطر", "warning": "تحذير", "careful": "حذِر", "stop": "قف",
+  "safe": "آمن", "must": "يجب", "emergency": "طوارئ", "fire": "حريق",
+  "help": "مساعدة", "police": "شرطة", "ambulance": "إسعاف", "exit": "مخرج",
 };
 
 export function translateWord(word: string): string | null {

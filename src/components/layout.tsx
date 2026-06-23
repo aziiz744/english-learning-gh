@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import {
   Route, Trophy, Flame, Zap,
   Shield, LogIn, LogOut, User, Menu, X,
-  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity,
+  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
@@ -195,6 +195,7 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
     { name: "الإنجازات",  href: "/achievements", icon: Trophy },
     { name: "القراءة",    href: "/reading",       icon: BookMarked },
     { name: "عضوية Pro",  href: "/pro",           icon: Sparkles },
+    { name: "سياسة الخصوصية", href: "/privacy",   icon: Lock },
   ];
   if (user?.isAdmin) moreItems.push({ name: "لوحة الإدارة", href: "/admin", icon: Shield });
   if (user?.isAdmin) moreItems.push({ name: "إحصائيات الموقع", href: "/admin-stats", icon: Activity });

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
+import { getUnitGuidePhrases } from "@/lib/lesson-exercises";
 
 interface UnitLesson {
   id: string;
@@ -309,6 +310,255 @@ const CHAPTERS: Chapter[] = [
           { id: "time-c", type: "challenge", title: "تحدي الوحدة",  description: "اختبار شامل: استخدم تعابير الوقت!", words: [] },
         ],
       },
+      // الوحدة 21: ناقش الرياضات
+      {
+        id: "unit-sport", title: "ناقش الرياضات", emoji: "⚽", color: "#65a30d",
+        sectionTitle: "ناقش الرياضات",
+        lessons: [
+          { id: "sport-1", type: "lesson",    title: "أنواع الرياضات", description: "تعلّم: football وbasketball وtennis.", words: ["football","basketball","tennis","swimming"] },
+          { id: "sport-2", type: "lesson",    title: "ممارسة الرياضة", description: "تعلّم: play وteam وmatch وgame.", words: ["play","team","match","game"] },
+          { id: "sport-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كلمات الرياضات!", words: [] },
+          { id: "sport-3", type: "lesson",    title: "ناقش الرياضة",   description: "تعلّم: favorite وwin وlose وscore.", words: ["favorite","win","lose","score"] },
+          { id: "sport-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: ناقش الرياضات!", words: [] },
+        ],
+      },
+      // الوحدة 22: ظروف التكرار والوقت
+      {
+        id: "unit-adv", title: "ظروف التكرار والوقت", emoji: "🔄", color: "#0d9488",
+        sectionTitle: "ظروف التكرار والوقت",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "adv-1", type: "lesson",    title: "ظروف التكرار",     description: "تعلّم: always وusually وsometimes وnever.", words: ["always","usually","sometimes","never"] },
+          { id: "adv-2", type: "lesson",    title: "عبارات التكرار",   description: "تعلّم: every day وonce a week وtwice.", words: ["every","once","twice","daily"] },
+          { id: "adv-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع ظروف التكرار!", words: [] },
+          { id: "adv-3", type: "lesson",    title: "استخدامها في جمل", description: "تعلّم موقع الظرف في الجملة.", words: ["always","never","usually","often"] },
+          { id: "adv-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: ظروف التكرار!", words: [] },
+        ],
+      },
+      // الوحدة 23: صف روتينك اليومي
+      {
+        id: "unit-rout", title: "صف روتينك اليومي", emoji: "🌅", color: "#ea580c",
+        sectionTitle: "صف روتينك اليومي",
+        lessons: [
+          { id: "rout-1", type: "lesson",    title: "روتين الصباح", description: "تعلّم: wake up وhave breakfast وgo to work.", words: ["wake up","breakfast","shower","work"] },
+          { id: "rout-2", type: "lesson",    title: "روتين المساء", description: "تعلّم: get home وhave dinner وgo to bed.", words: ["get home","dinner","watch","bed"] },
+          { id: "rout-t", type: "treasure",  title: "كنز المراجعة", description: "راجع أفعال الروتين!", words: [] },
+          { id: "rout-3", type: "lesson",    title: "صف يومك",     description: "تعلّم: first وthen وafter that وfinally.", words: ["first","then","after","finally"] },
+          { id: "rout-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل: صف روتينك اليومي!", words: [] },
+        ],
+      },
+      // الوحدة 24: احجز غرفة في فندق
+      {
+        id: "unit-hotel", title: "احجز غرفة في فندق", emoji: "🏨", color: "#0369a1",
+        sectionTitle: "احجز غرفة في فندق",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "hotel-1", type: "lesson",    title: "كلمات الفندق", description: "تعلّم: hotel وroom وkey وreception.", words: ["hotel","room","key","reception"] },
+          { id: "hotel-2", type: "lesson",    title: "احجز غرفة",    description: "تعلّم: single وdouble وnight وavailable.", words: ["single","double","night","available"] },
+          { id: "hotel-t", type: "treasure",  title: "كنز المراجعة", description: "راجع كلمات الفندق!", words: [] },
+          { id: "hotel-3", type: "lesson",    title: "في الفندق",    description: "تعلّم: check in وcheck out وincluded.", words: ["check in","check out","included","wifi"] },
+          { id: "hotel-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل: احجز غرفة في فندق!", words: [] },
+        ],
+      },
+      // الوحدة 25: أدوات التعريف
+      {
+        id: "unit-art", title: "استخدم أدوات التعريف", emoji: "🔤", color: "#7c3aed",
+        sectionTitle: "استخدم أدوات التعريف",
+        lessons: [
+          { id: "art-1", type: "lesson",    title: "a و an",         description: "تعلّم: متى نستخدم a ومتى an.", words: ["a","an","apple","book"] },
+          { id: "art-2", type: "lesson",    title: "أداة the",       description: "تعلّم: the للأشياء المحدّدة.", words: ["the","sun","moon","door"] },
+          { id: "art-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع أدوات التعريف!", words: [] },
+          { id: "art-3", type: "lesson",    title: "استخدامها معاً", description: "تعلّم: a/an/the في جمل واحدة.", words: ["a","an","the"] },
+          { id: "art-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: أدوات التعريف!", words: [] },
+        ],
+      },
+      // الوحدة 26: صف أفراد عائلتك
+      {
+        id: "unit-fam", title: "صف أفراد عائلتك", emoji: "👪", color: "#e11d48",
+        sectionTitle: "صف أفراد عائلتك",
+        lessons: [
+          { id: "fam-1", type: "lesson",    title: "أفراد العائلة",  description: "تعلّم: father وmother وbrother وsister.", words: ["father","mother","brother","sister"] },
+          { id: "fam-2", type: "lesson",    title: "صف شخصيتهم",    description: "تعلّم: kind وfunny وsmart وfriendly.", words: ["kind","funny","smart","friendly"] },
+          { id: "fam-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كلمات العائلة!", words: [] },
+          { id: "fam-3", type: "lesson",    title: "تحدث عن عائلتك", description: "تعلّم: older وyounger وthis is my.", words: ["older","younger","have","parents"] },
+          { id: "fam-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: صف أفراد عائلتك!", words: [] },
+        ],
+      },
+      // الوحدة 27: صف ممتلكاتك
+      {
+        id: "unit-poss", title: "صف ممتلكاتك", emoji: "🔑", color: "#0891b2",
+        sectionTitle: "صف ممتلكاتك",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "poss-1", type: "lesson",    title: "الملكية",   description: "تعلّم: my وyour وhis وher وour وtheir.", words: ["my","your","his","her"] },
+          { id: "poss-2", type: "lesson",    title: "ممتلكات",   description: "تعلّم: phone وwatch وbag وkeys وwallet.", words: ["phone","watch","bag","keys"] },
+          { id: "poss-t", type: "treasure",  title: "كنز المراجعة", description: "راجع كلمات الملكية!", words: [] },
+          { id: "poss-3", type: "lesson",    title: "لمن هذا",   description: "تعلّم: whose وit's mine وbelongs to.", words: ["whose","mine","yours","belongs"] },
+          { id: "poss-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل: صف ممتلكاتك!", words: [] },
+        ],
+      },
+      // الوحدة 28: افرز الأشياء المفقودة
+      {
+        id: "unit-lost", title: "افرز الأشياء المفقودة", emoji: "🔍", color: "#b45309",
+        sectionTitle: "افرز الأشياء المفقودة",
+        lessons: [
+          { id: "lost-1", type: "lesson",    title: "المفقودات",        description: "تعلّم: lost وfound وmissing.", words: ["lost","found","missing","leave"] },
+          { id: "lost-2", type: "lesson",    title: "صف الشيء المفقود", description: "تعلّم: color وsize وshape وmade of.", words: ["color","size","shape","made"] },
+          { id: "lost-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات المفقودات!", words: [] },
+          { id: "lost-3", type: "lesson",    title: "في مكتب المفقودات", description: "تعلّم: Have you seen وI lost وdescribe.", words: ["seen","lost","describe","report"] },
+          { id: "lost-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: افرز الأشياء المفقودة!", words: [] },
+        ],
+      },
+      // الوحدة 29: تسوق للملابس
+      {
+        id: "unit-wear", title: "تسوّق للملابس", emoji: "🧥", color: "#7c2d12",
+        sectionTitle: "تسوّق للملابس",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "wear-1", type: "lesson",    title: "ملابس متنوّعة",     description: "تعلّم: jacket وsweater وjeans وscarf.", words: ["jacket","sweater","jeans","scarf"] },
+          { id: "wear-2", type: "lesson",    title: "المقاسات والقياس", description: "تعلّم: fit وtight وloose وtry on.", words: ["fit","tight","loose","size"] },
+          { id: "wear-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع كلمات الملابس!", words: [] },
+          { id: "wear-3", type: "lesson",    title: "اتخاذ القرار",     description: "تعلّم: suits you وprefer وtake it.", words: ["suits","prefer","take","return"] },
+          { id: "wear-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: تسوّق للملابس!", words: [] },
+        ],
+      },
+      // الوحدة 30: جمع التكسير
+      {
+        id: "unit-plur", title: "كوّن جمع التكسير", emoji: "🔢", color: "#4f46e5",
+        sectionTitle: "كوّن جمع التكسير",
+        lessons: [
+          { id: "plur-1", type: "lesson",    title: "جموع شاذة شائعة",   description: "تعلّم: man/men وchild/children.", words: ["men","women","children"] },
+          { id: "plur-2", type: "lesson",    title: "المزيد من الجموع", description: "تعلّم: foot/feet وperson/people.", words: ["feet","teeth","people","mice"] },
+          { id: "plur-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع الجموع الشاذة!", words: [] },
+          { id: "plur-3", type: "lesson",    title: "استخدامها في جمل", description: "تعلّم: these وthose وmany مع الجموع.", words: ["these","those","many"] },
+          { id: "plur-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: جمع التكسير!", words: [] },
+        ],
+      },
+      // الوحدة 31: تنقّل في مدينة غير مألوفة
+      {
+        id: "unit-city", title: "تنقّل في مدينة غير مألوفة", emoji: "🏙️", color: "#0e7490",
+        sectionTitle: "تنقّل في مدينة غير مألوفة",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "city-1", type: "lesson",    title: "أماكن المدينة", description: "تعلّم: bank وstation وsquare وbridge.", words: ["bank","station","square","bridge"] },
+          { id: "city-2", type: "lesson",    title: "الاتجاهات",     description: "تعلّم: turn left وgo straight وnext to.", words: ["left","right","straight","across"] },
+          { id: "city-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع كلمات المدينة!", words: [] },
+          { id: "city-3", type: "lesson",    title: "اسأل عن الطريق", description: "تعلّم: How do I get to وExcuse me وfar.", words: ["excuse","get","far","map"] },
+          { id: "city-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: تنقّل في المدينة!", words: [] },
+        ],
+      },
+      // الوحدة 32: النفي في المضارع
+      {
+        id: "unit-neg", title: "كوّن النفي في المضارع", emoji: "🚫", color: "#be123c",
+        sectionTitle: "كوّن النفي في المضارع",
+        lessons: [
+          { id: "neg-1", type: "lesson",    title: "النفي بـ don't",   description: "تعلّم: I don't وyou don't وthey don't.", words: ["don't","do not","like","want"] },
+          { id: "neg-2", type: "lesson",    title: "النفي بـ doesn't", description: "تعلّم: he doesn't وshe doesn't.", words: ["doesn't","does not","like","work"] },
+          { id: "neg-t", type: "treasure",  title: "كنز المراجعة",     description: "راجع النفي في المضارع!", words: [] },
+          { id: "neg-3", type: "lesson",    title: "النفي في جمل",     description: "تعلّم متى don't ومتى doesn't.", words: ["don't","doesn't"] },
+          { id: "neg-c", type: "challenge", title: "تحدي الوحدة",      description: "اختبار شامل: كوّن النفي!", words: [] },
+        ],
+      },
+      // الوحدة 33: تحدّث عن الأعراض
+      {
+        id: "unit-symp", title: "تحدّث عن الأعراض", emoji: "🤒", color: "#0f766e",
+        sectionTitle: "تحدّث عن الأعراض",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "symp-1", type: "lesson",    title: "الجسم والألم", description: "تعلّم: head وstomach وthroat وpain.", words: ["head","stomach","throat","pain"] },
+          { id: "symp-2", type: "lesson",    title: "الأعراض",      description: "تعلّم: fever وcough وcold وsick.", words: ["fever","cough","cold","sick"] },
+          { id: "symp-t", type: "treasure",  title: "كنز المراجعة", description: "راجع كلمات الأعراض!", words: [] },
+          { id: "symp-3", type: "lesson",    title: "عند الطبيب",   description: "تعلّم: I have a وtake medicine وrest.", words: ["medicine","rest","doctor","appointment"] },
+          { id: "symp-c", type: "challenge", title: "تحدي الوحدة",  description: "اختبار شامل: تحدّث عن الأعراض!", words: [] },
+        ],
+      },
+      // الوحدة 34: أسئلة بـ"يكون"
+      {
+        id: "unit-beq", title: "كوّن أسئلة بيكون", emoji: "❓", color: "#9333ea",
+        sectionTitle: "كوّن أسئلة بيكون",
+        lessons: [
+          { id: "beq-1", type: "lesson",    title: "أسئلة Are/Is",   description: "تعلّم: Are you? وIs he?", words: ["are","is","am"] },
+          { id: "beq-2", type: "lesson",    title: "أسئلة الاستفهام", description: "تعلّم: Where is? وWhat are?", words: ["where","what","who","when"] },
+          { id: "beq-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع أسئلة يكون!", words: [] },
+          { id: "beq-3", type: "lesson",    title: "إجابات قصيرة",   description: "تعلّم: Yes I am وNo he isn't.", words: ["yes","no","isn't","aren't"] },
+          { id: "beq-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: كوّن أسئلة بيكون!", words: [] },
+        ],
+      },
+      // الوحدة 35: المضارع المستمر
+      {
+        id: "unit-cont", title: "استخدم المضارع المستمر", emoji: "⏳", color: "#c026d3",
+        sectionTitle: "استخدم المضارع المستمر",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "cont-1", type: "lesson",    title: "تكوين ing",     description: "تعلّم: am/is/are + verb-ing.", words: ["reading","playing","eating","working"] },
+          { id: "cont-2", type: "lesson",    title: "أفعال شائعة",   description: "تعلّم: eating وreading وwatching.", words: ["eating","reading","watching","playing"] },
+          { id: "cont-t", type: "treasure",  title: "كنز المراجعة",  description: "راجع المضارع المستمر!", words: [] },
+          { id: "cont-3", type: "lesson",    title: "استخدامه الآن", description: "تعلّم: now وat the moment وright now.", words: ["now","currently","moment","these days"] },
+          { id: "cont-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: المضارع المستمر!", words: [] },
+        ],
+      },
+      // الوحدة 36: الطقس والطبيعة
+      {
+        id: "unit-wthr", title: "تحدّث عن الطقس والطبيعة", emoji: "🌤️", color: "#0284c7",
+        sectionTitle: "تحدّث عن الطقس والطبيعة",
+        lessons: [
+          { id: "wthr-1", type: "lesson",    title: "الطقس",       description: "تعلّم: sunny وrainy وcloudy وwindy.", words: ["sunny","rainy","cloudy","windy"] },
+          { id: "wthr-2", type: "lesson",    title: "الطبيعة",     description: "تعلّم: mountain وriver وforest وbeach.", words: ["mountain","river","forest","beach"] },
+          { id: "wthr-t", type: "treasure",  title: "كنز المراجعة", description: "راجع الطقس والطبيعة!", words: [] },
+          { id: "wthr-3", type: "lesson",    title: "تحدّث عنهما", description: "تعلّم: What's the weather وseason.", words: ["weather","season","summer","winter"] },
+          { id: "wthr-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل: الطقس والطبيعة!", words: [] },
+        ],
+      },
+      // الوحدة 37: أسئلة المضارع المستمر
+      {
+        id: "unit-cq", title: "كوّن أسئلة في المضارع المستمر", emoji: "❓", color: "#7c3aed",
+        sectionTitle: "كوّن أسئلة في المضارع المستمر",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "cq-1", type: "lesson",    title: "أسئلة المستمر",  description: "تعلّم: Are you working? وIs he?", words: ["are","is","working","doing"] },
+          { id: "cq-2", type: "lesson",    title: "أسئلة الاستفهام", description: "تعلّم: What are you doing?", words: ["what","where","why","who"] },
+          { id: "cq-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع أسئلة المستمر!", words: [] },
+          { id: "cq-3", type: "lesson",    title: "إجابات قصيرة",   description: "تعلّم: Yes I am وNo she isn't.", words: ["yes","no","isn't","aren't"] },
+          { id: "cq-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: أسئلة المستمر!", words: [] },
+        ],
+      },
+      // الوحدة 38: تحدّث عن المدرسة
+      {
+        id: "unit-schl", title: "تحدّث عن المدرسة", emoji: "📐", color: "#16a34a",
+        sectionTitle: "تحدّث عن المدرسة",
+        lessons: [
+          { id: "schl-1", type: "lesson",    title: "المواد الدراسية", description: "تعلّم: math وscience وhistory وart.", words: ["math","science","history","art"] },
+          { id: "schl-2", type: "lesson",    title: "في المدرسة",     description: "تعلّم: classroom وhomework وexam وgrade.", words: ["classroom","homework","exam","grade"] },
+          { id: "schl-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كلمات المدرسة!", words: [] },
+          { id: "schl-3", type: "lesson",    title: "تحدّث عن دراستك", description: "تعلّم: favorite subject وgood at وstudy.", words: ["favorite","subject","study","learn"] },
+          { id: "schl-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: تحدّث عن المدرسة!", words: [] },
+        ],
+      },
+      // الوحدة 39: أفعال الأمر المثبتة
+      {
+        id: "unit-imp", title: "استخدم أفعال الأمر المثبتة", emoji: "👉", color: "#ea580c",
+        sectionTitle: "استخدم أفعال الأمر المثبتة",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "imp-1", type: "lesson",    title: "أوامر بسيطة",     description: "تعلّم: sit وstand وopen وclose.", words: ["sit","stand","open","close"] },
+          { id: "imp-2", type: "lesson",    title: "إعطاء التعليمات", description: "تعلّم: press وput وtake وfollow.", words: ["press","put","take","follow"] },
+          { id: "imp-t", type: "treasure",  title: "كنز المراجعة",    description: "راجع أفعال الأمر!", words: [] },
+          { id: "imp-3", type: "lesson",    title: "الأمر المهذّب",   description: "تعلّم: please وlet's وwould you.", words: ["please","let's","could","would"] },
+          { id: "imp-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: أفعال الأمر!", words: [] },
+        ],
+      },
+      // الوحدة 40: نصائح السلامة (الأخيرة!)
+      {
+        id: "unit-safe", title: "قدّم نصائح السلامة", emoji: "⚠️", color: "#dc2626",
+        sectionTitle: "قدّم نصائح السلامة",
+        lessons: [
+          { id: "safe-1", type: "lesson",    title: "علامات السلامة", description: "تعلّم: danger وwarning وcareful وstop.", words: ["danger","warning","careful","stop"] },
+          { id: "safe-2", type: "lesson",    title: "قواعد السلامة",  description: "تعلّم: must وdon't وalways وnever.", words: ["must","don't","always","never"] },
+          { id: "safe-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع نصائح السلامة!", words: [] },
+          { id: "safe-3", type: "lesson",    title: "حالات الطوارئ",  description: "تعلّم: emergency وcall وhelp وfire.", words: ["emergency","call","help","fire"] },
+          { id: "safe-c", type: "challenge", title: "تحدي الوحدة",    description: "🎉 الوحدة الأخيرة! أكمل القسم الثاني!", words: [] },
+        ],
+      },
     ],
   },
 ];
@@ -433,7 +683,7 @@ function FloatingMascot({ color, chapterId }: { color: string; chapterId: string
 
 // ─── Practice/Dumbbell Icon ──────────────────────────────────────────────────
 function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 76;
+  const SIZE = 62;
   const r = SIZE / 2;
   const faceColor = locked ? "#2d3a4a" : color;
   const darkColor = locked ? "#151f2b" : shadeColor(color, -50);
@@ -483,7 +733,7 @@ function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Crown icon for challenge stations ───────────────────────────────────────
 function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 76;
+  const SIZE = 62;
   const r = SIZE / 2;
   const depth = SIZE * 0.11;
   const pad = 5;
@@ -625,7 +875,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   isJumpStation?: boolean;
   canJump?: boolean;
 }) {
-  const SIZE   = type === "challenge" ? 90 : 76;
+  const SIZE   = type === "challenge" ? 76 : 62;
   const r      = SIZE / 2;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
   const pad = 16; // مساحة إضافية للخط الخارجي
@@ -899,7 +1149,7 @@ function PathConnector({ fromX, fromY, toX, toY, color, bothDone, anyDone }: {
 
 // ─── S-curve positions ────────────────────────────────────────────────────────
 const CANVAS_W = 300;
-const STEP_Y   = 110;
+const STEP_Y   = 92;
 const SIDE_PAD = 65;
 
 function buildPath(count: number, variant?: string): { x: number; y: number }[] {
@@ -970,7 +1220,13 @@ function GuideDrawer({ section, chapter, onClose }: {
   onClose: () => void;
 }) {
   const unit = chapter.units.find(u => u.id === section.unitId) ?? chapter.units[0];
-  const phrases = UNIT_GUIDE_PHRASES[unit.id] ?? [];
+  // جمل الدليل: استخدم اليدوية إن وُجدت، وإلا ولّدها تلقائياً من بنوك دروس الوحدة
+  const manualPhrases = UNIT_GUIDE_PHRASES[unit.id];
+  const lessonTitles = unit.lessons.filter(l => l.type === "lesson").map(l => l.title);
+  const phrases = (manualPhrases && manualPhrases.length > 0)
+    ? manualPhrases
+    : getUnitGuidePhrases(lessonTitles);
+  const unitEmoji = unit.emoji ?? "📘";
 
   return (
     <motion.div
@@ -996,7 +1252,7 @@ function GuideDrawer({ section, chapter, onClose }: {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
           <div>
-            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة 1</h2>
+            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة</h2>
             <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 13, margin: 0, textAlign: "right" }}>
               طالع الجمل الأساسية واستعرضها مع الترجمة
             </p>
@@ -1007,7 +1263,7 @@ function GuideDrawer({ section, chapter, onClose }: {
             border: `2px solid ${section.color}40`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 32, flexShrink: 0, marginRight: 12,
-          }}>☕</div>
+          }}>{unitEmoji}</div>
         </div>
 
         {/* Section label */}
@@ -1020,6 +1276,11 @@ function GuideDrawer({ section, chapter, onClose }: {
 
         {/* Phrases */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {phrases.length === 0 && (
+            <div style={{ textAlign: "center", padding: "24px 12px", color: "hsl(var(--muted-foreground))", fontSize: 14 }}>
+              ابدأ الدرس مباشرة لتتعلّم جمل هذه الوحدة! 🚀
+            </div>
+          )}
           {phrases.map((p, i) => (
             <div key={i} style={{
               background: "hsl(var(--background))",
@@ -1074,6 +1335,37 @@ const UNIT_GUIDES: Record<string, string> = {
   "unit-present": "استخدم الزمن المضارع في حياتك اليومية",
   "unit-weather": "تحدّث عن الطقس والفصول",
   "unit-pets": "تحدّث عن حيواناتك الأليفة",
+  // ── القسم الثاني ──
+  "unit-clothes": "تسوّق لشراء الملابس واطلب المقاسات والألوان",
+  "unit-house": "قم بجولة في منزلك وصف الغرف والأثاث",
+  "unit-tobe": "استخدم am / is / are في الجمل",
+  "unit-contr": "اختصر am/is/are: I'm وyou're وisn't",
+  "unit-order": "اطلب الطعام والمشروبات في المطعم بأدب",
+  "unit-work": "تواصل في العمل: الاجتماعات والبريد والمهام",
+  "unit-feel": "عبّر عن مشاعرك بالزمن المضارع",
+  "unit-class": "اطلب المساعدة في الصف وافهم الدرس",
+  "unit-shop": "اطلب المساعدة أثناء التسوّق واسأل عن المنتجات",
+  "unit-time": "استخدم تعابير الوقت والساعة وأوقات اليوم",
+  "unit-sport": "ناقش الرياضات وفرقك ولاعبيك المفضّلين",
+  "unit-adv": "استخدم ظروف التكرار: always وusually وnever",
+  "unit-rout": "صف روتينك اليومي من الصباح للمساء",
+  "unit-hotel": "احجز غرفة في فندق وتعامل مع الاستقبال",
+  "unit-art": "استخدم أدوات التعريف a / an / the بشكل صحيح",
+  "unit-fam": "صف أفراد عائلتك وشخصياتهم",
+  "unit-poss": "صف ممتلكاتك واستخدم my / your / his",
+  "unit-lost": "افرز الأشياء المفقودة وصِفها في مكتب المفقودات",
+  "unit-wear": "تسوّق للملابس واختر المقاس المناسب",
+  "unit-plur": "كوّن جمع التكسير: man/men وchild/children",
+  "unit-city": "تنقّل في مدينة غير مألوفة واسأل عن الطريق",
+  "unit-neg": "كوّن النفي في المضارع: don't وdoesn't",
+  "unit-symp": "تحدّث عن الأعراض والألم عند الطبيب",
+  "unit-beq": "كوّن أسئلة بـ am/is/are وأجب عليها",
+  "unit-cont": "استخدم المضارع المستمر للأحداث الجارية",
+  "unit-wthr": "تحدّث عن الطقس والطبيعة والفصول",
+  "unit-cq": "كوّن أسئلة في المضارع المستمر",
+  "unit-schl": "تحدّث عن المدرسة والمواد والدراسة",
+  "unit-imp": "استخدم أفعال الأمر لإعطاء التعليمات",
+  "unit-safe": "قدّم نصائح السلامة وتعامل مع الطوارئ",
 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -1379,42 +1671,42 @@ export default function Roadmap() {
           style={{
             position: "sticky",
             zIndex: 30,
-            padding: "8px 16px",
+            padding: "5px 12px",
           }}
         >
-          <div style={{ maxWidth: 360, margin: "0 auto", position: "relative" }}>
+          <div style={{ maxWidth: 340, margin: "0 auto", position: "relative" }}>
             {/* الطبقة السفلية (العمق ثلاثي الأبعاد) */}
             <div style={{
-              position: "absolute", inset: 0, top: 6,
+              position: "absolute", inset: 0, top: 4,
               background: shadeColor(activeSection.color, -55),
-              borderRadius: 18,
+              borderRadius: 14,
             }}/>
             {/* الوجه العلوي */}
             <div style={{
               position: "relative",
               background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 25)}, ${activeSection.color} 55%, ${shadeColor(activeSection.color, -20)})`,
-              borderRadius: 18,
-              padding: "12px 16px",
-              boxShadow: `0 6px 0 ${shadeColor(activeSection.color, -55)}, 0 10px 22px ${activeSection.color}55`,
-              border: `1.5px solid ${lightenColor(activeSection.color, 35)}`,
+              borderRadius: 14,
+              padding: "8px 12px",
+              boxShadow: `0 4px 0 ${shadeColor(activeSection.color, -55)}, 0 6px 14px ${activeSection.color}44`,
+              border: `1px solid ${lightenColor(activeSection.color, 35)}`,
             }}>
               {/* لمعة علوية */}
               <div style={{
-                position: "absolute", top: 4, left: 12, right: 12, height: 14,
+                position: "absolute", top: 3, left: 10, right: 10, height: 10,
                 background: "linear-gradient(180deg, rgba(255,255,255,0.35), transparent)",
-                borderRadius: 12, pointerEvents: "none",
+                borderRadius: 10, pointerEvents: "none",
               }}/>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 {/* Title — center */}
-                <div style={{ flex: 1, textAlign: "center", padding: "0 4px" }}>
-                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 700, marginBottom: 2 }}>
+                <div style={{ flex: 1, textAlign: "center", padding: "0 2px" }}>
+                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
                     القسم 1 · الوحدة {activeSectionIdx + 1} {activeSection.emoji}
                   </div>
-                  <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
+                  <div style={{ color: "white", fontWeight: 900, fontSize: 13.5, lineHeight: 1.15, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
                     {activeSection.title}
                   </div>
                   {/* دليل مختصر */}
-                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 10.5, fontWeight: 600, marginTop: 3, lineHeight: 1.35 }}>
+                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 9, fontWeight: 600, marginTop: 2, lineHeight: 1.3 }}>
                     {UNIT_GUIDES[activeSection.unitId] ?? "تعلّم كلمات وجمل جديدة خطوة بخطوة"}
                   </div>
                 </div>
@@ -1424,14 +1716,14 @@ export default function Roadmap() {
                   onClick={e => { e.stopPropagation(); setShowGuide(true); }}
                   style={{
                     background: "rgba(255,255,255,0.25)",
-                    border: "1.5px solid rgba(255,255,255,0.5)",
-                    borderRadius: 12, padding: "7px 10px",
-                    color: "white", fontWeight: 800, fontSize: 12,
-                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    borderRadius: 10, padding: "5px 8px",
+                    color: "white", fontWeight: 800, fontSize: 10.5,
+                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
                     flexShrink: 0, whiteSpace: "nowrap",
-                    boxShadow: `0 3px 0 ${shadeColor(activeSection.color, -50)}`,
+                    boxShadow: `0 2px 0 ${shadeColor(activeSection.color, -50)}`,
                   }}>
-                  <span style={{ fontSize: 16 }}>📖</span>
+                  <span style={{ fontSize: 14 }}>📖</span>
                   <span>الدليل</span>
                 </button>
               </div>

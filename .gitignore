@@ -3,3 +3,11 @@ dist
 .env
 .tsbuildinfo
 *.local
+
+# Capacitor
+/ios/App/Pods
+/ios/App/App/public
+/android/app/src/main/assets/public
+/android/.gradle
+node_modules
+dist

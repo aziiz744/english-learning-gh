@@ -82,7 +82,7 @@ export const unit15OrderFoodBank: Record<string, TieredBank> = {
     t3: [],
   },
 
-  "في المطعم": {
+  "في المطعم والطلب": {
     t0: [
       { id:"of3-t0-1", type:"translate", arabic:"طاولة لشخصين", options:["table for two","table two for","for table two","two table for"], correctAnswer:"table for two", explanation:"table for two = طاولة لشخصين", xp:12 },
       { id:"of3-t0-2", type:"word_order", sentence:"The food is ready", correctAnswer:"The food is ready", explanation:"الطعام جاهز", xp:12 },

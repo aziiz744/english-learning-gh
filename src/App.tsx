@@ -24,6 +24,7 @@ import Pro from "@/pages/pro";
 import ResetPassword from "@/pages/reset-password";
 import TeacherPage from "@/pages/teacher";
 import AdminStats from "@/pages/admin-stats";
+import Privacy from "@/pages/privacy";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/teacher" component={TeacherPage} />
       <Route path="/admin-stats" component={AdminStats} />
+      <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
   );
