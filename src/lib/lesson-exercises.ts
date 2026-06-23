@@ -30,6 +30,26 @@ import { unit17FeelingsBank } from "./lesson-banks/unit17-feelings";
 import { unit18ClassroomBank } from "./lesson-banks/unit18-classroom";
 import { unit19ShopHelpBank } from "./lesson-banks/unit19-shophelp";
 import { unit20TimeBank } from "./lesson-banks/unit20-time";
+import { unit21SportsBank } from "./lesson-banks/unit21-sports";
+import { unit22AdverbsBank } from "./lesson-banks/unit22-adverbs";
+import { unit23RoutineBank } from "./lesson-banks/unit23-routine";
+import { unit24HotelBank } from "./lesson-banks/unit24-hotel";
+import { unit25ArticlesBank } from "./lesson-banks/unit25-articles";
+import { unit26FamilyBank } from "./lesson-banks/unit26-family";
+import { unit27PossessionsBank } from "./lesson-banks/unit27-possessions";
+import { unit28LostFoundBank } from "./lesson-banks/unit28-lostfound";
+import { unit29ClothesShopBank } from "./lesson-banks/unit29-clothesshop";
+import { unit30PluralsBank } from "./lesson-banks/unit30-plurals";
+import { unit31CityBank } from "./lesson-banks/unit31-city";
+import { unit32NegationBank } from "./lesson-banks/unit32-negation";
+import { unit33SymptomsBank } from "./lesson-banks/unit33-symptoms";
+import { unit34ToBeQBank } from "./lesson-banks/unit34-tobeq";
+import { unit35ContinuousBank } from "./lesson-banks/unit35-continuous";
+import { unit36WeatherNatureBank } from "./lesson-banks/unit36-weathernature";
+import { unit37ContQBank } from "./lesson-banks/unit37-contq";
+import { unit38SchoolBank } from "./lesson-banks/unit38-school";
+import { unit39ImperativesBank } from "./lesson-banks/unit39-imperatives";
+import { unit40SafetyBank } from "./lesson-banks/unit40-safety";
 
 export type { ExObj, TieredBank } from "./lesson-banks/types";
 
@@ -60,6 +80,26 @@ const B: Record<string, TieredBank> = {
   ...unit18ClassroomBank,
   ...unit19ShopHelpBank,
   ...unit20TimeBank,
+  ...unit21SportsBank,
+  ...unit22AdverbsBank,
+  ...unit23RoutineBank,
+  ...unit24HotelBank,
+  ...unit25ArticlesBank,
+  ...unit26FamilyBank,
+  ...unit27PossessionsBank,
+  ...unit28LostFoundBank,
+  ...unit29ClothesShopBank,
+  ...unit30PluralsBank,
+  ...unit31CityBank,
+  ...unit32NegationBank,
+  ...unit33SymptomsBank,
+  ...unit34ToBeQBank,
+  ...unit35ContinuousBank,
+  ...unit36WeatherNatureBank,
+  ...unit37ContQBank,
+  ...unit38SchoolBank,
+  ...unit39ImperativesBank,
+  ...unit40SafetyBank,
 };
 
 // Generic tiered fallback for any lesson without a dedicated bank.
