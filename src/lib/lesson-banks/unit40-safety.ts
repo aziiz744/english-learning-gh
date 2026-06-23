@@ -17,7 +17,7 @@ export const unit40SafetyBank: Record<string, TieredBank> = {
       { id:"sa1-t0-3", type:"translate", arabic:"قف/توقّف", options:["stop","go","wait","run"], correctAnswer:"stop", explanation:"stop = قف 🛑", xp:10 },
       { id:"sa1-t0-4", type:"word_order", sentence:"Be careful please", correctAnswer:"Be careful please", explanation:"كن حذراً من فضلك", xp:12 },
       { id:"sa1-t0-5", type:"fill_blank", blankSentence:"This area is ___", blankOptions:["dangerous","run","very"], correctAnswer:"dangerous", explanation:"dangerous = خطير", xp:12 },
-      { id:"sa1-t0-6", type:"translate", arabic:"حذِر", options:["careful","careless","careful","carrying"], correctAnswer:"careful", explanation:"careful = حذِر", xp:10 },
+      { id:"sa1-t0-6", type:"translate", arabic:"حذِر", options:["careful","careless","carefree","carrying"], correctAnswer:"careful", explanation:"careful = حذِر", xp:10 },
       { id:"sa1-t0-7", type:"listen_select", listenSentence:"be careful", options:["careful","carful","careless","carefully"], correctAnswer:"careful", explanation:"be careful = كن حذراً", xp:12 },
       { id:"sa1-t0-8", type:"word_order", sentence:"Stop right now", correctAnswer:"Stop right now", explanation:"قف الآن", xp:12 },
       { id:"sa1-t0-9", type:"matching", pairs:[{en:"danger",ar:"خطر"},{en:"warning",ar:"تحذير"},{en:"stop",ar:"قف"},{en:"careful",ar:"حذِر"},{en:"safe",ar:"آمن"},{en:"caution",ar:"احتراس"}], correctAnswer:"matched", explanation:"أحسنت!", xp:15 },

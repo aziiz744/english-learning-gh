@@ -354,3 +354,61 @@
     inset: -1px;
   }
 }
+
+/* ═══════════ تحسينات الآيفون (Safe Area + اللمس) ═══════════ */
+
+/* منع التمرير المطّاطي الزائد على الجسم، ومنع تحديد النص العرضي */
+html, body {
+  -webkit-tap-highlight-color: transparent; /* إزالة وميض اللمس الأزرق */
+  -webkit-overflow-scrolling: touch;         /* تمرير سلس */
+  overscroll-behavior-y: none;               /* منع سحب الصفحة للأسفل */
+}
+
+/* منع تحديد النص عند اللمس المطوّل على الأزرار والبطاقات */
+button, a, [role="button"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* المناطق الآمنة: حشوة علوية للنوتش وسفلية لشريط الآيفون */
+.safe-top    { padding-top: env(safe-area-inset-top, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* شريط التنقّل السفلي يحترم منطقة الآيفون الآمنة */
+.bottom-nav-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+}
+
+/* الهيدر الثابت يحترم النوتش */
+.sticky-header-safe {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 5px);
+}
+
+/* تكبير منطقة اللمس للأزرار الصغيرة (إرشادات آبل: 44px على الأقل) */
+@media (pointer: coarse) {
+  button, a[role="button"], .tap-target {
+    min-height: 44px;
+  }
+}
+
+/* تحسين عرض الخطوط على شاشات الريتينا */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* منع تكبير الآيفون التلقائي عند الكتابة في الحقول (يتطلّب 16px على الأقل) */
+input, textarea, select {
+  font-size: 16px !important;
+}
+@media (min-width: 768px) {
+  /* على الكمبيوتر نرجّع الحجم الطبيعي */
+  input, textarea, select {
+    font-size: inherit !important;
+  }
+}
