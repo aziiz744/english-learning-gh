@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
+import { getUnitGuidePhrases } from "@/lib/lesson-exercises";
 
 interface UnitLesson {
   id: string;
@@ -1219,7 +1220,13 @@ function GuideDrawer({ section, chapter, onClose }: {
   onClose: () => void;
 }) {
   const unit = chapter.units.find(u => u.id === section.unitId) ?? chapter.units[0];
-  const phrases = UNIT_GUIDE_PHRASES[unit.id] ?? [];
+  // جمل الدليل: استخدم اليدوية إن وُجدت، وإلا ولّدها تلقائياً من بنوك دروس الوحدة
+  const manualPhrases = UNIT_GUIDE_PHRASES[unit.id];
+  const lessonTitles = unit.lessons.filter(l => l.type === "lesson").map(l => l.title);
+  const phrases = (manualPhrases && manualPhrases.length > 0)
+    ? manualPhrases
+    : getUnitGuidePhrases(lessonTitles);
+  const unitEmoji = unit.emoji ?? "📘";
 
   return (
     <motion.div
@@ -1245,7 +1252,7 @@ function GuideDrawer({ section, chapter, onClose }: {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
           <div>
-            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة 1</h2>
+            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة</h2>
             <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 13, margin: 0, textAlign: "right" }}>
               طالع الجمل الأساسية واستعرضها مع الترجمة
             </p>
@@ -1256,7 +1263,7 @@ function GuideDrawer({ section, chapter, onClose }: {
             border: `2px solid ${section.color}40`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 32, flexShrink: 0, marginRight: 12,
-          }}>☕</div>
+          }}>{unitEmoji}</div>
         </div>
 
         {/* Section label */}
@@ -1269,6 +1276,11 @@ function GuideDrawer({ section, chapter, onClose }: {
 
         {/* Phrases */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {phrases.length === 0 && (
+            <div style={{ textAlign: "center", padding: "24px 12px", color: "hsl(var(--muted-foreground))", fontSize: 14 }}>
+              ابدأ الدرس مباشرة لتتعلّم جمل هذه الوحدة! 🚀
+            </div>
+          )}
           {phrases.map((p, i) => (
             <div key={i} style={{
               background: "hsl(var(--background))",
@@ -1323,6 +1335,37 @@ const UNIT_GUIDES: Record<string, string> = {
   "unit-present": "استخدم الزمن المضارع في حياتك اليومية",
   "unit-weather": "تحدّث عن الطقس والفصول",
   "unit-pets": "تحدّث عن حيواناتك الأليفة",
+  // ── القسم الثاني ──
+  "unit-clothes": "تسوّق لشراء الملابس واطلب المقاسات والألوان",
+  "unit-house": "قم بجولة في منزلك وصف الغرف والأثاث",
+  "unit-tobe": "استخدم am / is / are في الجمل",
+  "unit-contr": "اختصر am/is/are: I'm وyou're وisn't",
+  "unit-order": "اطلب الطعام والمشروبات في المطعم بأدب",
+  "unit-work": "تواصل في العمل: الاجتماعات والبريد والمهام",
+  "unit-feel": "عبّر عن مشاعرك بالزمن المضارع",
+  "unit-class": "اطلب المساعدة في الصف وافهم الدرس",
+  "unit-shop": "اطلب المساعدة أثناء التسوّق واسأل عن المنتجات",
+  "unit-time": "استخدم تعابير الوقت والساعة وأوقات اليوم",
+  "unit-sport": "ناقش الرياضات وفرقك ولاعبيك المفضّلين",
+  "unit-adv": "استخدم ظروف التكرار: always وusually وnever",
+  "unit-rout": "صف روتينك اليومي من الصباح للمساء",
+  "unit-hotel": "احجز غرفة في فندق وتعامل مع الاستقبال",
+  "unit-art": "استخدم أدوات التعريف a / an / the بشكل صحيح",
+  "unit-fam": "صف أفراد عائلتك وشخصياتهم",
+  "unit-poss": "صف ممتلكاتك واستخدم my / your / his",
+  "unit-lost": "افرز الأشياء المفقودة وصِفها في مكتب المفقودات",
+  "unit-wear": "تسوّق للملابس واختر المقاس المناسب",
+  "unit-plur": "كوّن جمع التكسير: man/men وchild/children",
+  "unit-city": "تنقّل في مدينة غير مألوفة واسأل عن الطريق",
+  "unit-neg": "كوّن النفي في المضارع: don't وdoesn't",
+  "unit-symp": "تحدّث عن الأعراض والألم عند الطبيب",
+  "unit-beq": "كوّن أسئلة بـ am/is/are وأجب عليها",
+  "unit-cont": "استخدم المضارع المستمر للأحداث الجارية",
+  "unit-wthr": "تحدّث عن الطقس والطبيعة والفصول",
+  "unit-cq": "كوّن أسئلة في المضارع المستمر",
+  "unit-schl": "تحدّث عن المدرسة والمواد والدراسة",
+  "unit-imp": "استخدم أفعال الأمر لإعطاء التعليمات",
+  "unit-safe": "قدّم نصائح السلامة وتعامل مع الطوارئ",
 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────

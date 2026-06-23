@@ -237,6 +237,45 @@ export function getAllStationExercises(title: string): ExObj[] {
 }
 
 /**
+ * يولّد جمل "دليل الوحدة" تلقائياً من بنوك أسئلة دروس الوحدة.
+ * يجمع جمل word_order (لها correctAnswer جملة كاملة) و translate (لها arabic + correctAnswer)
+ * مع الترجمة العربية، ويُرجع أفضل ~8 جمل متنوّعة كأمثلة للمتعلّم.
+ */
+export function getUnitGuidePhrases(stationTitles: string[]): { en: string; ar: string }[] {
+  const out: { en: string; ar: string }[] = [];
+  const seenEn = new Set<string>();
+  for (const title of stationTitles) {
+    const exs = getAllStationExercises(title);
+    for (const ex of exs) {
+      let en = "";
+      let ar = "";
+      if (ex.type === "word_order" && ex.correctAnswer && ex.explanation) {
+        // الجملة الإنجليزية = الإجابة، والعربية من الشرح (قبل علامة =)
+        en = ex.correctAnswer;
+        const expl = ex.explanation;
+        // الشرح غالباً بصيغة "الجملة الإنجليزية = الترجمة" أو "الترجمة"
+        ar = expl.includes("=") ? expl.split("=").pop()!.trim() : expl.trim();
+      } else if (ex.type === "translate" && ex.arabic && ex.correctAnswer) {
+        // الجملة العربية معطاة، والإنجليزية = الإجابة الصحيحة
+        en = ex.correctAnswer;
+        ar = ex.arabic;
+      }
+      // اقبل فقط الجمل (تحتوي مسافة = أكثر من كلمة) وتجنّب التكرار
+      if (en && ar && en.includes(" ") && !seenEn.has(en.toLowerCase())) {
+        seenEn.add(en.toLowerCase());
+        out.push({ en, ar });
+      }
+    }
+  }
+  // وزّع: خذ من بداية ووسط ونهاية القائمة لتنوّع الصعوبة، بحدّ أقصى 8
+  if (out.length <= 8) return out;
+  const step = out.length / 8;
+  const picked: { en: string; ar: string }[] = [];
+  for (let i = 0; i < 8; i++) picked.push(out[Math.floor(i * step)]);
+  return picked;
+}
+
+/**
  * اختبار القسم الشامل — يجمع أهم الأسئلة من كل وحدات القسم الأول.
  * سؤالان من كل وحدة (متوسط/صعب) = اختبار حقيقي يثبت فهم كل القسم.
  */
