@@ -1525,7 +1525,7 @@ export default function Roadmap() {
 
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
-          .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
+          .roadmap-stats-bar { background: hsl(var(--background)); }
           .roadmap-side-widgets { display: none; }
           @media (min-width: 1100px) {
             .roadmap-side-widgets {
@@ -1535,7 +1535,6 @@ export default function Roadmap() {
           }
           @media (max-width: 767px) {
             .roadmap-stats-bar {
-              top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px));
               padding-top: 8px; padding-bottom: 6px;
               background: hsl(var(--background));
             }
@@ -1569,7 +1568,7 @@ export default function Roadmap() {
 
         {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
         <div className="roadmap-stats-bar" style={{
-          position: "sticky", zIndex: 31, display: "flex", justifyContent: "flex-start",
+          position: "static", zIndex: 31, display: "flex", justifyContent: "flex-start",
           alignItems: "center", gap: 16, padding: "6px 16px 0",
         }}>
           {/* القلوب */}
