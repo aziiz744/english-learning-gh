@@ -28,7 +28,7 @@ const CHAPTERS: Chapter[] = [
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#16B6C6",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson", title: "الكلمات الأساسية", description: "تعلّم كلمات المشروبات الأساسية مع سماع نطقها.", words: ["tea","coffee","water","juice","milk","yes","no"],
@@ -1668,7 +1668,7 @@ export default function Roadmap() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
           style={{
-            position: "relative",
+            position: "static",
             zIndex: 30,
             padding: "5px 12px",
             marginTop: 8,
