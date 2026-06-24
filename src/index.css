@@ -88,21 +88,21 @@
   --sidebar: 222 28% 6%;
   --sidebar-foreground: 210 10% 80%;
   --sidebar-border: 222 18% 14%;
-  --sidebar-primary: 152 70% 40%;
+  --sidebar-primary: 185 80% 43%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 222 22% 14%;
   --sidebar-accent-foreground: 210 10% 80%;
-  --sidebar-ring: 152 70% 40%;
+  --sidebar-ring: 185 80% 43%;
 
   --popover: 222 22% 12%;
   --popover-foreground: 210 12% 93%;
   --popover-border: 222 18% 20%;
 
   /* Green primary — brighter for dark mode visibility */
-  --primary: 152 70% 40%;
+  --primary: 185 80% 43%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 150 55% 35%;
+  --secondary: 170 87% 40%;
   --secondary-foreground: 0 0% 100%;
 
   --muted: 222 18% 16%;
@@ -115,10 +115,10 @@
   --destructive-foreground: 0 0% 100%;
 
   --input: 222 18% 22%;
-  --ring: 152 70% 40%;
+  --ring: 185 80% 43%;
 
-  --chart-1: 152 70% 40%;
-  --chart-2: 150 55% 35%;
+  --chart-1: 185 80% 43%;
+  --chart-2: 170 87% 40%;
   --chart-3: 43 100% 55%;
   --chart-4: 340 90% 60%;
   --chart-5: 280 70% 60%;
@@ -139,10 +139,10 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  --sidebar-primary-border: hsl(152 70% 40%);
+  --sidebar-primary-border: hsl(185 80% 43%);
   --sidebar-accent-border: hsl(222 22% 18%);
-  --primary-border: hsl(152 70% 35%);
-  --secondary-border: hsl(150 55% 30%);
+  --primary-border: hsl(186 83% 36%);
+  --secondary-border: hsl(170 87% 34%);
   --muted-border: hsl(222 18% 20%);
   --accent-border: hsl(222 18% 20%);
   --destructive-border: hsl(0 70% 45%);

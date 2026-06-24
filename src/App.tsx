@@ -44,7 +44,7 @@ function PageLoader() {
         style={{ width: 64, height: 64, borderRadius: 18, animation: "logoPulse 1.4s ease-in-out infinite" }} />
       <div style={{
         width: 32, height: 32, borderRadius: "50%",
-        border: "3px solid hsl(var(--muted))", borderTopColor: "#1e40af",
+        border: "3px solid hsl(var(--muted))", borderTopColor: "#16B6C6",
         animation: "spin 0.8s linear infinite",
       }} />
       <style>{`
