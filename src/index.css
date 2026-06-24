@@ -442,10 +442,10 @@ input, textarea, select {
 
 /* ═══════════ انتقالات ناعمة بين الصفحات ═══════════ */
 @keyframes pageEnter {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
-/* المحتوى الرئيسي يظهر بحركة ناعمة */
+/* المحتوى الرئيسي يظهر بحركة ناعمة (opacity فقط — لا يكسر sticky) */
 main > div {
   animation: pageEnter 0.28s ease-out;
 }

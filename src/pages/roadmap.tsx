@@ -1523,7 +1523,7 @@ export default function Roadmap() {
         )}
       </AnimatePresence>
 
-      <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
+      <div className="pb-8" onClick={handleBackdropClick}>
         <style>{`
           .roadmap-stats-bar { background: hsl(var(--background)); }
           .roadmap-side-widgets { display: none; }
