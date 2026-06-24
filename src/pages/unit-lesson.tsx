@@ -7,7 +7,7 @@ import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/hooks/use-auth";
-import { useSound } from "@/hooks/useSound";
+import { useSound, unlockAudio } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
 import { hapticSuccess, hapticError } from "@/lib/native";

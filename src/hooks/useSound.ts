@@ -1,11 +1,29 @@
 import { useCallback } from "react";
 
+// سياق صوتي مشترك واحد (الآيفون يمنع إنشاء سياقات متعددة ويبدأها معلّقة)
+let _sharedAC: AudioContext | null = null;
+
 function ctx(): AudioContext | null {
   try {
-    return new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (!_sharedAC) {
+      _sharedAC = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    // الآيفون يبدأ السياق "معلّقاً" — نستأنفه (يعمل لأنه يُستدعى بعد لمسة المستخدم)
+    if (_sharedAC.state === "suspended") {
+      _sharedAC.resume().catch(() => {});
+    }
+    return _sharedAC;
   } catch {
     return null;
   }
+}
+
+// فتح/استئناف الصوت عند أول تفاعل (يُستدعى مرة واحدة من التطبيق)
+export function unlockAudio() {
+  try {
+    const ac = ctx();
+    if (ac && ac.state === "suspended") ac.resume().catch(() => {});
+  } catch { /* ignore */ }
 }
 
 /**
@@ -91,7 +109,7 @@ export function useSound() {
     pad(ac, 329.63, t, 0.55, 0.035); // E4
     pad(ac, 392.00, t, 0.55, 0.030); // G4
 
-    setTimeout(() => { try { ac.close(); } catch {} }, 1400);
+    
   }, []);
 
   /**
@@ -110,7 +128,7 @@ export function useSound() {
     // Very soft low pad to fill space
     pad(ac, 196.00, t, 0.45, 0.035); // G3
 
-    setTimeout(() => { try { ac.close(); } catch {} }, 1000);
+    
   }, []);
 
   /**
@@ -132,7 +150,7 @@ export function useSound() {
     pad(ac, 261.63, t, 0.30, 0.05);
     pad(ac, 392.00, t, 0.30, 0.04);
 
-    setTimeout(() => { try { ac.close(); } catch {} }, 1200);
+    
   }, []);
 
   /**
@@ -164,7 +182,7 @@ export function useSound() {
     pad(ac, 392.00, t, 0.85, 0.040); // G4
     pad(ac, 523.25, t + 0.45, 0.45, 0.035); // C5
 
-    setTimeout(() => { try { ac.close(); } catch {} }, 2500);
+    
   }, []);
 
   /**
@@ -177,7 +195,7 @@ export function useSound() {
     bell(ac, 783.99,  t,        0.09, 0.35); // G5
     bell(ac, 987.77,  t + 0.09, 0.09, 0.33); // B5
     bell(ac, 1174.66, t + 0.18, 0.10, 0.38); // D6
-    setTimeout(() => { try { ac.close(); } catch {} }, 900);
+    
   }, []);
 
   return { playCorrect, playWrong, playCombo, playComplete, playStreak };
