@@ -1660,17 +1660,19 @@ export default function Roadmap() {
         </AnimatePresence>
 
         {/* ── Section header (ينزل مع التمرير) ── */}
+        <div style={{
+          position: "sticky",
+          top: "calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px))",
+          zIndex: 30,
+        }}>
         <motion.div
           key={activeSection.id}
           className="roadmap-sticky-header"
-          initial={{ opacity: 0.7, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
           style={{
-            position: "static",
-            zIndex: 30,
             padding: "5px 12px",
-            marginTop: 8,
           }}
         >
           <div style={{ maxWidth: 340, margin: "0 auto", position: "relative" }}>
@@ -1729,6 +1731,7 @@ export default function Roadmap() {
             </div>
           </div>
         </motion.div>
+        </div>
 
         {/* Page title */}
         <div className="text-center my-6">
