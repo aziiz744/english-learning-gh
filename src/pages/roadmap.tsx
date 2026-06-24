@@ -1659,11 +1659,9 @@ export default function Roadmap() {
           )}
         </AnimatePresence>
 
-        {/* ── Section header (ينزل مع التمرير) ── */}
-        <div style={{
-          position: "sticky",
-          top: "calc(3rem + max(env(safe-area-inset-top, 0px), 10px))",
-          zIndex: 30,
+        {/* ── Section header (ثابت تحت الهيدر) ── */}
+        <div className="roadmap-guide-fixed" style={{
+          zIndex: 29,
         }}>
         <motion.div
           key={activeSection.id}
@@ -1732,6 +1730,8 @@ export default function Roadmap() {
           </div>
         </motion.div>
         </div>
+        {/* مسافة تعويضية للمربّع الثابت (جوال فقط) */}
+        <div className="roadmap-guide-spacer" />
 
         {/* Page title */}
         <div className="text-center my-6">
