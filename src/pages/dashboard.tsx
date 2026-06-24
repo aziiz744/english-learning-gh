@@ -71,7 +71,7 @@ export default function Dashboard() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-primary">{stats.totalXp.toLocaleString()}</div>
+                    <div className="text-2xl md:text-3xl font-bold text-primary truncate">{stats.totalXp.toLocaleString()}</div>
                     <div className="text-xs text-muted-foreground mt-1">XP مكتسب</div>
                   </CardContent>
                 </Card>
@@ -124,7 +124,7 @@ export default function Dashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+              <Card className="col-span-1 md:col-span-2 lg:col-span-4">
                 <CardHeader>
                   <CardTitle>نشاط الأسبوع</CardTitle>
                   <CardDescription>نقاطك خلال الأيام السبعة الماضية</CardDescription>
@@ -148,7 +148,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="col-span-3">
+              <Card className="col-span-1 md:col-span-2 lg:col-span-3">
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-1">
                     <Star className="h-4 w-4 text-yellow-400" />

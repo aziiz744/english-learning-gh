@@ -330,9 +330,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className="md:hidden fixed inset-0 bg-black/60 z-50" onClick={() => setMobileMenuOpen(false)} />
             <motion.div key="drawer" initial={{ x:"100%" }} animate={{ x:0 }} exit={{ x:"100%" }}
               transition={{ type:"spring", stiffness:320, damping:32 }}
-              className="md:hidden fixed inset-y-0 right-0 w-72 bg-sidebar border-l border-sidebar-border z-50 flex flex-col overflow-y-auto">
+              className="md:hidden fixed inset-y-0 right-0 w-72 bg-sidebar border-l border-sidebar-border z-50 flex flex-col overflow-y-auto"
+              style={{
+                paddingTop: "max(env(safe-area-inset-top, 0px), 12px)",
+                paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              }}>
               <button onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-4 left-4 w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center">
+                className="absolute left-4 w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center z-10"
+                style={{ top: "max(env(safe-area-inset-top, 0px), 12px)" }}>
                 <X className="w-4 h-4" />
               </button>
               <SidebarContent {...sharedProps} onNavClick={() => setMobileMenuOpen(false)} />

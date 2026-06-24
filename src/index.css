@@ -420,3 +420,18 @@ input, textarea, select {
 @media (min-width: 768px) {
   .content-top-safe { padding-top: 0; }  /* الكمبيوتر: لا هيدر علوي */
 }
+
+/* ═══════════ ضبط احترافي للمقاسات على الجوال ═══════════ */
+
+/* منع التمرير الأفقي (سبب اختفاء الحواف) */
+html, body { overflow-x: hidden; max-width: 100vw; }
+
+/* على الجوال: تصغير الأرقام الكبيرة جداً */
+@media (max-width: 767px) {
+  .text-3xl { font-size: 1.6rem; line-height: 2rem; }
+  .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* ضمان أن الشبكات (grid) لا تتجاوز العرض */
+.grid { min-width: 0; }
+.grid > * { min-width: 0; }

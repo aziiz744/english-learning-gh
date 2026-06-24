@@ -1541,7 +1541,7 @@ export default function Roadmap() {
               background: hsl(var(--background));
             }
             .roadmap-sticky-header {
-              top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px) + 40px);
+              top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px) + 52px);
             }
           }
         `}</style>
