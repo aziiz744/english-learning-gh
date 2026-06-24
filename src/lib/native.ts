@@ -13,7 +13,7 @@ export const platform = Capacitor.getPlatform(); // 'ios' | 'android' | 'web'
 // ─── الاهتزاز (Haptics) ───────────────────────────────────────────
 // اهتزاز خفيف عند الإجابة الصحيحة / النقر
 export async function hapticLight() {
-  if (!isNative) return;
+  if (!isNative) { webVibrate(10); return; }
   try {
     const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
     await Haptics.impact({ style: ImpactStyle.Light });
@@ -22,7 +22,7 @@ export async function hapticLight() {
 
 // اهتزاز متوسط عند فتح الكنز / إنجاز
 export async function hapticMedium() {
-  if (!isNative) return;
+  if (!isNative) { webVibrate(20); return; }
   try {
     const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
     await Haptics.impact({ style: ImpactStyle.Medium });
@@ -31,7 +31,7 @@ export async function hapticMedium() {
 
 // اهتزاز نجاح (عند اجتياز درس)
 export async function hapticSuccess() {
-  if (!isNative) return;
+  if (!isNative) { webVibrate([15, 40, 15]); return; }
   try {
     const { Haptics, NotificationType } = await import('@capacitor/haptics');
     await Haptics.notification({ type: NotificationType.Success });
@@ -40,10 +40,19 @@ export async function hapticSuccess() {
 
 // اهتزاز خطأ (عند إجابة خاطئة)
 export async function hapticError() {
-  if (!isNative) return;
+  if (!isNative) { webVibrate([30, 30, 30]); return; }
   try {
     const { Haptics, NotificationType } = await import('@capacitor/haptics');
     await Haptics.notification({ type: NotificationType.Error });
+  } catch { /* ignore */ }
+}
+
+// اهتزاز عبر المتصفّح (يعمل على أندرويد؛ الآيفون لا يدعمه فيُتجاهل بهدوء)
+function webVibrate(pattern: number | number[]) {
+  try {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(pattern);
+    }
   } catch { /* ignore */ }
 }
 
