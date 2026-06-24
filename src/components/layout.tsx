@@ -76,17 +76,14 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <svg width="32" height="32" viewBox="0 0 48 48" className="shrink-0">
-            {/* دائرة التصويب */}
-            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
-            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
-            {/* السهم */}
-            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
-            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
-          </svg>
+          <img
+            src="/logo.png"
+            alt="مسار الإنجليزية"
+            width={36}
+            height={36}
+            className="shrink-0 rounded-xl object-cover"
+            style={{ width: 36, height: 36 }}
+          />
           <div>
             <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
             <span className="text-xs text-muted-foreground">EnglishPath</span>
@@ -303,15 +300,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1.5">
-          <svg width="24" height="24" viewBox="0 0 48 48">
-            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
-            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
-            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
-            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
-          </svg>
+          <img
+            src="/logo.png"
+            alt="مسار الإنجليزية"
+            width={28}
+            height={28}
+            className="shrink-0 rounded-lg object-cover"
+            style={{ width: 28, height: 28 }}
+          />
           <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
         </div>
         {stats && stats.streak > 0 ? (
