@@ -1536,10 +1536,10 @@ export default function Roadmap() {
           }
           @media (max-width: 767px) {
             .roadmap-stats-bar {
-              top: calc(56px + env(safe-area-inset-top, 0px));
+              top: 0px;
               padding-top: 8px; padding-bottom: 6px;
             }
-            .roadmap-sticky-header { top: calc(98px + env(safe-area-inset-top, 0px)); }
+            .roadmap-sticky-header { top: 42px; }
           }
         `}</style>
 

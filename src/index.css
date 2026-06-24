@@ -412,3 +412,11 @@ input, textarea, select {
     font-size: inherit !important;
   }
 }
+
+/* حشوة علوية للمحتوى = ارتفاع الهيدر + النوتش (جوال فقط) */
+.content-top-safe {
+  padding-top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px));
+}
+@media (min-width: 768px) {
+  .content-top-safe { padding-top: 0; }  /* الكمبيوتر: لا هيدر علوي */
+}

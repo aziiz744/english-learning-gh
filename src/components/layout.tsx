@@ -293,7 +293,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Mobile top header */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-50 h-14 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4">
+      <header className="md:hidden fixed top-0 inset-x-0 z-50 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4"
+        style={{
+          paddingTop: "max(env(safe-area-inset-top, 0px), 12px)",
+          height: "calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px))",
+        }}>
         <button onClick={() => setMobileMenuOpen(true)}
           className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center" aria-label="القائمة">
           <Menu className="w-5 h-5" />
@@ -338,7 +342,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className="md:mr-64 flex flex-col min-h-screen pt-14 md:pt-0 pb-20 md:pb-0">
+      <div className="md:mr-64 flex flex-col min-h-screen pb-20 md:pb-0 content-top-safe">
         <main className="flex-1 px-3 py-4 md:p-8 safe-x">
           <div className="mx-auto max-w-6xl w-full">{children}</div>
         </main>
