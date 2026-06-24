@@ -1525,7 +1525,6 @@ export default function Roadmap() {
 
       <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
         <style>{`
-          .roadmap-sticky-header { top: 46px; }
           .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
           .roadmap-side-widgets { display: none; }
           @media (min-width: 1100px) {
@@ -1539,9 +1538,6 @@ export default function Roadmap() {
               top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px));
               padding-top: 8px; padding-bottom: 6px;
               background: hsl(var(--background));
-            }
-            .roadmap-sticky-header {
-              top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px) + 52px);
             }
           }
         `}</style>
@@ -1664,7 +1660,7 @@ export default function Roadmap() {
           )}
         </AnimatePresence>
 
-        {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
+        {/* ── Section header (ينزل مع التمرير) ── */}
         <motion.div
           key={activeSection.id}
           className="roadmap-sticky-header"
@@ -1672,9 +1668,10 @@ export default function Roadmap() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
           style={{
-            position: "sticky",
+            position: "relative",
             zIndex: 30,
             padding: "5px 12px",
+            marginTop: 8,
           }}
         >
           <div style={{ maxWidth: 340, margin: "0 auto", position: "relative" }}>
