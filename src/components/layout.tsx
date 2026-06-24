@@ -78,15 +78,15 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
         <div className="flex items-center gap-2">
           <img
             src="/logo.png"
-            alt="مسار الإنجليزية"
+            alt="Owlio"
             width={36}
             height={36}
             className="shrink-0 rounded-xl"
             style={{ width: 36, height: 36, objectFit: "cover", display: "block" }}
           />
           <div>
-            <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
-            <span className="text-xs text-muted-foreground">EnglishPath</span>
+            <span className="font-bold text-lg text-primary tracking-tight leading-none block">Owlio</span>
+            <span className="text-xs text-muted-foreground">مسار الإنجليزية</span>
           </div>
         </div>
       </div>
@@ -302,13 +302,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-1.5">
           <img
             src="/logo.png"
-            alt="مسار الإنجليزية"
+            alt="Owlio"
             width={28}
             height={28}
             className="shrink-0 rounded-lg object-cover"
             style={{ width: 28, height: 28 }}
           />
-          <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
+          <span className="font-bold text-sm text-primary">Owlio</span>
         </div>
         {stats && stats.streak > 0 ? (
           <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1">

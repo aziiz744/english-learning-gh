@@ -1,5 +1,22 @@
 import { motion, AnimatePresence, type Target, type Transition } from "framer-motion";
 import { cn } from "@/lib/utils";
+import owlIdle from "@/assets/owl/owl-idle.png";
+import owlWave from "@/assets/owl/owl-wave.png";
+import owlThink from "@/assets/owl/owl-think.png";
+import owlCelebrate from "@/assets/owl/owl-celebrate.png";
+import owlExcited from "@/assets/owl/owl-excited.png";
+import owlRead from "@/assets/owl/owl-read.png";
+
+// خريطة حالات الماسكوت → صور Owlie الرسمية
+const OWLIE_IMG: Record<string, string> = {
+  idle: owlIdle,
+  thinking: owlThink,
+  correct: owlExcited,
+  wrong: owlThink,
+  combo: owlCelebrate,
+  combo5: owlCelebrate,
+  complete: owlCelebrate,
+};
 
 export type MascotState = "idle" | "thinking" | "correct" | "wrong" | "combo" | "combo5" | "complete";
 
@@ -81,16 +98,6 @@ const BODY_ANIMS: Record<MascotState, AnimDef> = {
 
 export function Mascot({ state, className }: { state: MascotState; className?: string }) {
   const cfg = STATES[state];
-  const pr = 5.5 * cfg.pupilScale;
-
-  /* ── skin / shirt palette ── */
-  const skin     = "#F5C5A3";
-  const skinDark = "#E0A882";
-  const hair     = "#3D2314";
-  const shirt    = "#15803D";
-  const shirtDk  = "#166534";
-  const cap      = "#1E293B";
-  const tassle   = "#22C55E";
 
   return (
     <div className={cn("flex flex-col items-center gap-2 relative", className)}>
@@ -116,183 +123,20 @@ export function Mascot({ state, className }: { state: MascotState; className?: s
         )}
       </AnimatePresence>
 
-      {/* Human teacher body */}
+      {/* Owlie الماسكوت الرسمي */}
       <motion.div
         key={state}
         animate={BODY_ANIMS[state]}
         style={{ originX: "50%", originY: "100%" }}
-        className="w-full h-full"
+        className="w-full h-full flex items-end justify-center"
       >
-        <svg viewBox="0 0 120 165" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-lg">
-          {/* Ground shadow */}
-          <ellipse cx="60" cy="162" rx="28" ry="4" fill="rgba(0,0,0,0.18)" />
-
-          {/* ── Body / shirt ── */}
-          <path
-            d="M 28 108 C 40 100 50 96 60 96 C 70 96 80 100 92 108 L 97 162 L 23 162 Z"
-            fill={shirt}
-          />
-          {/* Shirt shadow */}
-          <path
-            d="M 28 108 C 40 100 50 96 60 96 L 60 162 L 23 162 Z"
-            fill={shirtDk} opacity="0.3"
-          />
-
-          {/* Collar V-neck */}
-          <path d="M 46 97 L 60 114 L 74 97" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-
-          {/* Tie */}
-          <polygon points="57,110 55,132 60,138 65,132 63,110" fill="#0F4C81" />
-          <polygon points="55,108 60,116 65,108" fill="#0D3D6E" />
-          {/* Tie stripe */}
-          <line x1="57.5" y1="118" x2="62.5" y2="118" stroke="white" strokeWidth="1" opacity="0.4" />
-          <line x1="57" y1="124" x2="63" y2="124" stroke="white" strokeWidth="1" opacity="0.4" />
-
-          {/* ── Arms ── */}
-          {cfg.armRaise ? (
-            <>
-              {/* Arms raised */}
-              <path d="M 28 106 Q 10 86 8 62 Q 10 52 18 56 Q 26 60 26 76 L 36 104 Z" fill={shirt} />
-              <path d="M 92 106 Q 110 86 112 62 Q 110 52 102 56 Q 94 60 94 76 L 84 104 Z" fill={shirt} />
-              {/* Hands (raised) */}
-              <ellipse cx="13" cy="54" rx="8" ry="9" fill={skin} />
-              <ellipse cx="107" cy="54" rx="8" ry="9" fill={skin} />
-              {/* Fingers hint */}
-              <path d="M 8 50 Q 13 46 18 50" stroke={skinDark} strokeWidth="1" fill="none" strokeLinecap="round" />
-              <path d="M 102 50 Q 107 46 112 50" stroke={skinDark} strokeWidth="1" fill="none" strokeLinecap="round" />
-            </>
-          ) : (
-            <>
-              {/* Arms down */}
-              <path d="M 28 110 Q 10 120 12 146 Q 13 154 22 152 Q 30 150 30 136 L 36 108 Z" fill={shirt} />
-              <path d="M 92 110 Q 110 120 108 146 Q 107 154 98 152 Q 90 150 90 136 L 84 108 Z" fill={shirt} />
-              {/* Hands (down) */}
-              <ellipse cx="17" cy="154" rx="8" ry="9" fill={skin} />
-              <ellipse cx="103" cy="154" rx="8" ry="9" fill={skin} />
-              {/* Fingers hint */}
-              <path d="M 12 150 Q 17 146 22 150" stroke={skinDark} strokeWidth="1" fill="none" strokeLinecap="round" />
-              <path d="M 98 150 Q 103 146 108 150" stroke={skinDark} strokeWidth="1" fill="none" strokeLinecap="round" />
-            </>
-          )}
-
-          {/* ── Neck ── */}
-          <rect x="50" y="90" width="20" height="12" rx="4" fill={skin} />
-          {/* Neck shadow */}
-          <rect x="50" y="90" width="10" height="12" rx="4" fill={skinDark} opacity="0.25" />
-
-          {/* ── Ears ── */}
-          <ellipse cx="23" cy="64" rx="5" ry="7" fill={skin} />
-          <ellipse cx="23" cy="64" rx="3" ry="5" fill={skinDark} opacity="0.4" />
-          <ellipse cx="97" cy="64" rx="5" ry="7" fill={skin} />
-          <ellipse cx="97" cy="64" rx="3" ry="5" fill={skinDark} opacity="0.4" />
-
-          {/* ── Head ── */}
-          <ellipse cx="60" cy="60" rx="37" ry="38" fill={skin} />
-          {/* Head side shadow */}
-          <ellipse cx="58" cy="60" rx="37" ry="38" fill={skinDark} opacity="0.08" clipPath="url(#leftHalf)" />
-
-          {/* ── Hair ── */}
-          {/* Hair back shape */}
-          <path
-            d="M 23 48 Q 22 22 40 16 Q 60 10 80 16 Q 98 22 97 48 Q 86 30 60 28 Q 34 30 23 48 Z"
-            fill={hair}
-          />
-          {/* Hair side sweep */}
-          <path d="M 23 48 Q 26 38 30 36 Q 32 44 28 52 Z" fill={hair} />
-          <path d="M 97 48 Q 94 38 90 36 Q 88 44 92 52 Z" fill={hair} />
-
-          {/* ── Graduation cap ── */}
-          {/* Brim */}
-          <rect x="24" y="26" width="72" height="7" rx="3" fill={cap} />
-          {/* Cap top */}
-          <rect x="34" y="12" width="52" height="16" rx="4" fill={cap} />
-          {/* Cap shine */}
-          <rect x="36" y="14" width="24" height="4" rx="2" fill="white" opacity="0.08" />
-          {/* Tassel line */}
-          <line x1="86" y1="16" x2="95" y2="34" stroke={tassle} strokeWidth="2.5" strokeLinecap="round" />
-          <circle cx="95" cy="37" r="4" fill={tassle} />
-
-          {/* ── Eyes ── */}
-          {/* Eye whites */}
-          <circle cx="43" cy="58" r="11" fill="white" />
-          <circle cx="77" cy="58" r="11" fill="white" />
-          {/* Eye rim */}
-          <circle cx="43" cy="58" r="11" fill="none" stroke={skinDark} strokeWidth="0.8" />
-          <circle cx="77" cy="58" r="11" fill="none" stroke={skinDark} strokeWidth="0.8" />
-
-          {/* Pupils */}
-          {(state === "combo" || state === "combo5") ? (
-            <>
-              <text x="43" y="62" fontSize="13" textAnchor="middle" dominantBaseline="middle">⭐</text>
-              <text x="77" y="62" fontSize="13" textAnchor="middle" dominantBaseline="middle">⭐</text>
-            </>
-          ) : (
-            <>
-              <circle
-                cx={cfg.leftPupilX}  cy={cfg.pupilY} r={pr}
-                fill="#1E293B"
-                style={{ transition: "all 0.25s ease" }}
-              />
-              <circle
-                cx={cfg.rightPupilX} cy={cfg.pupilY} r={pr}
-                fill="#1E293B"
-                style={{ transition: "all 0.25s ease" }}
-              />
-              {/* Iris ring */}
-              <circle cx={cfg.leftPupilX}  cy={cfg.pupilY} r={pr * 0.6} fill="#334155" style={{ transition: "all 0.25s ease" }} />
-              <circle cx={cfg.rightPupilX} cy={cfg.pupilY} r={pr * 0.6} fill="#334155" style={{ transition: "all 0.25s ease" }} />
-            </>
-          )}
-          {/* Eye shine */}
-          <circle cx="47" cy="55" r="2.5" fill="rgba(255,255,255,0.9)" />
-          <circle cx="81" cy="55" r="2.5" fill="rgba(255,255,255,0.9)" />
-
-          {/* ── Eyebrows ── */}
-          <path
-            d={cfg.brow1} stroke={hair} strokeWidth="2.8" fill="none" strokeLinecap="round"
-            style={{ transition: "d 0.3s ease" }}
-          />
-          <path
-            d={cfg.brow2} stroke={hair} strokeWidth="2.8" fill="none" strokeLinecap="round"
-            style={{ transition: "d 0.3s ease" }}
-          />
-
-          {/* ── Nose ── */}
-          <path d="M 57 64 Q 60 70 63 64" stroke={skinDark} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-
-          {/* ── Cheeks ── */}
-          <ellipse cx="28" cy="70" rx="9" ry="6" fill="rgba(251,113,133,0.28)" />
-          <ellipse cx="92" cy="70" rx="9" ry="6" fill="rgba(251,113,133,0.28)" />
-
-          {/* ── Mouth ── */}
-          <path
-            d={cfg.mouth} stroke="#C0694A" strokeWidth="2.8" fill="none" strokeLinecap="round"
-            style={{ transition: "d 0.3s ease" }}
-          />
-
-          {/* ── Special effects ── */}
-          {state === "wrong" && (
-            <>
-              <motion.ellipse cx="34" cy="68" rx="3" ry="4" fill="#93C5FD" opacity="0.85"
-                animate={{ cy: [68, 80], opacity: [0.9, 0] }}
-                transition={{ duration: 0.9, repeat: Infinity }} />
-              <motion.ellipse cx="86" cy="68" rx="3" ry="4" fill="#93C5FD" opacity="0.85"
-                animate={{ cy: [68, 80], opacity: [0.9, 0] }}
-                transition={{ duration: 0.9, repeat: Infinity, delay: 0.25 }} />
-            </>
-          )}
-
-          {state === "complete" && (
-            <>
-              <motion.text x="2" y="34" fontSize="14"
-                animate={{ y: [34, 22, 34], rotate: [0, 20, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity }}>⭐</motion.text>
-              <motion.text x="100" y="30" fontSize="14"
-                animate={{ y: [30, 16, 30], rotate: [0, -20, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity }}>✨</motion.text>
-            </>
-          )}
-        </svg>
+        <img
+          src={OWLIE_IMG[state] || OWLIE_IMG.idle}
+          alt="Owlie"
+          className="w-full h-full"
+          style={{ objectFit: "contain", display: "block" }}
+          draggable={false}
+        />
       </motion.div>
     </div>
   );
