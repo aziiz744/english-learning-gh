@@ -37,21 +37,55 @@ function HotCup({ liquid, liquidTop, rim }: { liquid: string; liquidTop: string;
 // إيموجي معبّرة للكلمات البصرية في كل الوحدات (واضحة ومفهومة)
 const EMOJI_ART: Record<string, string> = {
   // مشروبات
-  tea:"🍵", coffee:"☕", water:"💧", juice:"🧃", milk:"🥛",
+  tea:"🍵", coffee:"☕", water:"💧", juice:"🧃", milk:"🥛", drink:"🥤",
   // أماكن
   school:"🏫", hospital:"🏥", market:"🏪", park:"🌳", bank:"🏦", city:"🏙️",
   street:"🛣️", house:"🏠", restaurant:"🍽️", store:"🏬", mosque:"🕌", library:"📚",
+  station:"🚉", bridge:"🌉", square:"⛲", hotel:"🏨", reception:"🛎️", office:"🏢",
   // مطار وسفر
   ticket:"🎫", passport:"🛂", gate:"🚪", plane:"✈️", bag:"🧳", airport:"🛫",
   // طعام
   rice:"🍚", chicken:"🍗", bread:"🍞", fish:"🐟", egg:"🥚", apple:"🍎",
   meat:"🥩", soup:"🍲", salad:"🥗", cheese:"🧀", fruit:"🍇", cake:"🍰",
-  // طقس
+  menu:"📋", bill:"🧾", receipt:"🧾", plate:"🍽️", card:"💳", cart:"🛒",
+  // طقس وطبيعة
   sunny:"☀️", rainy:"🌧️", cloudy:"☁️", snowy:"❄️", windy:"💨", hot:"🔥", cold:"🧊",
+  mountain:"⛰️", river:"🏞️", forest:"🌲", beach:"🏖️", sea:"🌊", lake:"🏞️",
   // حيوانات
   cat:"🐱", dog:"🐶", bird:"🐦", rabbit:"🐰", horse:"🐴", cow:"🐮", duck:"🦆",
   // مهن
-  teacher:"👨‍🏫", doctor:"👨‍⚕️", driver:"🚗", cook:"👨‍🍳", nurse:"👩‍⚕️", police:"👮",
+  teacher:"👩‍🏫", doctor:"👨‍⚕️", driver:"🚗", cook:"👨‍🍳", nurse:"👩‍⚕️", police:"👮", boss:"👔",
+  // ملابس
+  shirt:"👕", dress:"👗", pants:"👖", jeans:"👖", shoes:"👟", jacket:"🧥",
+  scarf:"🧣", hat:"🎩", sweater:"🧶", coat:"🧥", socks:"🧦", gloves:"🧤",
+  // منزل
+  door:"🚪", window:"🪟", kitchen:"🍳", bedroom:"🛏️", bathroom:"🛁",
+  "living room":"🛋️", room:"🚪", table:"🪑", chair:"🪑", bed:"🛏️",
+  // عائلة
+  father:"👨", mother:"👩", brother:"👦", sister:"👧",
+  grandfather:"👴", grandmother:"👵", uncle:"🧔", aunt:"👩", family:"👨‍👩‍👧‍👦",
+  // مشاعر
+  happy:"😊", sad:"😢", angry:"😠", tired:"😫", scared:"😨", excited:"🤩",
+  bored:"😑", worried:"😟", calm:"😌", proud:"😎",
+  // مدرسة
+  math:"🔢", science:"🔬", history:"📜", art:"🎨", music:"🎵",
+  book:"📖", pen:"🖊️", paper:"📄", homework:"📝", exam:"📝",
+  // أدوات
+  phone:"📱", watch:"⌚", clock:"🕐", alarm:"⏰", calendar:"📅", key:"🔑",
+  wallet:"👛", glasses:"👓", umbrella:"☂️", laptop:"💻", email:"📧", report:"📊",
+  // رياضة
+  football:"⚽", basketball:"🏀", tennis:"🎾", swimming:"🏊", volleyball:"🏐",
+  running:"🏃", "wake up":"⏰", shower:"🚿", sleep:"😴",
+  // جسم وصحة
+  head:"🧠", stomach:"🫃", foot:"🦶", tooth:"🦷", throat:"😷",
+  // سلامة
+  danger:"⚠️", warning:"⚠️", careful:"🚸", stop:"🛑", fire:"🔥",
+  emergency:"🚨", police_car:"🚓", ambulance:"🚑", exit:"🚪",
+  // أفعال
+  sit:"🪑", stand:"🧍", open:"🔓", close:"🔒", listen:"👂", look:"👀",
+  eat:"🍽️", come:"👋", press:"👆", put:"📥", take:"✋", follow:"👣",
+  // ظروف التكرار (رموز تقريبية)
+  always:"💯", usually:"🔄", sometimes:"🔸", never:"🚫",
 };
 
 export const DRINK_ART: Record<string, ReactElement> = {
