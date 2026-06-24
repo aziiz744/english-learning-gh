@@ -81,8 +81,8 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
             alt="مسار الإنجليزية"
             width={36}
             height={36}
-            className="shrink-0 rounded-xl object-cover"
-            style={{ width: 36, height: 36 }}
+            className="shrink-0 rounded-xl"
+            style={{ width: 36, height: 36, objectFit: "cover", display: "block" }}
           />
           <div>
             <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
