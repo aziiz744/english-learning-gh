@@ -1,35 +1,63 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LoginModal } from "@/components/login-modal";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { WelcomeModal } from "@/components/welcome-modal";
-import NotFound from "@/pages/not-found";
-import Dashboard from "@/pages/dashboard";
+
+// الصفحات الأساسية (تُحمّل فوراً لأنها أول ما يُفتح)
 import Roadmap from "@/pages/roadmap";
-import Chapter from "@/pages/chapter";
-import Lessons from "@/pages/lessons";
-import LessonDetail from "@/pages/lesson-detail";
-import UnitLesson from "@/pages/unit-lesson";
-import Achievements from "@/pages/achievements";
-import LevelTest from "@/pages/level-test";
-import Admin from "@/pages/admin";
-import Reading from "@/pages/reading";
-import Competitions from "@/pages/competitions";
-import SectionTest from "@/pages/section-test";
-import Grammar from "@/pages/grammar";
-import Pro from "@/pages/pro";
-import ResetPassword from "@/pages/reset-password";
-import TeacherPage from "@/pages/teacher";
-import AdminStats from "@/pages/admin-stats";
-import Privacy from "@/pages/privacy";
+import NotFound from "@/pages/not-found";
+
+// باقي الصفحات تُحمّل عند الحاجة فقط (lazy) — يسرّع فتح التطبيق
+const Dashboard = lazy(() => import("@/pages/dashboard"));
+const Chapter = lazy(() => import("@/pages/chapter"));
+const Lessons = lazy(() => import("@/pages/lessons"));
+const LessonDetail = lazy(() => import("@/pages/lesson-detail"));
+const UnitLesson = lazy(() => import("@/pages/unit-lesson"));
+const Achievements = lazy(() => import("@/pages/achievements"));
+const LevelTest = lazy(() => import("@/pages/level-test"));
+const Admin = lazy(() => import("@/pages/admin"));
+const Reading = lazy(() => import("@/pages/reading"));
+const Competitions = lazy(() => import("@/pages/competitions"));
+const SectionTest = lazy(() => import("@/pages/section-test"));
+const Grammar = lazy(() => import("@/pages/grammar"));
+const Pro = lazy(() => import("@/pages/pro"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
+const TeacherPage = lazy(() => import("@/pages/teacher"));
+const AdminStats = lazy(() => import("@/pages/admin-stats"));
+const Privacy = lazy(() => import("@/pages/privacy"));
 
 const queryClient = new QueryClient();
 
+// شاشة تحميل أنيقة أثناء تحميل الصفحات الكسولة
+function PageLoader() {
+  return (
+    <div style={{
+      minHeight: "70vh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center", gap: 16,
+    }}>
+      <img src="/logo.png" alt="مسار الإنجليزية" width={64} height={64}
+        style={{ width: 64, height: 64, borderRadius: 18, animation: "logoPulse 1.4s ease-in-out infinite" }} />
+      <div style={{
+        width: 32, height: 32, borderRadius: "50%",
+        border: "3px solid hsl(var(--muted))", borderTopColor: "#1e40af",
+        animation: "spin 0.8s linear infinite",
+      }} />
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes logoPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.94); } }
+      `}</style>
+    </div>
+  );
+}
+
 function Router() {
   return (
+    <Suspense fallback={<PageLoader />}>
     <Switch>
       <Route path="/" component={Roadmap} />
       <Route path="/dashboard" component={Dashboard} />
@@ -53,6 +81,7 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
+    </Suspense>
   );
 }
 
@@ -72,22 +101,26 @@ function App() {
     return (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <ResetPassword onDone={() => setIsRecovery(false)} />
+          <Suspense fallback={<PageLoader />}>
+            <ResetPassword onDone={() => setIsRecovery(false)} />
+          </Suspense>
         </TooltipProvider>
       </QueryClientProvider>
     );
   }
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <LoginModal />
-        <WelcomeModal />
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+          <LoginModal />
+          <WelcomeModal />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
