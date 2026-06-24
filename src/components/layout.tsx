@@ -292,8 +292,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile top header */}
       <header className="md:hidden fixed top-0 inset-x-0 z-50 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4"
         style={{
-          paddingTop: "max(env(safe-area-inset-top, 0px), 12px)",
-          height: "calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px))",
+          paddingTop: "max(env(safe-area-inset-top, 0px), 10px)",
+          height: "calc(3rem + max(env(safe-area-inset-top, 0px), 10px))",
         }}>
         <button onClick={() => setMobileMenuOpen(true)}
           className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center" aria-label="القائمة">

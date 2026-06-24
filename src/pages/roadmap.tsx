@@ -1662,7 +1662,7 @@ export default function Roadmap() {
         {/* ── Section header (ينزل مع التمرير) ── */}
         <div style={{
           position: "sticky",
-          top: "calc(3.5rem + max(env(safe-area-inset-top, 0px), 12px))",
+          top: "calc(3rem + max(env(safe-area-inset-top, 0px), 10px))",
           zIndex: 30,
         }}>
         <motion.div
