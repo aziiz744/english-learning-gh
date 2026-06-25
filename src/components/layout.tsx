@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import {
   Route, Trophy, Flame, Zap,
   Shield, LogIn, LogOut, User, Menu, X,
-  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock,
+  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock, Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
@@ -24,6 +24,7 @@ const BOTTOM_NAV = [
 const navigation = [
   { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
+  { name: "مكتبة المراجعة", href: "/review",      icon: Library },
   { name: "المسابقات",      href: "/competitions",icon: Zap },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
   { name: "عضوية Pro",      href: "/pro",         icon: Sparkles },

@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSound, unlockAudio } from "@/hooks/useSound";
 import { DrinkArt } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
+import { addReviewItem } from "@/lib/review-library";
 import { hapticSuccess, hapticError } from "@/lib/native";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
@@ -1381,10 +1382,11 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
 }
 
 // ── Completion Screen ─────────────────────────────────────────────────────────
-function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, mistakes, onNext, onRetry, onBack }: {
+function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, mistakes, onPracticeMistakes, onNext, onRetry, onBack }: {
   score:number; total:number; xpEarned:number; hearts:number; isPro:boolean;
   subLesson:number; isLast:boolean; color:string;
-  mistakes:{ question:string; correct:string; yourAnswer:string }[];
+  mistakes:{ question:string; correct:string; yourAnswer:string; ex:ExObj }[];
+  onPracticeMistakes:()=>void;
   onNext:()=>void; onRetry:()=>void; onBack:()=>void;
 }) {
   const pct = Math.round((score/total)*100);
@@ -1472,6 +1474,18 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
                   </div>
                 ))}
               </div>
+              {/* زر التدرّب على الأخطاء */}
+              <button
+                onClick={onPracticeMistakes}
+                style={{
+                  width: "100%", marginTop: 12, padding: "12px",
+                  background: `${color}18`, border: `2px solid ${color}`,
+                  borderRadius: 14, fontWeight: 800, fontSize: 14, color,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                }}>
+                <span style={{ fontSize: 17 }}>🎯</span>
+                تدرّب على هذه الأخطاء
+              </button>
             </div>
           )}
 
@@ -1593,7 +1607,9 @@ export default function UnitLesson() {
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
   // تتبّع الأخطاء لعرضها في ملخّص نهاية الدرس (للمراجعة)
-  const [mistakes, setMistakes] = useState<{ question: string; correct: string; yourAnswer: string }[]>([]);
+  const [mistakes, setMistakes] = useState<{ question: string; correct: string; yourAnswer: string; ex: ExObj }[]>([]);
+  // وضع التدرّب على الأخطاء (يعيد الأسئلة الغلط فقط)
+  const [practiceMode, setPracticeMode] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone"|"jumpdone">("playing");
   // لوحة تمهيدية لدرس الدمبل (practice) — تظهر مرة واحدة في البداية
@@ -1816,8 +1832,12 @@ export default function UnitLesson() {
       const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || ex.prompt || "سؤال";
       setMistakes(m => {
         if (m.some(x => x.correct === ex.correctAnswer && x.question === questionText)) return m;
-        return [...m, { question: questionText, correct: ex.correctAnswer ?? "", yourAnswer: answer }];
+        return [...m, { question: questionText, correct: ex.correctAnswer ?? "", yourAnswer: answer, ex }];
       });
+      // احفظ في مكتبة المراجعة الشخصية (دائم عبر كل الدروس) — عدا وضع التدرّب
+      if (!practiceMode && ex.correctAnswer) {
+        addReviewItem({ correct: ex.correctAnswer, question: questionText, unitTitle: meta.unitTitle ?? "" });
+      }
       if (isPro === false) {
         const newH = hearts - 1;
         setHearts(newH);
@@ -1828,6 +1848,22 @@ export default function UnitLesson() {
       }
       setFeedback({ ok: false, explanation: ex.explanation, correctAnswer: ex.correctAnswer });
     }
+  };
+
+  // تدرّب على الأخطاء: يعيد الأسئلة الغلط فقط لترسيخها
+  const practiceMistakes = () => {
+    if (mistakes.length === 0) return;
+    const mistakeExercises = mistakes.map(m => m.ex);
+    setQueue(shuffleArr(mistakeExercises));
+    setDoneCount(0);
+    setTotalCount(0);
+    setScore(0);
+    setStreak(0);
+    setMistakes([]);
+    setPracticeMode(true);
+    setFeedback(null);
+    setPhase("playing");
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   };
 
   const handleNext = () => {
@@ -1846,6 +1882,15 @@ export default function UnitLesson() {
       setDoneCount(d => d + 1);
 
       if (rest.length === 0) {
+        // وضع التدرّب على الأخطاء: انتهى — ارجع لشاشة النهاية بدون حفظ تقدّم
+        if (practiceMode) {
+          setPracticeMode(false);
+          setMascotFor("complete", 0);
+          playComplete();
+          setQueue([]);
+          setPhase("finish");
+          return;
+        }
         // وضع القفز — اجتاز الاختبار، افتح الوحدة المستهدفة
         if (meta.isJump) {
           // افتح أول درس في الوحدة المستهدفة (sub_progress=0 لكنه متاح)
@@ -1983,6 +2028,7 @@ export default function UnitLesson() {
           score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
           subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}
           mistakes={mistakes}
+          onPracticeMistakes={practiceMistakes}
           onNext={()=>setSubLesson(s=>s+1)}
           onRetry={()=>loadExercises(subLesson)}
           onBack={()=>setLocation("/roadmap")}/>}

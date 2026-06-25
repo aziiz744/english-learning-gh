@@ -30,6 +30,7 @@ const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const TeacherPage = lazy(() => import("@/pages/teacher"));
 const AdminStats = lazy(() => import("@/pages/admin-stats"));
 const Privacy = lazy(() => import("@/pages/privacy"));
+const ReviewLibrary = lazy(() => import("@/pages/review-library"));
 
 const queryClient = new QueryClient();
 
@@ -86,6 +87,7 @@ function Router() {
       <Route path="/teacher" component={TeacherPage} />
       <Route path="/admin-stats" component={AdminStats} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/review" component={ReviewLibrary} />
       <Route component={NotFound} />
     </Switch>
     </Suspense>
