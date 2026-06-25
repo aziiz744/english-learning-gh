@@ -1629,7 +1629,7 @@ export default function Roadmap() {
             /* شريط الإحصائيات: ثابت تحت الهيدر مباشرة (زي دوولينجو) */
             .roadmap-stats-bar {
               position: fixed;
-              top: calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px));
+              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px));
               left: 0; right: 0;
               background: hsl(var(--sidebar));
               border-bottom: 1px solid hsl(var(--sidebar-border) / 0.5);
@@ -1637,7 +1637,7 @@ export default function Roadmap() {
             }
             /* مربّع الدليل: ثابت تحت شريط الإحصائيات */
             .roadmap-guide-fixed {
-              top: calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px) + 38px) !important;
+              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 38px) !important;
               padding: 6px 12px !important;
             }
             /* مسافة تعويضية = شريط الإحصائيات (38px) + شريط الدليل (62px) */

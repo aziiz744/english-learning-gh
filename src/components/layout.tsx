@@ -286,8 +286,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen text-foreground" dir="rtl"
       style={{
         background: `
-          radial-gradient(140% 80% at 50% -20%, hsl(185 75% 45% / 0.14) 0%, hsl(185 70% 40% / 0.06) 35%, transparent 70%),
-          radial-gradient(120% 70% at 85% 110%, hsl(190 70% 42% / 0.07) 0%, transparent 60%),
+          radial-gradient(ellipse 90% 45% at 50% -5%, hsl(185 80% 43% / 0.22), transparent 55%),
+          radial-gradient(ellipse 70% 40% at 95% 8%, hsl(160 70% 45% / 0.12), transparent 50%),
+          radial-gradient(ellipse 80% 50% at 5% 95%, hsl(200 75% 42% / 0.10), transparent 55%),
           hsl(var(--background))
         `,
         backgroundAttachment: "fixed",
@@ -298,28 +299,54 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <SidebarContent {...sharedProps} />
       </div>
 
-      {/* Mobile top header */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-50 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4"
+      {/* Mobile top header — عصري زجاجي عائم (متناسق مع الشريط السفلي) */}
+      <header className="md:hidden fixed top-0 inset-x-0 z-50"
         style={{
           paddingTop: "max(env(safe-area-inset-top, 0px), 8px)",
-          height: "calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px))",
+          paddingLeft: 14, paddingRight: 14, paddingBottom: 8,
         }}>
-        <button onClick={() => setMobileMenuOpen(true)}
-          className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center" aria-label="القائمة">
-          <Menu className="w-5 h-5" />
-        </button>
-        <div className="flex items-center gap-1.5">
-          <img
-            src="/logo.png"
-            alt="Owlio"
-            width={28}
-            height={28}
-            className="shrink-0 rounded-lg object-cover"
-            style={{ width: 28, height: 28 }}
-          />
-          <span className="font-bold text-sm text-primary">Owlio</span>
+        <div
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: "hsl(var(--sidebar) / 0.78)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+            borderRadius: 22,
+            padding: "7px 10px 7px 14px",
+            boxShadow: "0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
+            height: 48,
+          }}>
+          {/* زر القائمة */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setMobileMenuOpen(true)}
+            style={{
+              width: 36, height: 36, borderRadius: 13,
+              background: "hsl(var(--muted) / 0.5)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              border: "none", cursor: "pointer",
+            }}
+            aria-label="القائمة">
+            <Menu className="w-[19px] h-[19px]" style={{ color: "hsl(var(--foreground))" }} />
+          </motion.button>
+
+          {/* اللوقو + الاسم */}
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <img
+              src="/logo.png"
+              alt="Owlio"
+              width={30}
+              height={30}
+              className="shrink-0 rounded-xl object-cover"
+              style={{ width: 30, height: 30 }}
+            />
+            <span style={{ fontWeight: 900, fontSize: 17, color: "hsl(var(--primary))", fontFamily: "'Outfit', sans-serif", letterSpacing: 0.3 }}>Owlio</span>
+          </div>
+
+          {/* مساحة متوازنة */}
+          <div style={{ width: 36 }} />
         </div>
-        <div className="w-9" />
       </header>
 
       {/* Mobile drawer */}

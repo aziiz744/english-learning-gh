@@ -419,9 +419,9 @@ input, textarea, select {
   }
 }
 
-/* حشوة علوية للمحتوى = ارتفاع الهيدر + النوتش (جوال فقط) */
+/* حشوة علوية للمحتوى = ارتفاع الهيدر العائم + النوتش (جوال فقط) */
 .content-top-safe {
-  padding-top: calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px));
+  padding-top: calc(56px + max(env(safe-area-inset-top, 0px), 8px));
 }
 @media (min-width: 768px) {
   .content-top-safe { padding-top: 0; }  /* الكمبيوتر: لا هيدر علوي */
