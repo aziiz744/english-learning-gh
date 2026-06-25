@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { getReviewItems, masterReviewItem, clearReviewLibrary, type ReviewItem } from "@/lib/review-library";
 import owlRead from "@/assets/owl/owl-read.png";
+import owlCelebrate from "@/assets/owl/owl-celebrate.png";
 
 // نطق إنجليزي بسيط
 function speakWord(text: string) {
@@ -16,13 +17,142 @@ function speakWord(text: string) {
   } catch { /* ignore */ }
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+// ── تمرين المراجعة: يختبر الطالب على كلماته الصعبة ──
+function ReviewQuiz({ items, onFinish, onMaster }: {
+  items: ReviewItem[];
+  onFinish: () => void;
+  onMaster: (item: ReviewItem) => void;
+}) {
+  const [queue] = useState<ReviewItem[]>(() => shuffle(items).slice(0, 15));
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const current = queue[idx];
+
+  // خيارات: الإجابة الصحيحة + 3 مشتّتات من بقية الكلمات
+  const [options, setOptions] = useState<string[]>([]);
+  useEffect(() => {
+    if (!current) return;
+    const others = items.filter(x => x.correct !== current.correct).map(x => x.correct);
+    const distractors = shuffle(others).slice(0, 3);
+    setOptions(shuffle([current.correct, ...distractors]));
+    setPicked(null);
+  }, [idx, current, items]);
+
+  // نطق تلقائي
+  useEffect(() => {
+    if (current) { const t = setTimeout(() => speakWord(current.correct), 350); return () => clearTimeout(t); }
+  }, [idx, current]);
+
+  if (done) {
+    const pct = Math.round((correctCount / queue.length) * 100);
+    return (
+      <div style={{ textAlign: "center", padding: "30px 20px" }}>
+        <img src={owlCelebrate} alt="Owlie" width={130} height={130}
+          style={{ width: 130, height: 130, objectFit: "contain", margin: "0 auto 16px" }} />
+        <h2 style={{ fontSize: 24, fontWeight: 900, color: "hsl(var(--primary))", marginBottom: 8 }}>
+          أحسنت! 🎉
+        </h2>
+        <p style={{ fontSize: 16, color: "hsl(var(--foreground))", marginBottom: 4 }}>
+          أجبت صح على {correctCount} من {queue.length}
+        </p>
+        <p style={{ fontSize: 14, color: "hsl(var(--muted-foreground))", marginBottom: 24 }}>
+          {pct >= 80 ? "تقدّم رائع! واصل المراجعة 💪" : "المراجعة تصنع الفرق — كرّر لتتقن 🌟"}
+        </p>
+        <button onClick={onFinish}
+          style={{ padding: "13px 32px", borderRadius: 14, background: "hsl(var(--primary))", color: "white", border: "none", fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
+          العودة للمكتبة
+        </button>
+      </div>
+    );
+  }
+
+  if (!current) return null;
+
+  const handlePick = (opt: string) => {
+    if (picked) return;
+    setPicked(opt);
+    const isCorrect = opt === current.correct;
+    if (isCorrect) {
+      setCorrectCount(c => c + 1);
+      speakWord(current.correct);
+      // لو أجاب صح، اعتبرها خطوة نحو الإتقان (احذفها من المكتبة)
+      setTimeout(() => onMaster(current), 200);
+    }
+    // انتقل للتالي بعد لحظة
+    setTimeout(() => {
+      if (idx + 1 >= queue.length) setDone(true);
+      else setIdx(i => i + 1);
+    }, 1100);
+  };
+
+  return (
+    <div style={{ padding: "0 12px" }}>
+      {/* شريط التقدّم */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "hsl(var(--muted-foreground))", marginBottom: 6, direction: "rtl" }}>
+          <span>السؤال {idx + 1} من {queue.length}</span>
+          <span>✓ {correctCount}</span>
+        </div>
+        <div style={{ height: 8, background: "hsl(var(--muted))", borderRadius: 6, overflow: "hidden" }}>
+          <motion.div animate={{ width: `${((idx) / queue.length) * 100}%` }}
+            style={{ height: "100%", background: "hsl(var(--primary))", borderRadius: 6 }} />
+        </div>
+      </div>
+
+      {/* السؤال */}
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <p style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", marginBottom: 8 }}>ما الترجمة الصحيحة؟</p>
+        <div style={{ fontSize: 22, fontWeight: 900, color: "hsl(var(--foreground))", direction: "rtl" }}>
+          {current.question}
+        </div>
+      </div>
+
+      {/* الخيارات */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {options.map((opt) => {
+          const isCorrect = picked && opt === current.correct;
+          const isWrong = picked === opt && opt !== current.correct;
+          return (
+            <motion.button key={opt} whileTap={!picked ? { scale: 0.97 } : {}}
+              onClick={() => handlePick(opt)} disabled={!!picked}
+              style={{
+                padding: "15px 18px", borderRadius: 14, direction: "ltr",
+                fontSize: 16, fontWeight: 800, cursor: picked ? "default" : "pointer",
+                border: `2px solid ${isCorrect ? "#22c55e" : isWrong ? "#ef4444" : "hsl(var(--border))"}`,
+                background: isCorrect ? "#22c55e18" : isWrong ? "#ef444418" : "hsl(var(--card))",
+                color: isCorrect ? "#16a34a" : isWrong ? "#dc2626" : "hsl(var(--foreground))",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+              <span>{opt}</span>
+              {isCorrect && <span>✓</span>}
+              {isWrong && <span>✗</span>}
+            </motion.button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function ReviewLibrary() {
   const [, setLocation] = useLocation();
   const [items, setItems] = useState<ReviewItem[]>([]);
+  const [quizMode, setQuizMode] = useState(false);
 
   useEffect(() => {
     setItems(getReviewItems().sort((a, b) => b.missCount - a.missCount || b.addedAt - a.addedAt));
   }, []);
+
+  const refreshItems = () => {
+    setItems(getReviewItems().sort((a, b) => b.missCount - a.missCount || b.addedAt - a.addedAt));
+  };
 
   const handleMaster = (item: ReviewItem) => {
     masterReviewItem(item.correct, item.question);
@@ -35,6 +165,21 @@ export default function ReviewLibrary() {
       setItems([]);
     }
   };
+
+  // وضع التمرين
+  if (quizMode && items.length >= 4) {
+    return (
+      <Layout>
+        <div className="pb-8" style={{ maxWidth: 560, margin: "0 auto", paddingTop: 16 }}>
+          <ReviewQuiz
+            items={items}
+            onFinish={() => { refreshItems(); setQuizMode(false); }}
+            onMaster={(item) => masterReviewItem(item.correct, item.question)}
+          />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -67,6 +212,21 @@ export default function ReviewLibrary() {
           </div>
         ) : (
           <div style={{ padding: "0 12px" }}>
+            {/* زر التدرّب (يظهر لو فيه 4+ كلمات) */}
+            {items.length >= 4 && (
+              <button onClick={() => setQuizMode(true)}
+                style={{
+                  width: "100%", marginBottom: 14, padding: "14px",
+                  background: "hsl(var(--primary))", color: "white", border: "none",
+                  borderRadius: 14, fontWeight: 800, fontSize: 15, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  boxShadow: "0 4px 12px hsl(var(--primary) / 0.3)",
+                }}>
+                <span style={{ fontSize: 18 }}>🎯</span>
+                تدرّب على كلماتي الصعبة
+              </button>
+            )}
+
             {/* شريط الإحصائية */}
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
