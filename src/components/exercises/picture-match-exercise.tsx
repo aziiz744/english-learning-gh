@@ -173,6 +173,8 @@ export function PictureMatchExercise({
                   src={getImageUrl(label)}
                   alt={label}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     // Fallback to emoji if image fails
                     const target = e.target as HTMLImageElement;

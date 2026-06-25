@@ -136,6 +136,7 @@ export function Mascot({ state, className }: { state: MascotState; className?: s
           className="w-full h-full"
           style={{ objectFit: "contain", display: "block" }}
           draggable={false}
+          decoding="async"
         />
       </motion.div>
     </div>

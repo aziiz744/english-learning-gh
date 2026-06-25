@@ -504,3 +504,17 @@ a[role="button"], nav button {
   }
   .roadmap-guide-spacer { display: none; }
 }
+
+/* ═══════════ تحسينات اللمس للجوال ═══════════ */
+@media (pointer: coarse) {
+  /* منع تأخير اللمس 300ms (آمن وعام) */
+  a, button, [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+/* ═══════════ منع كسر التخطيط بالنصوص الطويلة ═══════════ */
+/* النصوص الإنجليزية الطويلة تلتفّ بدل ما تكسر العرض */
+p, h1, h2, h3, h4, span, div, button {
+  overflow-wrap: break-word;
+}

@@ -25,3 +25,12 @@ if (isNative) {
     setTimeout(() => hideSplash(), 400);
   });
 }
+
+// تسجيل Service Worker (يخزّن التطبيق للأداء و offline) — على الويب فقط
+if (!isNative && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // فشل التسجيل لا يؤثّر على عمل التطبيق
+    });
+  });
+}
