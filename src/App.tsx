@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LoginModal } from "@/components/login-modal";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { WelcomeModal } from "@/components/welcome-modal";
+import { SplashScreen } from "@/components/splash-screen";
 
 // الصفحات الأساسية (تُحمّل فوراً لأنها أول ما يُفتح)
 import Roadmap from "@/pages/roadmap";
@@ -96,6 +97,17 @@ function Router() {
 
 function App() {
   const [isRecovery, setIsRecovery] = useState(false);
+  // شاشة الترحيب: تظهر مرّة عند فتح التطبيق
+  const [showSplash, setShowSplash] = useState(() => {
+    // لا تظهر إذا كانت الجلسة مفتوحة سابقاً (تنقّل داخلي)
+    try { return !sessionStorage.getItem("splashShown"); } catch { return true; }
+  });
+
+  useEffect(() => {
+    if (!showSplash) {
+      try { sessionStorage.setItem("splashShown", "1"); } catch { /* ignore */ }
+    }
+  }, [showSplash]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -121,6 +133,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
           </WouterRouter>
