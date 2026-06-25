@@ -1534,10 +1534,21 @@ export default function Roadmap() {
             }
           }
           @media (max-width: 767px) {
+            /* شريط الإحصائيات: ثابت تحت الهيدر مباشرة (زي دوولينجو) */
             .roadmap-stats-bar {
-              padding-top: 8px; padding-bottom: 6px;
-              background: hsl(var(--background));
+              position: fixed;
+              top: calc(3rem + max(env(safe-area-inset-top, 0px), 10px));
+              left: 0; right: 0;
+              background: hsl(var(--sidebar));
+              border-bottom: 1px solid hsl(var(--sidebar-border));
+              z-index: 28;
             }
+            /* مربّع الدليل: ثابت تحت شريط الإحصائيات */
+            .roadmap-guide-fixed {
+              top: calc(3rem + max(env(safe-area-inset-top, 0px), 10px) + 37px) !important;
+            }
+            /* مسافة تعويضية = شريط الإحصائيات (37px) + مربّع الدليل (100px) */
+            .roadmap-guide-spacer { height: 142px !important; }
           }
         `}</style>
 
@@ -1566,44 +1577,44 @@ export default function Roadmap() {
         </div>
 
 
-        {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
+        {/* ── شريط البيانات المختصر (heart · gem · flame · flag) — ثابت زي دوولينجو ── */}
         <div className="roadmap-stats-bar" style={{
-          position: "static", zIndex: 31, display: "flex", justifyContent: "flex-start",
-          alignItems: "center", gap: 16, padding: "6px 16px 0",
+          zIndex: 28, display: "flex", justifyContent: "center",
+          alignItems: "center", gap: 18, padding: "8px 16px",
         }}>
           {/* القلوب */}
           <button onClick={(e)=>{e.stopPropagation(); setStatInfo("hearts");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
             background: "none", border: "none", padding: 0,
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+            <svg width="21" height="21" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
               <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
                 fill={isPro ? "#3b82f6" : "#ef4444"} stroke={isPro ? "#1d4ed8" : "#b91c1c"} strokeWidth="1"/>
             </svg>
-            <span style={{ color: isPro ? "#3b82f6" : "#ef4444", fontWeight: 900, fontSize: 15 }}>{isPro ? "∞" : "5"}</span>
+            <span style={{ color: isPro ? "#3b82f6" : "#ef4444", fontWeight: 900, fontSize: 14 }}>{isPro ? "∞" : "5"}</span>
           </button>
 
           {/* الجواهر */}
           <button onClick={(e)=>{e.stopPropagation(); setStatInfo("gems");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
             background: "none", border: "none", padding: 0,
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+            <svg width="21" height="21" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
               <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#38bdf8" stroke="#0284c7" strokeWidth="1"/>
               <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#7dd3fc" opacity="0.9"/>
               <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#0ea5e9" opacity="0.7"/>
               <path d="M2 9 H22" stroke="#0284c7" strokeWidth="0.8"/>
             </svg>
-            <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 15 }}>{gemCount}</span>
+            <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 14 }}>{gemCount}</span>
           </button>
 
           {/* الستريك */}
           <button onClick={(e)=>{e.stopPropagation(); setStatInfo("streak");}} style={{
-            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 3, cursor: "pointer",
             background: "none", border: "none", padding: 0,
           }}>
-            <span style={{ color: "#f97316", fontWeight: 900, fontSize: 15 }}>{streak}</span>
-            <svg width="22" height="22" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
+            <span style={{ color: "#f97316", fontWeight: 900, fontSize: 14 }}>{streak}</span>
+            <svg width="19" height="19" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
               <path d="M12 2 C12 6 8 8 8 13 C8 16 10 19 12 19 C14 19 16 16 16 13 C16 11 15 10 15 10 C15 13 13 14 13 12 C13 9 12 6 12 2 Z" fill="#f97316" stroke="#ea580c" strokeWidth="0.8"/>
               <path d="M12 19 C10.5 19 9.5 17 9.5 15 C9.5 17 11 18 12 18 C13 18 14.5 17 14.5 15 C14.5 17 13.5 19 12 19 Z" fill="#fbbf24"/>
             </svg>
@@ -1611,11 +1622,11 @@ export default function Roadmap() {
 
           {/* علم أمريكا */}
           <button onClick={(e)=>{e.stopPropagation(); setStatInfo("lang");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
             background: "none", border: "none", padding: 0,
           }}>
-            <span style={{ color: "hsl(var(--foreground))", fontWeight: 900, fontSize: 15 }}>10</span>
-            <svg width="26" height="18" viewBox="0 0 26 18" style={{ borderRadius: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>
+            <span style={{ color: "hsl(var(--foreground))", fontWeight: 900, fontSize: 14 }}>10</span>
+            <svg width="23" height="16" viewBox="0 0 26 18" style={{ borderRadius: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>
               <rect width="26" height="18" fill="#b22234"/>
               {[1,3,5,7,9,11].map(i=>(<rect key={i} y={i*1.38} width="26" height="1.38" fill="white"/>))}
               <rect width="11" height="9.7" fill="#3c3b6e"/>
