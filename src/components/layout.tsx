@@ -283,7 +283,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sharedProps = { location, stats, user, authLoading, login, logout };
 
   return (
-    <div className="min-h-screen bg-background text-foreground" dir="rtl">
+    <div className="min-h-screen text-foreground" dir="rtl"
+      style={{
+        background: `
+          radial-gradient(ellipse 90% 45% at 50% -5%, hsl(185 80% 43% / 0.22), transparent 55%),
+          radial-gradient(ellipse 70% 40% at 95% 8%, hsl(160 70% 45% / 0.12), transparent 50%),
+          radial-gradient(ellipse 80% 50% at 5% 95%, hsl(200 75% 42% / 0.10), transparent 55%),
+          hsl(var(--background))
+        `,
+        backgroundAttachment: "fixed",
+      }}>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex w-64 border-l border-sidebar-border bg-sidebar flex-col fixed inset-y-0 right-0 z-40">
