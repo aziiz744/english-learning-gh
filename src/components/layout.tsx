@@ -347,17 +347,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile bottom nav — 5 items */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)", paddingLeft: 12, paddingRight: 12 }}>
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 10px)", paddingLeft: 14, paddingRight: 14 }}>
         <div
           style={{
-            display: "flex", alignItems: "center", justifyContent: "space-around",
-            background: "hsl(var(--sidebar) / 0.72)",
-            backdropFilter: "blur(20px) saturate(180%)",
-            WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            border: "1px solid hsl(var(--sidebar-border) / 0.6)",
-            borderRadius: 26,
-            padding: "8px 6px",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.06) inset",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: "hsl(var(--sidebar) / 0.78)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+            borderRadius: 28,
+            padding: "8px 10px",
+            boxShadow: "0 10px 36px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.05) inset",
+            gap: 4,
           }}>
           {BOTTOM_NAV.map(item => {
             const isMore = item.href === "__more__";
@@ -366,50 +367,46 @@ export function Layout({ children }: { children: React.ReactNode }) {
               : (location === item.href || (item.href !== "/" && location.startsWith(item.href)));
             const Icon = item.icon;
 
-            const content = (
-              <>
-                {/* المؤشّر المتحرّك (pill) خلف الأيقونة النشطة */}
-                {isActive && (
-                  <motion.div
-                    layoutId="navPill"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    style={{
-                      position: "absolute", inset: 0,
-                      background: "hsl(var(--primary) / 0.16)",
-                      borderRadius: 18,
-                    }}
-                  />
-                )}
-                <motion.div
-                  animate={{ scale: isActive ? 1 : 0.92, y: isActive ? -1 : 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                  style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+            // العنصر النشط = كبسولة بارزة ملوّنة مع نص (أسلوب حديث)
+            const content = isActive ? (
+              <motion.div
+                layout
+                initial={false}
+                transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  background: "hsl(var(--primary))",
+                  borderRadius: 20, padding: "10px 16px",
+                  boxShadow: "0 4px 14px hsl(var(--primary) / 0.45)",
+                }}
+              >
+                <Icon className="h-[21px] w-[21px]" style={{ color: "white", strokeWidth: 2.5 }} />
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  transition={{ duration: 0.2, delay: 0.05 }}
+                  style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap", overflow: "hidden" }}
                 >
-                  <Icon
-                    className="h-[22px] w-[22px]"
-                    style={{
-                      color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
-                      strokeWidth: isActive ? 2.5 : 2,
-                      transition: "color 0.2s",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontSize: 10, fontWeight: isActive ? 800 : 600, lineHeight: 1,
-                      color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
-                      transition: "color 0.2s",
-                    }}
-                  >
-                    {isMore ? "المزيد" : item.name}
-                  </span>
-                </motion.div>
-              </>
+                  {isMore ? "المزيد" : item.name}
+                </motion.span>
+              </motion.div>
+            ) : (
+              <motion.div
+                layout
+                whileTap={{ scale: 0.88 }}
+                transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  padding: "11px", borderRadius: 16,
+                }}
+              >
+                <Icon className="h-[22px] w-[22px]" style={{ color: "hsl(var(--muted-foreground))", strokeWidth: 2 }} />
+              </motion.div>
             );
 
             const wrapStyle: CSSProperties = {
-              position: "relative", flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-              padding: "8px 4px", borderRadius: 18, cursor: "pointer",
-              background: "none", border: "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", background: "none", border: "none", padding: 0,
             };
 
             if (isMore) {
