@@ -26,66 +26,64 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
             overflow: "hidden",
           }}
         >
-          {/* وهج إشعاعي خلف الشعار */}
+          {/* وهج إشعاعي ناعm خلف Owlie */}
           <motion.div
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1.1, opacity: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
             style={{
-              position: "absolute", width: 420, height: 420, borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 65%)",
+              position: "absolute", width: 480, height: 480, borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 62%)",
+              top: "30%", transform: "translateY(-50%)",
             }}
           />
 
-          {/* حلقات متموّجة تنتشر من المركز */}
+          {/* حلقات متموّجة تنتشر بهدوء */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              initial={{ scale: 0.3, opacity: 0.5 }}
-              animate={{ scale: 2.2, opacity: 0 }}
-              transition={{ duration: 3, repeat: Infinity, delay: i * 1, ease: "easeOut" }}
+              initial={{ scale: 0.4, opacity: 0.4 }}
+              animate={{ scale: 2.4, opacity: 0 }}
+              transition={{ duration: 3.2, repeat: Infinity, delay: i * 1.05, ease: "easeOut" }}
               style={{
-                position: "absolute", width: 180, height: 180, borderRadius: "50%",
-                border: "1.5px solid rgba(255,255,255,0.25)",
+                position: "absolute", top: "30%", width: 220, height: 220, borderRadius: "50%",
+                border: "1.5px solid rgba(255,255,255,0.22)", transform: "translateY(-50%)",
               }}
             />
           ))}
 
-          {/* بطاقة الشعار الزجاجية */}
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0, y: 10 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.1 }}
-            style={{
-              position: "relative", width: 130, height: 130, borderRadius: 36,
-              background: "rgba(255,255,255,0.14)",
-              backdropFilter: "blur(8px)",
-              border: "1px solid rgba(255,255,255,0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
+          {/* Owlie — كبير وبارز بدون إطار، يدخل بحركة احترافية */}
+          <motion.img
+            src={owlWave}
+            alt="Owlio"
+            width={200}
+            height={200}
+            draggable={false}
+            initial={{ scale: 0.4, opacity: 0, y: 30 }}
+            animate={{
+              scale: 1, opacity: 1, y: [0, -12, 0],
             }}
-          >
-            <motion.img
-              src={owlWave}
-              alt="Owlio"
-              width={96}
-              height={96}
-              draggable={false}
-              animate={{ y: [0, -6, 0], rotate: [0, -3, 3, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-              style={{ width: 96, height: 96, objectFit: "contain", filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.2))" }}
-            />
-          </motion.div>
+            transition={{
+              scale: { type: "spring", stiffness: 160, damping: 14, delay: 0.1 },
+              opacity: { duration: 0.5, delay: 0.1 },
+              y: { duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 0.7 },
+            }}
+            style={{
+              width: 200, height: 200, objectFit: "contain",
+              filter: "drop-shadow(0 14px 30px rgba(0,0,0,0.3))",
+              marginBottom: 10,
+            }}
+          />
 
           {/* اسم التطبيق */}
           <motion.h1
-            initial={{ opacity: 0, y: 14, letterSpacing: 8 }}
+            initial={{ opacity: 0, y: 16, letterSpacing: 10 }}
             animate={{ opacity: 1, y: 0, letterSpacing: 2 }}
-            transition={{ delay: 0.45, duration: 0.6, ease: "easeOut" }}
+            transition={{ delay: 0.5, duration: 0.65, ease: "easeOut" }}
             style={{
-              marginTop: 26, fontSize: 42, fontWeight: 900, color: "white",
+              fontSize: 46, fontWeight: 900, color: "white",
               fontFamily: "'Outfit', sans-serif",
-              textShadow: "0 4px 14px rgba(0,0,0,0.22)",
+              textShadow: "0 4px 16px rgba(0,0,0,0.25)",
             }}
           >
             Owlio
@@ -94,39 +92,39 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
           {/* خط فاصل أنيق */}
           <motion.div
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 56, opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-            style={{ height: 2.5, background: "rgba(255,255,255,0.5)", borderRadius: 2, marginTop: 12 }}
+            animate={{ width: 60, opacity: 1 }}
+            transition={{ delay: 0.75, duration: 0.5 }}
+            style={{ height: 2.5, background: "rgba(255,255,255,0.55)", borderRadius: 2, marginTop: 14 }}
           />
 
           {/* شعار فرعي */}
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85, duration: 0.5 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
             style={{
-              marginTop: 14, fontSize: 15, fontWeight: 600,
-              color: "rgba(255,255,255,0.88)", direction: "rtl", letterSpacing: 0.5,
+              marginTop: 16, fontSize: 16, fontWeight: 600,
+              color: "rgba(255,255,255,0.9)", direction: "rtl", letterSpacing: 0.5,
             }}
           >
             رحلتك لإتقان الإنجليزية
           </motion.p>
 
-          {/* مؤشّر تحميل أنيق (شريط) */}
+          {/* مؤشّر تحميل أنيق */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
+            transition={{ delay: 1.15 }}
             style={{
-              position: "absolute", bottom: 64, width: 130, height: 3,
-              background: "rgba(255,255,255,0.2)", borderRadius: 3, overflow: "hidden",
+              position: "absolute", bottom: 66, width: 140, height: 3,
+              background: "rgba(255,255,255,0.22)", borderRadius: 3, overflow: "hidden",
             }}
           >
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: "100%" }}
               transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: "60%", height: "100%", background: "white", borderRadius: 3 }}
+              style={{ width: "55%", height: "100%", background: "white", borderRadius: 3 }}
             />
           </motion.div>
         </motion.div>
