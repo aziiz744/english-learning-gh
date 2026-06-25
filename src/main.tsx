@@ -6,15 +6,6 @@ import { unlockAudio } from "./hooks/useSound";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-// أخفِ شاشة الترحيب الفورية (HTML) بعد أن يجهز React — انتقال سلس للـ splash المتحرّك
-requestAnimationFrame(() => {
-  const boot = document.getElementById("boot-splash");
-  if (boot) {
-    boot.style.opacity = "0";
-    setTimeout(() => boot.remove(), 400);
-  }
-});
-
 // فتح الصوت عند أول لمسة/ضغطة (الآيفون يتطلّب تفاعلاً مباشراً لتشغيل الصوت)
 function unlockOnce() {
   unlockAudio();
