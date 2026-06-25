@@ -403,8 +403,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <div className="md:mr-64 flex flex-col min-h-screen pb-28 md:pb-0 content-top-safe">
-        <main className="flex-1 px-3 py-4 md:p-8 safe-x">
-          <div className="mx-auto max-w-6xl w-full">{children}</div>
+        <main className="flex-1 px-3 py-4 md:p-8 safe-x" style={{ overflow: "hidden" }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ type: "tween", ease: [0.25, 0.8, 0.25, 1], duration: 0.26 }}
+              className="mx-auto max-w-6xl w-full"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
