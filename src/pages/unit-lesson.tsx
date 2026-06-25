@@ -11,6 +11,7 @@ import { useSound, unlockAudio } from "@/hooks/useSound";
 import { DrinkArt, PICTURE_WORDS, emojiFor } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
 import { addReviewItem } from "@/lib/review-library";
+import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
@@ -1891,6 +1892,7 @@ export default function UnitLesson() {
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
+      if (!practiceMode) addDailyXp(ex.xp ?? 10); // أضف للهدف اليومي
       setFeedback({ ok: true, explanation: ex.explanation, correctAnswer: ex.correctAnswer });
     } else {
       setStreak(0); // كسر الستريك

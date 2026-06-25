@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 import { getUnitGuidePhrases } from "@/lib/lesson-exercises";
+import { getDailyProgress, setDailyGoal, GOAL_OPTIONS } from "@/lib/daily-goal";
 
 interface UnitLesson {
   id: string;
@@ -1369,6 +1370,96 @@ const UNIT_GUIDES: Record<string, string> = {
 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
+// ── بطاقة الهدف اليومي (تحفيز العادة) ──
+function DailyGoalCard({ color }: { color: string }) {
+  const [prog, setProg] = useState(() => getDailyProgress());
+  const [showGoalPicker, setShowGoalPicker] = useState(false);
+
+  useEffect(() => {
+    setProg(getDailyProgress());
+    // حدّث عند العودة للصفحة
+    const onFocus = () => setProg(getDailyProgress());
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
+
+  const R = 26, C = 2 * Math.PI * R;
+  const dash = C * (prog.pct / 100);
+
+  return (
+    <div style={{
+      maxWidth: 380, margin: "0 auto 4px", padding: "0 12px",
+    }}>
+      <div style={{
+        background: prog.done
+          ? "linear-gradient(135deg, #16a34a, #22c55e)"
+          : "hsl(var(--card))",
+        border: prog.done ? "none" : "1px solid hsl(var(--border))",
+        borderRadius: 18, padding: "14px 16px",
+        display: "flex", alignItems: "center", gap: 14, direction: "rtl",
+        boxShadow: prog.done ? "0 4px 16px rgba(34,197,94,0.3)" : "none",
+      }}>
+        {/* حلقة التقدّم */}
+        <div style={{ position: "relative", width: 60, height: 60, flexShrink: 0 }}>
+          <svg width="60" height="60" style={{ transform: "rotate(-90deg)" }}>
+            <circle cx="30" cy="30" r={R} fill="none" stroke={prog.done ? "rgba(255,255,255,0.3)" : "hsl(var(--muted))"} strokeWidth="6"/>
+            <motion.circle cx="30" cy="30" r={R} fill="none"
+              stroke={prog.done ? "white" : color} strokeWidth="6" strokeLinecap="round"
+              strokeDasharray={C} initial={{ strokeDashoffset: C }}
+              animate={{ strokeDashoffset: C - dash }} transition={{ duration: 0.8, ease: "easeOut" }}/>
+          </svg>
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 20,
+          }}>
+            {prog.done ? "🏆" : "🔥"}
+          </div>
+        </div>
+
+        {/* النص */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 900, color: prog.done ? "white" : "hsl(var(--foreground))", marginBottom: 2 }}>
+            {prog.done ? "أنجزت هدف اليوم! 🎉" : "هدفك اليومي"}
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: prog.done ? "rgba(255,255,255,0.9)" : "hsl(var(--muted-foreground))" }}>
+            {prog.earned} / {prog.goal} نقطة
+            {!prog.done && (
+              <button onClick={() => setShowGoalPicker(v => !v)}
+                style={{ background: "none", border: "none", color, fontSize: 12, fontWeight: 800, cursor: "pointer", marginRight: 8, padding: 0 }}>
+                تغيير
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* اختيار الهدف */}
+      <AnimatePresence>
+        {showGoalPicker && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+            style={{ overflow: "hidden", marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 8, padding: "4px 0" }}>
+              {GOAL_OPTIONS.map(opt => (
+                <button key={opt.value}
+                  onClick={() => { setDailyGoal(opt.value); setProg(getDailyProgress()); setShowGoalPicker(false); }}
+                  style={{
+                    flex: 1, padding: "10px 4px", borderRadius: 12,
+                    border: `2px solid ${prog.goal === opt.value ? color : "hsl(var(--border))"}`,
+                    background: prog.goal === opt.value ? `${color}15` : "hsl(var(--card))",
+                    cursor: "pointer", textAlign: "center",
+                  }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "hsl(var(--foreground))" }}>{opt.label}</div>
+                  <div style={{ fontSize: 10, color: "hsl(var(--muted-foreground))", marginTop: 2 }}>{opt.desc}</div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Roadmap() {
   const [activeChapter] = useState(0);
   const [progress, setProgress] = useState<Record<string, number>>({});
@@ -1722,6 +1813,9 @@ export default function Roadmap() {
         </div>
         {/* مسافة تعويضية للمربّع الثابت (جوال فقط) */}
         <div className="roadmap-guide-spacer" />
+
+        {/* بطاقة الهدف اليومي */}
+        <DailyGoalCard color="#16B6C6" />
 
         {/* Page title */}
         <div className="text-center my-6">
