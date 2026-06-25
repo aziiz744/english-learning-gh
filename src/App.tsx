@@ -12,6 +12,8 @@ import { SplashScreen } from "@/components/splash-screen";
 
 // الصفحات الأساسية (تُحمّل فوراً لأنها أول ما يُفتح)
 import Roadmap from "@/pages/roadmap";
+import Competitions from "@/pages/competitions";
+import ReviewLibrary from "@/pages/review-library";
 import NotFound from "@/pages/not-found";
 
 // باقي الصفحات تُحمّل عند الحاجة فقط (lazy) — يسرّع فتح التطبيق
@@ -24,7 +26,6 @@ const Achievements = lazy(() => import("@/pages/achievements"));
 const LevelTest = lazy(() => import("@/pages/level-test"));
 const Admin = lazy(() => import("@/pages/admin"));
 const Reading = lazy(() => import("@/pages/reading"));
-const Competitions = lazy(() => import("@/pages/competitions"));
 const SectionTest = lazy(() => import("@/pages/section-test"));
 const Grammar = lazy(() => import("@/pages/grammar"));
 const Pro = lazy(() => import("@/pages/pro"));
@@ -32,7 +33,6 @@ const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const TeacherPage = lazy(() => import("@/pages/teacher"));
 const AdminStats = lazy(() => import("@/pages/admin-stats"));
 const Privacy = lazy(() => import("@/pages/privacy"));
-const ReviewLibrary = lazy(() => import("@/pages/review-library"));
 
 const queryClient = new QueryClient();
 
@@ -100,10 +100,10 @@ function Router() {
         <motion.div
           key={location}
           custom={direction}
-          initial={(d: number) => ({ x: d > 0 ? "26%" : "-26%", opacity: 0 })}
+          initial={(d: number) => ({ x: d > 0 ? "-100%" : "100%", opacity: 0.6 })}
           animate={{ x: 0, opacity: 1 }}
-          exit={(d: number) => ({ x: d > 0 ? "-16%" : "16%", opacity: 0 })}
-          transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.7 }}
+          exit={(d: number) => ({ x: d > 0 ? "100%" : "-100%", opacity: 0.6 })}
+          transition={{ type: "tween", ease: [0.32, 0.72, 0, 1], duration: 0.32 }}
           onAnimationComplete={() => setAnimating(false)}
           style={{ width: "100%", transform: animating ? undefined : "none" }}
         >
