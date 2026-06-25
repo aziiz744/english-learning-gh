@@ -1381,9 +1381,10 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
 }
 
 // ── Completion Screen ─────────────────────────────────────────────────────────
-function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, onNext, onRetry, onBack }: {
+function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, mistakes, onNext, onRetry, onBack }: {
   score:number; total:number; xpEarned:number; hearts:number; isPro:boolean;
   subLesson:number; isLast:boolean; color:string;
+  mistakes:{ question:string; correct:string; yourAnswer:string }[];
   onNext:()=>void; onRetry:()=>void; onBack:()=>void;
 }) {
   const pct = Math.round((score/total)*100);
@@ -1444,6 +1445,36 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
             <span>القلوب المتبقية:</span>
             <Hearts count={hearts} isPro={isPro}/>
           </div>
+
+          {/* ── مراجعة الأخطاء (تعلّم ممّا أخطأت فيه) ── */}
+          {mistakes.length > 0 && (
+            <div style={{ marginBottom: 20, textAlign: "right" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, direction: "rtl" }}>
+                <span style={{ fontSize: 16 }}>📝</span>
+                <span style={{ fontWeight: 800, fontSize: 14, color: "hsl(var(--foreground))" }}>
+                  راجع أخطاءك ({mistakes.length})
+                </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 200, overflowY: "auto" }}>
+                {mistakes.map((m, i) => (
+                  <div key={i} style={{
+                    background: "hsl(var(--muted) / 0.4)", borderRadius: 12, padding: "10px 12px",
+                    border: "1px solid hsl(var(--border))", direction: "rtl",
+                  }}>
+                    <div style={{ fontSize: 12, color: "hsl(var(--muted-foreground))", marginBottom: 4 }}>{m.question}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: "#22c55e", direction: "ltr" }}>✓ {m.correct}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); speak(m.correct, 0.85); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, padding: 0 }}
+                        aria-label="استمع">🔊</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="space-y-3">
             {isLast ? (
               <button onClick={onBack} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
@@ -1561,6 +1592,8 @@ export default function UnitLesson() {
   const [xpEarned, setXpEarned] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
+  // تتبّع الأخطاء لعرضها في ملخّص نهاية الدرس (للمراجعة)
+  const [mistakes, setMistakes] = useState<{ question: string; correct: string; yourAnswer: string }[]>([]);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone"|"jumpdone">("playing");
   // لوحة تمهيدية لدرس الدمبل (practice) — تظهر مرة واحدة في البداية
@@ -1714,6 +1747,7 @@ export default function UnitLesson() {
     setScore(0);
     setXpEarned(0);
     setStreak(0);
+    setMistakes([]);
     setHearts(meta.isJump ? 3 : MAX_HEARTS);
     setPhase("playing");
     setFeedback(null);
@@ -1778,6 +1812,12 @@ export default function UnitLesson() {
       playWrong();
       hapticError();
       setMascotFor("wrong");
+      // سجّل الخطأ للمراجعة في نهاية الدرس
+      const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || ex.prompt || "سؤال";
+      setMistakes(m => {
+        if (m.some(x => x.correct === ex.correctAnswer && x.question === questionText)) return m;
+        return [...m, { question: questionText, correct: ex.correctAnswer ?? "", yourAnswer: answer }];
+      });
       if (isPro === false) {
         const newH = hearts - 1;
         setHearts(newH);
@@ -1942,6 +1982,7 @@ export default function UnitLesson() {
         {phase === "finish"   && <CompletionScreen
           score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
           subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}
+          mistakes={mistakes}
           onNext={()=>setSubLesson(s=>s+1)}
           onRetry={()=>loadExercises(subLesson)}
           onBack={()=>setLocation("/roadmap")}/>}
