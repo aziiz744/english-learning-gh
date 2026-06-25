@@ -1,6 +1,7 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,38 +60,79 @@ function PageLoader() {
 
 function Router() {
   const [location] = useLocation();
+  const prevLocation = useRef(location);
 
-  // العودة لأعلى الصفحة عند كل انتقال (تجربة أفضل)
+  // ترتيب الصفحات الرئيسية لتحديد اتجاه الانزلاق (RTL)
+  const ORDER: Record<string, number> = {
+    "/": 0, "/roadmap": 0, "/review": 1, "/competitions": 2,
+  };
+
+  // حدّد اتجاه الانزلاق: للأمام (دخول) أو للخلف (رجوع)
+  const getDirection = () => {
+    const from = prevLocation.current;
+    const to = location;
+    const fromOrder = ORDER[from];
+    const toOrder = ORDER[to];
+    // بين صفحتين رئيسيتين: حسب الترتيب
+    if (fromOrder !== undefined && toOrder !== undefined) {
+      return toOrder > fromOrder ? 1 : -1; // 1 = ينزلق من اليسار، -1 = من اليمين
+    }
+    // الدخول لصفحة فرعية (درس مثلاً) = ينزلق من اليمين (تقدّم)
+    if (toOrder === undefined && fromOrder !== undefined) return 1;
+    // الرجوع لصفحة رئيسية = ينزلق من اليسار
+    if (toOrder !== undefined && fromOrder === undefined) return -1;
+    return 1;
+  };
+
+  const direction = getDirection();
+  const [animating, setAnimating] = useState(false);
+
+  // العودة لأعلى الصفحة عند كل انتقال
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    prevLocation.current = location;
+    setAnimating(true);
   }, [location]);
 
   return (
     <Suspense fallback={<PageLoader />}>
-    <Switch>
-      <Route path="/" component={Roadmap} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/roadmap" component={Roadmap} />
-      <Route path="/chapter/:level" component={Chapter} />
-      <Route path="/lessons" component={Lessons} />
-      <Route path="/lessons/:id" component={LessonDetail} />
-      <Route path="/u/:id" component={UnitLesson} />
-      <Route path="/jump/:unitId" component={UnitLesson} />
-      <Route path="/achievements" component={Achievements} />
-      <Route path="/level-test/:level" component={LevelTest} />
-      <Route path="/admin" component={Admin} />
-      <Route path="/reading" component={Reading} />
-      <Route path="/competitions" component={Competitions} />
-      <Route path="/section-test" component={SectionTest} />
-      <Route path="/grammar" component={Grammar} />
-      <Route path="/pro" component={Pro} />
-      <Route path="/reset-password" component={ResetPassword} />
-      <Route path="/teacher" component={TeacherPage} />
-      <Route path="/admin-stats" component={AdminStats} />
-      <Route path="/privacy" component={Privacy} />
-      <Route path="/review" component={ReviewLibrary} />
-      <Route component={NotFound} />
-    </Switch>
+      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+        <motion.div
+          key={location}
+          custom={direction}
+          initial={(d: number) => ({ x: d > 0 ? "26%" : "-26%", opacity: 0 })}
+          animate={{ x: 0, opacity: 1 }}
+          exit={(d: number) => ({ x: d > 0 ? "-16%" : "16%", opacity: 0 })}
+          transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.7 }}
+          onAnimationComplete={() => setAnimating(false)}
+          style={{ width: "100%", transform: animating ? undefined : "none" }}
+        >
+          <Switch location={location}>
+            <Route path="/" component={Roadmap} />
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/roadmap" component={Roadmap} />
+            <Route path="/chapter/:level" component={Chapter} />
+            <Route path="/lessons" component={Lessons} />
+            <Route path="/lessons/:id" component={LessonDetail} />
+            <Route path="/u/:id" component={UnitLesson} />
+            <Route path="/jump/:unitId" component={UnitLesson} />
+            <Route path="/achievements" component={Achievements} />
+            <Route path="/level-test/:level" component={LevelTest} />
+            <Route path="/admin" component={Admin} />
+            <Route path="/reading" component={Reading} />
+            <Route path="/competitions" component={Competitions} />
+            <Route path="/section-test" component={SectionTest} />
+            <Route path="/grammar" component={Grammar} />
+            <Route path="/pro" component={Pro} />
+            <Route path="/reset-password" component={ResetPassword} />
+            <Route path="/teacher" component={TeacherPage} />
+            <Route path="/admin-stats" component={AdminStats} />
+            <Route path="/privacy" component={Privacy} />
+            <Route path="/review" component={ReviewLibrary} />
+            <Route component={NotFound} />
+          </Switch>
+        </motion.div>
+      </AnimatePresence>
     </Suspense>
   );
 }
