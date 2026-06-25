@@ -2,8 +2,9 @@ import { useGetStats, useGetAchievements } from "@/lib/api-hooks";
 import { Layout } from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Award, Zap, BookOpen, Target, ChevronLeft, MapPin, Flame, Star } from "lucide-react";
+import { Award, Zap, BookOpen, Target, ChevronLeft, MapPin, Flame, Star, Library, GraduationCap } from "lucide-react";
 import { Link } from "wouter";
+import { getVocabSummary } from "@/lib/vocab-stats";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
@@ -21,6 +22,7 @@ const DAYS_AR = ["الأحد", "الإثنين", "الثلاثاء", "الأرب
 
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useGetStats();
+  const vocab = getVocabSummary();
   const { data: achievements, isLoading: achievementsLoading } = useGetAchievements();
 
   const recentAchievements = achievements?.filter(a => a.isEarned).slice(0, 3) || [];
@@ -122,6 +124,44 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
             </div>
+
+            {/* ── بطاقة المفردات (الكلمات المتعلّمة والمراجعة) ── */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+              <Card className="border-primary/20 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+                <CardContent className="p-5 relative">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1.5 bg-primary/10 rounded-lg">
+                      <GraduationCap className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-base">رحلة مفرداتك</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* الكلمات المتعلّمة */}
+                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-primary/5 border border-primary/15">
+                      <div className="text-4xl font-black text-primary">{vocab.learned}</div>
+                      <div className="text-xs text-muted-foreground mt-1.5 font-medium">كلمة تعلّمتها 🎓</div>
+                    </div>
+                    {/* الكلمات للمراجعة */}
+                    <Link href="/review">
+                      <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-orange-500/5 border border-orange-500/15 cursor-pointer hover:bg-orange-500/10 transition-colors h-full">
+                        <div className="text-4xl font-black text-orange-400">{vocab.review}</div>
+                        <div className="text-xs text-muted-foreground mt-1.5 font-medium flex items-center gap-1">
+                          <Library className="h-3 w-3" /> للمراجعة
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                  {vocab.review > 0 && (
+                    <Link href="/review">
+                      <button className="w-full mt-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                        <Library className="h-4 w-4" /> راجع كلماتك الصعبة
+                      </button>
+                    </Link>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
               <Card className="col-span-1 md:col-span-2 lg:col-span-4">
