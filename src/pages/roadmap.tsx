@@ -1383,34 +1383,35 @@ function DailyGoalCard({ color }: { color: string }) {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
-  const R = 20, C = 2 * Math.PI * R;
+  const R = 17, C = 2 * Math.PI * R;
   const dash = C * (prog.pct / 100);
 
   return (
     <div style={{
-      maxWidth: 380, margin: "0 auto 4px", padding: "0 12px",
+      position: "relative",
+      maxWidth: 360, margin: "8px auto 4px", padding: "0 12px",
     }}>
       <div style={{
         background: prog.done
           ? "linear-gradient(135deg, #16a34a, #22c55e)"
           : "hsl(var(--card))",
         border: prog.done ? "none" : "1px solid hsl(var(--border))",
-        borderRadius: 14, padding: "9px 14px",
-        display: "flex", alignItems: "center", gap: 11, direction: "rtl",
+        borderRadius: 12, padding: "7px 12px",
+        display: "flex", alignItems: "center", gap: 10, direction: "rtl",
         boxShadow: prog.done ? "0 3px 12px rgba(34,197,94,0.25)" : "none",
       }}>
         {/* حلقة التقدّم */}
-        <div style={{ position: "relative", width: 46, height: 46, flexShrink: 0 }}>
-          <svg width="46" height="46" style={{ transform: "rotate(-90deg)" }}>
-            <circle cx="23" cy="23" r={R} fill="none" stroke={prog.done ? "rgba(255,255,255,0.3)" : "hsl(var(--muted))"} strokeWidth="5"/>
-            <motion.circle cx="23" cy="23" r={R} fill="none"
-              stroke={prog.done ? "white" : color} strokeWidth="5" strokeLinecap="round"
+        <div style={{ position: "relative", width: 40, height: 40, flexShrink: 0 }}>
+          <svg width="40" height="40" style={{ transform: "rotate(-90deg)" }}>
+            <circle cx="20" cy="20" r={R} fill="none" stroke={prog.done ? "rgba(255,255,255,0.3)" : "hsl(var(--muted))"} strokeWidth="4.5"/>
+            <motion.circle cx="20" cy="20" r={R} fill="none"
+              stroke={prog.done ? "white" : color} strokeWidth="4.5" strokeLinecap="round"
               strokeDasharray={C} initial={{ strokeDashoffset: C }}
               animate={{ strokeDashoffset: C - dash }} transition={{ duration: 0.8, ease: "easeOut" }}/>
           </svg>
           <div style={{
             position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 16,
+            fontSize: 14,
           }}>
             {prog.done ? "🏆" : "🔥"}
           </div>
