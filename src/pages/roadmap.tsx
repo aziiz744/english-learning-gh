@@ -1537,18 +1537,19 @@ export default function Roadmap() {
             /* شريط الإحصائيات: ثابت تحت الهيدر مباشرة (زي دوولينجو) */
             .roadmap-stats-bar {
               position: fixed;
-              top: calc(3rem + max(env(safe-area-inset-top, 0px), 10px));
+              top: calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px));
               left: 0; right: 0;
               background: hsl(var(--sidebar));
-              border-bottom: 1px solid hsl(var(--sidebar-border));
+              border-bottom: 1px solid hsl(var(--sidebar-border) / 0.5);
               z-index: 28;
             }
             /* مربّع الدليل: ثابت تحت شريط الإحصائيات */
             .roadmap-guide-fixed {
-              top: calc(3rem + max(env(safe-area-inset-top, 0px), 10px) + 37px) !important;
+              top: calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px) + 38px) !important;
+              padding: 6px 12px !important;
             }
-            /* مسافة تعويضية = شريط الإحصائيات (37px) + مربّع الدليل (100px) */
-            .roadmap-guide-spacer { height: 142px !important; }
+            /* مسافة تعويضية = شريط الإحصائيات (38px) + شريط الدليل (62px) */
+            .roadmap-guide-spacer { height: 100px !important; }
           }
         `}</style>
 
@@ -1680,63 +1681,41 @@ export default function Roadmap() {
           initial={{ opacity: 0.7 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
-          style={{
-            padding: "5px 12px",
-          }}
         >
-          <div style={{ maxWidth: 340, margin: "0 auto", position: "relative" }}>
-            {/* الطبقة السفلية (العمق ثلاثي الأبعاد) */}
-            <div style={{
-              position: "absolute", inset: 0, top: 4,
-              background: shadeColor(activeSection.color, -55),
-              borderRadius: 14,
-            }}/>
-            {/* الوجه العلوي */}
+          <div style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
+            {/* شريط الدليل الأنيق (مدمج، سطر واحد) */}
             <div style={{
               position: "relative",
-              background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 25)}, ${activeSection.color} 55%, ${shadeColor(activeSection.color, -20)})`,
-              borderRadius: 14,
-              padding: "8px 12px",
-              boxShadow: `0 4px 0 ${shadeColor(activeSection.color, -55)}, 0 6px 14px ${activeSection.color}44`,
-              border: `1px solid ${lightenColor(activeSection.color, 35)}`,
+              background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 12)}, ${activeSection.color})`,
+              borderRadius: 12,
+              padding: "7px 10px 7px 12px",
+              boxShadow: `0 2px 8px ${activeSection.color}40`,
+              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
             }}>
-              {/* لمعة علوية */}
-              <div style={{
-                position: "absolute", top: 3, left: 10, right: 10, height: 10,
-                background: "linear-gradient(180deg, rgba(255,255,255,0.35), transparent)",
-                borderRadius: 10, pointerEvents: "none",
-              }}/>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                {/* Title — center */}
-                <div style={{ flex: 1, textAlign: "center", padding: "0 2px" }}>
-                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
-                    القسم 1 · الوحدة {activeSectionIdx + 1} {activeSection.emoji}
-                  </div>
-                  <div style={{ color: "white", fontWeight: 900, fontSize: 13.5, lineHeight: 1.15, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
-                    {activeSection.title}
-                  </div>
-                  {/* دليل مختصر */}
-                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 9, fontWeight: 600, marginTop: 2, lineHeight: 1.3 }}>
-                    {UNIT_GUIDES[activeSection.unitId] ?? "تعلّم كلمات وجمل جديدة خطوة بخطوة"}
-                  </div>
+              {/* عنوان الوحدة */}
+              <div style={{ flex: 1, textAlign: "right", minWidth: 0 }}>
+                <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
+                  الوحدة {activeSectionIdx + 1} {activeSection.emoji}
                 </div>
-
-                {/* Guidebook button */}
-                <button
-                  onClick={e => { e.stopPropagation(); setShowGuide(true); }}
-                  style={{
-                    background: "rgba(255,255,255,0.25)",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    borderRadius: 10, padding: "5px 8px",
-                    color: "white", fontWeight: 800, fontSize: 10.5,
-                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
-                    flexShrink: 0, whiteSpace: "nowrap",
-                    boxShadow: `0 2px 0 ${shadeColor(activeSection.color, -50)}`,
-                  }}>
-                  <span style={{ fontSize: 14 }}>📖</span>
-                  <span>الدليل</span>
-                </button>
+                <div style={{ color: "white", fontWeight: 900, fontSize: 13, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -50)}`, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {activeSection.title}
+                </div>
               </div>
+
+              {/* زر الدليل */}
+              <button
+                onClick={e => { e.stopPropagation(); setShowGuide(true); }}
+                style={{
+                  background: "rgba(255,255,255,0.22)",
+                  border: "1px solid rgba(255,255,255,0.45)",
+                  borderRadius: 10, padding: "6px 12px",
+                  color: "white", fontWeight: 800, fontSize: 12,
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
+                  flexShrink: 0, whiteSpace: "nowrap",
+                }}>
+                <span style={{ fontSize: 15 }}>📖</span>
+                <span>الدليل</span>
+              </button>
             </div>
           </div>
         </motion.div>

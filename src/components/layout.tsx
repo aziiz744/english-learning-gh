@@ -292,8 +292,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile top header */}
       <header className="md:hidden fixed top-0 inset-x-0 z-50 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4"
         style={{
-          paddingTop: "max(env(safe-area-inset-top, 0px), 10px)",
-          height: "calc(3rem + max(env(safe-area-inset-top, 0px), 10px))",
+          paddingTop: "max(env(safe-area-inset-top, 0px), 8px)",
+          height: "calc(2.75rem + max(env(safe-area-inset-top, 0px), 8px))",
         }}>
         <button onClick={() => setMobileMenuOpen(true)}
           className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center" aria-label="القائمة">
@@ -310,12 +310,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           />
           <span className="font-bold text-sm text-primary">Owlio</span>
         </div>
-        {stats && stats.streak > 0 ? (
-          <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1">
-            <Flame className="h-3.5 w-3.5 text-orange-400" />
-            <span className="text-xs font-bold text-orange-400">{stats.streak}</span>
-          </div>
-        ) : <div className="w-9" />}
+        <div className="w-9" />
       </header>
 
       {/* Mobile drawer */}
