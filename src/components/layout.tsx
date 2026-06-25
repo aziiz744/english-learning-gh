@@ -282,6 +282,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const sharedProps = { location, stats, user, authLoading, login, logout };
 
+  // الجواهر للهيدر (تقريب من XP: كل 10 XP ≈ جوهرة، مبسّط)
+  const headerGems = stats ? Math.floor((stats.totalXp ?? 0) / 10) : 0;
+
   return (
     <div className="min-h-screen text-foreground" dir="rtl"
       style={{
@@ -344,8 +347,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span style={{ fontWeight: 900, fontSize: 17, color: "hsl(var(--primary))", fontFamily: "'Outfit', sans-serif", letterSpacing: 0.3 }}>Owlio</span>
           </div>
 
-          {/* مساحة متوازنة */}
-          <div style={{ width: 36 }} />
+          {/* الإحصائيات المصغّرة (ستريك · جواهر · قلوب) */}
+          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+            {/* الستريك */}
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ color: "#f97316", fontWeight: 900, fontSize: 13 }}>{stats?.streak ?? 0}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M12 2 C12 6 8 8 8 13 C8 16 10 19 12 19 C14 19 16 16 16 13 C16 11 15 10 15 10 C15 13 13 14 13 12 C13 9 12 6 12 2 Z" fill="#f97316"/>
+                <path d="M12 19 C10.5 19 9.5 17 9.5 15 C9.5 17 11 18 12 18 C13 18 14.5 17 14.5 15 C14.5 17 13.5 19 12 19 Z" fill="#fbbf24"/>
+              </svg>
+            </div>
+            {/* الجواهر */}
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 13 }}>{headerGems}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#38bdf8" stroke="#0284c7" strokeWidth="1"/>
+                <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#7dd3fc" opacity="0.9"/>
+                <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#0ea5e9" opacity="0.7"/>
+              </svg>
+            </div>
+            {/* القلوب */}
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ color: "#ef4444", fontWeight: 900, fontSize: 13 }}>5</span>
+              <svg width="15" height="15" viewBox="0 0 24 24">
+                <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z" fill="#ef4444"/>
+              </svg>
+            </div>
+          </div>
         </div>
       </header>
 
