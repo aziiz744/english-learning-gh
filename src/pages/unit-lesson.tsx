@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useSound, unlockAudio } from "@/hooks/useSound";
-import { DrinkArt } from "@/components/drink-art";
+import { DrinkArt, PICTURE_WORDS, emojiFor } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
 import { addReviewItem } from "@/lib/review-library";
 import { hapticSuccess, hapticError } from "@/lib/native";
@@ -454,6 +454,52 @@ const JUMP_MAP: Record<string, { unitTitle: string; color: string; prevTitles: s
   "unit-safe": { unitTitle: "قدّم نصائح السلامة", color: "#dc2626",
     prevTitles: ["أوامر بسيطة", "إعطاء التعليمات", "الأمر المهذّب"] },
 };
+
+// ── مولّد أسئلة الصور (لزيادة توازن الأنماط) ──
+// يستخرج كلمات لها إيموجي من أسئلة المحطة ويبني أسئلة صور
+function genPictureFromExercises(exercises: ExObj[], count: number, idPrefix: string): ExObj[] {
+  // اجمع الكلمات الإنجليزية المفردة التي لها إيموجي
+  const wordSet = new Set<string>();
+  exercises.forEach(ex => {
+    // من أسئلة الصور الموجودة (labels)
+    ex.pictureOptions?.forEach(o => {
+      if (PICTURE_WORDS.includes(o.label.toLowerCase().trim())) wordSet.add(o.label.toLowerCase().trim());
+    });
+    // من الإجابات المفردة (كلمة واحدة لها إيموجي)
+    const ca = (ex.correctAnswer ?? "").toLowerCase().trim();
+    if (ca && !ca.includes(" ") && PICTURE_WORDS.includes(ca)) wordSet.add(ca);
+  });
+
+  const words = [...wordSet];
+  if (words.length < 4) return [];
+
+  const shuffled = [...words].sort(() => Math.random() - 0.5);
+  const questions: ExObj[] = [];
+
+  for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+    const correct = shuffled[i];
+    const distractors = words
+      .filter(w => w !== correct)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    if (distractors.length < 3) continue;
+
+    const options = [correct, ...distractors]
+      .sort(() => Math.random() - 0.5)
+      .map(w => ({ emoji: emojiFor(w), label: w }));
+
+    questions.push({
+      id: `${idPrefix}-genpic-${i}`,
+      type: "picture_match",
+      word: correct,
+      pictureOptions: options,
+      correctAnswer: correct,
+      explanation: `${correct} ${emojiFor(correct)}`,
+      xp: 10,
+    } as ExObj);
+  }
+  return questions;
+}
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
 function lightColor(hex: string): string {
@@ -1747,6 +1793,21 @@ export default function UnitLesson() {
           }
         }
         raw = slice.slice(0, 8).sort(() => Math.random() - 0.5);
+        // ── زيادة توازن الأنماط: اضمن سؤال صورة (أو اثنين) في الدرس ──
+        const picCount = raw.filter(e => e.type === "picture_match").length;
+        if (picCount < 1) {
+          // ولّد أسئلة صور من كلمات المحطة كاملةً
+          const generated = genPictureFromExercises(all, 2, `${meta.title}-${t}`);
+          if (generated.length > 0) {
+            // استبدل آخر سؤال (غير صورة) بسؤال صورة مولّد، للحفاظ على العدد
+            const nonPicIdx = raw.map((e,idx)=>({e,idx})).filter(x=>x.e.type!=="picture_match");
+            if (nonPicIdx.length > 0) {
+              raw[nonPicIdx[nonPicIdx.length-1].idx] = generated[0];
+            } else {
+              raw.push(generated[0]);
+            }
+          }
+        }
       }
     } catch (err) {
       console.error("loadExercises error:", err);

@@ -55,6 +55,16 @@ function getEmoji(label: string): string {
   return EMOJI_MAP[label.toLowerCase().trim()] ?? "📦";
 }
 
+// تصدير القاموس وقائمة الكلمات (لتوليد أسئلة الصور تلقائياً)
+export { EMOJI_MAP };
+export const PICTURE_WORDS = Object.keys(EMOJI_MAP);
+export function hasEmoji(label: string): boolean {
+  return !!EMOJI_MAP[label.toLowerCase().trim()];
+}
+export function emojiFor(label: string): string {
+  return getEmoji(label);
+}
+
 export function DrinkArt({ label }: { label: string }): ReactElement {
   const emoji = getEmoji(label);
   return (
