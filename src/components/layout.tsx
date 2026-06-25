@@ -9,7 +9,7 @@ import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Mascot } from "@/components/mascot";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Bottom nav: 5 items max ──
@@ -339,43 +339,89 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className="md:mr-64 flex flex-col min-h-screen pb-20 md:pb-0 content-top-safe">
+      <div className="md:mr-64 flex flex-col min-h-screen pb-28 md:pb-0 content-top-safe">
         <main className="flex-1 px-3 py-4 md:p-8 safe-x">
           <div className="mx-auto max-w-6xl w-full">{children}</div>
         </main>
       </div>
 
       {/* Mobile bottom nav — 5 items */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-sidebar border-t border-sidebar-border"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)", paddingLeft: 12, paddingRight: 12 }}>
+        <div
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-around",
+            background: "hsl(var(--sidebar) / 0.72)",
+            backdropFilter: "blur(20px) saturate(180%)",
+            WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            border: "1px solid hsl(var(--sidebar-border) / 0.6)",
+            borderRadius: 26,
+            padding: "8px 6px",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.06) inset",
+          }}>
           {BOTTOM_NAV.map(item => {
-            if (item.href === "__more__") {
+            const isMore = item.href === "__more__";
+            const isActive = isMore
+              ? moreOpen
+              : (location === item.href || (item.href !== "/" && location.startsWith(item.href)));
+            const Icon = item.icon;
+
+            const content = (
+              <>
+                {/* المؤشّر المتحرّك (pill) خلف الأيقونة النشطة */}
+                {isActive && (
+                  <motion.div
+                    layoutId="navPill"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    style={{
+                      position: "absolute", inset: 0,
+                      background: "hsl(var(--primary) / 0.16)",
+                      borderRadius: 18,
+                    }}
+                  />
+                )}
+                <motion.div
+                  animate={{ scale: isActive ? 1 : 0.92, y: isActive ? -1 : 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                  style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+                >
+                  <Icon
+                    className="h-[22px] w-[22px]"
+                    style={{
+                      color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
+                      strokeWidth: isActive ? 2.5 : 2,
+                      transition: "color 0.2s",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 10, fontWeight: isActive ? 800 : 600, lineHeight: 1,
+                      color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
+                      transition: "color 0.2s",
+                    }}
+                  >
+                    {isMore ? "المزيد" : item.name}
+                  </span>
+                </motion.div>
+              </>
+            );
+
+            const wrapStyle: CSSProperties = {
+              position: "relative", flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "8px 4px", borderRadius: 18, cursor: "pointer",
+              background: "none", border: "none",
+            };
+
+            if (isMore) {
               return (
-                <button key="more" onClick={() => setMoreOpen(true)}
-                  className={cn(
-                    "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all",
-                    moreOpen ? "text-primary" : "text-muted-foreground"
-                  )}>
-                  <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", moreOpen ? "bg-primary/15" : "")}>
-                    <MoreHorizontal className={cn("h-5 w-5", moreOpen ? "text-primary" : "")} />
-                  </div>
-                  <span className="text-[10px] font-bold leading-none">المزيد</span>
+                <button key="more" onClick={() => setMoreOpen(true)} style={wrapStyle}>
+                  {content}
                 </button>
               );
             }
-            const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
-            const Icon = item.icon;
             return (
-              <Link key={item.href} href={item.href}
-                className={cn(
-                  "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}>
-                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", isActive ? "bg-primary/15" : "")}>
-                  <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "")} />
-                </div>
-                <span className={cn("text-[10px] font-bold leading-none", isActive ? "text-primary" : "")}>{item.name}</span>
+              <Link key={item.href} href={item.href} style={wrapStyle}>
+                {content}
               </Link>
             );
           })}
