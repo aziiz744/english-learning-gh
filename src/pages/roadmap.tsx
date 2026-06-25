@@ -1086,7 +1086,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
         <>
           <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
           <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-            {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
+            {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : lesson.type === "practice" ? "تمرين مكثف 🏋️ · مراجعة شاملة" : `الدرس ${lessonNum} · 4 دروس`}
           </p>
 
           {/* Start button or completed state */}
@@ -1113,7 +1113,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
               onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
               onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
             >
-              {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : "ابدأ +10 XP"}
+              {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : lesson.type === "practice" ? "ابدأ التمرين 🏋️" : "ابدأ +10 XP"}
             </button>
           )}
         </>

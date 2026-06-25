@@ -1051,13 +1051,14 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 }
 
 // ── Matching pairs (الأزواج المتطابقة) ───────────────────────────────────────
-function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+function MatchingQ({ ex, color, onAnswer, onMatchError }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void; onMatchError?: (en:string, ar:string) => void }) {
   const pairs = ex.pairs ?? [];
   const [enCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
   const [arCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
   const [selected, setSelected] = useState<{ col:"en"|"ar"; en:string } | null>(null);
   const [matched, setMatched] = useState<Set<string>>(new Set());
   const [wrongKey, setWrongKey] = useState<string|null>(null);
+  const [hadError, setHadError] = useState(false);
 
   const playMatchCorrect = () => {
     try {
@@ -1080,8 +1081,15 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
       playMatchCorrect();
       const nm = new Set(matched); nm.add(en);
       setMatched(nm); setSelected(null);
-      if (nm.size === pairs.length) setTimeout(()=>onAnswer(true, "matched"), 600);
+      if (nm.size === pairs.length) {
+        // إذا أخطأ أثناء المطابقة، سجّلها كإجابة فيها أخطاء (لكن أكملها)
+        setTimeout(()=>onAnswer(!hadError, hadError ? "__match_error__" : "matched"), 600);
+      }
     } else {
+      // محاولة خاطئة — سجّل الزوج الصحيح للكلمة المختارة في المكتبة
+      setHadError(true);
+      const correctPair = ex.pairs?.find(p => p.en === selected.en);
+      if (correctPair && onMatchError) onMatchError(correctPair.en, correctPair.ar);
       setWrongKey(col+en);
       setTimeout(()=>{ setWrongKey(null); setSelected(null); }, 600);
     }
@@ -2127,7 +2135,9 @@ export default function UnitLesson() {
                   {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="picture_match" && <PictureQ    ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="fill_blank"    && <FillBlankQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
-                  {ex.type==="matching"      && <MatchingQ   ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="matching"      && <MatchingQ   ex={ex} color={meta.color} onAnswer={handleAnswer} onMatchError={(en, ar) => {
+                    if (!practiceMode) addReviewItem({ correct: en, question: ar, unitTitle: meta.unitTitle ?? "" });
+                  }}/>}
                 </motion.div>
               )}
             </AnimatePresence>
