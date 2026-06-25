@@ -1626,22 +1626,27 @@ export default function Roadmap() {
             }
           }
           @media (max-width: 767px) {
-            /* شريط الإحصائيات: ثابت تحت الهيدر مباشرة (زي دوولينجو) */
+            /* شريط الإحصائيات: ثابت زجاجي عائم (متناسق مع الهيدر) */
             .roadmap-stats-bar {
               position: fixed;
-              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px));
-              left: 0; right: 0;
-              background: hsl(var(--sidebar));
-              border-bottom: 1px solid hsl(var(--sidebar-border) / 0.5);
+              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px);
+              left: 14px; right: 14px;
+              background: hsl(var(--sidebar) / 0.78);
+              backdrop-filter: blur(24px) saturate(180%);
+              -webkit-backdrop-filter: blur(24px) saturate(180%);
+              border: 1px solid hsl(var(--sidebar-border) / 0.5);
+              border-radius: 18px;
+              box-shadow: 0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset;
               z-index: 28;
             }
-            /* مربّع الدليل: ثابت تحت شريط الإحصائيات */
+            /* مربّع الدليل: ثابت زجاجي عائم تحت الإحصائيات */
             .roadmap-guide-fixed {
-              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 38px) !important;
-              padding: 6px 12px !important;
+              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px + 50px) !important;
+              left: 14px !important; right: 14px !important;
+              padding: 0 !important;
             }
-            /* مسافة تعويضية = شريط الإحصائيات (38px) + شريط الدليل (62px) */
-            .roadmap-guide-spacer { height: 100px !important; }
+            /* مسافة تعويضية = شريط الإحصائيات (50px) + شريط الدليل (62px) + فراغات */
+            .roadmap-guide-spacer { height: 124px !important; }
           }
         `}</style>
 
@@ -1775,39 +1780,55 @@ export default function Roadmap() {
           transition={{ duration: 0.25 }}
         >
           <div style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
-            {/* شريط الدليل الأنيق (مدمج، سطر واحد) */}
+            {/* شريط الدليل الزجاجي الأنيق (متناسق مع الواجهة) */}
             <div style={{
               position: "relative",
-              background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 12)}, ${activeSection.color})`,
-              borderRadius: 12,
-              padding: "7px 10px 7px 12px",
-              boxShadow: `0 2px 8px ${activeSection.color}40`,
+              background: "hsl(var(--sidebar) / 0.78)",
+              backdropFilter: "blur(24px) saturate(180%)",
+              WebkitBackdropFilter: "blur(24px) saturate(180%)",
+              border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+              borderRadius: 16,
+              padding: "8px 10px 8px 12px",
+              boxShadow: "0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
             }}>
-              {/* عنوان الوحدة */}
-              <div style={{ flex: 1, textAlign: "right", minWidth: 0 }}>
-                <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
-                  الوحدة {activeSectionIdx + 1} {activeSection.emoji}
+              {/* مؤشّر لون الوحدة + العنوان */}
+              <div style={{ display: "flex", alignItems: "center", gap: 9, flex: 1, minWidth: 0 }}>
+                {/* نقطة لون الوحدة */}
+                <div style={{
+                  width: 36, height: 36, borderRadius: 11, flexShrink: 0,
+                  background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 15)}, ${activeSection.color})`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 18, boxShadow: `0 2px 8px ${activeSection.color}55`,
+                }}>
+                  {activeSection.emoji}
                 </div>
-                <div style={{ color: "white", fontWeight: 900, fontSize: 13, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -50)}`, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {activeSection.title}
+                <div style={{ flex: 1, textAlign: "right", minWidth: 0 }}>
+                  <div style={{ color: "hsl(var(--muted-foreground))", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
+                    الوحدة {activeSectionIdx + 1}
+                  </div>
+                  <div style={{ color: "hsl(var(--foreground))", fontWeight: 800, fontSize: 13, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {activeSection.title}
+                  </div>
                 </div>
               </div>
 
               {/* زر الدليل */}
-              <button
+              <motion.button
+                whileTap={{ scale: 0.92 }}
                 onClick={e => { e.stopPropagation(); setShowGuide(true); }}
                 style={{
-                  background: "rgba(255,255,255,0.22)",
-                  border: "1px solid rgba(255,255,255,0.45)",
-                  borderRadius: 10, padding: "6px 12px",
+                  background: activeSection.color,
+                  border: "none",
+                  borderRadius: 12, padding: "8px 14px",
                   color: "white", fontWeight: 800, fontSize: 12,
                   cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
                   flexShrink: 0, whiteSpace: "nowrap",
+                  boxShadow: `0 3px 10px ${activeSection.color}55`,
                 }}>
-                <span style={{ fontSize: 15 }}>📖</span>
+                <span style={{ fontSize: 14 }}>📖</span>
                 <span>الدليل</span>
-              </button>
+              </motion.button>
             </div>
           </div>
         </motion.div>
