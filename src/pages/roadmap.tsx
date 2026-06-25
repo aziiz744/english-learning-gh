@@ -1383,7 +1383,7 @@ function DailyGoalCard({ color }: { color: string }) {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
-  const R = 26, C = 2 * Math.PI * R;
+  const R = 20, C = 2 * Math.PI * R;
   const dash = C * (prog.pct / 100);
 
   return (
@@ -1395,22 +1395,22 @@ function DailyGoalCard({ color }: { color: string }) {
           ? "linear-gradient(135deg, #16a34a, #22c55e)"
           : "hsl(var(--card))",
         border: prog.done ? "none" : "1px solid hsl(var(--border))",
-        borderRadius: 18, padding: "14px 16px",
-        display: "flex", alignItems: "center", gap: 14, direction: "rtl",
-        boxShadow: prog.done ? "0 4px 16px rgba(34,197,94,0.3)" : "none",
+        borderRadius: 14, padding: "9px 14px",
+        display: "flex", alignItems: "center", gap: 11, direction: "rtl",
+        boxShadow: prog.done ? "0 3px 12px rgba(34,197,94,0.25)" : "none",
       }}>
         {/* حلقة التقدّم */}
-        <div style={{ position: "relative", width: 60, height: 60, flexShrink: 0 }}>
-          <svg width="60" height="60" style={{ transform: "rotate(-90deg)" }}>
-            <circle cx="30" cy="30" r={R} fill="none" stroke={prog.done ? "rgba(255,255,255,0.3)" : "hsl(var(--muted))"} strokeWidth="6"/>
-            <motion.circle cx="30" cy="30" r={R} fill="none"
-              stroke={prog.done ? "white" : color} strokeWidth="6" strokeLinecap="round"
+        <div style={{ position: "relative", width: 46, height: 46, flexShrink: 0 }}>
+          <svg width="46" height="46" style={{ transform: "rotate(-90deg)" }}>
+            <circle cx="23" cy="23" r={R} fill="none" stroke={prog.done ? "rgba(255,255,255,0.3)" : "hsl(var(--muted))"} strokeWidth="5"/>
+            <motion.circle cx="23" cy="23" r={R} fill="none"
+              stroke={prog.done ? "white" : color} strokeWidth="5" strokeLinecap="round"
               strokeDasharray={C} initial={{ strokeDashoffset: C }}
               animate={{ strokeDashoffset: C - dash }} transition={{ duration: 0.8, ease: "easeOut" }}/>
           </svg>
           <div style={{
             position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 20,
+            fontSize: 16,
           }}>
             {prog.done ? "🏆" : "🔥"}
           </div>
@@ -1418,14 +1418,14 @@ function DailyGoalCard({ color }: { color: string }) {
 
         {/* النص */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: prog.done ? "white" : "hsl(var(--foreground))", marginBottom: 2 }}>
+          <div style={{ fontSize: 13, fontWeight: 900, color: prog.done ? "white" : "hsl(var(--foreground))", marginBottom: 1 }}>
             {prog.done ? "أنجزت هدف اليوم! 🎉" : "هدفك اليومي"}
           </div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: prog.done ? "rgba(255,255,255,0.9)" : "hsl(var(--muted-foreground))" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: prog.done ? "rgba(255,255,255,0.9)" : "hsl(var(--muted-foreground))" }}>
             {prog.earned} / {prog.goal} نقطة
             {!prog.done && (
               <button onClick={() => setShowGoalPicker(v => !v)}
-                style={{ background: "none", border: "none", color, fontSize: 12, fontWeight: 800, cursor: "pointer", marginRight: 8, padding: 0 }}>
+                style={{ background: "none", border: "none", color, fontSize: 11, fontWeight: 800, cursor: "pointer", marginRight: 8, padding: 0 }}>
                 تغيير
               </button>
             )}
