@@ -286,9 +286,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen text-foreground" dir="rtl"
       style={{
         background: `
-          radial-gradient(ellipse 90% 45% at 50% -5%, hsl(185 80% 43% / 0.22), transparent 55%),
-          radial-gradient(ellipse 70% 40% at 95% 8%, hsl(160 70% 45% / 0.12), transparent 50%),
-          radial-gradient(ellipse 80% 50% at 5% 95%, hsl(200 75% 42% / 0.10), transparent 55%),
+          radial-gradient(140% 80% at 50% -20%, hsl(185 75% 45% / 0.14) 0%, hsl(185 70% 40% / 0.06) 35%, transparent 70%),
+          radial-gradient(120% 70% at 85% 110%, hsl(190 70% 42% / 0.07) 0%, transparent 60%),
           hsl(var(--background))
         `,
         backgroundAttachment: "fixed",
