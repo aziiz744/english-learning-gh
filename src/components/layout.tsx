@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import {
   Route, Trophy, Flame, Zap,
-  Shield, LogIn, LogOut, User, Menu, X,
+  Shield, LogIn, LogOut, User, X,
   Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock, Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -316,24 +316,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             WebkitBackdropFilter: "blur(24px) saturate(180%)",
             border: "1px solid hsl(var(--sidebar-border) / 0.5)",
             borderRadius: 22,
-            padding: "7px 10px 7px 14px",
+            padding: "7px 14px",
             boxShadow: "0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
             height: 48,
           }}>
-          {/* زر القائمة */}
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setMobileMenuOpen(true)}
-            style={{
-              width: 36, height: 36, borderRadius: 13,
-              background: "hsl(var(--muted) / 0.5)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              border: "none", cursor: "pointer",
-            }}
-            aria-label="القائمة">
-            <Menu className="w-[19px] h-[19px]" style={{ color: "hsl(var(--foreground))" }} />
-          </motion.button>
-
           {/* اللوقو + الاسم */}
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <img
@@ -348,7 +334,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* الإحصائيات المصغّرة (ستريك · جواهر · قلوب) */}
-          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
             {/* الستريك */}
             <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
               <span style={{ color: "#f97316", fontWeight: 900, fontSize: 13 }}>{stats?.streak ?? 0}</span>
