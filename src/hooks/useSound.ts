@@ -34,6 +34,14 @@ export function unlockAudio() {
       source.connect(ac.destination);
       source.start(0);
       _audioUnlocked = true;
+      // تفعيل النطق (speechSynthesis) على iOS — يحتاج نطقاً صامتاً بأول تفاعل
+      try {
+        if (window.speechSynthesis) {
+          const u = new SpeechSynthesisUtterance("");
+          u.volume = 0;
+          window.speechSynthesis.speak(u);
+        }
+      } catch { /* ignore */ }
     }
   } catch { /* ignore */ }
 }

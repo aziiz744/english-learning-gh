@@ -470,12 +470,22 @@ let _cachedVoices: SpeechSynthesisVoice[] = [];
 function loadVoices() {
   if (!window.speechSynthesis) return;
   const all = window.speechSynthesis.getVoices();
+  // الأولوية للأصوات الطبيعية عالية الجودة (Google/Microsoft Neural)
+  const premium = all.filter(v =>
+    /en[-_]/i.test(v.lang) &&
+    /(google|natural|neural|premium|enhanced|siri)/i.test(v.name + v.voiceURI)
+  );
+  // الأصوات الأنثوية الواضحة (مناسبة لتعلّم اللغة)
   const preferred = all.filter(v =>
     /en[-_]/i.test(v.lang) &&
-    /(female|woman|girl|child|kid|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
+    /(female|woman|girl|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
   );
   const englishVoices = all.filter(v => /en[-_]/i.test(v.lang));
-  _cachedVoices = (preferred.length >= 2 ? preferred : englishVoices).slice(0, 6);
+  // الأفضلية: premium → preferred → أي إنجليزي
+  const pool = premium.length >= 1 ? premium
+    : preferred.length >= 2 ? preferred
+    : englishVoices;
+  _cachedVoices = pool.slice(0, 6);
 }
 if (typeof window !== "undefined" && window.speechSynthesis) {
   loadVoices();
@@ -573,7 +583,7 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
   onNext: () => void; color: string;
 }) {
   // رسائل تشجيع متنوّعة
-  const okMsgs = ["إجابة صحيحة! 🎉", "ممتاز! 🌟", "أحسنت! 👏", "رائع! 💪", "بالضبط! ✨"];
+  const okMsgs = ["إجابة صحيحة! 🎉", "ممتاز! 🌟", "أحسنت! 👏", "رائع! 💪", "بالضبط! ✨", "عمل رائع! 🔥", "أنت مبدع! 🚀", "صحيح تماماً! 💯", "ما شاء الله! 🌙", "إجابة موفّقة! ⭐", "تقدّم رائع! 📈", "أنت بطل! 🏆"];
   const noMsgs = ["لا بأس، تعلّمنا شيئاً! 💪", "قريب! حاول التذكّر 🤔", "لا تيأس، المحاولة القادمة! 🌱"];
   const msg = correct
     ? okMsgs[Math.floor(Math.random()*okMsgs.length)]
