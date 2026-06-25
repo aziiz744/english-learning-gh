@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // ── Bottom nav: 5 items max ──
 const BOTTOM_NAV = [
   { name: "الخارطة",  href: "/",          icon: Route },
-  { name: "الإنجازات", href: "/achievements", icon: Trophy },
+  { name: "المراجعة", href: "/review",     icon: Library },
   { name: "المسابقات", href: "/competitions", icon: Zap },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
@@ -372,7 +372,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <motion.div
                 layout
                 initial={false}
-                transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                transition={{ type: "spring", stiffness: 320, damping: 32, mass: 0.8 }}
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
                   background: "hsl(var(--primary))",
