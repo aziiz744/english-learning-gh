@@ -402,11 +402,11 @@ export default function Reading() {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">السرعة:</span>
                       <button onClick={() => changeSpeed("slow")}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "slow" ? }`}>
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "slow" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                         🐢 بطيء
                       </button>
                       <button onClick={() => changeSpeed("normal")}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "normal" ? }`}>
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "normal" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                         🐇 عادي
                       </button>
                       {playing && <span className="text-xs text-primary mr-auto">جاري القراءة...</span>}
