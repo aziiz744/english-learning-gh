@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import type { LessonLevel, LessonCategory } from "./lesson-banks/types";
 
 // ── Supabase client ──
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -23,8 +22,8 @@ export interface Lesson {
   id: number;
   title: string;
   description: string;
-  level: LessonLevel;
-  category: LessonCategory;
+  level: string;
+  category: string;
   durationMinutes: number;
   order: number;
   xpReward: number;

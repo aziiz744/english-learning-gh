@@ -1690,7 +1690,7 @@ export default function UnitLesson() {
   }, [id, isJumpMode]);
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
-  const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
+  const mascotTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 
 
@@ -1911,7 +1911,7 @@ export default function UnitLesson() {
       hapticError();
       setMascotFor("wrong");
       // سجّل الخطأ للمراجعة في نهاية الدرس
-      const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || ex.prompt || "سؤال";
+      const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || "سؤال";
       setMistakes(m => {
         if (m.some(x => x.correct === ex.correctAnswer && x.question === questionText)) return m;
         return [...m, { question: questionText, correct: ex.correctAnswer ?? "", yourAnswer: answer, ex }];

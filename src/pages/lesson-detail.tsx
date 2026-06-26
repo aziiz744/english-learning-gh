@@ -219,7 +219,7 @@ export default function LessonDetail() {
     if (!currentExercise || !selectedAnswer || feedback) return;
 
     submitExercise.mutate(
-      { data: { exerciseId: currentExercise.id, answer: selectedAnswer } },
+      { exerciseId: currentExercise.id, answer: selectedAnswer },
       {
         onSuccess: (result) => {
           setFeedback(result);
