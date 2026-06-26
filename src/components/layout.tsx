@@ -447,32 +447,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
             // العنصر النشط = كبسولة بارزة ملوّنة مع نص (أسلوب حديث)
             const content = isActive ? (
-              <motion.div
-                layout
-                initial={false}
-                transition={{ type: "spring", stiffness: 320, damping: 32, mass: 0.8 }}
+              <div
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
                   background: "hsl(var(--primary))",
-                  borderRadius: 20, padding: "10px 16px",
+                  borderRadius: 18, padding: "10px 16px",
                   boxShadow: "0 4px 14px hsl(var(--primary) / 0.45)",
                 }}
               >
                 <Icon className="h-[21px] w-[21px]" style={{ color: "white", strokeWidth: 2.5 }} />
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  transition={{ duration: 0.2, delay: 0.05 }}
-                  style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap", overflow: "hidden" }}
-                >
+                <span style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap" }}>
                   {isMore ? "المزيد" : item.name}
-                </motion.span>
-              </motion.div>
+                </span>
+              </div>
             ) : (
               <motion.div
-                layout
-                whileTap={{ scale: 0.88 }}
-                transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                whileTap={{ scale: 0.85 }}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center",
                   padding: "11px", borderRadius: 16,
