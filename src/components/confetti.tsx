@@ -7,13 +7,13 @@ import { motion } from "framer-motion";
 // ════════════════════════════════════════════════════════════════
 
 const COLORS = ["#16B6C6", "#0DBFA0", "#22D3DB", "#f59e0b", "#fbbf24", "#34d399", "#60a5fa", "#f472b6"];
-const SHAPES = ["circle", "square", "ribbon"] as const;
+const SHAPES = ["circle", "square", "ribbon"];
 
 interface Piece {
   id: number;
   x: number;
   color: string;
-  shape: typeof SHAPES[number];
+  shape: string;
   size: number;
   delay: number;
   duration: number;
