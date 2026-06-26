@@ -2201,8 +2201,8 @@ export default function UnitLesson() {
             </div>
           )}
 
-          {/* Main content area — يملأ المساحة، تمرير داخلي فقط عند الحاجة */}
-          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", minHeight:0, scrollbarWidth:"none" }} className="hide-scrollbar">
+          {/* Main content area — كل شي يدخل الشاشة، بدون تمرير */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", minHeight:0, scrollbarWidth:"none", paddingBottom: feedback ? 8 : 0 }} className="hide-scrollbar">
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait" initial={false}>
               {ex && (
@@ -2242,16 +2242,23 @@ export default function UnitLesson() {
             )}
           </AnimatePresence>
 
-          {/* Feedback bar — عرض كامل، الشخصية مخفية */}
-          <div style={{ flexShrink:0, paddingBottom:8 }}>
-            <AnimatePresence>
-              {feedback && (
-                <motion.div key="fb" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}}>
-                  <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Feedback bar — يطفو فوق المحتوى (overlay) بدل ما يدفعه */}
+          <AnimatePresence>
+            {feedback && (
+              <motion.div key="fb"
+                initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:30}}
+                transition={{ type:"spring", stiffness:300, damping:30 }}
+                style={{
+                  position:"fixed", left:0, right:0,
+                  bottom:0,
+                  zIndex:40,
+                  padding:"0 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
+                  maxWidth:440, margin:"0 auto",
+                }}>
+                <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>}
 
         {/* Exit confirmation modal */}
