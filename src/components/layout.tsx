@@ -445,37 +445,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
               : (location === item.href || (item.href !== "/" && location.startsWith(item.href)));
             const Icon = item.icon;
 
-            // العنصر النشط = كبسولة بارزة + مؤشّر منزلق (layoutId) سلس
-            const content = (
-              <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {isActive && (
-                  <motion.div
-                    layoutId="navActiveCapsule"
-                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    style={{
-                      position: "absolute", inset: 0,
-                      background: "hsl(var(--primary))",
-                      borderRadius: 18,
-                      boxShadow: "0 4px 14px hsl(var(--primary) / 0.45)",
-                    }}
-                  />
-                )}
-                <div style={{
-                  position: "relative", zIndex: 1,
-                  display: "flex", alignItems: "center", gap: isActive ? 7 : 0,
-                  padding: isActive ? "10px 16px" : "11px",
-                  transition: "padding 0.2s ease, gap 0.2s ease",
-                }}>
-                  <Icon className={isActive ? "h-[21px] w-[21px]" : "h-[22px] w-[22px]"}
-                    style={{ color: isActive ? "white" : "hsl(var(--muted-foreground))", strokeWidth: isActive ? 2.5 : 2, transition: "color 0.2s" }} />
-                  <motion.span
-                    animate={{ width: isActive ? "auto" : 0, opacity: isActive ? 1 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap", overflow: "hidden" }}>
-                    {isMore ? "المزيد" : item.name}
-                  </motion.span>
-                </div>
+            // العنصر النشط = كبسولة بارزة ملوّنة مع نص (أسلوب حديث)
+            const content = isActive ? (
+              <div
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  background: "hsl(var(--primary))",
+                  borderRadius: 18, padding: "10px 16px",
+                  boxShadow: "0 4px 14px hsl(var(--primary) / 0.45)",
+                }}
+              >
+                <Icon className="h-[21px] w-[21px]" style={{ color: "white", strokeWidth: 2.5 }} />
+                <span style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap" }}>
+                  {isMore ? "المزيد" : item.name}
+                </span>
               </div>
+            ) : (
+              <motion.div
+                whileTap={{ scale: 0.85 }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  padding: "11px", borderRadius: 16,
+                }}
+              >
+                <Icon className="h-[22px] w-[22px]" style={{ color: "hsl(var(--muted-foreground))", strokeWidth: 2 }} />
+              </motion.div>
             );
 
             const wrapStyle: CSSProperties = {
