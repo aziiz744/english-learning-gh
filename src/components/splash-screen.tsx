@@ -22,7 +22,12 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
             position: "fixed", inset: 0, zIndex: 9999,
             display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center",
-            background: "linear-gradient(160deg, #16B6C6 0%, #0DBFA0 55%, #08334A 100%)",
+            background: `
+              radial-gradient(ellipse 90% 50% at 50% 0%, hsl(185 80% 43% / 0.28), transparent 60%),
+              radial-gradient(ellipse 70% 45% at 90% 100%, hsl(160 70% 45% / 0.16), transparent 55%),
+              radial-gradient(ellipse 80% 50% at 10% 90%, hsl(200 75% 42% / 0.14), transparent 55%),
+              hsl(222 22% 9%)
+            `,
             overflow: "hidden",
           }}
         >
@@ -81,9 +86,9 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
             animate={{ opacity: 1, y: 0, letterSpacing: 2 }}
             transition={{ delay: 0.5, duration: 0.65, ease: "easeOut" }}
             style={{
-              fontSize: 46, fontWeight: 900, color: "white",
+              fontSize: 46, fontWeight: 900, color: "#22D3DB",
               fontFamily: "'Outfit', sans-serif",
-              textShadow: "0 4px 16px rgba(0,0,0,0.25)",
+              textShadow: "0 0 30px rgba(34,211,219,0.5), 0 4px 16px rgba(0,0,0,0.4)",
             }}
           >
             Owlio
@@ -94,7 +99,7 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 60, opacity: 1 }}
             transition={{ delay: 0.75, duration: 0.5 }}
-            style={{ height: 2.5, background: "rgba(255,255,255,0.55)", borderRadius: 2, marginTop: 14 }}
+            style={{ height: 2.5, background: "linear-gradient(90deg, transparent, #22D3DB, transparent)", borderRadius: 2, marginTop: 14 }}
           />
 
           {/* شعار فرعي */}
@@ -124,7 +129,7 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
               initial={{ x: "-100%" }}
               animate={{ x: "100%" }}
               transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: "55%", height: "100%", background: "white", borderRadius: 3 }}
+              style={{ width: "55%", height: "100%", background: "#22D3DB", borderRadius: 3, boxShadow: "0 0 12px rgba(34,211,219,0.6)" }}
             />
           </motion.div>
         </motion.div>

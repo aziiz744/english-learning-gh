@@ -1597,19 +1597,29 @@ export default function Roadmap() {
         {showSyncMsg && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             onClick={()=>setShowSyncMsg(false)}
-            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:90, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", zIndex:90, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
             <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+              transition={{ type:"spring", stiffness:320, damping:28 }}
               onClick={e=>e.stopPropagation()}
-              style={{ background:"hsl(var(--card))", borderRadius:24, padding:"32px 24px", maxWidth:360, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
-              <motion.div animate={{ rotate:[0,-10,10,-10,0] }} transition={{ duration:0.6, delay:0.2 }} style={{ fontSize:56, marginBottom:14 }}>🔄</motion.div>
-              <h2 style={{ fontWeight:900, fontSize:20, marginBottom:12, color:"hsl(var(--foreground))" }}>تم تحديث المنهج! ✨</h2>
-              <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:24 }}>
+              style={{
+                position:"relative", borderRadius:28, padding:"36px 26px", maxWidth:360, width:"100%", textAlign:"center",
+                background:"hsl(var(--sidebar) / 0.85)",
+                backdropFilter:"blur(28px) saturate(180%)", WebkitBackdropFilter:"blur(28px) saturate(180%)",
+                border:"1px solid hsl(var(--sidebar-border) / 0.5)",
+                boxShadow:`0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px ${activeSection.color}20`,
+                overflow:"hidden",
+              }}>
+              {/* توهّج علوي */}
+              <div style={{ position:"absolute", top:0, left:0, right:0, height:120, background:`radial-gradient(ellipse 70% 100% at 50% 0%, ${activeSection.color}30, transparent 70%)`, pointerEvents:"none" }}/>
+              <motion.div animate={{ rotate:[0,-10,10,-10,0], scale:[1,1.1,1] }} transition={{ duration:0.7, delay:0.2 }} style={{ fontSize:60, marginBottom:14, position:"relative", filter:`drop-shadow(0 6px 16px ${activeSection.color}60)` }}>🔄</motion.div>
+              <h2 style={{ fontWeight:900, fontSize:21, marginBottom:12, color:"hsl(var(--foreground))", position:"relative" }}>تم تحديث المنهج! ✨</h2>
+              <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:26, position:"relative" }}>
                 لقد قمنا بمزامنة تقدّمك ليتناسب مع محتوى منهج الإنجليزية الجديد والمطوّر. واصل من حيث توقّفت! 🚀
               </p>
-              <button onClick={()=>setShowSyncMsg(false)}
-                style={{ width:"100%", padding:"14px", background:activeSection.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 4px 0 ${activeSection.color}99` }}>
+              <motion.button whileTap={{scale:0.96}} onClick={()=>setShowSyncMsg(false)}
+                style={{ width:"100%", padding:"15px", background:`linear-gradient(135deg, ${lightenColor(activeSection.color, 12)}, ${activeSection.color})`, color:"white", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 6px 20px ${activeSection.color}50`, position:"relative" }}>
                 رائع، لنكمل! 🎯
-              </button>
+              </motion.button>
             </motion.div>
           </motion.div>
         )}
