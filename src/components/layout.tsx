@@ -206,8 +206,16 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
             className="fixed inset-0 bg-black/50 z-50 md:hidden" onClick={onClose} />
           <motion.div key="sheet"
             initial={{ y:"100%" }} animate={{ y:0 }} exit={{ y:"100%" }}
-            transition={{ type:"spring", stiffness:300, damping:30 }}
-            className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-sidebar rounded-t-3xl border-t border-sidebar-border pb-8 pt-4 shadow-2xl">
+            transition={{ type:"spring", stiffness:340, damping:34, mass: 0.8 }}
+            className="fixed bottom-0 inset-x-0 z-50 md:hidden pb-8 pt-4"
+            style={{
+              background: "hsl(var(--sidebar) / 0.92)",
+              backdropFilter: "blur(28px) saturate(180%)",
+              WebkitBackdropFilter: "blur(28px) saturate(180%)",
+              borderTopLeftRadius: 28, borderTopRightRadius: 28,
+              borderTop: "1px solid hsl(var(--sidebar-border) / 0.5)",
+              boxShadow: "0 -12px 40px rgba(0,0,0,0.3)",
+            }}>
 
             {/* Handle */}
             <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto mb-5" />
@@ -232,22 +240,27 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
             )}
 
             {/* Links */}
-            <div className="px-4 space-y-1">
-              {moreItems.map(item => {
+            <div className="px-4 space-y-1.5">
+              {moreItems.map((item, i) => {
                 const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 const Icon = item.icon;
                 return (
-                  <Link key={item.href} href={item.href} onClick={onClose}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all",
-                      isActive ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
-                    )}>
-                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", isActive ? "bg-primary/15" : "bg-muted")}>
-                      <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-muted-foreground")} />
-                    </div>
-                    <span className="font-semibold text-sm">{item.name}</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground mr-auto rotate-180" />
-                  </Link>
+                  <motion.div key={item.href}
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.04, type: "spring", stiffness: 400, damping: 30 }}>
+                    <Link href={item.href} onClick={onClose}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all active:scale-[0.98]",
+                        isActive ? "bg-primary/12" : "hover:bg-muted/60"
+                      )}
+                      style={ isActive ? { border: "1px solid hsl(var(--primary) / 0.3)" } : {} }>
+                      <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center shrink-0", isActive ? "bg-primary/20" : "bg-muted/70")}>
+                        <Icon className={cn("w-[19px] h-[19px]", isActive ? "text-primary" : "text-muted-foreground")} />
+                      </div>
+                      <span className={cn("font-bold text-sm", isActive ? "text-primary" : "text-foreground")}>{item.name}</span>
+                      <ChevronRight className={cn("w-4 h-4 mr-auto rotate-180", isActive ? "text-primary" : "text-muted-foreground/50")} />
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -393,10 +406,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <AnimatePresence mode="wait">
             <motion.div
               key={location}
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ type: "tween", ease: [0.25, 0.8, 0.25, 1], duration: 0.26 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ type: "tween", ease: [0.33, 1, 0.68, 1], duration: 0.34 }}
               className="mx-auto max-w-6xl w-full"
             >
               {children}
