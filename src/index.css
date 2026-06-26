@@ -482,22 +482,7 @@ a[role="button"], nav button {
   transition: opacity 0.12s ease, background-color 0.15s ease;
 }
 
-/* ═══════════ مربّع الدليل الثابت في الخارطة ═══════════ */
-/* على الجوال: ثابت (fixed) تحت الهيدر مباشرة — لا يختفي أبداً */
-@media (max-width: 767px) {
-  .roadmap-guide-fixed {
-    position: fixed;
-    top: calc(3rem + max(env(safe-area-inset-top, 0px), 10px));
-    left: 0;
-    right: 0;
-    z-index: 29;
-  }
-  /* مسافة للمحتوى عشان ما يتغطّى تحت المربّع الثابت (ارتفاع المربّع ~95px) */
-  .roadmap-guide-spacer {
-    height: 100px;
-  }
-}
-/* على الكمبيوتر: sticky عادي */
+/* ═══════════ مربّع الدليل الثابت في الخارطة (كمبيوتر) ═══════════ */
 @media (min-width: 768px) {
   .roadmap-guide-fixed {
     position: sticky;

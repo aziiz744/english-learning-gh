@@ -407,8 +407,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className={cn("md:mr-64 flex flex-col min-h-screen md:pb-0", isImmersive ? "" : "pb-28 content-top-safe")}>
-        <main className={cn("flex-1 safe-x", isImmersive ? "" : "px-3 py-4 md:p-8")} style={{ overflow: "hidden" }}>
+      <div className={cn("md:mr-64 flex flex-col md:pb-0", isImmersive ? "h-screen overflow-hidden" : "min-h-screen pb-28 content-top-safe")}>
+        <main className={cn("flex-1 safe-x", isImmersive ? "min-h-0 overflow-hidden" : "px-3 py-4 md:p-8")} style={{ overflow: "hidden" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location}
@@ -416,7 +416,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ type: "tween", ease: [0.33, 1, 0.68, 1], duration: 0.34 }}
-              className="mx-auto max-w-6xl w-full"
+              className={cn("mx-auto w-full", isImmersive ? "h-full" : "max-w-6xl")}
             >
               {children}
             </motion.div>
