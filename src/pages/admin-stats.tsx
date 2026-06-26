@@ -5,8 +5,6 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Users, TrendingUp, BookOpen, Crown, Activity, Clock, Target, Zap, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Layout } from "@/components/layout";
-
 interface StatsData {
   totalUsers: number;
   proUsers: number;
@@ -124,7 +122,7 @@ export default function AdminStats() {
   ] : [];
 
   return (
-    <Layout>
+    <>
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -205,6 +203,6 @@ export default function AdminStats() {
         </>
       )}
     </div>
-    </Layout>
+    </>
   );
 }

@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LoginModal } from "@/components/login-modal";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { WelcomeModal } from "@/components/welcome-modal";
+import { Layout } from "@/components/layout";
 import { SplashScreen } from "@/components/splash-screen";
 
 // الصفحات الأساسية (تُحمّل فوراً لأنها أول ما يُفتح)
@@ -135,7 +136,9 @@ function App() {
         <TooltipProvider>
           {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
+            <Layout>
+              <Router />
+            </Layout>
           </WouterRouter>
           <LoginModal />
           <WelcomeModal />

@@ -1,5 +1,4 @@
 import { useGetAchievements } from "@/lib/api-hooks";
-import { Layout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
@@ -14,7 +13,7 @@ export default function Achievements() {
   const totalCount = achievements?.length || 0;
 
   return (
-    <Layout>
+    <>
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Header */}
         <div className="relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 bg-card p-4 md:p-6 rounded-2xl border border-yellow-500/20">
@@ -96,6 +95,6 @@ export default function Achievements() {
           ) : null}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

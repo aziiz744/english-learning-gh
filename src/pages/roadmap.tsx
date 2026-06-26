@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
@@ -1591,7 +1590,7 @@ export default function Roadmap() {
   const handleBackdropClick = () => setActivePopup(null);
 
   return (
-    <Layout>
+    <>
       {/* ── رسالة مزامنة التقدّم (للمتعلّم المتقدّم) ── */}
       <AnimatePresence>
         {showSyncMsg && (
@@ -2127,6 +2126,6 @@ export default function Roadmap() {
 
       {/* Floating Mascot */}
       {/* البومة الآن حارسة الوحدة — لا حاجة للروبوت القديم */}
-    </Layout>
+    </>
   );
 }

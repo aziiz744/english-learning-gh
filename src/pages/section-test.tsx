@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Layout } from "@/components/layout";
 import { Mascot } from "@/components/mascot";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSectionTestExercises } from "@/lib/lesson-exercises";
@@ -113,7 +112,7 @@ export default function SectionTest() {
   // ── المقدّمة ──
   if (phase === "intro") {
     return (
-      <Layout>
+      <>
         <div className="max-w-md mx-auto px-5 py-10 text-center min-h-[70vh] flex flex-col items-center justify-center">
           <Mascot state="thinking" className="w-28 h-32 mb-4" />
           <div style={{ fontSize: 48, marginBottom: 8 }}>🎓</div>
@@ -133,7 +132,7 @@ export default function SectionTest() {
             العودة للخارطة
           </button>
         </div>
-      </Layout>
+      </>
     );
   }
 
@@ -141,7 +140,7 @@ export default function SectionTest() {
   if (phase === "result") {
     const pct = Math.round((correct / total) * 100);
     return (
-      <Layout>
+      <>
         <div className="max-w-md mx-auto px-5 py-10 text-center min-h-[70vh] flex flex-col items-center justify-center">
           <Mascot state={passed ? "complete" : "idle"} className="w-32 h-36 mb-4" />
           <div style={{ fontSize: 56, marginBottom: 8 }}>{passed ? "🎉" : "💪"}</div>
@@ -173,19 +172,19 @@ export default function SectionTest() {
             </div>
           )}
         </div>
-      </Layout>
+      </>
     );
   }
 
   // ── حماية: لو ما فيه أسئلة ──
   if (!ex) {
     return (
-      <Layout>
+      <>
         <div className="max-w-md mx-auto px-5 py-20 text-center">
           <p className="text-muted-foreground">تعذّر تحميل أسئلة الاختبار. حاول مجدداً.</p>
           <button onClick={() => setLocation("/")} className="mt-4 text-sky-400 font-bold">العودة للخارطة</button>
         </div>
-      </Layout>
+      </>
     );
   }
 
@@ -194,7 +193,7 @@ export default function SectionTest() {
 
   // ── الأسئلة ──
   return (
-    <Layout>
+    <>
       <div className="max-w-md mx-auto px-5 flex flex-col" style={{ minHeight: "calc(100svh - 120px)" }}>
         {/* شريط التقدّم */}
         <div className="flex items-center gap-3 pt-4 pb-2">
@@ -280,6 +279,6 @@ export default function SectionTest() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

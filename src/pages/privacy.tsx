@@ -1,10 +1,8 @@
 import { useLocation } from "wouter";
-import { Layout } from "@/components/layout";
-
 export default function Privacy() {
   const [, setLocation] = useLocation();
   return (
-    <Layout>
+    <>
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 18px", direction: "rtl", lineHeight: 1.9 }}>
         <button onClick={() => setLocation("/")}
           style={{ background: "none", border: "none", color: "hsl(var(--muted-foreground))", fontSize: 15, fontWeight: 700, cursor: "pointer", marginBottom: 18 }}>
@@ -58,6 +56,6 @@ export default function Privacy() {
           باستخدامك للتطبيق، فإنك توافق على سياسة الخصوصية هذه.
         </p>
       </div>
-    </Layout>
+    </>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
-import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLessonMiniExercises, getAllStationExercises } from "@/lib/lesson-exercises";
 import type { ExObj } from "@/lib/lesson-exercises";
@@ -2040,7 +2039,7 @@ export default function UnitLesson() {
 
   // ── بوابة تسجيل الدخول — لا يمكن دخول الدروس بدون حساب ──
   if (!authLoading && !user) return (
-    <Layout>
+    <>
       <div style={{ maxWidth:400, margin:"0 auto", padding:"40px 20px", minHeight:"calc(100svh - 160px)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
         <div style={{ marginBottom:8 }}>
           <Mascot state="thinking" className="w-28 h-32"/>
@@ -2060,21 +2059,21 @@ export default function UnitLesson() {
           العودة للخارطة
         </button>
       </div>
-    </Layout>
+    </>
   );
 
   if (!meta) return (
-    <Layout>
+    <>
       <div style={{ textAlign:"center", padding:60 }}>
         <div style={{ fontSize:64, marginBottom:16 }}>😕</div>
         <h2 style={{ marginBottom:16 }}>الدرس غير موجود</h2>
         <button onClick={()=>history.back()} style={{ padding:"10px 24px", background:"hsl(var(--primary))", color:"white", border:"none", borderRadius:12, fontWeight:700, cursor:"pointer" }}>رجوع</button>
       </div>
-    </Layout>
+    </>
   );
 
   return (
-    <Layout>
+    <>
       <div style={{ maxWidth:440, margin:"0 auto", padding:"0 16px", height:"calc(100svh - 130px)", display:"flex", flexDirection:"column" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
@@ -2268,6 +2267,6 @@ export default function UnitLesson() {
           )}
         </AnimatePresence>
       </div>
-    </Layout>
+    </>
   );
 }

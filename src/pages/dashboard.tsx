@@ -1,5 +1,4 @@
 import { useGetStats, useGetAchievements } from "@/lib/api-hooks";
-import { Layout } from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Award, Zap, BookOpen, Target, ChevronLeft, MapPin, Flame, Star, Library, GraduationCap } from "lucide-react";
@@ -35,7 +34,7 @@ export default function Dashboard() {
   });
 
   return (
-    <Layout>
+    <>
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex items-start justify-between">
           <div>
@@ -260,7 +259,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 

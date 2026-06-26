@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Layout } from "@/components/layout";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { getReviewItems, masterReviewItem, clearReviewLibrary, type ReviewItem } from "@/lib/review-library";
@@ -169,7 +168,7 @@ export default function ReviewLibrary() {
   // وضع التمرين
   if (quizMode && items.length >= 4) {
     return (
-      <Layout>
+      <>
         <div className="pb-8" style={{ maxWidth: 560, margin: "0 auto", paddingTop: 16 }}>
           <ReviewQuiz
             items={items}
@@ -177,12 +176,12 @@ export default function ReviewLibrary() {
             onMaster={(item) => masterReviewItem(item.correct, item.question)}
           />
         </div>
-      </Layout>
+      </>
     );
   }
 
   return (
-    <Layout>
+    <>
       <div className="pb-8" style={{ maxWidth: 560, margin: "0 auto" }}>
         {/* العنوان */}
         <div style={{ textAlign: "center", padding: "12px 16px 20px" }}>
@@ -287,6 +286,6 @@ export default function ReviewLibrary() {
           </div>
         )}
       </div>
-    </Layout>
+    </>
   );
 }

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -237,7 +236,7 @@ export default function Grammar() {
   const currentOpts = shuffledOptions[exIdx] ?? [];
 
   return (
-    <Layout>
+    <>
       <div className="max-w-3xl mx-auto p-4">
         <AnimatePresence mode="wait">
 
@@ -406,6 +405,6 @@ export default function Grammar() {
 
         </AnimatePresence>
       </div>
-    </Layout>
+    </>
   );
 }
