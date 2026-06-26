@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { useGetLessons, useGetStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { triggerLoginModal as openLoginModal } from "@/lib/modal-state";
-import { Layout } from "@/components/layout";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -86,7 +85,7 @@ export default function Lessons() {
   const levelOrder = LEVELS.filter(l => l !== "all");
 
   return (
-    <Layout>
+    <>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
         {/* Header */}
@@ -218,7 +217,7 @@ export default function Lessons() {
           </div>
         )}
       </div>
-    </Layout>
+    </>
   );
 }
 

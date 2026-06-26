@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+/* الخطوط محمّلة في index.html (أسرع مع preconnect) */
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -88,21 +88,21 @@
   --sidebar: 222 28% 6%;
   --sidebar-foreground: 210 10% 80%;
   --sidebar-border: 222 18% 14%;
-  --sidebar-primary: 152 70% 40%;
+  --sidebar-primary: 185 80% 43%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 222 22% 14%;
   --sidebar-accent-foreground: 210 10% 80%;
-  --sidebar-ring: 152 70% 40%;
+  --sidebar-ring: 185 80% 43%;
 
   --popover: 222 22% 12%;
   --popover-foreground: 210 12% 93%;
   --popover-border: 222 18% 20%;
 
   /* Green primary — brighter for dark mode visibility */
-  --primary: 152 70% 40%;
+  --primary: 185 80% 43%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 150 55% 35%;
+  --secondary: 170 87% 40%;
   --secondary-foreground: 0 0% 100%;
 
   --muted: 222 18% 16%;
@@ -115,10 +115,10 @@
   --destructive-foreground: 0 0% 100%;
 
   --input: 222 18% 22%;
-  --ring: 152 70% 40%;
+  --ring: 185 80% 43%;
 
-  --chart-1: 152 70% 40%;
-  --chart-2: 150 55% 35%;
+  --chart-1: 185 80% 43%;
+  --chart-2: 170 87% 40%;
   --chart-3: 43 100% 55%;
   --chart-4: 340 90% 60%;
   --chart-5: 280 70% 60%;
@@ -139,10 +139,10 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  --sidebar-primary-border: hsl(152 70% 40%);
+  --sidebar-primary-border: hsl(185 80% 43%);
   --sidebar-accent-border: hsl(222 22% 18%);
-  --primary-border: hsl(152 70% 35%);
-  --secondary-border: hsl(150 55% 30%);
+  --primary-border: hsl(186 83% 36%);
+  --secondary-border: hsl(170 87% 34%);
   --muted-border: hsl(222 18% 20%);
   --accent-border: hsl(222 18% 20%);
   --destructive-border: hsl(0 70% 45%);
@@ -353,4 +353,160 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+}
+
+/* ═══════════ تحسينات الآيفون (Safe Area + اللمس) ═══════════ */
+
+/* إزالة وميض اللمس الأزرق (كل الأجهزة) */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  background-color: hsl(222 22% 9%);
+}
+
+/* تمرير سلس ومنع السحب المطّاطي — على الأجهزة اللمسية فقط (لا يؤثّر على سكرول الماوس) */
+@media (pointer: coarse) {
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+}
+
+/* منع تحديد النص عند اللمس المطوّل على الأزرار والبطاقات */
+button, a, [role="button"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* المناطق الآمنة: حشوة علوية للنوتش وسفلية لشريط الآيفون */
+.safe-top    { padding-top: env(safe-area-inset-top, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* شريط التنقّل السفلي يحترم منطقة الآيفون الآمنة */
+.bottom-nav-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+}
+
+/* الهيدر الثابت يحترم النوتش */
+.sticky-header-safe {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 5px);
+}
+
+/* تكبير منطقة اللمس للأزرار الصغيرة (إرشادات آبل: 44px على الأقل) */
+@media (pointer: coarse) {
+  button, a[role="button"], .tap-target {
+    min-height: 44px;
+  }
+}
+
+/* تحسين عرض الخطوط على شاشات الريتينا */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* منع تكبير الآيفون التلقائي عند الكتابة في الحقول (يتطلّب 16px على الأقل) */
+input, textarea, select {
+  font-size: 16px !important;
+}
+@media (min-width: 768px) {
+  /* على الكمبيوتر نرجّع الحجم الطبيعي */
+  input, textarea, select {
+    font-size: inherit !important;
+  }
+}
+
+/* حشوة علوية للمحتوى = ارتفاع الهيدر العائم + النوتش (جوال فقط) */
+.content-top-safe {
+  padding-top: calc(56px + max(env(safe-area-inset-top, 0px), 8px));
+}
+@media (min-width: 768px) {
+  .content-top-safe { padding-top: 0; }  /* الكمبيوتر: لا هيدر علوي */
+}
+
+/* ═══════════ ضبط احترافي للمقاسات على الجوال ═══════════ */
+
+/* منع التمرير الأفقي — على الجوال فقط (لا يكسر سكرول الماوس على الكمبيوتر) */
+@media (max-width: 767px) {
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  .text-3xl { font-size: 1.6rem; line-height: 2rem; }
+  .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* ضمان أن الشبكات (grid) لا تتجاوز العرض */
+.grid { min-width: 0; }
+.grid > * { min-width: 0; }
+
+/* ═══════════ انتقالات ناعمة بين الصفحات ═══════════ */
+/* انتقال الصفحات يُدار الآن بـ framer-motion (انزلاق اتجاهي) */
+
+/* إخفاء شريط التمرير (للمحتوى الداخلي في الدروس) */
+.hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* مربّع الدليل في الخارطة: ثابت فوراً (جوال) — يمنع القفز عند التحميل */
+@media (max-width: 767px) {
+  .roadmap-guide-fixed {
+    position: fixed !important;
+    top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px) !important;
+    left: 14px !important;
+    right: 14px !important;
+    padding: 0 !important;
+    z-index: 29;
+  }
+  .roadmap-guide-spacer { height: 70px !important; }
+}
+
+/* ═══════════ صقل بصري عام ═══════════ */
+
+/* تمرير ناعم عند القفز للأقسام */
+html { scroll-behavior: smooth; }
+
+/* تحسين مظهر شريط التمرير على الكمبيوتر (أنحف وأنيق) */
+@media (pointer: fine) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+    background-clip: padding-box;
+  }
+}
+
+/* انتقالات ناعمة لروابط التنقّل فقط (نتجنّب التأثير على أزرار الدروس ثلاثية الأبعاد) */
+a[role="button"], nav button {
+  transition: opacity 0.12s ease, background-color 0.15s ease;
+}
+
+/* ═══════════ مربّع الدليل الثابت في الخارطة (كمبيوتر) ═══════════ */
+@media (min-width: 768px) {
+  .roadmap-guide-fixed {
+    position: sticky;
+    top: 8px;
+    z-index: 29;
+  }
+  .roadmap-guide-spacer { display: none; }
+}
+
+/* ═══════════ تحسينات اللمس للجوال ═══════════ */
+@media (pointer: coarse) {
+  /* منع تأخير اللمس 300ms (آمن وعام) */
+  a, button, [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+/* ═══════════ منع كسر التخطيط بالنصوص الطويلة ═══════════ */
+/* النصوص الإنجليزية الطويلة تلتفّ بدل ما تكسر العرض */
+p, h1, h2, h3, h4, span, div, button {
+  overflow-wrap: break-word;
 }

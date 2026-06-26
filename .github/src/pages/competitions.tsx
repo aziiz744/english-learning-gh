@@ -1,4 +1,3 @@
-import { Layout } from "@/components/layout";
 import { Mascot } from "@/components/mascot";
 import { motion } from "framer-motion";
 import { Zap, Lock, Clock } from "lucide-react";
@@ -26,7 +25,7 @@ export default function Competitions() {
   const progress = Math.min(100, (todayXp / dailyGoal) * 100);
 
   return (
-    <Layout>
+    <>
       <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
         {/* بانر ترحيبي */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
@@ -90,6 +89,6 @@ export default function Competitions() {
           أكمل دروسك اليومية لتجمع XP وتفوز بالمسابقات! 🏆
         </p>
       </div>
-    </Layout>
+    </>
   );
 }

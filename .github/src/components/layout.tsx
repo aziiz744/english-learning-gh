@@ -1,21 +1,21 @@
 import { Link, useLocation } from "wouter";
 import {
   Route, Trophy, Flame, Zap,
-  Shield, LogIn, LogOut, User, Menu, X,
-  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity,
+  Shield, LogIn, LogOut, User, X,
+  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock, Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Mascot } from "@/components/mascot";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Bottom nav: 5 items max ──
 const BOTTOM_NAV = [
   { name: "الخارطة",  href: "/",          icon: Route },
-  { name: "الإنجازات", href: "/achievements", icon: Trophy },
+  { name: "المراجعة", href: "/review",     icon: Library },
   { name: "المسابقات", href: "/competitions", icon: Zap },
   { name: "المزيد",    href: "__more__",    icon: MoreHorizontal },
 ];
@@ -24,6 +24,7 @@ const BOTTOM_NAV = [
 const navigation = [
   { name: "خارطة التعلم",   href: "/",            icon: Route },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
+  { name: "مكتبة المراجعة", href: "/review",      icon: Library },
   { name: "المسابقات",      href: "/competitions",icon: Zap },
   { name: "القراءة",        href: "/reading",     icon: BookMarked },
   { name: "عضوية Pro",      href: "/pro",         icon: Sparkles },
@@ -76,20 +77,17 @@ function SidebarContent({ location, stats, user, authLoading, login, logout, onN
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <svg width="32" height="32" viewBox="0 0 48 48" className="shrink-0">
-            {/* دائرة التصويب */}
-            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
-            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
-            {/* السهم */}
-            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
-            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
-          </svg>
+          <img
+            src="/logo.png"
+            alt="Owlio"
+            width={36}
+            height={36}
+            className="shrink-0 rounded-xl"
+            style={{ width: 36, height: 36, objectFit: "cover", display: "block" }}
+          />
           <div>
-            <span className="font-bold text-lg text-primary tracking-tight leading-none block">مسار الإنجليزية</span>
-            <span className="text-xs text-muted-foreground">EnglishPath</span>
+            <span className="font-bold text-lg text-primary tracking-tight leading-none block">Owlio</span>
+            <span className="text-xs text-muted-foreground">مسار الإنجليزية</span>
           </div>
         </div>
       </div>
@@ -195,6 +193,7 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
     { name: "الإنجازات",  href: "/achievements", icon: Trophy },
     { name: "القراءة",    href: "/reading",       icon: BookMarked },
     { name: "عضوية Pro",  href: "/pro",           icon: Sparkles },
+    { name: "سياسة الخصوصية", href: "/privacy",   icon: Lock },
   ];
   if (user?.isAdmin) moreItems.push({ name: "لوحة الإدارة", href: "/admin", icon: Shield });
   if (user?.isAdmin) moreItems.push({ name: "إحصائيات الموقع", href: "/admin-stats", icon: Activity });
@@ -207,8 +206,16 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
             className="fixed inset-0 bg-black/50 z-50 md:hidden" onClick={onClose} />
           <motion.div key="sheet"
             initial={{ y:"100%" }} animate={{ y:0 }} exit={{ y:"100%" }}
-            transition={{ type:"spring", stiffness:300, damping:30 }}
-            className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-sidebar rounded-t-3xl border-t border-sidebar-border pb-8 pt-4 shadow-2xl">
+            transition={{ type:"spring", stiffness:340, damping:34, mass: 0.8 }}
+            className="fixed bottom-0 inset-x-0 z-50 md:hidden pb-8 pt-4"
+            style={{
+              background: "hsl(var(--sidebar) / 0.92)",
+              backdropFilter: "blur(28px) saturate(180%)",
+              WebkitBackdropFilter: "blur(28px) saturate(180%)",
+              borderTopLeftRadius: 28, borderTopRightRadius: 28,
+              borderTop: "1px solid hsl(var(--sidebar-border) / 0.5)",
+              boxShadow: "0 -12px 40px rgba(0,0,0,0.3)",
+            }}>
 
             {/* Handle */}
             <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto mb-5" />
@@ -233,22 +240,27 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
             )}
 
             {/* Links */}
-            <div className="px-4 space-y-1">
-              {moreItems.map(item => {
+            <div className="px-4 space-y-1.5">
+              {moreItems.map((item, i) => {
                 const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 const Icon = item.icon;
                 return (
-                  <Link key={item.href} href={item.href} onClick={onClose}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all",
-                      isActive ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
-                    )}>
-                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", isActive ? "bg-primary/15" : "bg-muted")}>
-                      <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-muted-foreground")} />
-                    </div>
-                    <span className="font-semibold text-sm">{item.name}</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground mr-auto rotate-180" />
-                  </Link>
+                  <motion.div key={item.href}
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.04, type: "spring", stiffness: 400, damping: 30 }}>
+                    <Link href={item.href} onClick={onClose}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all active:scale-[0.98]",
+                        isActive ? "bg-primary/12" : "hover:bg-muted/60"
+                      )}
+                      style={ isActive ? { border: "1px solid hsl(var(--primary) / 0.3)" } : {} }>
+                      <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center shrink-0", isActive ? "bg-primary/20" : "bg-muted/70")}>
+                        <Icon className={cn("w-[19px] h-[19px]", isActive ? "text-primary" : "text-muted-foreground")} />
+                      </div>
+                      <span className={cn("font-bold text-sm", isActive ? "text-primary" : "text-foreground")}>{item.name}</span>
+                      <ChevronRight className={cn("w-4 h-4 mr-auto rotate-180", isActive ? "text-primary" : "text-muted-foreground/50")} />
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -283,39 +295,92 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const sharedProps = { location, stats, user, authLoading, login, logout };
 
+  // الجواهر للهيدر (تقريب من XP: كل 10 XP ≈ جوهرة، مبسّط)
+  const headerGems = stats ? Math.floor((stats.totalXp ?? 0) / 10) : 0;
+
+  // صفحات "غامرة" تخفي الهيدر والشريط السفلي (التمارين، الاختبارات)
+  const isImmersive = /^\/(u|jump|level-test|section-test)\//.test(location) ||
+    location === "/section-test" || location === "/reset-password";
+
   return (
-    <div className="min-h-screen bg-background text-foreground" dir="rtl">
+    <div className="min-h-screen text-foreground" dir="rtl"
+      style={{
+        background: `
+          radial-gradient(ellipse 90% 45% at 50% -5%, hsl(185 80% 43% / 0.22), transparent 55%),
+          radial-gradient(ellipse 70% 40% at 95% 8%, hsl(160 70% 45% / 0.12), transparent 50%),
+          radial-gradient(ellipse 80% 50% at 5% 95%, hsl(200 75% 42% / 0.10), transparent 55%),
+          hsl(var(--background))
+        `,
+        backgroundAttachment: "fixed",
+      }}>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex w-64 border-l border-sidebar-border bg-sidebar flex-col fixed inset-y-0 right-0 z-40">
         <SidebarContent {...sharedProps} />
       </div>
 
-      {/* Mobile top header */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-50 h-14 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4">
-        <button onClick={() => setMobileMenuOpen(true)}
-          className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center" aria-label="القائمة">
-          <Menu className="w-5 h-5" />
-        </button>
-        <div className="flex items-center gap-1.5">
-          <svg width="24" height="24" viewBox="0 0 48 48">
-            <circle cx="24" cy="24" r="22" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="16" fill="#ffffff"/>
-            <circle cx="24" cy="24" r="10" fill="#ef4444"/>
-            <circle cx="24" cy="24" r="4" fill="#ffffff"/>
-            <line x1="6" y1="42" x2="24" y2="24" stroke="#1e293b" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M24 24 L18 27 L21 30 Z" fill="#1e293b"/>
-            <path d="M6 42 L10 41 L7 38 Z" fill="#f59e0b"/>
-          </svg>
-          <span className="font-bold text-sm text-primary">مسار الإنجليزية</span>
-        </div>
-        {stats && stats.streak > 0 ? (
-          <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1">
-            <Flame className="h-3.5 w-3.5 text-orange-400" />
-            <span className="text-xs font-bold text-orange-400">{stats.streak}</span>
+      {/* Mobile top header — عصري زجاجي عائم (متناسق مع الشريط السفلي) */}
+      {!isImmersive && (
+      <header className="md:hidden fixed top-0 inset-x-0 z-50"
+        style={{
+          paddingTop: "max(env(safe-area-inset-top, 0px), 8px)",
+          paddingLeft: 14, paddingRight: 14, paddingBottom: 8,
+        }}>
+        <div
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: "hsl(var(--sidebar) / 0.78)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+            borderRadius: 22,
+            padding: "7px 14px",
+            boxShadow: "0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
+            height: 48,
+          }}>
+          {/* اللوقو + الاسم */}
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <img
+              src="/logo.png"
+              alt="Owlio"
+              width={30}
+              height={30}
+              className="shrink-0 rounded-xl object-cover"
+              style={{ width: 30, height: 30 }}
+            />
+            <span style={{ fontWeight: 900, fontSize: 17, color: "hsl(var(--primary))", fontFamily: "'Outfit', sans-serif", letterSpacing: 0.3 }}>Owlio</span>
           </div>
-        ) : <div className="w-9" />}
+
+          {/* الإحصائيات المصغّرة (ستريك · جواهر · قلوب) */}
+          <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
+            {/* الستريك */}
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ color: "#f97316", fontWeight: 900, fontSize: 13 }}>{stats?.streak ?? 0}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M12 2 C12 6 8 8 8 13 C8 16 10 19 12 19 C14 19 16 16 16 13 C16 11 15 10 15 10 C15 13 13 14 13 12 C13 9 12 6 12 2 Z" fill="#f97316"/>
+                <path d="M12 19 C10.5 19 9.5 17 9.5 15 C9.5 17 11 18 12 18 C13 18 14.5 17 14.5 15 C14.5 17 13.5 19 12 19 Z" fill="#fbbf24"/>
+              </svg>
+            </div>
+            {/* الجواهر */}
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 13 }}>{headerGems}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#38bdf8" stroke="#0284c7" strokeWidth="1"/>
+                <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#7dd3fc" opacity="0.9"/>
+                <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#0ea5e9" opacity="0.7"/>
+              </svg>
+            </div>
+            {/* القلوب */}
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ color: "#ef4444", fontWeight: 900, fontSize: 13 }}>5</span>
+              <svg width="15" height="15" viewBox="0 0 24 24">
+                <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z" fill="#ef4444"/>
+              </svg>
+            </div>
+          </div>
+        </div>
       </header>
+      )}
 
       {/* Mobile drawer */}
       <AnimatePresence>
@@ -325,9 +390,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className="md:hidden fixed inset-0 bg-black/60 z-50" onClick={() => setMobileMenuOpen(false)} />
             <motion.div key="drawer" initial={{ x:"100%" }} animate={{ x:0 }} exit={{ x:"100%" }}
               transition={{ type:"spring", stiffness:320, damping:32 }}
-              className="md:hidden fixed inset-y-0 right-0 w-72 bg-sidebar border-l border-sidebar-border z-50 flex flex-col overflow-y-auto">
+              className="md:hidden fixed inset-y-0 right-0 w-72 bg-sidebar border-l border-sidebar-border z-50 flex flex-col overflow-y-auto"
+              style={{
+                paddingTop: "max(env(safe-area-inset-top, 0px), 12px)",
+                paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              }}>
               <button onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-4 left-4 w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center">
+                className="absolute left-4 w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center z-10"
+                style={{ top: "max(env(safe-area-inset-top, 0px), 12px)" }}>
                 <X className="w-4 h-4" />
               </button>
               <SidebarContent {...sharedProps} onNavClick={() => setMobileMenuOpen(false)} />
@@ -337,48 +407,104 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className="md:mr-64 flex flex-col min-h-screen pt-14 md:pt-0 pb-20 md:pb-0">
-        <main className="flex-1 p-4 md:p-8">
-          <div className="mx-auto max-w-6xl w-full">{children}</div>
+      <div className={cn("md:mr-64 flex flex-col md:pb-0", isImmersive ? "overflow-hidden" : "min-h-screen pb-28 content-top-safe")}
+        style={isImmersive ? { height: "100dvh" } : undefined}>
+        <main className={cn("safe-x", isImmersive ? "flex-1 min-h-0 flex flex-col overflow-hidden" : "flex-1 px-3 py-4 md:p-8")} style={{ overflow: "hidden" }}>
+          <motion.div
+            key={location}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className={cn("mx-auto w-full", isImmersive ? "flex-1 min-h-0 flex flex-col" : "max-w-6xl")}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
 
       {/* Mobile bottom nav — 5 items */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-sidebar border-t border-sidebar-border"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-        <div className="flex items-center justify-around h-16 px-2">
+      {!isImmersive && (
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 10px)", paddingLeft: 14, paddingRight: 14 }}>
+        <div
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: "hsl(var(--sidebar) / 0.78)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+            borderRadius: 28,
+            padding: "8px 10px",
+            boxShadow: "0 10px 36px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.05) inset",
+            gap: 4,
+          }}>
           {BOTTOM_NAV.map(item => {
-            if (item.href === "__more__") {
+            const isMore = item.href === "__more__";
+            const isActive = isMore
+              ? moreOpen
+              : (location === item.href || (item.href !== "/" && location.startsWith(item.href)));
+            const Icon = item.icon;
+
+            // العنصر النشط = كبسولة بارزة ملوّنة مع نص + لمعة فاخرة
+            const content = isActive ? (
+              <div
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  background: "hsl(var(--primary))",
+                  borderRadius: 18, padding: "10px 16px",
+                  boxShadow: "0 4px 14px hsl(var(--primary) / 0.45)",
+                  position: "relative", overflow: "hidden",
+                }}
+              >
+                {/* لمعة متحركة */}
+                <motion.div
+                  initial={{ x: "-120%" }}
+                  animate={{ x: "220%" }}
+                  transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 2.5, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute", top: 0, bottom: 0, width: "45%",
+                    background: "linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <Icon className="h-[21px] w-[21px]" style={{ color: "white", strokeWidth: 2.5, position: "relative" }} />
+                <span style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap", position: "relative" }}>
+                  {isMore ? "المزيد" : item.name}
+                </span>
+              </div>
+            ) : (
+              <motion.div
+                whileTap={{ scale: 0.85 }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  padding: "11px", borderRadius: 16,
+                }}
+              >
+                <Icon className="h-[22px] w-[22px]" style={{ color: "hsl(var(--muted-foreground))", strokeWidth: 2 }} />
+              </motion.div>
+            );
+
+            const wrapStyle: CSSProperties = {
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", background: "none", border: "none", padding: 0,
+            };
+
+            if (isMore) {
               return (
-                <button key="more" onClick={() => setMoreOpen(true)}
-                  className={cn(
-                    "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all",
-                    moreOpen ? "text-primary" : "text-muted-foreground"
-                  )}>
-                  <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", moreOpen ? "bg-primary/15" : "")}>
-                    <MoreHorizontal className={cn("h-5 w-5", moreOpen ? "text-primary" : "")} />
-                  </div>
-                  <span className="text-[10px] font-bold leading-none">المزيد</span>
+                <button key="more" onClick={() => setMoreOpen(true)} style={wrapStyle}>
+                  {content}
                 </button>
               );
             }
-            const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
-            const Icon = item.icon;
             return (
-              <Link key={item.href} href={item.href}
-                className={cn(
-                  "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}>
-                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", isActive ? "bg-primary/15" : "")}>
-                  <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "")} />
-                </div>
-                <span className={cn("text-[10px] font-bold leading-none", isActive ? "text-primary" : "")}>{item.name}</span>
+              <Link key={item.href} href={item.href} style={wrapStyle}>
+                {content}
               </Link>
             );
           })}
         </div>
       </nav>
+      )}
 
       {/* More Sheet */}
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)}

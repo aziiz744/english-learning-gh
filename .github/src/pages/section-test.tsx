@@ -1,6 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Layout } from "@/components/layout";
 import { Mascot } from "@/components/mascot";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSectionTestExercises } from "@/lib/lesson-exercises";
@@ -11,16 +10,44 @@ import { Check, X, ArrowRight, Volume2 } from "lucide-react";
 
 const PASS_PERCENT = 80;
 
-// نطق بسيط
-function speak(text: string) {
-  try {
-    if (!window.speechSynthesis) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
-    u.rate = 0.9;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-  } catch { /* ignore */ }
+// ── نظام الأصوات (نفس نظام الدروس بالضبط) ──
+// أصوات أنثوية إنجليزية واضحة، صوت ثابت لكل سؤال
+let _cachedVoices: SpeechSynthesisVoice[] = [];
+function loadVoices() {
+  if (!window.speechSynthesis) return;
+  const all = window.speechSynthesis.getVoices();
+  const preferred = all.filter(v =>
+    /en[-_]/i.test(v.lang) &&
+    /(female|woman|girl|child|kid|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
+  );
+  const englishVoices = all.filter(v => /en[-_]/i.test(v.lang));
+  _cachedVoices = (preferred.length >= 2 ? preferred : englishVoices).slice(0, 6);
+}
+if (typeof window !== "undefined" && window.speechSynthesis) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+// حوّل نصاً لرقم ثابت (نفس السؤال = نفس الصوت)
+function _hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+
+// نطق نص (نفس دالة الدروس) — صوت ثابت لكل سؤال حسب voiceKey
+function speak(text: string, voiceKey?: string) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  if (_cachedVoices.length === 0) loadVoices();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = 0.85;
+  if (_cachedVoices.length > 0) {
+    const idx = _hashStr(voiceKey ?? text) % _cachedVoices.length;
+    u.voice = _cachedVoices[idx];
+    u.pitch = 1.12;
+  }
+  window.speechSynthesis.speak(u);
 }
 
 export default function SectionTest() {
@@ -63,8 +90,8 @@ export default function SectionTest() {
     setConfirmed(true);
     const isCorrect = picked === answer;
     if (isCorrect) setCorrect((c) => c + 1);
-    // انطق الإجابة الصحيحة دائماً (تعليم بالصوت)
-    setTimeout(() => speak(answer), 200);
+    // انطق الإجابة الصحيحة بالصوت الحالي (تعليم بالصوت)
+    setTimeout(() => speak(answer, ex?.id), 200);
   };
 
   const next = () => {
@@ -85,7 +112,7 @@ export default function SectionTest() {
   // ── المقدّمة ──
   if (phase === "intro") {
     return (
-      <Layout>
+      <>
         <div className="max-w-md mx-auto px-5 py-10 text-center min-h-[70vh] flex flex-col items-center justify-center">
           <Mascot state="thinking" className="w-28 h-32 mb-4" />
           <div style={{ fontSize: 48, marginBottom: 8 }}>🎓</div>
@@ -105,7 +132,7 @@ export default function SectionTest() {
             العودة للخارطة
           </button>
         </div>
-      </Layout>
+      </>
     );
   }
 
@@ -113,7 +140,7 @@ export default function SectionTest() {
   if (phase === "result") {
     const pct = Math.round((correct / total) * 100);
     return (
-      <Layout>
+      <>
         <div className="max-w-md mx-auto px-5 py-10 text-center min-h-[70vh] flex flex-col items-center justify-center">
           <Mascot state={passed ? "complete" : "idle"} className="w-32 h-36 mb-4" />
           <div style={{ fontSize: 56, marginBottom: 8 }}>{passed ? "🎉" : "💪"}</div>
@@ -145,19 +172,19 @@ export default function SectionTest() {
             </div>
           )}
         </div>
-      </Layout>
+      </>
     );
   }
 
   // ── حماية: لو ما فيه أسئلة ──
   if (!ex) {
     return (
-      <Layout>
+      <>
         <div className="max-w-md mx-auto px-5 py-20 text-center">
           <p className="text-muted-foreground">تعذّر تحميل أسئلة الاختبار. حاول مجدداً.</p>
           <button onClick={() => setLocation("/")} className="mt-4 text-sky-400 font-bold">العودة للخارطة</button>
         </div>
-      </Layout>
+      </>
     );
   }
 
@@ -166,7 +193,7 @@ export default function SectionTest() {
 
   // ── الأسئلة ──
   return (
-    <Layout>
+    <>
       <div className="max-w-md mx-auto px-5 flex flex-col" style={{ minHeight: "calc(100svh - 120px)" }}>
         {/* شريط التقدّم */}
         <div className="flex items-center gap-3 pt-4 pb-2">
@@ -200,7 +227,7 @@ export default function SectionTest() {
                 </span>
                 {/* زر صوت — للجمل الإنجليزية (fill_blank) */}
                 {isFill && (
-                  <button onClick={() => speak((ex.blankSentence ?? "").replace(/_+/g, answer))}
+                  <button onClick={() => speak((ex.blankSentence ?? "").replace(/_+/g, answer), ex.id)}
                     style={{ width: 42, height: 42, borderRadius: 12, background: "#05966922", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Volume2 className="w-5 h-5 text-emerald-600" />
                   </button>
@@ -217,7 +244,7 @@ export default function SectionTest() {
                     else if (isP) { bg = "#ef444422"; border = "2px solid #ef4444"; }
                   } else if (isP) { bg = "#34d39922"; border = "2px solid #34d399"; }
                   return (
-                    <button key={o} onClick={() => { if (!confirmed) { setPicked(o); speak(o); } }} disabled={confirmed}
+                    <button key={o} onClick={() => { if (!confirmed) { setPicked(o); speak(o, ex.id); } }} disabled={confirmed}
                       style={{ padding: "16px 18px", borderRadius: 14, fontSize: 17, fontWeight: 700, background: bg, border,
                         display: "flex", alignItems: "center", justifyContent: "space-between", direction: "ltr",
                         cursor: confirmed ? "default" : "pointer", color: "hsl(var(--foreground))" }}>
@@ -252,6 +279,6 @@ export default function SectionTest() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

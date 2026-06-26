@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Layout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
@@ -67,15 +66,15 @@ export default function Pro() {
   const isPro = proData?.is_pro && daysLeft !== null && daysLeft > 0;
 
   if (loading) return (
-    <Layout>
+    <>
       <div className="flex justify-center py-20">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
-    </Layout>
+    </>
   );
 
   return (
-    <Layout>
+    <>
       <div className="max-w-2xl mx-auto p-4 space-y-6">
 
         {/* Header */}
@@ -188,6 +187,6 @@ export default function Pro() {
         </Card>
 
       </div>
-    </Layout>
+    </>
   );
 }

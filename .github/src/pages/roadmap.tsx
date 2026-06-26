@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Layout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
+import { getUnitGuidePhrases } from "@/lib/lesson-exercises";
+import { getDailyProgress, setDailyGoal, GOAL_OPTIONS } from "@/lib/daily-goal";
 
 interface UnitLesson {
   id: string;
@@ -27,7 +28,7 @@ const CHAPTERS: Chapter[] = [
     units: [
       // ── القسم 1: قدّم واقبل المشروبات ──
       {
-        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#22a55e",
+        id: "unit-drinks", title: "قدّم واقبل المشروبات", emoji: "☕", color: "#16B6C6",
         sectionTitle: "",  // أول وحدة — بدون فاصل فوقها
         lessons: [
           { id: "drinks-1", type: "lesson", title: "الكلمات الأساسية", description: "تعلّم كلمات المشروبات الأساسية مع سماع نطقها.", words: ["tea","coffee","water","juice","milk","yes","no"],
@@ -496,6 +497,68 @@ const CHAPTERS: Chapter[] = [
           { id: "cont-c", type: "challenge", title: "تحدي الوحدة",   description: "اختبار شامل: المضارع المستمر!", words: [] },
         ],
       },
+      // الوحدة 36: الطقس والطبيعة
+      {
+        id: "unit-wthr", title: "تحدّث عن الطقس والطبيعة", emoji: "🌤️", color: "#0284c7",
+        sectionTitle: "تحدّث عن الطقس والطبيعة",
+        lessons: [
+          { id: "wthr-1", type: "lesson",    title: "الطقس",       description: "تعلّم: sunny وrainy وcloudy وwindy.", words: ["sunny","rainy","cloudy","windy"] },
+          { id: "wthr-2", type: "lesson",    title: "الطبيعة",     description: "تعلّم: mountain وriver وforest وbeach.", words: ["mountain","river","forest","beach"] },
+          { id: "wthr-t", type: "treasure",  title: "كنز المراجعة", description: "راجع الطقس والطبيعة!", words: [] },
+          { id: "wthr-3", type: "lesson",    title: "تحدّث عنهما", description: "تعلّم: What's the weather وseason.", words: ["weather","season","summer","winter"] },
+          { id: "wthr-c", type: "challenge", title: "تحدي الوحدة", description: "اختبار شامل: الطقس والطبيعة!", words: [] },
+        ],
+      },
+      // الوحدة 37: أسئلة المضارع المستمر
+      {
+        id: "unit-cq", title: "كوّن أسئلة في المضارع المستمر", emoji: "❓", color: "#7c3aed",
+        sectionTitle: "كوّن أسئلة في المضارع المستمر",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "cq-1", type: "lesson",    title: "أسئلة المستمر",  description: "تعلّم: Are you working? وIs he?", words: ["are","is","working","doing"] },
+          { id: "cq-2", type: "lesson",    title: "أسئلة الاستفهام", description: "تعلّم: What are you doing?", words: ["what","where","why","who"] },
+          { id: "cq-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع أسئلة المستمر!", words: [] },
+          { id: "cq-3", type: "lesson",    title: "إجابات قصيرة",   description: "تعلّم: Yes I am وNo she isn't.", words: ["yes","no","isn't","aren't"] },
+          { id: "cq-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: أسئلة المستمر!", words: [] },
+        ],
+      },
+      // الوحدة 38: تحدّث عن المدرسة
+      {
+        id: "unit-schl", title: "تحدّث عن المدرسة", emoji: "📐", color: "#16a34a",
+        sectionTitle: "تحدّث عن المدرسة",
+        lessons: [
+          { id: "schl-1", type: "lesson",    title: "المواد الدراسية", description: "تعلّم: math وscience وhistory وart.", words: ["math","science","history","art"] },
+          { id: "schl-2", type: "lesson",    title: "في المدرسة",     description: "تعلّم: classroom وhomework وexam وgrade.", words: ["classroom","homework","exam","grade"] },
+          { id: "schl-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع كلمات المدرسة!", words: [] },
+          { id: "schl-3", type: "lesson",    title: "تحدّث عن دراستك", description: "تعلّم: favorite subject وgood at وstudy.", words: ["favorite","subject","study","learn"] },
+          { id: "schl-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: تحدّث عن المدرسة!", words: [] },
+        ],
+      },
+      // الوحدة 39: أفعال الأمر المثبتة
+      {
+        id: "unit-imp", title: "استخدم أفعال الأمر المثبتة", emoji: "👉", color: "#ea580c",
+        sectionTitle: "استخدم أفعال الأمر المثبتة",
+        pathVariant: "zigzag",
+        lessons: [
+          { id: "imp-1", type: "lesson",    title: "أوامر بسيطة",     description: "تعلّم: sit وstand وopen وclose.", words: ["sit","stand","open","close"] },
+          { id: "imp-2", type: "lesson",    title: "إعطاء التعليمات", description: "تعلّم: press وput وtake وfollow.", words: ["press","put","take","follow"] },
+          { id: "imp-t", type: "treasure",  title: "كنز المراجعة",    description: "راجع أفعال الأمر!", words: [] },
+          { id: "imp-3", type: "lesson",    title: "الأمر المهذّب",   description: "تعلّم: please وlet's وwould you.", words: ["please","let's","could","would"] },
+          { id: "imp-c", type: "challenge", title: "تحدي الوحدة",    description: "اختبار شامل: أفعال الأمر!", words: [] },
+        ],
+      },
+      // الوحدة 40: نصائح السلامة (الأخيرة!)
+      {
+        id: "unit-safe", title: "قدّم نصائح السلامة", emoji: "⚠️", color: "#dc2626",
+        sectionTitle: "قدّم نصائح السلامة",
+        lessons: [
+          { id: "safe-1", type: "lesson",    title: "علامات السلامة", description: "تعلّم: danger وwarning وcareful وstop.", words: ["danger","warning","careful","stop"] },
+          { id: "safe-2", type: "lesson",    title: "قواعد السلامة",  description: "تعلّم: must وdon't وalways وnever.", words: ["must","don't","always","never"] },
+          { id: "safe-t", type: "treasure",  title: "كنز المراجعة",   description: "راجع نصائح السلامة!", words: [] },
+          { id: "safe-3", type: "lesson",    title: "حالات الطوارئ",  description: "تعلّم: emergency وcall وhelp وfire.", words: ["emergency","call","help","fire"] },
+          { id: "safe-c", type: "challenge", title: "تحدي الوحدة",    description: "🎉 الوحدة الأخيرة! أكمل القسم الثاني!", words: [] },
+        ],
+      },
     ],
   },
 ];
@@ -620,7 +683,7 @@ function FloatingMascot({ color, chapterId }: { color: string; chapterId: string
 
 // ─── Practice/Dumbbell Icon ──────────────────────────────────────────────────
 function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 76;
+  const SIZE = 62;
   const r = SIZE / 2;
   const faceColor = locked ? "#2d3a4a" : color;
   const darkColor = locked ? "#151f2b" : shadeColor(color, -50);
@@ -670,7 +733,7 @@ function PracticeIcon({ color, locked }: { color: string; locked: boolean }) {
 
 // ─── Crown icon for challenge stations ───────────────────────────────────────
 function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
-  const SIZE = 76;
+  const SIZE = 62;
   const r = SIZE / 2;
   const depth = SIZE * 0.11;
   const pad = 5;
@@ -812,7 +875,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   isJumpStation?: boolean;
   canJump?: boolean;
 }) {
-  const SIZE   = type === "challenge" ? 90 : 76;
+  const SIZE   = type === "challenge" ? 76 : 62;
   const r      = SIZE / 2;
   const depth = SIZE * 0.11; // عمق الزاوية ثلاثية الأبعاد
   const pad = 16; // مساحة إضافية للخط الخارجي
@@ -1023,7 +1086,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
         <>
           <p className="font-bold text-white text-center mb-0.5" style={{ fontSize: 15 }}>{unitTitle}</p>
           <p className="text-white/80 text-center mb-3" style={{ fontSize: 12 }}>
-            {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : `الدرس ${lessonNum} · 4 دروس`}
+            {lesson.type === "treasure" ? "كنز المراجعة 💎" : lesson.type === "challenge" ? "تحدي الوحدة 👑" : lesson.type === "practice" ? "تمرين مكثف 🏋️ · مراجعة شاملة" : `الدرس ${lessonNum} · 4 دروس`}
           </p>
 
           {/* Start button or completed state */}
@@ -1050,7 +1113,7 @@ function StationPopup({ lesson, color, unitTitle, lessonNum, totalLessons, lesso
               onMouseDown={e => (e.currentTarget.style.transform = "translateY(2px)", e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.15)")}
               onMouseUp={e => (e.currentTarget.style.transform = "", e.currentTarget.style.boxShadow = "0 4px 0 rgba(0,0,0,0.15)")}
             >
-              {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : "ابدأ +10 XP"}
+              {lesson.type === "treasure" ? "ابدأ المراجعة 💎 +20 XP" : lesson.type === "practice" ? "ابدأ التمرين 🏋️" : "ابدأ +10 XP"}
             </button>
           )}
         </>
@@ -1086,7 +1149,7 @@ function PathConnector({ fromX, fromY, toX, toY, color, bothDone, anyDone }: {
 
 // ─── S-curve positions ────────────────────────────────────────────────────────
 const CANVAS_W = 300;
-const STEP_Y   = 110;
+const STEP_Y   = 92;
 const SIDE_PAD = 65;
 
 function buildPath(count: number, variant?: string): { x: number; y: number }[] {
@@ -1157,7 +1220,13 @@ function GuideDrawer({ section, chapter, onClose }: {
   onClose: () => void;
 }) {
   const unit = chapter.units.find(u => u.id === section.unitId) ?? chapter.units[0];
-  const phrases = UNIT_GUIDE_PHRASES[unit.id] ?? [];
+  // جمل الدليل: استخدم اليدوية إن وُجدت، وإلا ولّدها تلقائياً من بنوك دروس الوحدة
+  const manualPhrases = UNIT_GUIDE_PHRASES[unit.id];
+  const lessonTitles = unit.lessons.filter(l => l.type === "lesson").map(l => l.title);
+  const phrases = (manualPhrases && manualPhrases.length > 0)
+    ? manualPhrases
+    : getUnitGuidePhrases(lessonTitles);
+  const unitEmoji = unit.emoji ?? "📘";
 
   return (
     <motion.div
@@ -1183,7 +1252,7 @@ function GuideDrawer({ section, chapter, onClose }: {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
           <div>
-            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة 1</h2>
+            <h2 style={{ fontWeight: 900, fontSize: 20, margin: "0 0 4px", textAlign: "right" }}>دليل الوحدة</h2>
             <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 13, margin: 0, textAlign: "right" }}>
               طالع الجمل الأساسية واستعرضها مع الترجمة
             </p>
@@ -1194,7 +1263,7 @@ function GuideDrawer({ section, chapter, onClose }: {
             border: `2px solid ${section.color}40`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 32, flexShrink: 0, marginRight: 12,
-          }}>☕</div>
+          }}>{unitEmoji}</div>
         </div>
 
         {/* Section label */}
@@ -1207,6 +1276,11 @@ function GuideDrawer({ section, chapter, onClose }: {
 
         {/* Phrases */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {phrases.length === 0 && (
+            <div style={{ textAlign: "center", padding: "24px 12px", color: "hsl(var(--muted-foreground))", fontSize: 14 }}>
+              ابدأ الدرس مباشرة لتتعلّم جمل هذه الوحدة! 🚀
+            </div>
+          )}
           {phrases.map((p, i) => (
             <div key={i} style={{
               background: "hsl(var(--background))",
@@ -1261,11 +1335,134 @@ const UNIT_GUIDES: Record<string, string> = {
   "unit-present": "استخدم الزمن المضارع في حياتك اليومية",
   "unit-weather": "تحدّث عن الطقس والفصول",
   "unit-pets": "تحدّث عن حيواناتك الأليفة",
+  // ── القسم الثاني ──
+  "unit-clothes": "تسوّق لشراء الملابس واطلب المقاسات والألوان",
+  "unit-house": "قم بجولة في منزلك وصف الغرف والأثاث",
+  "unit-tobe": "استخدم am / is / are في الجمل",
+  "unit-contr": "اختصر am/is/are: I'm وyou're وisn't",
+  "unit-order": "اطلب الطعام والمشروبات في المطعم بأدب",
+  "unit-work": "تواصل في العمل: الاجتماعات والبريد والمهام",
+  "unit-feel": "عبّر عن مشاعرك بالزمن المضارع",
+  "unit-class": "اطلب المساعدة في الصف وافهم الدرس",
+  "unit-shop": "اطلب المساعدة أثناء التسوّق واسأل عن المنتجات",
+  "unit-time": "استخدم تعابير الوقت والساعة وأوقات اليوم",
+  "unit-sport": "ناقش الرياضات وفرقك ولاعبيك المفضّلين",
+  "unit-adv": "استخدم ظروف التكرار: always وusually وnever",
+  "unit-rout": "صف روتينك اليومي من الصباح للمساء",
+  "unit-hotel": "احجز غرفة في فندق وتعامل مع الاستقبال",
+  "unit-art": "استخدم أدوات التعريف a / an / the بشكل صحيح",
+  "unit-fam": "صف أفراد عائلتك وشخصياتهم",
+  "unit-poss": "صف ممتلكاتك واستخدم my / your / his",
+  "unit-lost": "افرز الأشياء المفقودة وصِفها في مكتب المفقودات",
+  "unit-wear": "تسوّق للملابس واختر المقاس المناسب",
+  "unit-plur": "كوّن جمع التكسير: man/men وchild/children",
+  "unit-city": "تنقّل في مدينة غير مألوفة واسأل عن الطريق",
+  "unit-neg": "كوّن النفي في المضارع: don't وdoesn't",
+  "unit-symp": "تحدّث عن الأعراض والألم عند الطبيب",
+  "unit-beq": "كوّن أسئلة بـ am/is/are وأجب عليها",
+  "unit-cont": "استخدم المضارع المستمر للأحداث الجارية",
+  "unit-wthr": "تحدّث عن الطقس والطبيعة والفصول",
+  "unit-cq": "كوّن أسئلة في المضارع المستمر",
+  "unit-schl": "تحدّث عن المدرسة والمواد والدراسة",
+  "unit-imp": "استخدم أفعال الأمر لإعطاء التعليمات",
+  "unit-safe": "قدّم نصائح السلامة وتعامل مع الطوارئ",
 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
+// ── بطاقة الهدف اليومي (تحفيز العادة) ──
+function DailyGoalCard({ color }: { color: string }) {
+  const [prog, setProg] = useState(() => getDailyProgress());
+  const [showGoalPicker, setShowGoalPicker] = useState(false);
+
+  useEffect(() => {
+    setProg(getDailyProgress());
+    // حدّث عند العودة للصفحة
+    const onFocus = () => setProg(getDailyProgress());
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
+
+  const R = 17, C = 2 * Math.PI * R;
+  const dash = C * (prog.pct / 100);
+
+  return (
+    <div style={{
+      position: "relative",
+      maxWidth: 360, margin: "8px auto 4px", padding: "0 12px",
+    }}>
+      <div style={{
+        background: prog.done
+          ? "linear-gradient(135deg, #16a34a, #22c55e)"
+          : "hsl(var(--card))",
+        border: prog.done ? "none" : "1px solid hsl(var(--border))",
+        borderRadius: 12, padding: "7px 12px",
+        display: "flex", alignItems: "center", gap: 10, direction: "rtl",
+        boxShadow: prog.done ? "0 3px 12px rgba(34,197,94,0.25)" : "none",
+      }}>
+        {/* حلقة التقدّم */}
+        <div style={{ position: "relative", width: 40, height: 40, flexShrink: 0 }}>
+          <svg width="40" height="40" style={{ transform: "rotate(-90deg)" }}>
+            <circle cx="20" cy="20" r={R} fill="none" stroke={prog.done ? "rgba(255,255,255,0.3)" : "hsl(var(--muted))"} strokeWidth="4.5"/>
+            <motion.circle cx="20" cy="20" r={R} fill="none"
+              stroke={prog.done ? "white" : color} strokeWidth="4.5" strokeLinecap="round"
+              strokeDasharray={C} initial={{ strokeDashoffset: C }}
+              animate={{ strokeDashoffset: C - dash }} transition={{ duration: 0.8, ease: "easeOut" }}/>
+          </svg>
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 14,
+          }}>
+            {prog.done ? "🏆" : "🔥"}
+          </div>
+        </div>
+
+        {/* النص */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 900, color: prog.done ? "white" : "hsl(var(--foreground))", marginBottom: 1 }}>
+            {prog.done ? "أنجزت هدف اليوم! 🎉" : "هدفك اليومي"}
+          </div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: prog.done ? "rgba(255,255,255,0.9)" : "hsl(var(--muted-foreground))" }}>
+            {prog.earned} / {prog.goal} نقطة
+            {!prog.done && (
+              <button onClick={() => setShowGoalPicker(v => !v)}
+                style={{ background: "none", border: "none", color, fontSize: 11, fontWeight: 800, cursor: "pointer", marginRight: 8, padding: 0 }}>
+                تغيير
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* اختيار الهدف */}
+      <AnimatePresence>
+        {showGoalPicker && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+            style={{ overflow: "hidden", marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 8, padding: "4px 0" }}>
+              {GOAL_OPTIONS.map(opt => (
+                <button key={opt.value}
+                  onClick={() => { setDailyGoal(opt.value); setProg(getDailyProgress()); setShowGoalPicker(false); }}
+                  style={{
+                    flex: 1, padding: "10px 4px", borderRadius: 12,
+                    border: `2px solid ${prog.goal === opt.value ? color : "hsl(var(--border))"}`,
+                    background: prog.goal === opt.value ? `${color}15` : "hsl(var(--card))",
+                    cursor: "pointer", textAlign: "center",
+                  }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "hsl(var(--foreground))" }}>{opt.label}</div>
+                  <div style={{ fontSize: 10, color: "hsl(var(--muted-foreground))", marginTop: 2 }}>{opt.desc}</div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Roadmap() {
   const [activeChapter] = useState(0);
+  const [isMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= 767);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
@@ -1394,34 +1591,42 @@ export default function Roadmap() {
   const handleBackdropClick = () => setActivePopup(null);
 
   return (
-    <Layout>
+    <>
       {/* ── رسالة مزامنة التقدّم (للمتعلّم المتقدّم) ── */}
       <AnimatePresence>
         {showSyncMsg && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             onClick={()=>setShowSyncMsg(false)}
-            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:90, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", zIndex:90, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
             <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}} exit={{scale:0.85,y:20}}
+              transition={{ type:"spring", stiffness:320, damping:28 }}
               onClick={e=>e.stopPropagation()}
-              style={{ background:"hsl(var(--card))", borderRadius:24, padding:"32px 24px", maxWidth:360, width:"100%", textAlign:"center", border:"2px solid hsl(var(--border))" }}>
-              <motion.div animate={{ rotate:[0,-10,10,-10,0] }} transition={{ duration:0.6, delay:0.2 }} style={{ fontSize:56, marginBottom:14 }}>🔄</motion.div>
-              <h2 style={{ fontWeight:900, fontSize:20, marginBottom:12, color:"hsl(var(--foreground))" }}>تم تحديث المنهج! ✨</h2>
-              <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:24 }}>
+              style={{
+                position:"relative", borderRadius:28, padding:"36px 26px", maxWidth:360, width:"100%", textAlign:"center",
+                background:"hsl(var(--sidebar) / 0.85)",
+                backdropFilter:"blur(28px) saturate(180%)", WebkitBackdropFilter:"blur(28px) saturate(180%)",
+                border:"1px solid hsl(var(--sidebar-border) / 0.5)",
+                boxShadow:`0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px ${activeSection.color}20`,
+                overflow:"hidden",
+              }}>
+              {/* توهّج علوي */}
+              <div style={{ position:"absolute", top:0, left:0, right:0, height:120, background:`radial-gradient(ellipse 70% 100% at 50% 0%, ${activeSection.color}30, transparent 70%)`, pointerEvents:"none" }}/>
+              <motion.div animate={{ rotate:[0,-10,10,-10,0], scale:[1,1.1,1] }} transition={{ duration:0.7, delay:0.2 }} style={{ fontSize:60, marginBottom:14, position:"relative", filter:`drop-shadow(0 6px 16px ${activeSection.color}60)` }}>🔄</motion.div>
+              <h2 style={{ fontWeight:900, fontSize:21, marginBottom:12, color:"hsl(var(--foreground))", position:"relative" }}>تم تحديث المنهج! ✨</h2>
+              <p style={{ fontSize:15, color:"hsl(var(--muted-foreground))", lineHeight:1.8, direction:"rtl", marginBottom:26, position:"relative" }}>
                 لقد قمنا بمزامنة تقدّمك ليتناسب مع محتوى منهج الإنجليزية الجديد والمطوّر. واصل من حيث توقّفت! 🚀
               </p>
-              <button onClick={()=>setShowSyncMsg(false)}
-                style={{ width:"100%", padding:"14px", background:activeSection.color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 4px 0 ${activeSection.color}99` }}>
+              <motion.button whileTap={{scale:0.96}} onClick={()=>setShowSyncMsg(false)}
+                style={{ width:"100%", padding:"15px", background:`linear-gradient(135deg, ${lightenColor(activeSection.color, 12)}, ${activeSection.color})`, color:"white", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:`0 6px 20px ${activeSection.color}50`, position:"relative" }}>
                 رائع، لنكمل! 🎯
-              </button>
+              </motion.button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="animate-in fade-in duration-500 pb-8" onClick={handleBackdropClick}>
+      <div className="pb-8" onClick={handleBackdropClick}>
         <style>{`
-          .roadmap-sticky-header { top: 46px; }
-          .roadmap-stats-bar { top: 6px; background: hsl(var(--background)); }
           .roadmap-side-widgets { display: none; }
           @media (min-width: 1100px) {
             .roadmap-side-widgets {
@@ -1430,11 +1635,7 @@ export default function Roadmap() {
             }
           }
           @media (max-width: 767px) {
-            .roadmap-stats-bar {
-              top: calc(56px + env(safe-area-inset-top, 0px));
-              padding-top: 8px; padding-bottom: 6px;
-            }
-            .roadmap-sticky-header { top: calc(98px + env(safe-area-inset-top, 0px)); }
+            /* مربّع الدليل وضعه الآن في index.css (يُطبّق فوراً بلا قفز) */
           }
         `}</style>
 
@@ -1463,63 +1664,8 @@ export default function Roadmap() {
         </div>
 
 
-        {/* ── شريط البيانات المختصر (heart · gem · flame · flag) ── */}
-        <div className="roadmap-stats-bar" style={{
-          position: "sticky", zIndex: 31, display: "flex", justifyContent: "flex-start",
-          alignItems: "center", gap: 16, padding: "6px 16px 0",
-        }}>
-          {/* القلوب */}
-          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("hearts");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: "none", border: "none", padding: 0,
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
-              <path d="M12 21 C5 15 3 11 3 8 C3 5 5 3 8 3 C10 3 11 4.5 12 6 C13 4.5 14 3 16 3 C19 3 21 5 21 8 C21 11 19 15 12 21 Z"
-                fill={isPro ? "#3b82f6" : "#ef4444"} stroke={isPro ? "#1d4ed8" : "#b91c1c"} strokeWidth="1"/>
-            </svg>
-            <span style={{ color: isPro ? "#3b82f6" : "#ef4444", fontWeight: 900, fontSize: 15 }}>{isPro ? "∞" : "5"}</span>
-          </button>
-
-          {/* الجواهر */}
-          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("gems");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: "none", border: "none", padding: 0,
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
-              <path d="M6 3 H18 L22 9 L12 22 L2 9 Z" fill="#38bdf8" stroke="#0284c7" strokeWidth="1"/>
-              <path d="M6 3 L9 9 L12 22 L2 9 Z" fill="#7dd3fc" opacity="0.9"/>
-              <path d="M18 3 L15 9 L12 22 L22 9 Z" fill="#0ea5e9" opacity="0.7"/>
-              <path d="M2 9 H22" stroke="#0284c7" strokeWidth="0.8"/>
-            </svg>
-            <span style={{ color: "#0ea5e9", fontWeight: 900, fontSize: 15 }}>{gemCount}</span>
-          </button>
-
-          {/* الستريك */}
-          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("streak");}} style={{
-            display: "flex", alignItems: "center", gap: 4, cursor: "pointer",
-            background: "none", border: "none", padding: 0,
-          }}>
-            <span style={{ color: "#f97316", fontWeight: 900, fontSize: 15 }}>{streak}</span>
-            <svg width="22" height="22" viewBox="0 0 24 24" style={{ filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>
-              <path d="M12 2 C12 6 8 8 8 13 C8 16 10 19 12 19 C14 19 16 16 16 13 C16 11 15 10 15 10 C15 13 13 14 13 12 C13 9 12 6 12 2 Z" fill="#f97316" stroke="#ea580c" strokeWidth="0.8"/>
-              <path d="M12 19 C10.5 19 9.5 17 9.5 15 C9.5 17 11 18 12 18 C13 18 14.5 17 14.5 15 C14.5 17 13.5 19 12 19 Z" fill="#fbbf24"/>
-            </svg>
-          </button>
-
-          {/* علم أمريكا */}
-          <button onClick={(e)=>{e.stopPropagation(); setStatInfo("lang");}} style={{
-            display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: "none", border: "none", padding: 0,
-          }}>
-            <span style={{ color: "hsl(var(--foreground))", fontWeight: 900, fontSize: 15 }}>10</span>
-            <svg width="26" height="18" viewBox="0 0 26 18" style={{ borderRadius: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>
-              <rect width="26" height="18" fill="#b22234"/>
-              {[1,3,5,7,9,11].map(i=>(<rect key={i} y={i*1.38} width="26" height="1.38" fill="white"/>))}
-              <rect width="11" height="9.7" fill="#3c3b6e"/>
-              {[...Array(15)].map((_,i)=>(<circle key={i} cx={1.4+(i%5)*2} cy={1.4+Math.floor(i/5)*2.8} r="0.55" fill="white"/>))}
-            </svg>
-          </button>
-        </div>
+        {/* ── شريط البيانات المختصر (heart · gem · flame · flag) — ثابت زي دوولينجو ── */}
+        {/* شريط الإحصائيات نُقل للهيدر العلوي */}
 
         {/* ── نافذة توضيح البيانات ── */}
         <AnimatePresence>
@@ -1556,79 +1702,76 @@ export default function Roadmap() {
           )}
         </AnimatePresence>
 
-        {/* ── Sticky section header (ثلاثي الأبعاد) ── */}
-        <motion.div
-          key={activeSection.id}
-          className="roadmap-sticky-header"
-          initial={{ opacity: 0.7, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          style={{
-            position: "sticky",
-            zIndex: 30,
-            padding: "8px 16px",
-          }}
-        >
-          <div style={{ maxWidth: 360, margin: "0 auto", position: "relative" }}>
-            {/* الطبقة السفلية (العمق ثلاثي الأبعاد) */}
-            <div style={{
-              position: "absolute", inset: 0, top: 6,
-              background: shadeColor(activeSection.color, -55),
-              borderRadius: 18,
-            }}/>
-            {/* الوجه العلوي */}
+        {/* ── Section header (ثابت تحت الهيدر) ── */}
+        <div className="roadmap-guide-fixed" style={ isMobile ? {
+          zIndex: 29,
+          position: "fixed",
+          top: "calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px)",
+          left: 14, right: 14,
+        } : { zIndex: 29 }}>
+        <div className="roadmap-sticky-header">
+          <div style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
+            {/* شريط الدليل الزجاجي الأنيق (متناسق مع الواجهة) */}
             <div style={{
               position: "relative",
-              background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 25)}, ${activeSection.color} 55%, ${shadeColor(activeSection.color, -20)})`,
-              borderRadius: 18,
-              padding: "12px 16px",
-              boxShadow: `0 6px 0 ${shadeColor(activeSection.color, -55)}, 0 10px 22px ${activeSection.color}55`,
-              border: `1.5px solid ${lightenColor(activeSection.color, 35)}`,
+              background: "hsl(var(--sidebar) / 0.78)",
+              backdropFilter: "blur(24px) saturate(180%)",
+              WebkitBackdropFilter: "blur(24px) saturate(180%)",
+              border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+              borderRadius: 16,
+              padding: "8px 10px 8px 12px",
+              boxShadow: "0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
+              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
             }}>
-              {/* لمعة علوية */}
-              <div style={{
-                position: "absolute", top: 4, left: 12, right: 12, height: 14,
-                background: "linear-gradient(180deg, rgba(255,255,255,0.35), transparent)",
-                borderRadius: 12, pointerEvents: "none",
-              }}/>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                {/* Title — center */}
-                <div style={{ flex: 1, textAlign: "center", padding: "0 4px" }}>
-                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 700, marginBottom: 2 }}>
-                    القسم 1 · الوحدة {activeSectionIdx + 1} {activeSection.emoji}
+              {/* مؤشّر لون الوحدة + العنوان */}
+              <div style={{ display: "flex", alignItems: "center", gap: 9, flex: 1, minWidth: 0 }}>
+                {/* نقطة لون الوحدة */}
+                <div style={{
+                  width: 36, height: 36, borderRadius: 11, flexShrink: 0,
+                  background: `linear-gradient(135deg, ${lightenColor(activeSection.color, 15)}, ${activeSection.color})`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 18, boxShadow: `0 2px 8px ${activeSection.color}55`,
+                }}>
+                  {activeSection.emoji}
+                </div>
+                <div style={{ flex: 1, textAlign: "right", minWidth: 0 }}>
+                  <div style={{ color: "hsl(var(--muted-foreground))", fontSize: 9.5, fontWeight: 700, marginBottom: 1 }}>
+                    الوحدة {activeSectionIdx + 1}
                   </div>
-                  <div style={{ color: "white", fontWeight: 900, fontSize: 16, lineHeight: 1.2, textShadow: `0 1px 2px ${shadeColor(activeSection.color, -60)}` }}>
+                  <div style={{ color: "hsl(var(--foreground))", fontWeight: 800, fontSize: 13, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {activeSection.title}
                   </div>
-                  {/* دليل مختصر */}
-                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 10.5, fontWeight: 600, marginTop: 3, lineHeight: 1.35 }}>
-                    {UNIT_GUIDES[activeSection.unitId] ?? "تعلّم كلمات وجمل جديدة خطوة بخطوة"}
-                  </div>
                 </div>
-
-                {/* Guidebook button */}
-                <button
-                  onClick={e => { e.stopPropagation(); setShowGuide(true); }}
-                  style={{
-                    background: "rgba(255,255,255,0.25)",
-                    border: "1.5px solid rgba(255,255,255,0.5)",
-                    borderRadius: 12, padding: "7px 10px",
-                    color: "white", fontWeight: 800, fontSize: 12,
-                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-                    flexShrink: 0, whiteSpace: "nowrap",
-                    boxShadow: `0 3px 0 ${shadeColor(activeSection.color, -50)}`,
-                  }}>
-                  <span style={{ fontSize: 16 }}>📖</span>
-                  <span>الدليل</span>
-                </button>
               </div>
+
+              {/* زر الدليل */}
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                onClick={e => { e.stopPropagation(); setShowGuide(true); }}
+                style={{
+                  background: activeSection.color,
+                  border: "none",
+                  borderRadius: 12, padding: "8px 14px",
+                  color: "white", fontWeight: 800, fontSize: 12,
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
+                  flexShrink: 0, whiteSpace: "nowrap",
+                  boxShadow: `0 3px 10px ${activeSection.color}55`,
+                }}>
+                <span style={{ fontSize: 14 }}>📖</span>
+                <span>الدليل</span>
+              </motion.button>
             </div>
           </div>
-        </motion.div>
+        </div>
+        </div>
+        {/* مسافة تعويضية للمربّع الثابت (جوال فقط) */}
+        <div className="roadmap-guide-spacer" style={ isMobile ? { height: 70 } : undefined } />
+
+        {/* بطاقة الهدف اليومي */}
+        <DailyGoalCard color="#16B6C6" />
 
         {/* Page title */}
         <div className="text-center my-6">
-          <div className="text-5xl mb-3">🗺️</div>
           <h1 className="text-3xl font-bold">خارطة التعلم</h1>
           <p className="text-muted-foreground mt-1 text-sm">طريقك من الصفر حتى إتقان الإنجليزية</p>
         </div>
@@ -1981,6 +2124,6 @@ export default function Roadmap() {
 
       {/* Floating Mascot */}
       {/* البومة الآن حارسة الوحدة — لا حاجة للروبوت القديم */}
-    </Layout>
+    </>
   );
 }

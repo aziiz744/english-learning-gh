@@ -1,29 +1,44 @@
-// ── شخصية البومة "مسار الإنجليزية" — 6 وضعيات تتبدّل بسلاسة (تلاشي ناعم فقط) ──
+// ════════════════════════════════════════════════════════════════
+//  Owlie — الماسكوت الرسمي لتطبيق "مسار الإنجليزية"
+//  نظام جاهز لاستقبال 6 صور PNG شفافة (الوضعيات الرسمية المعتمدة)
+//  ضع الصور الست في src/assets/owl/ بالأسماء التالية:
+//    owl-idle.png       → Happy / Idle (واقف سعيد)
+//    owl-wave.png       → Waving (يلوّح)
+//    owl-think.png      → Thinking (يفكّر)
+//    owl-celebrate.png  → Celebrating (يحتفل)
+//    owl-excited.png    → Excited (متحمّس)
+//    owl-read.png       → Reading (يقرأ كتاب)
+// ════════════════════════════════════════════════════════════════
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import owlIdle from "@/assets/owl/owl-idle.png";
-import owlHop from "@/assets/owl/owl-hop.png";
-import owlWing from "@/assets/owl/owl-wing.png";
-import owlCelebrate from "@/assets/owl/owl-celebrate.png";
-import owlFlight from "@/assets/owl/owl-flight.png";
+import owlWave from "@/assets/owl/owl-wave.png";
 import owlThink from "@/assets/owl/owl-think.png";
+import owlCelebrate from "@/assets/owl/owl-celebrate.png";
+import owlExcited from "@/assets/owl/owl-excited.png";
+import owlRead from "@/assets/owl/owl-read.png";
 
-export type OwlState = "idle" | "correct" | "wrong" | "celebrate" | "thinking" | "auto";
+export type OwlState =
+  | "idle" | "correct" | "wrong" | "celebrate"
+  | "thinking" | "reading" | "welcome" | "auto";
 
 const POSE_IMG = {
-  idle: owlIdle, hop: owlHop, wing: owlWing,
-  celebrate: owlCelebrate, flight: owlFlight, think: owlThink,
+  idle: owlIdle,
+  wave: owlWave,
+  think: owlThink,
+  celebrate: owlCelebrate,
+  excited: owlExcited,
+  read: owlRead,
 } as const;
 type PoseKey = keyof typeof POSE_IMG;
 
-// تسلسل عفوي للوضعيات (كأنها تعيش)
 const AUTO_SEQUENCE: { pose: PoseKey; hold: number }[] = [
   { pose: "idle",      hold: 3800 },
-  { pose: "wing",      hold: 2800 },
+  { pose: "wave",      hold: 2600 },
   { pose: "think",     hold: 3200 },
   { pose: "idle",      hold: 3400 },
-  { pose: "hop",       hold: 2400 },
-  { pose: "flight",    hold: 3000 },
+  { pose: "read",      hold: 3600 },
+  { pose: "excited",   hold: 2400 },
   { pose: "celebrate", hold: 2600 },
   { pose: "idle",      hold: 3800 },
 ];
@@ -34,7 +49,7 @@ export function OwlMascot({ state = "auto", size = 120 }: { state?: OwlState; si
 
   useEffect(() => {
     if (state !== "auto") return;
-    let timer: any;
+    let timer: ReturnType<typeof setTimeout>;
     const step = () => {
       const cur = AUTO_SEQUENCE[idxRef.current % AUTO_SEQUENCE.length];
       setAutoPose(cur.pose);
@@ -47,10 +62,12 @@ export function OwlMascot({ state = "auto", size = 120 }: { state?: OwlState; si
 
   const poseKey: PoseKey =
     state === "auto"      ? autoPose :
-    state === "correct"   ? "hop" :
+    state === "correct"   ? "excited" :
     state === "celebrate" ? "celebrate" :
     state === "thinking"  ? "think" :
-    state === "wrong"     ? "wing" :
+    state === "reading"   ? "read" :
+    state === "welcome"   ? "wave" :
+    state === "wrong"     ? "think" :
     "idle";
 
   return (
@@ -59,17 +76,14 @@ export function OwlMascot({ state = "auto", size = 120 }: { state?: OwlState; si
         <motion.img
           key={poseKey}
           src={POSE_IMG[poseKey]}
-          alt="مسار الإنجليزية"
+          alt="Owlie"
+          initial={{ opacity: 0, scale: 0.92, y: 6 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.32, ease: "easeOut" }}
+          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
           draggable={false}
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.92 }}
-          transition={{ duration: 0.45, ease: "easeInOut" }}
-          style={{
-            width: "100%", height: "100%", objectFit: "contain",
-            position: "absolute", inset: 0, pointerEvents: "none",
-            filter: "drop-shadow(0 5px 8px rgba(0,0,0,0.16))",
-          }}/>
+        />
       </AnimatePresence>
     </div>
   );

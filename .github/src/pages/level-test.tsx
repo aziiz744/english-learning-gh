@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -169,11 +168,11 @@ export default function LevelTest() {
   const passed = score >= 70;
 
   if (!level || !LEVEL_LABELS[level]) {
-    return <Layout><div className="text-center py-20 text-muted-foreground">مستوى غير موجود</div></Layout>;
+    return <><div className="text-center py-20 text-muted-foreground">مستوى غير موجود</div></>;
   }
 
   return (
-    <Layout>
+    <>
       <div className="max-w-3xl mx-auto pt-4 pb-8">
 
         {/* ── Intro ── */}
@@ -410,6 +409,6 @@ export default function LevelTest() {
           </motion.div>
         )}
       </div>
-    </Layout>
+    </>
   );
 }

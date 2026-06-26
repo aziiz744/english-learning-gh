@@ -7,7 +7,6 @@ import {
   getGetLessonQueryKey, getGetProgressQueryKey,
   getGetStatsQueryKey, getGetRoadmapQueryKey,
 } from "@/lib/api-hooks";
-import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -397,7 +396,7 @@ export default function LessonDetail() {
   // Auth guard
   if (!authLoading && !user) {
     return (
-      <Layout>
+      <>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-5 p-6">
           <div className="text-6xl">🔐</div>
           <h2 className="text-2xl font-bold">سجّل دخولك أولاً</h2>
@@ -408,26 +407,26 @@ export default function LessonDetail() {
             تسجيل الدخول
           </Button>
         </div>
-      </Layout>
+      </>
     );
   }
 
   if (lessonLoading) {
     return (
-      <Layout>
+      <>
         <div className="max-w-3xl mx-auto mt-8">
           <Skeleton className="h-10 w-2/3 mb-4" />
           <Skeleton className="h-6 w-1/3 mb-8" />
           <Skeleton className="h-64 w-full rounded-xl" />
         </div>
-      </Layout>
+      </>
     );
   }
 
-  if (!lesson) return <Layout><div className="text-center py-20">الدرس غير موجود</div></Layout>;
+  if (!lesson) return <><div className="text-center py-20">الدرس غير موجود</div></>;
 
   return (
-    <Layout>
+    <>
       {showConfetti && <Confetti />}
       {showXpFloat && (
         <FloatingXP
@@ -975,6 +974,6 @@ export default function LessonDetail() {
           );
         })()}
       </div>
-    </Layout>
+    </>
   );
 }

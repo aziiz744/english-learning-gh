@@ -1,0 +1,32 @@
+{
+  "name": "Owlio — مسار الإنجليزية",
+  "short_name": "Owlio",
+  "description": "تعلم اللغة الإنجليزية من الصفر حتى الإتقان",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#16B6C6",
+  "theme_color": "#16B6C6",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon-v2.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

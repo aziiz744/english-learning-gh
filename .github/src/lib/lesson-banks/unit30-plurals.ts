@@ -60,7 +60,7 @@ export const unit30PluralsBank: Record<string, TieredBank> = {
     t1: [
       { id:"pl2-t1-1", type:"translate", arabic:"فئران (جمع mouse)", options:["mice","mouses","mouse","mices"], correctAnswer:"mice", explanation:"mouse → mice", xp:12 },
       { id:"pl2-t1-2", type:"word_order", sentence:"The dentist checked my teeth", correctAnswer:"The dentist checked my teeth", explanation:"فحص الطبيب أسناني", xp:14 },
-      { id:"pl2-t1-3", type:"translate", arabic:"سمك (جمع fish)", options:["fish","fishes","fishs","fish"], correctAnswer:"fish", explanation:"fish → fish (نفس الكلمة)", xp:13 },
+      { id:"pl2-t1-3", type:"translate", arabic:"سمك (جمع fish)", options:["fish","fishes","fishs","fishies"], correctAnswer:"fish", explanation:"fish → fish (نفس الكلمة)", xp:13 },
       { id:"pl2-t1-4", type:"fill_blank", blankSentence:"There are many ___ at the party", blankOptions:["people","persons","peoples"], correctAnswer:"people", explanation:"person → people", xp:14 },
       { id:"pl2-t1-5", type:"word_order", sentence:"My feet hurt after the walk", correctAnswer:"My feet hurt after the walk", explanation:"قدماي تؤلمانني بعد المشي", xp:14 },
       { id:"pl2-t1-6", type:"translate", arabic:"خراف (جمع sheep)", options:["sheep","sheeps","sheepes","ship"], correctAnswer:"sheep", explanation:"sheep → sheep (نفس الكلمة)", xp:13 },
@@ -81,7 +81,7 @@ export const unit30PluralsBank: Record<string, TieredBank> = {
     t3: [],
   },
 
-  "استخدامها في جمل": {
+  "الجموع في جمل": {
     t0: [
       { id:"pl3-t0-1", type:"translate", arabic:"هؤلاء (للقريب)", options:["these","those","this","that"], correctAnswer:"these", explanation:"these = هؤلاء/هذه (جمع قريب)", xp:10 },
       { id:"pl3-t0-2", type:"translate", arabic:"أولئك (للبعيد)", options:["those","these","this","that"], correctAnswer:"those", explanation:"those = أولئك/تلك (جمع بعيد)", xp:10 },

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import { Layout } from "@/components/layout";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -190,7 +189,7 @@ export default function Admin() {
   const inactiveCount = totalUsers - onlineCount;
 
   return (
-    <Layout>
+    <>
       <div className="max-w-5xl mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -293,6 +292,6 @@ export default function Admin() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </>
   );
 }

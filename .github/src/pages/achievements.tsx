@@ -1,5 +1,4 @@
 import { useGetAchievements } from "@/lib/api-hooks";
-import { Layout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
@@ -14,24 +13,24 @@ export default function Achievements() {
   const totalCount = achievements?.length || 0;
 
   return (
-    <Layout>
+    <>
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Header */}
-        <div className="relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card p-6 rounded-2xl border border-yellow-500/20">
+        <div className="relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 bg-card p-4 md:p-6 rounded-2xl border border-yellow-500/20">
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent pointer-events-none" />
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-              <Trophy className="h-8 w-8 text-yellow-400" />
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 md:gap-3">
+              <Trophy className="h-7 w-7 md:h-8 md:w-8 text-yellow-400" />
               الإنجازات
             </h1>
-            <p className="text-muted-foreground mt-1">أكمل المهام واكسب الشارات المميزة</p>
+            <p className="text-sm md:text-base text-muted-foreground mt-1">أكمل المهام واكسب الشارات المميزة</p>
           </div>
 
-          <div className="flex items-center gap-4 min-w-[220px]">
-            <div className="p-3 bg-yellow-500/10 rounded-full border border-yellow-500/20">
-              <Trophy className="w-7 h-7 text-yellow-400" />
+          <div className="flex items-center gap-3 md:gap-4 w-full md:min-w-[220px] md:w-auto">
+            <div className="p-2.5 md:p-3 bg-yellow-500/10 rounded-full border border-yellow-500/20 shrink-0">
+              <Trophy className="w-6 h-6 md:w-7 md:h-7 text-yellow-400" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex justify-between text-sm mb-2 font-bold">
                 <span className="text-foreground">مكتسبة</span>
                 <span className="text-yellow-400">{earnedCount} / {totalCount}</span>
@@ -42,7 +41,7 @@ export default function Achievements() {
         </div>
 
         {/* Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {isLoading ? (
             [1, 2, 3, 4, 5, 6, 7, 8].map((i) => <Skeleton key={i} className="h-44 rounded-xl" />)
           ) : achievements?.length ? (
@@ -61,9 +60,9 @@ export default function Achievements() {
                       : "border-border bg-card/50 opacity-60"
                   )}
                 >
-                  <CardContent className="p-6 text-center flex flex-col items-center">
+                  <CardContent className="p-4 md:p-6 text-center flex flex-col items-center">
                     <div className={cn(
-                      "w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm relative",
+                      "w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-2xl md:text-3xl mb-3 md:mb-4 shadow-sm relative",
                       achievement.isEarned
                         ? "bg-yellow-500/10 border-2 border-yellow-500/30"
                         : "bg-muted border-2 border-border"
@@ -96,6 +95,6 @@ export default function Achievements() {
           ) : null}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

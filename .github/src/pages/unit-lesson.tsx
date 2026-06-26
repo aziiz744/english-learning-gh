@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
-import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLessonMiniExercises, getAllStationExercises } from "@/lib/lesson-exercises";
 import type { ExObj } from "@/lib/lesson-exercises";
 import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/hooks/use-auth";
-import { useSound } from "@/hooks/useSound";
-import { DrinkArt } from "@/components/drink-art";
+import { useSound, unlockAudio } from "@/hooks/useSound";
+import { DrinkArt, PICTURE_WORDS, emojiFor } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
+import { addReviewItem } from "@/lib/review-library";
+import { addDailyXp } from "@/lib/daily-goal";
+import { hapticSuccess, hapticError } from "@/lib/native";
+import { Confetti } from "@/components/confetti";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -176,7 +179,7 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "order-1": { title: "قائمة الطعام", unitTitle: "اطلب الطعام والمشروبات", emoji: "📋", color: "#14b8a6" },
   "order-2": { title: "اطلب بأدب", unitTitle: "اطلب الطعام والمشروبات", emoji: "🙏", color: "#14b8a6" },
   "order-t": { title: "كنز المراجعة", unitTitle: "اطلب الطعام والمشروبات", emoji: "💎", color: "#14b8a6", isReview: true, reviewTitles: ["قائمة الطعام", "اطلب بأدب"], crossReviewTitles: ["الاختصارات الأساسية"] },
-  "order-3": { title: "في المطعم", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
+  "order-3": { title: "في المطعم والطلب", unitTitle: "اطلب الطعام والمشروبات", emoji: "🍽️", color: "#14b8a6" },
   "order-c": { title: "تحدي الوحدة", unitTitle: "اطلب الطعام والمشروبات", emoji: "🏆", color: "#14b8a6", isUnitFinal: true, isChallenge: true },
 
   // ── الدفعة 2 (الوحدات 16-20) ──
@@ -284,14 +287,14 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "plur-1": { title: "جموع شاذة شائعة", unitTitle: "كوّن جمع التكسير", emoji: "🔢", color: "#4f46e5" },
   "plur-2": { title: "المزيد من الجموع", unitTitle: "كوّن جمع التكسير", emoji: "📚", color: "#4f46e5" },
   "plur-t": { title: "كنز المراجعة", unitTitle: "كوّن جمع التكسير", emoji: "💎", color: "#4f46e5", isReview: true, reviewTitles: ["جموع شاذة شائعة", "المزيد من الجموع"], crossReviewTitles: ["ملابس متنوّعة"] },
-  "plur-3": { title: "استخدامها في جمل", unitTitle: "كوّن جمع التكسير", emoji: "✍️", color: "#4f46e5" },
+  "plur-3": { title: "الجموع في جمل", unitTitle: "كوّن جمع التكسير", emoji: "✍️", color: "#4f46e5" },
   "plur-c": { title: "تحدي الوحدة", unitTitle: "كوّن جمع التكسير", emoji: "🏆", color: "#4f46e5", isUnitFinal: true, isChallenge: true },
 
   // ── الدفعة 5 (الوحدات 31-35) ──
   // الوحدة 31: تنقّل في مدينة غير مألوفة
   "city-1": { title: "أماكن المدينة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🏙️", color: "#0e7490" },
-  "city-2": { title: "الاتجاهات", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🧭", color: "#0e7490" },
-  "city-t": { title: "كنز المراجعة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "💎", color: "#0e7490", isReview: true, reviewTitles: ["أماكن المدينة", "الاتجاهات"], crossReviewTitles: ["جموع شاذة شائعة"] },
+  "city-2": { title: "اتجاهات المدينة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🧭", color: "#0e7490" },
+  "city-t": { title: "كنز المراجعة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "💎", color: "#0e7490", isReview: true, reviewTitles: ["أماكن المدينة", "اتجاهات المدينة"], crossReviewTitles: ["جموع شاذة شائعة"] },
   "city-3": { title: "اسأل عن الطريق", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🗺️", color: "#0e7490" },
   "city-c": { title: "تحدي الوحدة", unitTitle: "تنقّل في مدينة غير مألوفة", emoji: "🏆", color: "#0e7490", isUnitFinal: true, isChallenge: true },
 
@@ -322,6 +325,42 @@ const LESSON_MAP: Record<string, { title: string; unitTitle: string; emoji: stri
   "cont-t": { title: "كنز المراجعة", unitTitle: "استخدم المضارع المستمر", emoji: "💎", color: "#c026d3", isReview: true, reviewTitles: ["تكوين ing", "أفعال شائعة"], crossReviewTitles: ["أسئلة Are/Is"] },
   "cont-3": { title: "استخدامه الآن", unitTitle: "استخدم المضارع المستمر", emoji: "⌛", color: "#c026d3" },
   "cont-c": { title: "تحدي الوحدة", unitTitle: "استخدم المضارع المستمر", emoji: "🏆", color: "#c026d3", isUnitFinal: true, isChallenge: true },
+
+  // ── الدفعة 6 (الوحدات 36-40) — الأخيرة ──
+  // الوحدة 36: الطقس والطبيعة
+  "wthr-1": { title: "الطقس", unitTitle: "تحدّث عن الطقس والطبيعة", emoji: "🌤️", color: "#0284c7" },
+  "wthr-2": { title: "الطبيعة", unitTitle: "تحدّث عن الطقس والطبيعة", emoji: "⛰️", color: "#0284c7" },
+  "wthr-t": { title: "كنز المراجعة", unitTitle: "تحدّث عن الطقس والطبيعة", emoji: "💎", color: "#0284c7", isReview: true, reviewTitles: ["الطقس", "الطبيعة"], crossReviewTitles: ["تكوين ing"] },
+  "wthr-3": { title: "تحدّث عنهما", unitTitle: "تحدّث عن الطقس والطبيعة", emoji: "🍃", color: "#0284c7" },
+  "wthr-c": { title: "تحدي الوحدة", unitTitle: "تحدّث عن الطقس والطبيعة", emoji: "🏆", color: "#0284c7", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 37: أسئلة المضارع المستمر
+  "cq-1": { title: "أسئلة المستمر", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "❓", color: "#7c3aed" },
+  "cq-2": { title: "أسئلة الاستفهام", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "🔍", color: "#7c3aed" },
+  "cq-t": { title: "كنز المراجعة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "💎", color: "#7c3aed", isReview: true, reviewTitles: ["أسئلة المستمر", "أسئلة الاستفهام"], crossReviewTitles: ["الطقس"] },
+  "cq-3": { title: "إجابات المستمر القصيرة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "💬", color: "#7c3aed" },
+  "cq-c": { title: "تحدي الوحدة", unitTitle: "كوّن أسئلة في المضارع المستمر", emoji: "🏆", color: "#7c3aed", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 38: تحدّث عن المدرسة
+  "schl-1": { title: "المواد الدراسية", unitTitle: "تحدّث عن المدرسة", emoji: "📐", color: "#16a34a" },
+  "schl-2": { title: "في المدرسة", unitTitle: "تحدّث عن المدرسة", emoji: "🎒", color: "#16a34a" },
+  "schl-t": { title: "كنز المراجعة", unitTitle: "تحدّث عن المدرسة", emoji: "💎", color: "#16a34a", isReview: true, reviewTitles: ["المواد الدراسية", "في المدرسة"], crossReviewTitles: ["أسئلة المستمر"] },
+  "schl-3": { title: "تحدّث عن دراستك", unitTitle: "تحدّث عن المدرسة", emoji: "🎓", color: "#16a34a" },
+  "schl-c": { title: "تحدي الوحدة", unitTitle: "تحدّث عن المدرسة", emoji: "🏆", color: "#16a34a", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 39: أفعال الأمر المثبتة
+  "imp-1": { title: "أوامر بسيطة", unitTitle: "استخدم أفعال الأمر المثبتة", emoji: "👉", color: "#ea580c" },
+  "imp-2": { title: "إعطاء التعليمات", unitTitle: "استخدم أفعال الأمر المثبتة", emoji: "📋", color: "#ea580c" },
+  "imp-t": { title: "كنز المراجعة", unitTitle: "استخدم أفعال الأمر المثبتة", emoji: "💎", color: "#ea580c", isReview: true, reviewTitles: ["أوامر بسيطة", "إعطاء التعليمات"], crossReviewTitles: ["المواد الدراسية"] },
+  "imp-3": { title: "الأمر المهذّب", unitTitle: "استخدم أفعال الأمر المثبتة", emoji: "🙏", color: "#ea580c" },
+  "imp-c": { title: "تحدي الوحدة", unitTitle: "استخدم أفعال الأمر المثبتة", emoji: "🏆", color: "#ea580c", isUnitFinal: true, isChallenge: true },
+
+  // الوحدة 40: نصائح السلامة (الأخيرة!)
+  "safe-1": { title: "علامات السلامة", unitTitle: "قدّم نصائح السلامة", emoji: "⚠️", color: "#dc2626" },
+  "safe-2": { title: "قواعد السلامة", unitTitle: "قدّم نصائح السلامة", emoji: "🛡️", color: "#dc2626" },
+  "safe-t": { title: "كنز المراجعة", unitTitle: "قدّم نصائح السلامة", emoji: "💎", color: "#dc2626", isReview: true, reviewTitles: ["علامات السلامة", "قواعد السلامة"], crossReviewTitles: ["أوامر بسيطة"] },
+  "safe-3": { title: "حالات الطوارئ", unitTitle: "قدّم نصائح السلامة", emoji: "🚨", color: "#dc2626" },
+  "safe-c": { title: "تحدي الوحدة", unitTitle: "قدّم نصائح السلامة", emoji: "🎉", color: "#dc2626", isUnitFinal: true, isChallenge: true },
 };
 
 // ── خريطة اختبار القفز: لكل وحدة، عناوين الوحدات السابقة (متراكمة) ──
@@ -353,7 +392,115 @@ const JUMP_MAP: Record<string, { unitTitle: string; color: string; prevTitles: s
   // القفز لوحدة 10 = اختبار وحدات 1-9
   "unit-pets": { unitTitle: "تحدث عن حيواناتك الأليفة", color: "#a78bfa",
     prevTitles: ["عائلتك", "الاتجاهات", "في الطائرة", "قارن بين الأشياء", "في المطعم", "اسأل عن المهن", "روتينك اليومي", "كلمات الطقس", "صف الطقس", "الفصول الأربعة"] },
+
+  // ════════ القسم الثاني (وحدات 11-40) ════════
+  "unit-clothes": { unitTitle: "تسوّق لشراء الملابس", color: "#0ea5e9",
+    prevTitles: ["أسماء الحيوانات", "صف حيوانك", "العناية بالحيوان"] },
+  "unit-house": { unitTitle: "قم بجولة في منزلك", color: "#f97316",
+    prevTitles: ["أسماء الملابس", "في متجر الملابس", "اطلب الملابس"] },
+  "unit-tobe": { unitTitle: "استخدم المضارع من يكون", color: "#8b5cf6",
+    prevTitles: ["غرف المنزل", "الأثاث", "أين الأشياء"] },
+  "unit-contr": { unitTitle: "اختصارات المضارع من يكون", color: "#ec4899",
+    prevTitles: ["أنا أكون، أنت تكون", "جمل مع يكون", "يكون مع الصفات"] },
+  "unit-order": { unitTitle: "اطلب الطعام والمشروبات", color: "#14b8a6",
+    prevTitles: ["الاختصارات الأساسية", "الاختصارات في جمل", "اختصارات النفي"] },
+  "unit-work": { unitTitle: "تواصل في العمل", color: "#0284c7",
+    prevTitles: ["قائمة الطعام", "اطلب بأدب", "في المطعم"] },
+  "unit-feel": { unitTitle: "استخدم المضارع للمشاعر", color: "#eab308",
+    prevTitles: ["كلمات العمل", "في الاجتماع", "التواصل المهني"] },
+  "unit-class": { unitTitle: "اطلب المساعدة في الصف", color: "#16a34a",
+    prevTitles: ["المشاعر", "كيف تشعر", "التعبير عن المشاعر"] },
+  "unit-shop": { unitTitle: "اطلب المساعدة أثناء التسوق", color: "#dc2626",
+    prevTitles: ["كلمات الصف", "اطلب المساعدة", "في الدرس"] },
+  "unit-time": { unitTitle: "استخدم تعابير الوقت", color: "#9333ea",
+    prevTitles: ["كلمات التسوق", "اسأل عن المنتجات", "الدفع والمساعدة"] },
+  "unit-sport": { unitTitle: "ناقش الرياضات", color: "#65a30d",
+    prevTitles: ["كم الساعة", "أوقات اليوم", "تعابير الوقت"] },
+  "unit-adv": { unitTitle: "ظروف التكرار والوقت", color: "#0d9488",
+    prevTitles: ["أنواع الرياضات", "ممارسة الرياضة", "ناقش الرياضة"] },
+  "unit-rout": { unitTitle: "صف روتينك اليومي", color: "#ea580c",
+    prevTitles: ["ظروف التكرار", "عبارات التكرار", "استخدامها في جمل"] },
+  "unit-hotel": { unitTitle: "احجز غرفة في فندق", color: "#0369a1",
+    prevTitles: ["روتين الصباح", "روتين المساء", "صف يومك"] },
+  "unit-art": { unitTitle: "استخدم أدوات التعريف", color: "#7c3aed",
+    prevTitles: ["كلمات الفندق", "احجز غرفة", "في الفندق"] },
+  "unit-fam": { unitTitle: "صف أفراد عائلتك", color: "#e11d48",
+    prevTitles: ["a و an", "أداة the", "استخدامها معاً"] },
+  "unit-poss": { unitTitle: "صف ممتلكاتك", color: "#0891b2",
+    prevTitles: ["أفراد العائلة", "صف شخصيتهم", "تحدث عن عائلتك"] },
+  "unit-lost": { unitTitle: "افرز الأشياء المفقودة", color: "#b45309",
+    prevTitles: ["الملكية", "ممتلكات", "لمن هذا"] },
+  "unit-wear": { unitTitle: "تسوّق للملابس", color: "#7c2d12",
+    prevTitles: ["المفقودات", "صف الشيء المفقود", "في مكتب المفقودات"] },
+  "unit-plur": { unitTitle: "كوّن جمع التكسير", color: "#4f46e5",
+    prevTitles: ["ملابس متنوّعة", "المقاسات والقياس", "اتخاذ القرار"] },
+  "unit-city": { unitTitle: "تنقّل في مدينة غير مألوفة", color: "#0e7490",
+    prevTitles: ["جموع شاذة شائعة", "المزيد من الجموع", "استخدامها في جمل"] },
+  "unit-neg": { unitTitle: "كوّن النفي في المضارع", color: "#be123c",
+    prevTitles: ["أماكن المدينة", "الاتجاهات", "اسأل عن الطريق"] },
+  "unit-symp": { unitTitle: "تحدّث عن الأعراض", color: "#0f766e",
+    prevTitles: ["النفي بـ don't", "النفي بـ doesn't", "النفي في جمل"] },
+  "unit-beq": { unitTitle: "كوّن أسئلة بيكون", color: "#9333ea",
+    prevTitles: ["الجسم والألم", "الأعراض", "عند الطبيب"] },
+  "unit-cont": { unitTitle: "استخدم المضارع المستمر", color: "#c026d3",
+    prevTitles: ["أسئلة Are/Is", "أسئلة الاستفهام", "إجابات قصيرة"] },
+  "unit-wthr": { unitTitle: "تحدّث عن الطقس والطبيعة", color: "#0284c7",
+    prevTitles: ["تكوين ing", "أفعال شائعة", "استخدامه الآن"] },
+  "unit-cq": { unitTitle: "كوّن أسئلة في المضارع المستمر", color: "#7c3aed",
+    prevTitles: ["الطقس", "الطبيعة", "تحدّث عنهما"] },
+  "unit-schl": { unitTitle: "تحدّث عن المدرسة", color: "#16a34a",
+    prevTitles: ["أسئلة المستمر", "أسئلة الاستفهام", "إجابات قصيرة"] },
+  "unit-imp": { unitTitle: "استخدم أفعال الأمر المثبتة", color: "#ea580c",
+    prevTitles: ["المواد الدراسية", "في المدرسة", "تحدّث عن دراستك"] },
+  "unit-safe": { unitTitle: "قدّم نصائح السلامة", color: "#dc2626",
+    prevTitles: ["أوامر بسيطة", "إعطاء التعليمات", "الأمر المهذّب"] },
 };
+
+// ── مولّد أسئلة الصور (لزيادة توازن الأنماط) ──
+// يستخرج كلمات لها إيموجي من أسئلة المحطة ويبني أسئلة صور
+function genPictureFromExercises(exercises: ExObj[], count: number, idPrefix: string): ExObj[] {
+  // اجمع الكلمات الإنجليزية المفردة التي لها إيموجي
+  const wordSet = new Set<string>();
+  exercises.forEach(ex => {
+    // من أسئلة الصور الموجودة (labels)
+    ex.pictureOptions?.forEach(o => {
+      if (PICTURE_WORDS.includes(o.label.toLowerCase().trim())) wordSet.add(o.label.toLowerCase().trim());
+    });
+    // من الإجابات المفردة (كلمة واحدة لها إيموجي)
+    const ca = (ex.correctAnswer ?? "").toLowerCase().trim();
+    if (ca && !ca.includes(" ") && PICTURE_WORDS.includes(ca)) wordSet.add(ca);
+  });
+
+  const words = [...wordSet];
+  if (words.length < 4) return [];
+
+  const shuffled = [...words].sort(() => Math.random() - 0.5);
+  const questions: ExObj[] = [];
+
+  for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+    const correct = shuffled[i];
+    const distractors = words
+      .filter(w => w !== correct)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    if (distractors.length < 3) continue;
+
+    const options = [correct, ...distractors]
+      .sort(() => Math.random() - 0.5)
+      .map(w => ({ emoji: emojiFor(w), label: w }));
+
+    questions.push({
+      id: `${idPrefix}-genpic-${i}`,
+      type: "picture_match",
+      word: correct,
+      pictureOptions: options,
+      correctAnswer: correct,
+      explanation: `${correct} ${emojiFor(correct)}`,
+      xp: 10,
+    } as ExObj);
+  }
+  return questions;
+}
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
 function lightColor(hex: string): string {
@@ -371,12 +518,22 @@ let _cachedVoices: SpeechSynthesisVoice[] = [];
 function loadVoices() {
   if (!window.speechSynthesis) return;
   const all = window.speechSynthesis.getVoices();
+  // الأولوية للأصوات الطبيعية عالية الجودة (Google/Microsoft Neural)
+  const premium = all.filter(v =>
+    /en[-_]/i.test(v.lang) &&
+    /(google|natural|neural|premium|enhanced|siri)/i.test(v.name + v.voiceURI)
+  );
+  // الأصوات الأنثوية الواضحة (مناسبة لتعلّم اللغة)
   const preferred = all.filter(v =>
     /en[-_]/i.test(v.lang) &&
-    /(female|woman|girl|child|kid|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
+    /(female|woman|girl|samantha|victoria|karen|moira|tessa|fiona|google us english|zira|aria|jenny|salli|joanna|kimberly|ivy)/i.test(v.name + v.voiceURI)
   );
   const englishVoices = all.filter(v => /en[-_]/i.test(v.lang));
-  _cachedVoices = (preferred.length >= 2 ? preferred : englishVoices).slice(0, 6);
+  // الأفضلية: premium → preferred → أي إنجليزي
+  const pool = premium.length >= 1 ? premium
+    : preferred.length >= 2 ? preferred
+    : englishVoices;
+  _cachedVoices = pool.slice(0, 6);
 }
 if (typeof window !== "undefined" && window.speechSynthesis) {
   loadVoices();
@@ -474,7 +631,7 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
   onNext: () => void; color: string;
 }) {
   // رسائل تشجيع متنوّعة
-  const okMsgs = ["إجابة صحيحة! 🎉", "ممتاز! 🌟", "أحسنت! 👏", "رائع! 💪", "بالضبط! ✨"];
+  const okMsgs = ["إجابة صحيحة! 🎉", "ممتاز! 🌟", "أحسنت! 👏", "رائع! 💪", "بالضبط! ✨", "عمل رائع! 🔥", "أنت مبدع! 🚀", "صحيح تماماً! 💯", "ما شاء الله! 🌙", "إجابة موفّقة! ⭐", "تقدّم رائع! 📈", "أنت بطل! 🏆"];
   const noMsgs = ["لا بأس، تعلّمنا شيئاً! 💪", "قريب! حاول التذكّر 🤔", "لا تيأس، المحاولة القادمة! 🌱"];
   const msg = correct
     ? okMsgs[Math.floor(Math.random()*okMsgs.length)]
@@ -483,18 +640,18 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
     <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
       className={cn("rounded-2xl border-2 overflow-hidden", correct ? "bg-green-500/10 border-green-500/40" : "bg-red-500/10 border-red-500/40")}>
       {/* Top bar */}
-      <div className={cn("px-4 py-3 flex items-center gap-2.5", correct ? "bg-green-500/15" : "bg-red-500/15")}>
-        <span className="text-2xl">{correct ? "✅" : "❌"}</span>
-        <h4 className={cn("font-extrabold text-base", correct ? "text-green-400" : "text-red-400")}>{msg}</h4>
+      <div className={cn("px-4 py-2 flex items-center gap-2", correct ? "bg-green-500/15" : "bg-red-500/15")}>
+        <span className="text-xl">{correct ? "✅" : "❌"}</span>
+        <h4 className={cn("font-extrabold text-sm", correct ? "text-green-400" : "text-red-400")}>{msg}</h4>
       </div>
       {/* Body */}
-      <div className="px-4 py-3 space-y-2.5">
+      <div className="px-3 py-2.5 space-y-2">
         {!correct && correctAnswer && (
-          <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
-            <Check className="w-5 h-5 text-green-400 shrink-0" />
+          <div className="flex items-center gap-2 p-2.5 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <Check className="w-4 h-4 text-green-400 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة <span style={{ opacity:0.7 }}>· اضغط الكلمة لمعناها</span></div>
-              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>
+              <div className="text-[11px] text-muted-foreground mb-0.5">الإجابة الصحيحة <span style={{ opacity:0.7 }}>· اضغط الكلمة لمعناها</span></div>
+              <div className="text-green-400 font-bold text-sm" style={{ direction:"ltr" }}>
                 {correctAnswer.split(" ").map((w, i) => (
                   <span key={i}>
                     <WordChip word={w} color="#22c55e" isNew={isNewWord(w)} />
@@ -503,17 +660,17 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
                 ))}
               </div>
             </div>
-            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:38, height:38, borderRadius:10, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:18, flexShrink:0 }}>🔊</button>
+            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:34, height:34, borderRadius:9, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:16, flexShrink:0 }}>🔊</button>
           </div>
         )}
         {explanation && (
-          <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background:`${color}10`, border:`1px solid ${color}30` }}>
-            <span style={{ fontSize:16 }}>💡</span>
-            <p className="text-sm leading-relaxed flex-1" style={{ color:"hsl(var(--foreground))", direction:"rtl" }}>{explanation}</p>
+          <div className="flex items-start gap-2 p-2.5 rounded-xl" style={{ background:`${color}10`, border:`1px solid ${color}30` }}>
+            <span style={{ fontSize:14 }}>💡</span>
+            <p className="text-[13px] leading-relaxed flex-1" style={{ color:"hsl(var(--foreground))", direction:"rtl" }}>{explanation}</p>
           </div>
         )}
         <button onClick={onNext}
-          style={{ width:"100%", padding:"14px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
+          style={{ width:"100%", padding:"12px", borderRadius:13, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
             background: correct ? "#22c55e" : color, color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8,
             boxShadow: correct ? "0 4px 0 #16a34a" : `0 4px 0 ${color}99` }}>
           متابعة <ArrowRight size={18}/>
@@ -718,39 +875,39 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", marginBottom:22 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔄 الترجمة</div>
+      <div style={{ textAlign:"center", marginBottom:14 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:5 }}>🔄 الترجمة</div>
         {isNewWord(ex.correctAnswer ?? "") && (
-          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#f59e0b18", border:"1.5px solid #f59e0b55", borderRadius:14, padding:"3px 12px", marginBottom:8 }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#f59e0b18", border:"1.5px solid #f59e0b55", borderRadius:14, padding:"3px 12px", marginBottom:6 }}>
             <span style={{ fontSize:12, fontWeight:800, color:"#d97706" }}>✦ كلمة جديدة</span>
           </div>
         )}
-        <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:12, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة للكلمة التالية</div>
-        <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
+        <div style={{ fontSize:12, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:8, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة</div>
+        <div style={{ fontSize:23, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.4 }}>{ex.arabic}</div>
       </div>
-      <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
+      <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:12 }}>
         {(ex.options??[]).map(o=>{
           const isPicked = o===picked;
           let bg = "hsl(var(--card))", border = "2px solid hsl(var(--border))", shadow = "0 3px 0 hsl(var(--border))";
           if (isPicked && !confirmed) { bg=`${color}14`; border=`2px solid ${color}`; shadow=`0 3px 0 ${color}`; }
           return (
             <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={confirmed}
-              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
+              style={{ padding:"12px 18px", borderRadius:13, fontSize:15, fontWeight:700, cursor:confirmed?"default":"pointer",
                 textAlign:"left", direction:"ltr", background:bg, border, boxShadow:shadow,
-                display:"flex", alignItems:"center", justifyContent:"space-between", minHeight:54,
+                display:"flex", alignItems:"center", justifyContent:"space-between", minHeight:46,
                 color:"hsl(var(--foreground))" }}>
               <span>{o}</span>
               <span onClick={e=>{e.stopPropagation();speak(o, 0.85, ex.id);}}
-                style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
+                style={{ fontSize:17, opacity:0.5, cursor:"pointer" }}>🔊</span>
             </motion.button>
           );
         })}
       </div>
       {!confirmed && (
         <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:15, marginTop:8,
+          style={{ width:"100%", padding:13, marginTop:4,
             background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))",
-            border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"default",
+            border:"none", borderRadius:13, fontWeight:800, fontSize:15, cursor:picked?"pointer":"default",
             boxShadow:picked?`0 4px 0 ${color}99`:"none", transition:"all 0.2s" }}>
           تحقّق
         </button>
@@ -777,34 +934,36 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
 
   return (
     <div>
-      {/* التعليمة */}
-      <div style={{ textAlign:"center", marginBottom:18 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🎧 الاستماع</div>
-        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
-      </div>
-      {/* Audio buttons: عادي + سلحفاة بطيء */}
-      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:14 }}>
-        {/* عادي — كبير */}
+      {/* التعليمة — تختفي بعد الإجابة لتوفير مساحة */}
+      {!picked && (
+        <div style={{ textAlign:"center", marginBottom:12 }}>
+          <div style={{ fontSize:13, fontWeight:800, color, marginBottom:4 }}>🎧 الاستماع</div>
+          <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
+        </div>
+      )}
+      {/* Audio buttons — تصغر بعد الإجابة */}
+      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom: picked ? 8 : 8 }}>
+        {/* عادي */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!, 0.85, ex.id)}
-          style={{ width:96, height:96, borderRadius:24, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 0 ${color}99, 0 8px 22px ${color}40` }}>
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          style={{ width: picked?52:74, height: picked?52:74, borderRadius: picked?16:20, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 0 ${color}99, 0 7px 18px ${color}40`, transition:"all 0.2s" }}>
+          <svg width={picked?26:36} height={picked?26:36} viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
-        {/* سلحفاة — بطيء */}
+        {/* سلحفاة */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!, ex.id)}
-          style={{ width:72, height:72, borderRadius:20, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 4px 0 ${color}30` }}>
-          <span style={{ fontSize:34 }}>🐢</span>
+          style={{ width: picked?42:56, height: picked?42:56, borderRadius: picked?13:16, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 3px 0 ${color}30`, transition:"all 0.2s" }}>
+          <span style={{ fontSize: picked?20:26 }}>🐢</span>
         </motion.button>
       </div>
-      <div style={{ fontSize:12, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:24 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
-      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+      {!picked && <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:10 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>}
+      <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
           const bc = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
           return (
             <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={!!picked}
-              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:54,
+              style={{ padding:"11px 18px", borderRadius:13, fontSize:15, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:44,
                 color:"hsl(var(--foreground))",
                 background:isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))"),
                 border:`2px solid ${bc}`, boxShadow:`0 3px 0 ${bc==="hsl(var(--border))"?"hsl(var(--border))":bc}` }}>
@@ -941,13 +1100,14 @@ function FillBlankQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
 }
 
 // ── Matching pairs (الأزواج المتطابقة) ───────────────────────────────────────
-function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+function MatchingQ({ ex, color, onAnswer, onMatchError }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void; onMatchError?: (en:string, ar:string) => void }) {
   const pairs = ex.pairs ?? [];
   const [enCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
   const [arCol] = useState(()=>[...pairs].sort(()=>Math.random()-0.5));
   const [selected, setSelected] = useState<{ col:"en"|"ar"; en:string } | null>(null);
   const [matched, setMatched] = useState<Set<string>>(new Set());
   const [wrongKey, setWrongKey] = useState<string|null>(null);
+  const [hadError, setHadError] = useState(false);
 
   const playMatchCorrect = () => {
     try {
@@ -970,8 +1130,15 @@ function MatchingQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer
       playMatchCorrect();
       const nm = new Set(matched); nm.add(en);
       setMatched(nm); setSelected(null);
-      if (nm.size === pairs.length) setTimeout(()=>onAnswer(true, "matched"), 600);
+      if (nm.size === pairs.length) {
+        // إذا أخطأ أثناء المطابقة، سجّلها كإجابة فيها أخطاء (لكن أكملها)
+        setTimeout(()=>onAnswer(!hadError, hadError ? "__match_error__" : "matched"), 600);
+      }
     } else {
+      // محاولة خاطئة — سجّل الزوج الصحيح للكلمة المختارة في المكتبة
+      setHadError(true);
+      const correctPair = ex.pairs?.find(p => p.en === selected.en);
+      if (correctPair && onMatchError) onMatchError(correctPair.en, correctPair.ar);
       setWrongKey(col+en);
       setTimeout(()=>{ setWrongKey(null); setSelected(null); }, 600);
     }
@@ -1068,6 +1235,7 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
+      {phase === "done" && <Confetti count={80} />}
       <div className="text-center max-w-sm mx-auto p-6">
         <div style={{ position:"relative", width:240, height:240, margin:"0 auto 24px" }}>
           {/* وهج خلفي ينبض */}
@@ -1224,8 +1392,11 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
   unitTitle:string; vocab:{en:string;ar:string}[]; xpEarned:number; color:string; onBack:()=>void;
 }) {
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center" style={{ overflowY:"auto" }}>
-      <div className="w-full max-w-md mx-auto p-4">
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="hide-scrollbar"
+      style={{ flex:1, minHeight:0, width:"100%", overflowY:"auto", display:"flex", flexDirection:"column",
+        padding:"calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
+      <Confetti count={90} duration={3500} />
+      <div className="w-full max-w-md mx-auto" style={{ margin:"auto" }}>
         {/* Trophy header */}
         <div className="text-center mb-6">
           <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}}
@@ -1272,20 +1443,24 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
 }
 
 // ── Completion Screen ─────────────────────────────────────────────────────────
-function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, onNext, onRetry, onBack }: {
+function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, isLast, color, mistakes, onPracticeMistakes, onNext, onRetry, onBack }: {
   score:number; total:number; xpEarned:number; hearts:number; isPro:boolean;
   subLesson:number; isLast:boolean; color:string;
+  mistakes:{ question:string; correct:string; yourAnswer:string; ex:ExObj }[];
+  onPracticeMistakes:()=>void;
   onNext:()=>void; onRetry:()=>void; onBack:()=>void;
 }) {
   const pct = Math.round((score/total)*100);
   const stars = pct>=90?3:pct>=70?2:1;
 
   return (
-    <motion.div initial={{opacity:0,scale:0.85}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:150}}
-      className="flex-1 flex items-center justify-center">
-      <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-2xl shadow-2xl bg-card">
+    <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:160,damping:20}}
+      className="hide-scrollbar"
+      style={{ flex:1, minHeight:0, width:"100%", overflowY:"auto", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start",
+        padding:"calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
+      <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-3xl shadow-2xl" style={{ background:"hsl(var(--card))", margin:"auto 0" }}>
         {/* Header */}
-        <div className="py-8 flex flex-col items-center bg-primary/10 relative">
+        <div className="py-6 flex flex-col items-center bg-primary/10 relative">
           <motion.div animate={{rotate:[0,-10,10,-10,0],scale:[1,1.1,1]}} transition={{delay:0.3,duration:0.6}}
             className="w-24 h-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-4 shadow-xl shadow-primary/30">
             <Trophy className="w-12 h-12" />
@@ -1316,7 +1491,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
           </div>
         </div>
         {/* Stats */}
-        <div className="p-6">
+        <div className="p-5">
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="p-3 bg-muted/50 rounded-2xl flex flex-col items-center">
               <div className="text-xs text-muted-foreground mb-1">الدقة</div>
@@ -1335,6 +1510,48 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
             <span>القلوب المتبقية:</span>
             <Hearts count={hearts} isPro={isPro}/>
           </div>
+
+          {/* ── مراجعة الأخطاء (تعلّم ممّا أخطأت فيه) ── */}
+          {mistakes.length > 0 && (
+            <div style={{ marginBottom: 20, textAlign: "right" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, direction: "rtl" }}>
+                <span style={{ fontSize: 16 }}>📝</span>
+                <span style={{ fontWeight: 800, fontSize: 14, color: "hsl(var(--foreground))" }}>
+                  راجع أخطاءك ({mistakes.length})
+                </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 200, overflowY: "auto" }}>
+                {mistakes.map((m, i) => (
+                  <div key={i} style={{
+                    background: "hsl(var(--muted) / 0.4)", borderRadius: 12, padding: "10px 12px",
+                    border: "1px solid hsl(var(--border))", direction: "rtl",
+                  }}>
+                    <div style={{ fontSize: 12, color: "hsl(var(--muted-foreground))", marginBottom: 4 }}>{m.question}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: "#22c55e", direction: "ltr" }}>✓ {m.correct}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); speak(m.correct, 0.85); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, padding: 0 }}
+                        aria-label="استمع">🔊</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* زر التدرّب على الأخطاء */}
+              <button
+                onClick={onPracticeMistakes}
+                style={{
+                  width: "100%", marginTop: 12, padding: "12px",
+                  background: `${color}18`, border: `2px solid ${color}`,
+                  borderRadius: 14, fontWeight: 800, fontSize: 14, color,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                }}>
+                <span style={{ fontSize: 17 }}>🎯</span>
+                تدرّب على هذه الأخطاء
+              </button>
+            </div>
+          )}
+
           <div className="space-y-3">
             {isLast ? (
               <button onClick={onBack} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:14, fontWeight:800, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
@@ -1452,6 +1669,11 @@ export default function UnitLesson() {
   const [xpEarned, setXpEarned] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
+  const [successFlash, setSuccessFlash] = useState(false);
+  // تتبّع الأخطاء لعرضها في ملخّص نهاية الدرس (للمراجعة)
+  const [mistakes, setMistakes] = useState<{ question: string; correct: string; yourAnswer: string; ex: ExObj }[]>([]);
+  // وضع التدرّب على الأخطاء (يعيد الأسئلة الغلط فقط)
+  const [practiceMode, setPracticeMode] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [phase, setPhase] = useState<"playing"|"gameover"|"finish"|"subdone"|"chest"|"unitdone"|"jumpdone">("playing");
   // لوحة تمهيدية لدرس الدمبل (practice) — تظهر مرة واحدة في البداية
@@ -1468,7 +1690,7 @@ export default function UnitLesson() {
   }, [id, isJumpMode]);
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
-  const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
+  const mascotTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 
 
@@ -1581,6 +1803,21 @@ export default function UnitLesson() {
           }
         }
         raw = slice.slice(0, 8).sort(() => Math.random() - 0.5);
+        // ── زيادة توازن الأنماط: اضمن سؤال صورة (أو اثنين) في الدرس ──
+        const picCount = raw.filter(e => e.type === "picture_match").length;
+        if (picCount < 1) {
+          // ولّد أسئلة صور من كلمات المحطة كاملةً
+          const generated = genPictureFromExercises(all, 2, `${meta.title}-${t}`);
+          if (generated.length > 0) {
+            // استبدل آخر سؤال (غير صورة) بسؤال صورة مولّد، للحفاظ على العدد
+            const nonPicIdx = raw.map((e,idx)=>({e,idx})).filter(x=>x.e.type!=="picture_match");
+            if (nonPicIdx.length > 0) {
+              raw[nonPicIdx[nonPicIdx.length-1].idx] = generated[0];
+            } else {
+              raw.push(generated[0]);
+            }
+          }
+        }
       }
     } catch (err) {
       console.error("loadExercises error:", err);
@@ -1605,6 +1842,7 @@ export default function UnitLesson() {
     setScore(0);
     setXpEarned(0);
     setStreak(0);
+    setMistakes([]);
     setHearts(meta.isJump ? 3 : MAX_HEARTS);
     setPhase("playing");
     setFeedback(null);
@@ -1659,14 +1897,29 @@ export default function UnitLesson() {
         setTimeout(() => setShowStreakPop(false), 2000);
       }
       playCorrect();
+      hapticSuccess();
+      setSuccessFlash(true);
+      setTimeout(() => setSuccessFlash(false), 600);
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
+      if (!practiceMode) addDailyXp(ex.xp ?? 10); // أضف للهدف اليومي
       setFeedback({ ok: true, explanation: ex.explanation, correctAnswer: ex.correctAnswer });
     } else {
       setStreak(0); // كسر الستريك
       playWrong();
+      hapticError();
       setMascotFor("wrong");
+      // سجّل الخطأ للمراجعة في نهاية الدرس
+      const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || "سؤال";
+      setMistakes(m => {
+        if (m.some(x => x.correct === ex.correctAnswer && x.question === questionText)) return m;
+        return [...m, { question: questionText, correct: ex.correctAnswer ?? "", yourAnswer: answer, ex }];
+      });
+      // احفظ في مكتبة المراجعة الشخصية (دائم عبر كل الدروس) — عدا وضع التدرّب
+      if (!practiceMode && ex.correctAnswer) {
+        addReviewItem({ correct: ex.correctAnswer, question: questionText, unitTitle: meta.unitTitle ?? "" });
+      }
       if (isPro === false) {
         const newH = hearts - 1;
         setHearts(newH);
@@ -1677,6 +1930,22 @@ export default function UnitLesson() {
       }
       setFeedback({ ok: false, explanation: ex.explanation, correctAnswer: ex.correctAnswer });
     }
+  };
+
+  // تدرّب على الأخطاء: يعيد الأسئلة الغلط فقط لترسيخها
+  const practiceMistakes = () => {
+    if (mistakes.length === 0) return;
+    const mistakeExercises = mistakes.map(m => m.ex);
+    setQueue(shuffleArr(mistakeExercises));
+    setDoneCount(0);
+    setTotalCount(0);
+    setScore(0);
+    setStreak(0);
+    setMistakes([]);
+    setPracticeMode(true);
+    setFeedback(null);
+    setPhase("playing");
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   };
 
   const handleNext = () => {
@@ -1695,6 +1964,15 @@ export default function UnitLesson() {
       setDoneCount(d => d + 1);
 
       if (rest.length === 0) {
+        // وضع التدرّب على الأخطاء: انتهى — ارجع لشاشة النهاية بدون حفظ تقدّم
+        if (practiceMode) {
+          setPracticeMode(false);
+          setMascotFor("complete", 0);
+          playComplete();
+          setQueue([]);
+          setPhase("finish");
+          return;
+        }
         // وضع القفز — اجتاز الاختبار، افتح الوحدة المستهدفة
         if (meta.isJump) {
           // افتح أول درس في الوحدة المستهدفة (sub_progress=0 لكنه متاح)
@@ -1773,7 +2051,7 @@ export default function UnitLesson() {
 
   // ── بوابة تسجيل الدخول — لا يمكن دخول الدروس بدون حساب ──
   if (!authLoading && !user) return (
-    <Layout>
+    <>
       <div style={{ maxWidth:400, margin:"0 auto", padding:"40px 20px", minHeight:"calc(100svh - 160px)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
         <div style={{ marginBottom:8 }}>
           <Mascot state="thinking" className="w-28 h-32"/>
@@ -1793,22 +2071,31 @@ export default function UnitLesson() {
           العودة للخارطة
         </button>
       </div>
-    </Layout>
+    </>
   );
 
   if (!meta) return (
-    <Layout>
+    <>
       <div style={{ textAlign:"center", padding:60 }}>
         <div style={{ fontSize:64, marginBottom:16 }}>😕</div>
         <h2 style={{ marginBottom:16 }}>الدرس غير موجود</h2>
         <button onClick={()=>history.back()} style={{ padding:"10px 24px", background:"hsl(var(--primary))", color:"white", border:"none", borderRadius:12, fontWeight:700, cursor:"pointer" }}>رجوع</button>
       </div>
-    </Layout>
+    </>
   );
 
   return (
-    <Layout>
-      <div style={{ maxWidth:440, margin:"0 auto", padding:"0 16px", height:"calc(100svh - 130px)", display:"flex", flexDirection:"column" }}>
+    <>
+      {/* توهّج خلفي بلون الوحدة (يعطي عمق وتناسق) */}
+      <div style={{
+        position:"fixed", inset:0, zIndex:-1, pointerEvents:"none",
+        background:`
+          radial-gradient(ellipse 100% 40% at 50% 0%, ${meta.color}22, transparent 60%),
+          radial-gradient(ellipse 80% 40% at 50% 100%, ${meta.color}14, transparent 60%),
+          hsl(var(--background))
+        `,
+      }}/>
+      <div style={{ maxWidth:440, margin:"0 auto", padding:"calc(max(env(safe-area-inset-top, 0px), 8px) + 8px) 16px calc(env(safe-area-inset-bottom, 0px) + 8px)", flex:1, minHeight:0, width:"100%", display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
@@ -1831,6 +2118,8 @@ export default function UnitLesson() {
         {phase === "finish"   && <CompletionScreen
           score={score} total={totalCount} xpEarned={xpEarned} hearts={hearts} isPro={isPro??false}
           subLesson={subLesson+1} isLast={subLesson+1 >= 4} color={meta.color}
+          mistakes={mistakes}
+          onPracticeMistakes={practiceMistakes}
           onNext={()=>setSubLesson(s=>s+1)}
           onRetry={()=>loadExercises(subLesson)}
           onBack={()=>setLocation("/roadmap")}/>}
@@ -1888,19 +2177,41 @@ export default function UnitLesson() {
         )}
 
         {phase === "playing" && <>
-          {/* Top bar — قلب يسار · شريط أخضر · X يمين (ستايل Duolingo) */}
-          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
+          {/* وميض نجاح أخضر خفيف عند الإجابة الصحيحة */}
+          <AnimatePresence>
+            {successFlash && (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: "fixed", inset: 0, zIndex: 35, pointerEvents: "none",
+                  background: "radial-gradient(ellipse 100% 60% at 50% 50%, rgba(34,197,94,0.18), transparent 70%)",
+                }}
+              />
+            )}
+          </AnimatePresence>
+          {/* Top bar — عصري زجاجي (قلوب · شريط تقدّم · إغلاق) */}
+          <div style={{
+            display:"flex", alignItems:"center", gap:12, padding:"9px 14px", marginBottom:12,
+            flexShrink:0,
+            background:"hsl(var(--sidebar) / 0.78)",
+            backdropFilter:"blur(24px) saturate(180%)",
+            WebkitBackdropFilter:"blur(24px) saturate(180%)",
+            border:"1px solid hsl(var(--sidebar-border) / 0.5)",
+            borderRadius:18,
+            boxShadow:"0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
+          }}>
             {/* القلوب — يسار */}
             {proLoaded && <Hearts count={hearts} isPro={isPro}/>}
             {/* شريط التقدم */}
-            <div style={{ flex:1, height:14, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
-              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10 }} transition={{ duration:0.4 }}>
+            <div style={{ flex:1, height:12, background:"hsl(var(--muted) / 0.6)", borderRadius:10, overflow:"hidden", minWidth:0 }}>
+              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 12px ${meta.color}80` }} transition={{ type:"spring", stiffness:120, damping:20 }}>
                 {/* لمعة علوية */}
-                <div style={{ height:"40%", margin:"2px 6px 0", background:"rgba(255,255,255,0.35)", borderRadius:6 }}/>
+                <div style={{ height:"38%", margin:"2px 6px 0", background:"rgba(255,255,255,0.4)", borderRadius:6 }}/>
               </motion.div>
             </div>
             {/* زر الإغلاق — يمين */}
-            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20, color:"hsl(var(--muted-foreground))" }}>✕</button>
+            <button onClick={()=>setShowExitConfirm(true)} style={{ width:30, height:30, borderRadius:"50%", background:"hsl(var(--muted) / 0.5)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:17, color:"hsl(var(--muted-foreground))" }}>✕</button>
           </div>
 
           {/* شارة مرحلة التدرّج (للدروس العادية فقط) */}
@@ -1915,8 +2226,8 @@ export default function UnitLesson() {
             </div>
           )}
 
-          {/* Main content area */}
-          <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
+          {/* Main content area — من الأعلى، يتمرّر نظيف لو طال، ما يتقصّ */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"flex-start", overflowY:"auto", overflowX:"hidden", minHeight:0, paddingTop:4 }} className="hide-scrollbar">
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait" initial={false}>
               {ex && (
@@ -1929,7 +2240,9 @@ export default function UnitLesson() {
                   {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="picture_match" && <PictureQ    ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="fill_blank"    && <FillBlankQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
-                  {ex.type==="matching"      && <MatchingQ   ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="matching"      && <MatchingQ   ex={ex} color={meta.color} onAnswer={handleAnswer} onMatchError={(en, ar) => {
+                    if (!practiceMode) addReviewItem({ correct: en, question: ar, unitTitle: meta.unitTitle ?? "" });
+                  }}/>}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1954,16 +2267,16 @@ export default function UnitLesson() {
             )}
           </AnimatePresence>
 
-          {/* Feedback bar — عرض كامل، الشخصية مخفية */}
-          <div style={{ flexShrink:0, paddingBottom:8 }}>
-            <AnimatePresence>
-              {feedback && (
-                <motion.div key="fb" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}}>
-                  <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Feedback bar — قسم ثابت أسفل (داخل التدفّق، يدفع السؤال لأعلى) */}
+          {feedback && (
+            <div style={{ flexShrink:0, paddingTop:8 }}>
+              <motion.div key="fb"
+                initial={{opacity:0,y:16}} animate={{opacity:1,y:0}}
+                transition={{ type:"spring", stiffness:320, damping:30 }}>
+                <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
+              </motion.div>
+            </div>
+          )}
         </>}
 
         {/* Exit confirmation modal */}
@@ -1997,6 +2310,6 @@ export default function UnitLesson() {
           )}
         </AnimatePresence>
       </div>
-    </Layout>
+    </>
   );
 }

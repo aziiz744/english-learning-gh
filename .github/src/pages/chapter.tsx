@@ -5,7 +5,6 @@ import {
   useGetLessonExercises,
   useCompleteLesson,
 } from "@/lib/api-hooks";
-import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Star, Lock, Play, Check, Zap, ChevronRight,
@@ -313,7 +312,7 @@ export default function Chapter() {
   }
 
   return (
-    <Layout>
+    <>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-32">
 
         {/* Back */}
@@ -439,6 +438,6 @@ export default function Chapter() {
           />
         )}
       </AnimatePresence>
-    </Layout>
+    </>
   );
 }

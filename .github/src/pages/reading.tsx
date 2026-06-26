@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Layout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -68,7 +67,7 @@ const COMMON_WORDS: Record<string, string> = {
   "go":"يذهب","come":"يأتي","see":"يرى","know":"يعلم","think":"يفكر",
   "say":"يقول","get":"يحصل","make":"يصنع","take":"يأخذ","give":"يعطي",
   "look":"ينظر","want":"يريد","use":"يستخدم","find":"يجد","tell":"يخبر",
-  "ask":"يسأل","work":"يعمل","call":"يتصل","try":"يحاول","need":"يحتاج",
+  "ask":"يسأل","work":"يعمل","call":"يتصل","try":"يحاول",
   "feel":"يشعر","become":"يصبح","leave":"يغادر","put":"يضع","mean":"يعني",
   "keep":"يحتفظ","let":"يدع","begin":"يبدأ","show":"يُظهر","hear":"يسمع",
   "play":"يلعب","run":"يجري","move":"يتحرك","live":"يعيش","walk":"يمشي",
@@ -87,14 +86,14 @@ const COMMON_WORDS: Record<string, string> = {
   "door":"باب","window":"نافذة","room":"غرفة","street":"شارع","road":"طريق",
   "white":"أبيض","black":"أسود","red":"أحمر","blue":"أزرق","green":"أخضر",
   "yellow":"أصفر","brown":"بني","color":"لون","name":"اسم","love":"حب",
-  "help":"مساعدة","work":"عمل","hand":"يد","eye":"عين","face":"وجه",
+  "help":"مساعدة","hand":"يد","eye":"عين","face":"وجه",
   "head":"رأس","heart":"قلب","body":"جسد","sun":"شمس","moon":"قمر","sky":"سماء",
   "again":"مرة أخرى","always":"دائماً","never":"أبداً","often":"كثيراً",
   "very":"جداً","too":"أيضاً","also":"كذلك","just":"فقط","even":"حتى",
   "still":"لا يزال","back":"رجوع","only":"فقط","well":"بشكل جيد",
   "how":"كيف","what":"ماذا","when":"متى","where":"أين","why":"لماذا","who":"من",
   "hello":"مرحباً","hi":"مرحباً","bye":"وداعاً","thanks":"شكراً","please":"من فضلك",
-  "sorry":"آسف","yes":"نعم","no":"لا","ok":"حسناً","wow":"رائع",
+  "sorry":"آسف","ok":"حسناً","wow":"رائع",
 };
 
 async function translateWord(word: string): Promise<string> {
@@ -285,7 +284,7 @@ export default function Reading() {
     "bg-purple-500/20 text-purple-400";
 
   return (
-    <Layout>
+    <>
       <div className="max-w-4xl mx-auto p-4">
         {/* Pro Gate */}
         {isPro === false && (
@@ -447,6 +446,6 @@ export default function Reading() {
         </AnimatePresence>
         )}
       </div>
-    </Layout>
+    </>
   );
 }

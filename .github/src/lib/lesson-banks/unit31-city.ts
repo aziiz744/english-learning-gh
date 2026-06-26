@@ -46,7 +46,7 @@ export const unit31CityBank: Record<string, TieredBank> = {
     t3: [],
   },
 
-  "الاتجاهات": {
+  "اتجاهات المدينة": {
     t0: [
       { id:"ci2-t0-1", type:"translate", arabic:"انعطف يساراً", options:["turn left","turn right","go straight","go back"], correctAnswer:"turn left", explanation:"turn left = انعطف يساراً", xp:10 },
       { id:"ci2-t0-2", type:"translate", arabic:"انعطف يميناً", options:["turn right","turn left","go straight","stop here"], correctAnswer:"turn right", explanation:"turn right = انعطف يميناً", xp:10 },

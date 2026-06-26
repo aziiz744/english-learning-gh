@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 
 const STEPS = [
   {
-    title: "مرحباً بك في مسار الإنجليزية! 🎉",
+    title: "مرحباً بك في Owlio! 🎉",
     text: "أنا مرشدك في رحلة تعلم اللغة الإنجليزية. سنسير معاً من المستوى الصفر حتى الإتقان!",
   },
   {
@@ -52,14 +52,23 @@ export function WelcomeModal() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-card border border-border rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center"
+            className="rounded-3xl w-full max-w-sm p-6 text-center relative overflow-hidden"
+            style={{
+              background: "hsl(var(--sidebar) / 0.88)",
+              backdropFilter: "blur(28px) saturate(180%)",
+              WebkitBackdropFilter: "blur(28px) saturate(180%)",
+              border: "1px solid hsl(var(--sidebar-border) / 0.5)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+            }}
             initial={{ scale: 0.85, opacity: 0, y: 30 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.85, opacity: 0 }}
             transition={{ type: "spring", stiffness: 200 }}
           >
+            {/* توهّج علوي */}
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:130, background:"radial-gradient(ellipse 70% 100% at 50% 0%, hsl(185 80% 43% / 0.22), transparent 70%)", pointerEvents:"none" }}/>
             {/* Mascot */}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-4 relative">
               <Mascot state={step === 3 ? "complete" : step === 0 ? "correct" : "idle"} className="w-28 h-28" />
             </div>
 
