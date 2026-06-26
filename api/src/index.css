@@ -1,0 +1,512 @@
+/* الخطوط محمّلة في index.html (أسرع مع preconnect) */
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary-border: var(--sidebar-primary-border);
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent-border: var(--sidebar-accent-border);
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* DARK MODE — Default */
+:root {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+
+  /* Deep dark background */
+  --background: 222 22% 9%;
+  --foreground: 210 12% 93%;
+
+  --border: 222 18% 18%;
+
+  --card: 222 22% 12%;
+  --card-foreground: 210 12% 93%;
+  --card-border: 222 18% 20%;
+
+  --sidebar: 222 28% 6%;
+  --sidebar-foreground: 210 10% 80%;
+  --sidebar-border: 222 18% 14%;
+  --sidebar-primary: 185 80% 43%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 222 22% 14%;
+  --sidebar-accent-foreground: 210 10% 80%;
+  --sidebar-ring: 185 80% 43%;
+
+  --popover: 222 22% 12%;
+  --popover-foreground: 210 12% 93%;
+  --popover-border: 222 18% 20%;
+
+  /* Green primary — brighter for dark mode visibility */
+  --primary: 185 80% 43%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 170 87% 40%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 222 18% 16%;
+  --muted-foreground: 210 10% 50%;
+
+  --accent: 222 18% 16%;
+  --accent-foreground: 210 12% 93%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 222 18% 22%;
+  --ring: 185 80% 43%;
+
+  --chart-1: 185 80% 43%;
+  --chart-2: 170 87% 40%;
+  --chart-3: 43 100% 55%;
+  --chart-4: 340 90% 60%;
+  --chart-5: 280 70% 60%;
+
+  --app-font-sans: 'Cairo', 'Outfit', sans-serif;
+  --app-font-serif: Georgia, serif;
+  --app-font-mono: Menlo, monospace;
+  --radius: 0.75rem;
+
+  --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0.3);
+  --shadow-xs: 0px 2px 4px 0px rgba(0,0,0,0.3);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.3), 0px 1px 2px -1px rgba(0,0,0,0.3);
+  --shadow: 0px 4px 6px 0px rgba(0,0,0,0.4), 0px 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-md: 0px 8px 10px 0px rgba(0,0,0,0.4), 0px 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0px 12px 16px 0px rgba(0,0,0,0.5), 0px 4px 6px -1px rgba(0,0,0,0.3);
+  --shadow-xl: 0px 20px 25px 0px rgba(0,0,0,0.5), 0px 8px 10px -1px rgba(0,0,0,0.3);
+  --shadow-2xl: 0px 25px 50px 0px rgba(0,0,0,0.6);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  --sidebar-primary-border: hsl(185 80% 43%);
+  --sidebar-accent-border: hsl(222 22% 18%);
+  --primary-border: hsl(186 83% 36%);
+  --secondary-border: hsl(170 87% 34%);
+  --muted-border: hsl(222 18% 20%);
+  --accent-border: hsl(222 18% 20%);
+  --destructive-border: hsl(0 70% 45%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* RTL adjustments */
+[dir="rtl"] .lucide {
+  transform-origin: center;
+}
+
+/* Floating XP animation */
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  60% { opacity: 1; transform: translateY(-40px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.8); }
+}
+
+.xp-float {
+  animation: floatUp 1.2s ease-out forwards;
+}
+
+/* Heart pulse animation */
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.heart-beat {
+  animation: heartBeat 0.5s ease-in-out;
+}
+
+/* Combo burst */
+@keyframes comboBurst {
+  0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.combo-burst {
+  animation: comboBurst 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Mascot bob */
+@keyframes mascotBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.mascot-bob {
+  animation: mascotBob 3s ease-in-out infinite;
+}
+
+/* Mascot jump */
+@keyframes mascotJump {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-22px) scale(1.08); }
+  60%  { transform: translateY(-8px) scale(1.03); }
+  80%  { transform: translateY(-16px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.mascot-jump {
+  animation: mascotJump 0.6s ease-out forwards;
+}
+
+/* Mascot wiggle */
+@keyframes mascotWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(5deg); }
+}
+
+.mascot-wiggle {
+  animation: mascotWiggle 0.5s ease-out;
+}
+
+/* Shake on wrong answer */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Confetti pieces */
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  animation: confettiFall linear forwards;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 2px;
+}
+
+/* Streak fire glow */
+@keyframes fireGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px #f97316); }
+  50% { filter: drop-shadow(0 0 12px #f97316) drop-shadow(0 0 20px #fbbf24); }
+}
+
+.fire-glow {
+  animation: fireGlow 1.5s ease-in-out infinite;
+}
+
+/* Pulse green on correct */
+@keyframes correctPulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+  50% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.correct-pulse {
+  animation: correctPulse 0.6s ease-out;
+}
+
+@layer utilities {
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  .no-default-hover-elevate {}
+  .no-default-active-elevate {}
+
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: -1;
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate),
+  .active-elevate:not(.no-default-active-elevate),
+  .hover-elevate-2:not(.no-default-hover-elevate),
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: 999;
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+    inset: -1px;
+  }
+}
+
+/* ═══════════ تحسينات الآيفون (Safe Area + اللمس) ═══════════ */
+
+/* إزالة وميض اللمس الأزرق (كل الأجهزة) */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  background-color: hsl(222 22% 9%);
+}
+
+/* تمرير سلس ومنع السحب المطّاطي — على الأجهزة اللمسية فقط (لا يؤثّر على سكرول الماوس) */
+@media (pointer: coarse) {
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+}
+
+/* منع تحديد النص عند اللمس المطوّل على الأزرار والبطاقات */
+button, a, [role="button"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* المناطق الآمنة: حشوة علوية للنوتش وسفلية لشريط الآيفون */
+.safe-top    { padding-top: env(safe-area-inset-top, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* شريط التنقّل السفلي يحترم منطقة الآيفون الآمنة */
+.bottom-nav-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+}
+
+/* الهيدر الثابت يحترم النوتش */
+.sticky-header-safe {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 5px);
+}
+
+/* تكبير منطقة اللمس للأزرار الصغيرة (إرشادات آبل: 44px على الأقل) */
+@media (pointer: coarse) {
+  button, a[role="button"], .tap-target {
+    min-height: 44px;
+  }
+}
+
+/* تحسين عرض الخطوط على شاشات الريتينا */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* منع تكبير الآيفون التلقائي عند الكتابة في الحقول (يتطلّب 16px على الأقل) */
+input, textarea, select {
+  font-size: 16px !important;
+}
+@media (min-width: 768px) {
+  /* على الكمبيوتر نرجّع الحجم الطبيعي */
+  input, textarea, select {
+    font-size: inherit !important;
+  }
+}
+
+/* حشوة علوية للمحتوى = ارتفاع الهيدر العائم + النوتش (جوال فقط) */
+.content-top-safe {
+  padding-top: calc(56px + max(env(safe-area-inset-top, 0px), 8px));
+}
+@media (min-width: 768px) {
+  .content-top-safe { padding-top: 0; }  /* الكمبيوتر: لا هيدر علوي */
+}
+
+/* ═══════════ ضبط احترافي للمقاسات على الجوال ═══════════ */
+
+/* منع التمرير الأفقي — على الجوال فقط (لا يكسر سكرول الماوس على الكمبيوتر) */
+@media (max-width: 767px) {
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  .text-3xl { font-size: 1.6rem; line-height: 2rem; }
+  .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* ضمان أن الشبكات (grid) لا تتجاوز العرض */
+.grid { min-width: 0; }
+.grid > * { min-width: 0; }
+
+/* ═══════════ انتقالات ناعمة بين الصفحات ═══════════ */
+/* انتقال الصفحات يُدار الآن بـ framer-motion (انزلاق اتجاهي) */
+
+/* إخفاء شريط التمرير (للمحتوى الداخلي في الدروس) */
+.hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* مربّع الدليل في الخارطة: ثابت فوراً (جوال) — يمنع القفز عند التحميل */
+@media (max-width: 767px) {
+  .roadmap-guide-fixed {
+    position: fixed !important;
+    top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px) !important;
+    left: 14px !important;
+    right: 14px !important;
+    padding: 0 !important;
+    z-index: 29;
+  }
+  .roadmap-guide-spacer { height: 70px !important; }
+}
+
+/* ═══════════ صقل بصري عام ═══════════ */
+
+/* تمرير ناعم عند القفز للأقسام */
+html { scroll-behavior: smooth; }
+
+/* تحسين مظهر شريط التمرير على الكمبيوتر (أنحف وأنيق) */
+@media (pointer: fine) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+    background-clip: padding-box;
+  }
+}
+
+/* انتقالات ناعمة لروابط التنقّل فقط (نتجنّب التأثير على أزرار الدروس ثلاثية الأبعاد) */
+a[role="button"], nav button {
+  transition: opacity 0.12s ease, background-color 0.15s ease;
+}
+
+/* ═══════════ مربّع الدليل الثابت في الخارطة (كمبيوتر) ═══════════ */
+@media (min-width: 768px) {
+  .roadmap-guide-fixed {
+    position: sticky;
+    top: 8px;
+    z-index: 29;
+  }
+  .roadmap-guide-spacer { display: none; }
+}
+
+/* ═══════════ تحسينات اللمس للجوال ═══════════ */
+@media (pointer: coarse) {
+  /* منع تأخير اللمس 300ms (آمن وعام) */
+  a, button, [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+/* ═══════════ منع كسر التخطيط بالنصوص الطويلة ═══════════ */
+/* النصوص الإنجليزية الطويلة تلتفّ بدل ما تكسر العرض */
+p, h1, h2, h3, h4, span, div, button {
+  overflow-wrap: break-word;
+}
