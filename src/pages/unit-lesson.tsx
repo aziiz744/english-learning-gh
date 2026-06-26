@@ -2083,7 +2083,7 @@ export default function UnitLesson() {
           hsl(var(--background))
         `,
       }}/>
-      <div style={{ maxWidth:440, margin:"0 auto", padding:"calc(max(env(safe-area-inset-top, 0px), 8px) + 8px) 16px 0", height:"100svh", display:"flex", flexDirection:"column" }}>
+      <div style={{ maxWidth:440, margin:"0 auto", padding:"calc(max(env(safe-area-inset-top, 0px), 8px) + 8px) 16px calc(env(safe-area-inset-bottom, 0px) + 8px)", height:"100svh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
@@ -2201,8 +2201,8 @@ export default function UnitLesson() {
             </div>
           )}
 
-          {/* Main content area */}
-          <div style={{ overflowY:"auto", display:"flex", flexDirection:"column", paddingBottom:16 }}>
+          {/* Main content area — يملأ الشاشة، يتمركز، بدون سحب الصفحة */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", paddingBottom:8, minHeight:0 }}>
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait" initial={false}>
               {ex && (

@@ -1695,13 +1695,7 @@ export default function Roadmap() {
         <div className="roadmap-guide-fixed" style={{
           zIndex: 29,
         }}>
-        <motion.div
-          key={activeSection.id}
-          className="roadmap-sticky-header"
-          initial={{ opacity: 0.7 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.25 }}
-        >
+        <div className="roadmap-sticky-header">
           <div style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
             {/* شريط الدليل الزجاجي الأنيق (متناسق مع الواجهة) */}
             <div style={{
@@ -1754,7 +1748,7 @@ export default function Roadmap() {
               </motion.button>
             </div>
           </div>
-        </motion.div>
+        </div>
         </div>
         {/* مسافة تعويضية للمربّع الثابت (جوال فقط) */}
         <div className="roadmap-guide-spacer" />
@@ -1764,7 +1758,6 @@ export default function Roadmap() {
 
         {/* Page title */}
         <div className="text-center my-6">
-          <div className="text-5xl mb-3">🗺️</div>
           <h1 className="text-3xl font-bold">خارطة التعلم</h1>
           <p className="text-muted-foreground mt-1 text-sm">طريقك من الصفر حتى إتقان الإنجليزية</p>
         </div>
