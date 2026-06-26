@@ -9,7 +9,7 @@ import { useGetStats, type UserStats } from "@/lib/api-hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Mascot } from "@/components/mascot";
-import { useState, useEffect, useCallback, useRef, type CSSProperties } from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Bottom nav: 5 items max ──
@@ -293,24 +293,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  // ترتيب الصفحات لتحديد اتجاه السحب (RTL: الخارطة يمين، المسابقات يسار)
-  const NAV_ORDER: Record<string, number> = { "/": 0, "/roadmap": 0, "/review": 1, "/competitions": 2 };
-  const prevLoc = useRef(location);
-  const direction = useRef(0);
-  const fromOrder = NAV_ORDER[prevLoc.current];
-  const toOrder = NAV_ORDER[location];
-  if (location !== prevLoc.current) {
-    const goingToRoadmap = location === "/" || location === "/roadmap";
-    if (goingToRoadmap) {
-      direction.current = 0; // الخارطة فيها عناصر ثابتة (الدليل) → تلاشٍ فقط لتجنّب كسرها
-    } else if (fromOrder !== undefined && toOrder !== undefined) {
-      direction.current = toOrder > fromOrder ? 1 : -1;
-    } else {
-      direction.current = 0;
-    }
-    prevLoc.current = location;
-  }
-
   const sharedProps = { location, stats, user, authLoading, login, logout };
 
   // الجواهر للهيدر (تقريب من XP: كل 10 XP ≈ جوهرة، مبسّط)
@@ -430,9 +412,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <main className={cn("safe-x", isImmersive ? "flex-1 min-h-0 flex flex-col overflow-hidden" : "flex-1 px-3 py-4 md:p-8")} style={{ overflow: "hidden" }}>
           <motion.div
             key={location}
-            initial={{ opacity: 0, x: direction.current === 0 ? 0 : direction.current * 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "tween", ease: [0.32, 0.72, 0, 1], duration: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
             className={cn("mx-auto w-full", isImmersive ? "flex-1 min-h-0 flex flex-col" : "max-w-6xl")}
           >
             {children}
