@@ -85,7 +85,7 @@ function Router() {
         <Route path="/section-test" component={SectionTest} />
         <Route path="/grammar" component={Grammar} />
         <Route path="/pro" component={Pro} />
-        <Route path="/reset-password">{() => <ResetPassword onDone={() => window.location.assign("/")} />}</Route>
+        <Route path="/reset-password" component={ResetPassword} />
         <Route path="/teacher" component={TeacherPage} />
         <Route path="/admin-stats" component={AdminStats} />
         <Route path="/privacy" component={Privacy} />
