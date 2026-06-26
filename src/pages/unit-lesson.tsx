@@ -1392,9 +1392,11 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
   unitTitle:string; vocab:{en:string;ar:string}[]; xpEarned:number; color:string; onBack:()=>void;
 }) {
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center" style={{ overflowY:"auto" }}>
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="hide-scrollbar"
+      style={{ flex:1, minHeight:0, width:"100%", overflowY:"auto", display:"flex", flexDirection:"column",
+        padding:"calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
       <Confetti count={90} duration={3500} />
-      <div className="w-full max-w-md mx-auto p-4">
+      <div className="w-full max-w-md mx-auto" style={{ margin:"auto" }}>
         {/* Trophy header */}
         <div className="text-center mb-6">
           <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}}
@@ -1452,11 +1454,13 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
   const stars = pct>=90?3:pct>=70?2:1;
 
   return (
-    <motion.div initial={{opacity:0,scale:0.85}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:150}}
-      className="flex-1 flex items-center justify-center">
-      <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-2xl shadow-2xl bg-card">
+    <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:160,damping:20}}
+      className="hide-scrollbar"
+      style={{ flex:1, minHeight:0, width:"100%", overflowY:"auto", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start",
+        padding:"calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
+      <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-3xl shadow-2xl" style={{ background:"hsl(var(--card))", margin:"auto 0" }}>
         {/* Header */}
-        <div className="py-8 flex flex-col items-center bg-primary/10 relative">
+        <div className="py-6 flex flex-col items-center bg-primary/10 relative">
           <motion.div animate={{rotate:[0,-10,10,-10,0],scale:[1,1.1,1]}} transition={{delay:0.3,duration:0.6}}
             className="w-24 h-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-4 shadow-xl shadow-primary/30">
             <Trophy className="w-12 h-12" />
@@ -1487,7 +1491,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
           </div>
         </div>
         {/* Stats */}
-        <div className="p-6">
+        <div className="p-5">
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="p-3 bg-muted/50 rounded-2xl flex flex-col items-center">
               <div className="text-xs text-muted-foreground mb-1">الدقة</div>
