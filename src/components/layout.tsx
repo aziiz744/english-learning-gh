@@ -407,7 +407,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className={cn("md:mr-64 flex flex-col md:pb-0", isImmersive ? "h-screen overflow-hidden" : "min-h-screen pb-28 content-top-safe")}>
+      <div className={cn("md:mr-64 flex flex-col md:pb-0", isImmersive ? "overflow-hidden" : "min-h-screen pb-28 content-top-safe")}
+        style={isImmersive ? { height: "100dvh" } : undefined}>
         <main className={cn("safe-x", isImmersive ? "flex-1 min-h-0 flex flex-col overflow-hidden" : "flex-1 px-3 py-4 md:p-8")} style={{ overflow: "hidden" }}>
           <motion.div
             key={location}

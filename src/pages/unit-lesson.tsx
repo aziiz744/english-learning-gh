@@ -933,27 +933,29 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
 
   return (
     <div>
-      {/* التعليمة */}
-      <div style={{ textAlign:"center", marginBottom:12 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:4 }}>🎧 الاستماع</div>
-        <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
-      </div>
-      {/* Audio buttons: عادي + سلحفاة بطيء */}
-      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:8 }}>
-        {/* عادي — كبير */}
+      {/* التعليمة — تختفي بعد الإجابة لتوفير مساحة */}
+      {!picked && (
+        <div style={{ textAlign:"center", marginBottom:12 }}>
+          <div style={{ fontSize:13, fontWeight:800, color, marginBottom:4 }}>🎧 الاستماع</div>
+          <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
+        </div>
+      )}
+      {/* Audio buttons — تصغر بعد الإجابة */}
+      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom: picked ? 8 : 8 }}>
+        {/* عادي */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!, 0.85, ex.id)}
-          style={{ width:74, height:74, borderRadius:20, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 0 ${color}99, 0 7px 18px ${color}40` }}>
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          style={{ width: picked?52:74, height: picked?52:74, borderRadius: picked?16:20, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 0 ${color}99, 0 7px 18px ${color}40`, transition:"all 0.2s" }}>
+          <svg width={picked?26:36} height={picked?26:36} viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
-        {/* سلحفاة — بطيء */}
+        {/* سلحفاة */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!, ex.id)}
-          style={{ width:56, height:56, borderRadius:16, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 3px 0 ${color}30` }}>
-          <span style={{ fontSize:26 }}>🐢</span>
+          style={{ width: picked?42:56, height: picked?42:56, borderRadius: picked?13:16, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 3px 0 ${color}30`, transition:"all 0.2s" }}>
+          <span style={{ fontSize: picked?20:26 }}>🐢</span>
         </motion.button>
       </div>
-      <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:10 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
+      {!picked && <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:10 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>}
       <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
