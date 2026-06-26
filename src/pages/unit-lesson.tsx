@@ -12,6 +12,7 @@ import { translateWord } from "@/lib/word-glossary";
 import { addReviewItem } from "@/lib/review-library";
 import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
+import { Confetti } from "@/components/confetti";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -1234,6 +1235,7 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
+      {phase === "done" && <Confetti count={80} />}
       <div className="text-center max-w-sm mx-auto p-6">
         <div style={{ position:"relative", width:240, height:240, margin:"0 auto 24px" }}>
           {/* وهج خلفي ينبض */}
@@ -1391,6 +1393,7 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
 }) {
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center" style={{ overflowY:"auto" }}>
+      <Confetti count={90} duration={3500} />
       <div className="w-full max-w-md mx-auto p-4">
         {/* Trophy header */}
         <div className="text-center mb-6">
@@ -1662,6 +1665,7 @@ export default function UnitLesson() {
   const [xpEarned, setXpEarned] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
+  const [successFlash, setSuccessFlash] = useState(false);
   // تتبّع الأخطاء لعرضها في ملخّص نهاية الدرس (للمراجعة)
   const [mistakes, setMistakes] = useState<{ question: string; correct: string; yourAnswer: string; ex: ExObj }[]>([]);
   // وضع التدرّب على الأخطاء (يعيد الأسئلة الغلط فقط)
@@ -1890,6 +1894,8 @@ export default function UnitLesson() {
       }
       playCorrect();
       hapticSuccess();
+      setSuccessFlash(true);
+      setTimeout(() => setSuccessFlash(false), 600);
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
@@ -2167,6 +2173,19 @@ export default function UnitLesson() {
         )}
 
         {phase === "playing" && <>
+          {/* وميض نجاح أخضر خفيف عند الإجابة الصحيحة */}
+          <AnimatePresence>
+            {successFlash && (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: "fixed", inset: 0, zIndex: 35, pointerEvents: "none",
+                  background: "radial-gradient(ellipse 100% 60% at 50% 50%, rgba(34,197,94,0.18), transparent 70%)",
+                }}
+              />
+            )}
+          </AnimatePresence>
           {/* Top bar — عصري زجاجي (قلوب · شريط تقدّم · إغلاق) */}
           <div style={{
             display:"flex", alignItems:"center", gap:12, padding:"9px 14px", marginBottom:12,
