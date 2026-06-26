@@ -2083,7 +2083,7 @@ export default function UnitLesson() {
           hsl(var(--background))
         `,
       }}/>
-      <div style={{ maxWidth:440, margin:"0 auto", padding:"calc(max(env(safe-area-inset-top, 0px), 8px) + 8px) 16px calc(env(safe-area-inset-bottom, 0px) + 8px)", height:"100%", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+      <div style={{ maxWidth:440, margin:"0 auto", padding:"calc(max(env(safe-area-inset-top, 0px), 8px) + 8px) 16px calc(env(safe-area-inset-bottom, 0px) + 8px)", flex:1, minHeight:0, width:"100%", display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}

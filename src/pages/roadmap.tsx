@@ -1462,6 +1462,7 @@ function DailyGoalCard({ color }: { color: string }) {
 
 export default function Roadmap() {
   const [activeChapter] = useState(0);
+  const [isMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= 767);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [activePopup, setActivePopup] = useState<{ lessonId: string; x: number; y: number } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
@@ -1692,9 +1693,12 @@ export default function Roadmap() {
         </AnimatePresence>
 
         {/* ── Section header (ثابت تحت الهيدر) ── */}
-        <div className="roadmap-guide-fixed" style={{
+        <div className="roadmap-guide-fixed" style={ isMobile ? {
           zIndex: 29,
-        }}>
+          position: "fixed",
+          top: "calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px)",
+          left: 14, right: 14,
+        } : { zIndex: 29 }}>
         <div className="roadmap-sticky-header">
           <div style={{ maxWidth: 380, margin: "0 auto", position: "relative" }}>
             {/* شريط الدليل الزجاجي الأنيق (متناسق مع الواجهة) */}
@@ -1751,7 +1755,7 @@ export default function Roadmap() {
         </div>
         </div>
         {/* مسافة تعويضية للمربّع الثابت (جوال فقط) */}
-        <div className="roadmap-guide-spacer" />
+        <div className="roadmap-guide-spacer" style={ isMobile ? { height: 70 } : undefined } />
 
         {/* بطاقة الهدف اليومي */}
         <DailyGoalCard color="#16B6C6" />
