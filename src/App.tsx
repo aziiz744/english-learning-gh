@@ -30,7 +30,6 @@ const SectionTest = lazy(() => import("@/pages/section-test"));
 const Grammar = lazy(() => import("@/pages/grammar"));
 const Pro = lazy(() => import("@/pages/pro"));
 const ResetPassword = lazy(() => import("@/pages/reset-password"));
-const TeacherPage = lazy(() => import("@/pages/teacher"));
 const AdminStats = lazy(() => import("@/pages/admin-stats"));
 const Privacy = lazy(() => import("@/pages/privacy"));
 
@@ -86,7 +85,6 @@ function Router() {
         <Route path="/grammar" component={Grammar} />
         <Route path="/pro" component={Pro} />
         <Route path="/reset-password">{() => <ResetPassword onDone={() => window.location.assign("/")} />}</Route>
-        <Route path="/teacher" component={TeacherPage} />
         <Route path="/admin-stats" component={AdminStats} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/review" component={ReviewLibrary} />
