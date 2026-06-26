@@ -443,6 +443,19 @@ input, textarea, select {
 /* ═══════════ انتقالات ناعمة بين الصفحات ═══════════ */
 /* انتقال الصفحات يُدار الآن بـ framer-motion (انزلاق اتجاهي) */
 
+/* مربّع الدليل في الخارطة: ثابت فوراً (جوال) — يمنع القفز عند التحميل */
+@media (max-width: 767px) {
+  .roadmap-guide-fixed {
+    position: fixed !important;
+    top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px) !important;
+    left: 14px !important;
+    right: 14px !important;
+    padding: 0 !important;
+    z-index: 29;
+  }
+  .roadmap-guide-spacer { height: 70px !important; }
+}
+
 /* ═══════════ صقل بصري عام ═══════════ */
 
 /* تمرير ناعم عند القفز للأقسام */

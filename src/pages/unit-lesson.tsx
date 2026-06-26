@@ -2074,7 +2074,16 @@ export default function UnitLesson() {
 
   return (
     <>
-      <div style={{ maxWidth:440, margin:"0 auto", padding:"0 16px", height:"calc(100svh - 130px)", display:"flex", flexDirection:"column" }}>
+      {/* توهّج خلفي بلون الوحدة (يعطي عمق وتناسق) */}
+      <div style={{
+        position:"fixed", inset:0, zIndex:-1, pointerEvents:"none",
+        background:`
+          radial-gradient(ellipse 100% 40% at 50% 0%, ${meta.color}22, transparent 60%),
+          radial-gradient(ellipse 80% 40% at 50% 100%, ${meta.color}14, transparent 60%),
+          hsl(var(--background))
+        `,
+      }}/>
+      <div style={{ maxWidth:440, margin:"0 auto", padding:"calc(max(env(safe-area-inset-top, 0px), 8px) + 8px) 16px 0", height:"100svh", display:"flex", flexDirection:"column" }}>
 
         {phase === "gameover" && <GameOverScreen score={score} total={totalCount} isPro={isPro??false} onRetry={()=>loadExercises(subLesson)} onBack={()=>setLocation("/roadmap")}/>}
         {phase === "chest"    && <ChestOpenScreen xp={xpEarned + 20} color={meta.color} onBack={()=>setLocation("/roadmap")}/>}
@@ -2156,19 +2165,28 @@ export default function UnitLesson() {
         )}
 
         {phase === "playing" && <>
-          {/* Top bar — قلب يسار · شريط أخضر · X يمين (ستايل Duolingo) */}
-          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0 18px", position:"sticky", top:0, background:"hsl(var(--background))", zIndex:20, flexShrink:0 }}>
+          {/* Top bar — عصري زجاجي (قلوب · شريط تقدّم · إغلاق) */}
+          <div style={{
+            display:"flex", alignItems:"center", gap:12, padding:"10px 14px", marginBottom:18,
+            position:"sticky", top:10, zIndex:20, flexShrink:0,
+            background:"hsl(var(--sidebar) / 0.78)",
+            backdropFilter:"blur(24px) saturate(180%)",
+            WebkitBackdropFilter:"blur(24px) saturate(180%)",
+            border:"1px solid hsl(var(--sidebar-border) / 0.5)",
+            borderRadius:20,
+            boxShadow:"0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
+          }}>
             {/* القلوب — يسار */}
             {proLoaded && <Hearts count={hearts} isPro={isPro}/>}
             {/* شريط التقدم */}
-            <div style={{ flex:1, height:14, background:"hsl(var(--muted))", borderRadius:10, overflow:"hidden", minWidth:0 }}>
-              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10 }} transition={{ duration:0.4 }}>
+            <div style={{ flex:1, height:12, background:"hsl(var(--muted) / 0.6)", borderRadius:10, overflow:"hidden", minWidth:0 }}>
+              <motion.div animate={{ width:`${progress}%` }} style={{ height:"100%", background:`linear-gradient(90deg, ${meta.color}, ${lightColor(meta.color)})`, borderRadius:10, boxShadow:`0 0 12px ${meta.color}80` }} transition={{ type:"spring", stiffness:120, damping:20 }}>
                 {/* لمعة علوية */}
-                <div style={{ height:"40%", margin:"2px 6px 0", background:"rgba(255,255,255,0.35)", borderRadius:6 }}/>
+                <div style={{ height:"38%", margin:"2px 6px 0", background:"rgba(255,255,255,0.4)", borderRadius:6 }}/>
               </motion.div>
             </div>
             {/* زر الإغلاق — يمين */}
-            <button onClick={()=>setShowExitConfirm(true)} style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20, color:"hsl(var(--muted-foreground))" }}>✕</button>
+            <button onClick={()=>setShowExitConfirm(true)} style={{ width:30, height:30, borderRadius:"50%", background:"hsl(var(--muted) / 0.5)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:17, color:"hsl(var(--muted-foreground))" }}>✕</button>
           </div>
 
           {/* شارة مرحلة التدرّج (للدروس العادية فقط) */}

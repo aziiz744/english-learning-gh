@@ -1624,16 +1624,7 @@ export default function Roadmap() {
             }
           }
           @media (max-width: 767px) {
-            /* مربّع الدليل: ثابت تحت الهيدر مباشرة (مكان شريط الإحصائيات المحذوف) */
-            .roadmap-guide-fixed {
-              position: fixed;
-              top: calc(56px + max(env(safe-area-inset-top, 0px), 8px) + 6px) !important;
-              left: 14px !important; right: 14px !important;
-              padding: 0 !important;
-              z-index: 29;
-            }
-            /* مسافة تعويضية = مربّع الدليل فقط (أقل لأن الشريط حُذف) */
-            .roadmap-guide-spacer { height: 70px !important; }
+            /* مربّع الدليل وضعه الآن في index.css (يُطبّق فوراً بلا قفز) */
           }
         `}</style>
 

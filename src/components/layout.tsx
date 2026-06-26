@@ -298,6 +298,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
   // الجواهر للهيدر (تقريب من XP: كل 10 XP ≈ جوهرة، مبسّط)
   const headerGems = stats ? Math.floor((stats.totalXp ?? 0) / 10) : 0;
 
+  // صفحات "غامرة" تخفي الهيدر والشريط السفلي (التمارين، الاختبارات)
+  const isImmersive = /^\/(u|jump|level-test|section-test)\//.test(location) ||
+    location === "/section-test" || location === "/reset-password";
+
   return (
     <div className="min-h-screen text-foreground" dir="rtl"
       style={{
@@ -316,6 +320,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Mobile top header — عصري زجاجي عائم (متناسق مع الشريط السفلي) */}
+      {!isImmersive && (
       <header className="md:hidden fixed top-0 inset-x-0 z-50"
         style={{
           paddingTop: "max(env(safe-area-inset-top, 0px), 8px)",
@@ -375,6 +380,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
+      )}
 
       {/* Mobile drawer */}
       <AnimatePresence>
@@ -401,8 +407,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className="md:mr-64 flex flex-col min-h-screen pb-28 md:pb-0 content-top-safe">
-        <main className="flex-1 px-3 py-4 md:p-8 safe-x" style={{ overflow: "hidden" }}>
+      <div className={cn("md:mr-64 flex flex-col min-h-screen md:pb-0", isImmersive ? "" : "pb-28 content-top-safe")}>
+        <main className={cn("flex-1 safe-x", isImmersive ? "" : "px-3 py-4 md:p-8")} style={{ overflow: "hidden" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location}
@@ -419,6 +425,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Mobile bottom nav — 5 items */}
+      {!isImmersive && (
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 10px)", paddingLeft: 14, paddingRight: 14 }}>
         <div
@@ -497,6 +504,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           })}
         </div>
       </nav>
+      )}
 
       {/* More Sheet */}
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)}
