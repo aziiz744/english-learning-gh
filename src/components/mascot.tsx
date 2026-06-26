@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, type Target, type Transition } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import owlIdle from "@/assets/owl/owl-idle.png";
 import owlWave from "@/assets/owl/owl-wave.png";
