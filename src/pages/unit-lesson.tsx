@@ -639,18 +639,18 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
     <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
       className={cn("rounded-2xl border-2 overflow-hidden", correct ? "bg-green-500/10 border-green-500/40" : "bg-red-500/10 border-red-500/40")}>
       {/* Top bar */}
-      <div className={cn("px-4 py-3 flex items-center gap-2.5", correct ? "bg-green-500/15" : "bg-red-500/15")}>
-        <span className="text-2xl">{correct ? "✅" : "❌"}</span>
-        <h4 className={cn("font-extrabold text-base", correct ? "text-green-400" : "text-red-400")}>{msg}</h4>
+      <div className={cn("px-4 py-2 flex items-center gap-2", correct ? "bg-green-500/15" : "bg-red-500/15")}>
+        <span className="text-xl">{correct ? "✅" : "❌"}</span>
+        <h4 className={cn("font-extrabold text-sm", correct ? "text-green-400" : "text-red-400")}>{msg}</h4>
       </div>
       {/* Body */}
-      <div className="px-4 py-3 space-y-2.5">
+      <div className="px-3 py-2.5 space-y-2">
         {!correct && correctAnswer && (
-          <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
-            <Check className="w-5 h-5 text-green-400 shrink-0" />
+          <div className="flex items-center gap-2 p-2.5 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <Check className="w-4 h-4 text-green-400 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground mb-0.5">الإجابة الصحيحة <span style={{ opacity:0.7 }}>· اضغط الكلمة لمعناها</span></div>
-              <div className="text-green-400 font-bold text-base" style={{ direction:"ltr" }}>
+              <div className="text-[11px] text-muted-foreground mb-0.5">الإجابة الصحيحة <span style={{ opacity:0.7 }}>· اضغط الكلمة لمعناها</span></div>
+              <div className="text-green-400 font-bold text-sm" style={{ direction:"ltr" }}>
                 {correctAnswer.split(" ").map((w, i) => (
                   <span key={i}>
                     <WordChip word={w} color="#22c55e" isNew={isNewWord(w)} />
@@ -659,17 +659,17 @@ function FeedbackBar({ correct, explanation, correctAnswer, onNext, color }: {
                 ))}
               </div>
             </div>
-            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:38, height:38, borderRadius:10, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:18, flexShrink:0 }}>🔊</button>
+            <button onClick={()=>speak(correctAnswer, 0.85)} style={{ width:34, height:34, borderRadius:9, background:"#22c55e22", border:"none", cursor:"pointer", fontSize:16, flexShrink:0 }}>🔊</button>
           </div>
         )}
         {explanation && (
-          <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background:`${color}10`, border:`1px solid ${color}30` }}>
-            <span style={{ fontSize:16 }}>💡</span>
-            <p className="text-sm leading-relaxed flex-1" style={{ color:"hsl(var(--foreground))", direction:"rtl" }}>{explanation}</p>
+          <div className="flex items-start gap-2 p-2.5 rounded-xl" style={{ background:`${color}10`, border:`1px solid ${color}30` }}>
+            <span style={{ fontSize:14 }}>💡</span>
+            <p className="text-[13px] leading-relaxed flex-1" style={{ color:"hsl(var(--foreground))", direction:"rtl" }}>{explanation}</p>
           </div>
         )}
         <button onClick={onNext}
-          style={{ width:"100%", padding:"14px", borderRadius:14, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
+          style={{ width:"100%", padding:"12px", borderRadius:13, border:"none", fontWeight:800, fontSize:15, cursor:"pointer",
             background: correct ? "#22c55e" : color, color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:8,
             boxShadow: correct ? "0 4px 0 #16a34a" : `0 4px 0 ${color}99` }}>
           متابعة <ArrowRight size={18}/>
@@ -953,14 +953,14 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
           <span style={{ fontSize:26 }}>🐢</span>
         </motion.button>
       </div>
-      <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
-      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+      <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:10 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
+      <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
           const bc = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
           return (
             <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={!!picked}
-              style={{ padding:"12px 18px", borderRadius:14, fontSize:15, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:48,
+              style={{ padding:"11px 18px", borderRadius:13, fontSize:15, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:44,
                 color:"hsl(var(--foreground))",
                 background:isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))"),
                 border:`2px solid ${bc}`, boxShadow:`0 3px 0 ${bc==="hsl(var(--border))"?"hsl(var(--border))":bc}` }}>
@@ -2201,8 +2201,8 @@ export default function UnitLesson() {
             </div>
           )}
 
-          {/* Main content area — كل شي يدخل الشاشة، بدون تمرير */}
-          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", minHeight:0, scrollbarWidth:"none", paddingBottom: feedback ? 8 : 0 }} className="hide-scrollbar">
+          {/* Main content area — يتمركز، يتمرّر داخلياً فقط لو لزم (نادر) */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", minHeight:0 }} className="hide-scrollbar">
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait" initial={false}>
               {ex && (
@@ -2242,23 +2242,16 @@ export default function UnitLesson() {
             )}
           </AnimatePresence>
 
-          {/* Feedback bar — يطفو فوق المحتوى (overlay) بدل ما يدفعه */}
-          <AnimatePresence>
-            {feedback && (
+          {/* Feedback bar — قسم ثابت أسفل (داخل التدفّق، يدفع السؤال لأعلى) */}
+          {feedback && (
+            <div style={{ flexShrink:0, paddingTop:8 }}>
               <motion.div key="fb"
-                initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:30}}
-                transition={{ type:"spring", stiffness:300, damping:30 }}
-                style={{
-                  position:"fixed", left:0, right:0,
-                  bottom:0,
-                  zIndex:40,
-                  padding:"0 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
-                  maxWidth:440, margin:"0 auto",
-                }}>
+                initial={{opacity:0,y:16}} animate={{opacity:1,y:0}}
+                transition={{ type:"spring", stiffness:320, damping:30 }}>
                 <FeedbackBar correct={feedback.ok} explanation={feedback.explanation} correctAnswer={feedback.correctAnswer} onNext={handleNext} color={meta.color}/>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+          )}
         </>}
 
         {/* Exit confirmation modal */}
