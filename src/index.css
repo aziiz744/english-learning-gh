@@ -443,6 +443,10 @@ input, textarea, select {
 /* ═══════════ انتقالات ناعمة بين الصفحات ═══════════ */
 /* انتقال الصفحات يُدار الآن بـ framer-motion (انزلاق اتجاهي) */
 
+/* إخفاء شريط التمرير (للمحتوى الداخلي في الدروس) */
+.hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* مربّع الدليل في الخارطة: ثابت فوراً (جوال) — يمنع القفز عند التحميل */
 @media (max-width: 767px) {
   .roadmap-guide-fixed {

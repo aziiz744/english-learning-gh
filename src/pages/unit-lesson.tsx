@@ -934,33 +934,33 @@ function ListenQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: 
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", marginBottom:18 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🎧 الاستماع</div>
-        <div style={{ fontSize:14, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
+      <div style={{ textAlign:"center", marginBottom:12 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:4 }}>🎧 الاستماع</div>
+        <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--foreground))", direction:"rtl" }}>استمع جيداً ثم اختر ما سمعته</div>
       </div>
       {/* Audio buttons: عادي + سلحفاة بطيء */}
-      <div style={{ display:"flex", gap:14, justifyContent:"center", alignItems:"center", marginBottom:14 }}>
+      <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"center", marginBottom:8 }}>
         {/* عادي — كبير */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speak(ex.listenSentence!, 0.85, ex.id)}
-          style={{ width:96, height:96, borderRadius:24, background:color, border:"none", cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 6px 0 ${color}99, 0 8px 22px ${color}40` }}>
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          style={{ width:74, height:74, borderRadius:20, background:color, border:"none", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 5px 0 ${color}99, 0 7px 18px ${color}40` }}>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         </motion.button>
         {/* سلحفاة — بطيء */}
         <motion.button whileTap={{scale:0.92}} onClick={()=>speakSlow(ex.listenSentence!, ex.id)}
-          style={{ width:72, height:72, borderRadius:20, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
-            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 4px 0 ${color}30` }}>
-          <span style={{ fontSize:34 }}>🐢</span>
+          style={{ width:56, height:56, borderRadius:16, background:`${color}18`, border:`2px solid ${color}45`, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 3px 0 ${color}30` }}>
+          <span style={{ fontSize:26 }}>🐢</span>
         </motion.button>
       </div>
-      <div style={{ fontSize:12, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:24 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
-      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+      <div style={{ fontSize:11, color:"hsl(var(--muted-foreground))", textAlign:"center", marginBottom:14 }}>اضغط 🔊 للعادي أو 🐢 للبطيء</div>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
         {(ex.options??[]).map(o=>{
           const isCorrect=o===ex.correctAnswer, isPicked=o===picked;
           const bc = isPicked?(isCorrect?"#16a34a":"#dc2626"):(picked&&isCorrect?"#16a34a":"hsl(var(--border))");
           return (
             <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={!!picked}
-              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:54,
+              style={{ padding:"12px 18px", borderRadius:14, fontSize:15, fontWeight:800, cursor:picked?"default":"pointer", direction:"ltr", minHeight:48,
                 color:"hsl(var(--foreground))",
                 background:isPicked?(isCorrect?"#16a34a14":"#dc262614"):(picked&&isCorrect?"#16a34a14":"hsl(var(--card))"),
                 border:`2px solid ${bc}`, boxShadow:`0 3px 0 ${bc==="hsl(var(--border))"?"hsl(var(--border))":bc}` }}>
@@ -2201,8 +2201,8 @@ export default function UnitLesson() {
             </div>
           )}
 
-          {/* Main content area — يملأ الشاشة، يتمركز، بدون سحب الصفحة */}
-          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", paddingBottom:8, minHeight:0 }}>
+          {/* Main content area — يملأ المساحة، تمرير داخلي فقط عند الحاجة */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", minHeight:0, scrollbarWidth:"none" }} className="hide-scrollbar">
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait" initial={false}>
               {ex && (

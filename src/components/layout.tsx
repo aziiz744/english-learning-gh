@@ -412,10 +412,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <AnimatePresence mode="wait">
             <motion.div
               key={location}
-              initial={{ opacity: 0, x: 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ type: "tween", ease: [0.33, 1, 0.68, 1], duration: 0.34 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
               className={cn("mx-auto w-full", isImmersive ? "flex-1 min-h-0 flex flex-col" : "max-w-6xl")}
             >
               {children}
