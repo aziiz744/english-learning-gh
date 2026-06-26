@@ -54,46 +54,32 @@ const translationCache: Record<string, string> = {};
 
 // Common words dictionary for instant accurate translation
 const COMMON_WORDS: Record<string, string> = {
-  "the":"الـ","a":"أ","an":"أ","is":"يكون","are":"يكونون","was":"كان","were":"كانوا",
-  "have":"يملك","has":"يملك","had":"امتلك","do":"يفعل","does":"يفعل","did":"فعل",
-  "will":"سيـ","would":"سيكون","can":"يستطيع","could":"استطاع","should":"ينبغي",
-  "may":"ربما","might":"قد","must":"يجب","shall":"سـ","need":"يحتاج",
-  "i":"أنا","you":"أنت","he":"هو","she":"هي","it":"هو/هي","we":"نحن","they":"هم",
-  "my":"لي","your":"لك","his":"له","her":"لها","our":"لنا","their":"لهم",
-  "this":"هذا","that":"ذاك","these":"هؤلاء","those":"أولئك",
-  "and":"و","or":"أو","but":"لكن","not":"لا","no":"لا","yes":"نعم",
-  "in":"في","on":"على","at":"في/عند","to":"إلى","for":"لـ","of":"من/لـ",
-  "from":"من","with":"مع","by":"بواسطة","about":"حول","up":"فوق","down":"تحت",
-  "go":"يذهب","come":"يأتي","see":"يرى","know":"يعلم","think":"يفكر",
-  "say":"يقول","get":"يحصل","make":"يصنع","take":"يأخذ","give":"يعطي",
-  "look":"ينظر","want":"يريد","use":"يستخدم","find":"يجد","tell":"يخبر",
-  "ask":"يسأل","work":"يعمل","call":"يتصل","try":"يحاول","need":"يحتاج",
-  "feel":"يشعر","become":"يصبح","leave":"يغادر","put":"يضع","mean":"يعني",
-  "keep":"يحتفظ","let":"يدع","begin":"يبدأ","show":"يُظهر","hear":"يسمع",
-  "play":"يلعب","run":"يجري","move":"يتحرك","live":"يعيش","walk":"يمشي",
-  "good":"جيد","bad":"سيئ","big":"كبير","small":"صغير","new":"جديد",
-  "old":"قديم","great":"رائع","little":"صغير","large":"كبير","high":"عالي",
-  "long":"طويل","short":"قصير","different":"مختلف","same":"نفس","right":"صحيح",
-  "happy":"سعيد","sad":"حزين","angry":"غاضب","tired":"متعب","excited":"متحمس",
-  "beautiful":"جميل","ugly":"قبيح","fast":"سريع","slow":"بطيء","hot":"حار",
-  "cold":"بارد","easy":"سهل","hard":"صعب","important":"مهم","possible":"ممكن",
-  "day":"يوم","night":"ليل","time":"وقت","year":"سنة","month":"شهر","week":"أسبوع",
-  "home":"منزل","house":"بيت","school":"مدرسة","city":"مدينة","country":"بلد",
-  "world":"عالم","life":"حياة","family":"عائلة","friend":"صديق","people":"ناس",
-  "man":"رجل","woman":"امرأة","boy":"ولد","girl":"بنت","child":"طفل",
-  "dog":"كلب","cat":"قطة","bird":"طائر","fish":"سمكة","horse":"حصان",
-  "water":"ماء","food":"طعام","book":"كتاب","money":"مال","car":"سيارة",
-  "door":"باب","window":"نافذة","room":"غرفة","street":"شارع","road":"طريق",
-  "white":"أبيض","black":"أسود","red":"أحمر","blue":"أزرق","green":"أخضر",
-  "yellow":"أصفر","brown":"بني","color":"لون","name":"اسم","love":"حب",
-  "help":"مساعدة","work":"عمل","hand":"يد","eye":"عين","face":"وجه",
-  "head":"رأس","heart":"قلب","body":"جسد","sun":"شمس","moon":"قمر","sky":"سماء",
-  "again":"مرة أخرى","always":"دائماً","never":"أبداً","often":"كثيراً",
-  "very":"جداً","too":"أيضاً","also":"كذلك","just":"فقط","even":"حتى",
-  "still":"لا يزال","back":"رجوع","only":"فقط","well":"بشكل جيد",
-  "how":"كيف","what":"ماذا","when":"متى","where":"أين","why":"لماذا","who":"من",
-  "hello":"مرحباً","hi":"مرحباً","bye":"وداعاً","thanks":"شكراً","please":"من فضلك",
-  "sorry":"آسف","yes":"نعم","no":"لا","ok":"حسناً","wow":"رائع",
+  "the":"الـ","a":"أ","an":"أ","is":"يكون","are":"يكونون","was":"كان","were":"كانوا","have":"يملك",
+  "has":"يملك","had":"امتلك","do":"يفعل","does":"يفعل","did":"فعل","will":"سيـ","would":"سيكون","can":"يستطيع",
+  "could":"استطاع","should":"ينبغي","may":"ربما","might":"قد","must":"يجب","shall":"سـ","need":"يحتاج","i":"أنا",
+  "you":"أنت","he":"هو","she":"هي","it":"هو/هي","we":"نحن","they":"هم","my":"لي","your":"لك",
+  "his":"له","her":"لها","our":"لنا","their":"لهم","this":"هذا","that":"ذاك","these":"هؤلاء","those":"أولئك",
+  "and":"و","or":"أو","but":"لكن","not":"لا","no":"لا","yes":"نعم","in":"في","on":"على",
+  "at":"في/عند","to":"إلى","for":"لـ","of":"من/لـ","from":"من","with":"مع","by":"بواسطة","about":"حول",
+  "up":"فوق","down":"تحت","go":"يذهب","come":"يأتي","see":"يرى","know":"يعلم","think":"يفكر","say":"يقول",
+  "get":"يحصل","make":"يصنع","take":"يأخذ","give":"يعطي","look":"ينظر","want":"يريد","use":"يستخدم","find":"يجد",
+  "tell":"يخبر","ask":"يسأل","work":"يعمل","call":"يتصل","try":"يحاول","feel":"يشعر","become":"يصبح","leave":"يغادر",
+  "put":"يضع","mean":"يعني","keep":"يحتفظ","let":"يدع","begin":"يبدأ","show":"يُظهر","hear":"يسمع","play":"يلعب",
+  "run":"يجري","move":"يتحرك","live":"يعيش","walk":"يمشي","good":"جيد","bad":"سيئ","big":"كبير","small":"صغير",
+  "new":"جديد","old":"قديم","great":"رائع","little":"صغير","large":"كبير","high":"عالي","long":"طويل","short":"قصير",
+  "different":"مختلف","same":"نفس","right":"صحيح","happy":"سعيد","sad":"حزين","angry":"غاضب","tired":"متعب","excited":"متحمس",
+  "beautiful":"جميل","ugly":"قبيح","fast":"سريع","slow":"بطيء","hot":"حار","cold":"بارد","easy":"سهل","hard":"صعب",
+  "important":"مهم","possible":"ممكن","day":"يوم","night":"ليل","time":"وقت","year":"سنة","month":"شهر","week":"أسبوع",
+  "home":"منزل","house":"بيت","school":"مدرسة","city":"مدينة","country":"بلد","world":"عالم","life":"حياة","family":"عائلة",
+  "friend":"صديق","people":"ناس","man":"رجل","woman":"امرأة","boy":"ولد","girl":"بنت","child":"طفل","dog":"كلب",
+  "cat":"قطة","bird":"طائر","fish":"سمكة","horse":"حصان","water":"ماء","food":"طعام","book":"كتاب","money":"مال",
+  "car":"سيارة","door":"باب","window":"نافذة","room":"غرفة","street":"شارع","road":"طريق","white":"أبيض","black":"أسود",
+  "red":"أحمر","blue":"أزرق","green":"أخضر","yellow":"أصفر","brown":"بني","color":"لون","name":"اسم","love":"حب",
+  "help":"مساعدة","hand":"يد","eye":"عين","face":"وجه","head":"رأس","heart":"قلب","body":"جسد","sun":"شمس",
+  "moon":"قمر","sky":"سماء","again":"مرة أخرى","always":"دائماً","never":"أبداً","often":"كثيراً","very":"جداً","too":"أيضاً",
+  "also":"كذلك","just":"فقط","even":"حتى","still":"لا يزال","back":"رجوع","only":"فقط","well":"بشكل جيد","how":"كيف",
+  "what":"ماذا","when":"متى","where":"أين","why":"لماذا","who":"من","hello":"مرحباً","hi":"مرحباً","bye":"وداعاً",
+  "thanks":"شكراً","please":"من فضلك","sorry":"آسف","ok":"حسناً","wow":"رائع",
 };
 
 async function translateWord(word: string): Promise<string> {
@@ -416,11 +402,11 @@ export default function Reading() {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">السرعة:</span>
                       <button onClick={() => changeSpeed("slow")}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "slow" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "slow" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                         🐢 بطيء
                       </button>
                       <button onClick={() => changeSpeed("normal")}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "normal" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${speed === "normal" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                         🐇 عادي
                       </button>
                       {playing && <span className="text-xs text-primary mr-auto">جاري القراءة...</span>}

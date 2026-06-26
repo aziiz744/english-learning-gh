@@ -43,7 +43,7 @@ export default function TeacherPage() {
 
   // All refs — no stale closures
   const isActive = useRef(false);
-  const recRef = useRef<SpeechRecognition|null>(null);
+  const recRef = useRef<any>(null);
   const silenceTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
   const pendingText = useRef("");
   const msgId = useRef(0);
@@ -161,7 +161,7 @@ export default function TeacherPage() {
     rec.interimResults = true;
     recRef.current = rec;
 
-    rec.onresult = (e: SpeechRecognitionEvent) => {
+    rec.onresult = (e: any) => {
       let fin = "", int = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) fin += e.results[i][0].transcript + " ";
@@ -198,7 +198,7 @@ export default function TeacherPage() {
       }
     };
 
-    rec.onerror = (e: SpeechRecognitionErrorEvent) => {
+    rec.onerror = (e: any) => {
       recRef.current = null;
       if (!isActive.current || e.error === "aborted" || e.error === "not-allowed") return;
       setTimeout(() => {

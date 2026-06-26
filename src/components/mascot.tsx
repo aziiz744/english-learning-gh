@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, type Target, type Transition } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import owlIdle from "@/assets/owl/owl-idle.png";
 import owlWave from "@/assets/owl/owl-wave.png";
@@ -85,7 +85,7 @@ const STATES: Record<MascotState, Config> = {
   },
 };
 
-type AnimDef = Target & { transition?: Transition };
+type AnimDef = any;
 const BODY_ANIMS: Record<MascotState, AnimDef> = {
   idle:     { y: [0, -4, 0],                                  transition: { repeat: Infinity, duration: 3, ease: "easeInOut" } },
   thinking: { rotate: [-2, 2, -2],                            transition: { repeat: Infinity, duration: 2, ease: "easeInOut" } },

@@ -445,7 +445,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               : (location === item.href || (item.href !== "/" && location.startsWith(item.href)));
             const Icon = item.icon;
 
-            // العنصر النشط = كبسولة بارزة ملوّنة مع نص (أسلوب حديث)
+            // العنصر النشط = كبسولة بارزة ملوّنة مع نص + لمعة فاخرة
             const content = isActive ? (
               <div
                 style={{
@@ -453,10 +453,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   background: "hsl(var(--primary))",
                   borderRadius: 18, padding: "10px 16px",
                   boxShadow: "0 4px 14px hsl(var(--primary) / 0.45)",
+                  position: "relative", overflow: "hidden",
                 }}
               >
-                <Icon className="h-[21px] w-[21px]" style={{ color: "white", strokeWidth: 2.5 }} />
-                <span style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap" }}>
+                {/* لمعة متحركة */}
+                <motion.div
+                  initial={{ x: "-120%" }}
+                  animate={{ x: "220%" }}
+                  transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 2.5, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute", top: 0, bottom: 0, width: "45%",
+                    background: "linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <Icon className="h-[21px] w-[21px]" style={{ color: "white", strokeWidth: 2.5, position: "relative" }} />
+                <span style={{ fontSize: 13, fontWeight: 800, color: "white", whiteSpace: "nowrap", position: "relative" }}>
                   {isMore ? "المزيد" : item.name}
                 </span>
               </div>

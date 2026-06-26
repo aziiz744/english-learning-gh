@@ -12,6 +12,7 @@ import { translateWord } from "@/lib/word-glossary";
 import { addReviewItem } from "@/lib/review-library";
 import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
+import { Confetti } from "@/components/confetti";
 import { Mascot } from "@/components/mascot";
 import { Heart, Check, X, ArrowRight, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -1234,6 +1235,7 @@ function ChestOpenScreen({ xp, color, onBack }: { xp:number; color:string; onBac
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center">
+      {phase === "done" && <Confetti count={80} />}
       <div className="text-center max-w-sm mx-auto p-6">
         <div style={{ position:"relative", width:240, height:240, margin:"0 auto 24px" }}>
           {/* وهج خلفي ينبض */}
@@ -1390,8 +1392,11 @@ function UnitCompleteScreen({ unitTitle, vocab, xpEarned, color, onBack }: {
   unitTitle:string; vocab:{en:string;ar:string}[]; xpEarned:number; color:string; onBack:()=>void;
 }) {
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex-1 flex items-center justify-center" style={{ overflowY:"auto" }}>
-      <div className="w-full max-w-md mx-auto p-4">
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} className="hide-scrollbar"
+      style={{ flex:1, minHeight:0, width:"100%", overflowY:"auto", display:"flex", flexDirection:"column",
+        padding:"calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
+      <Confetti count={90} duration={3500} />
+      <div className="w-full max-w-md mx-auto" style={{ margin:"auto" }}>
         {/* Trophy header */}
         <div className="text-center mb-6">
           <motion.div initial={{scale:0,rotate:-30}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:150}}
@@ -1449,11 +1454,13 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
   const stars = pct>=90?3:pct>=70?2:1;
 
   return (
-    <motion.div initial={{opacity:0,scale:0.85}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:150}}
-      className="flex-1 flex items-center justify-center">
-      <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-2xl shadow-2xl bg-card">
+    <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:160,damping:20}}
+      className="hide-scrollbar"
+      style={{ flex:1, minHeight:0, width:"100%", overflowY:"auto", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start",
+        padding:"calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
+      <div className="w-full max-w-md text-center overflow-hidden border-2 border-primary/30 rounded-3xl shadow-2xl" style={{ background:"hsl(var(--card))", margin:"auto 0" }}>
         {/* Header */}
-        <div className="py-8 flex flex-col items-center bg-primary/10 relative">
+        <div className="py-6 flex flex-col items-center bg-primary/10 relative">
           <motion.div animate={{rotate:[0,-10,10,-10,0],scale:[1,1.1,1]}} transition={{delay:0.3,duration:0.6}}
             className="w-24 h-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-4 shadow-xl shadow-primary/30">
             <Trophy className="w-12 h-12" />
@@ -1484,7 +1491,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
           </div>
         </div>
         {/* Stats */}
-        <div className="p-6">
+        <div className="p-5">
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="p-3 bg-muted/50 rounded-2xl flex flex-col items-center">
               <div className="text-xs text-muted-foreground mb-1">الدقة</div>
@@ -1662,6 +1669,7 @@ export default function UnitLesson() {
   const [xpEarned, setXpEarned] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showStreakPop, setShowStreakPop] = useState(false);
+  const [successFlash, setSuccessFlash] = useState(false);
   // تتبّع الأخطاء لعرضها في ملخّص نهاية الدرس (للمراجعة)
   const [mistakes, setMistakes] = useState<{ question: string; correct: string; yourAnswer: string; ex: ExObj }[]>([]);
   // وضع التدرّب على الأخطاء (يعيد الأسئلة الغلط فقط)
@@ -1682,7 +1690,7 @@ export default function UnitLesson() {
   }, [id, isJumpMode]);
   const [feedback, setFeedback] = useState<{ ok: boolean; explanation: string; correctAnswer: string } | null>(null);
   const [mascotState, setMascotState] = useState<"idle"|"correct"|"wrong"|"complete">("idle");
-  const mascotTimer = useRef<ReturnType<typeof setTimeout>>();
+  const mascotTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 
 
@@ -1890,6 +1898,8 @@ export default function UnitLesson() {
       }
       playCorrect();
       hapticSuccess();
+      setSuccessFlash(true);
+      setTimeout(() => setSuccessFlash(false), 600);
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
@@ -1901,7 +1911,7 @@ export default function UnitLesson() {
       hapticError();
       setMascotFor("wrong");
       // سجّل الخطأ للمراجعة في نهاية الدرس
-      const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || ex.prompt || "سؤال";
+      const questionText = ex.arabic || ex.sentence || ex.blankSentence || ex.listenSentence || "سؤال";
       setMistakes(m => {
         if (m.some(x => x.correct === ex.correctAnswer && x.question === questionText)) return m;
         return [...m, { question: questionText, correct: ex.correctAnswer ?? "", yourAnswer: answer, ex }];
@@ -2167,6 +2177,19 @@ export default function UnitLesson() {
         )}
 
         {phase === "playing" && <>
+          {/* وميض نجاح أخضر خفيف عند الإجابة الصحيحة */}
+          <AnimatePresence>
+            {successFlash && (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: "fixed", inset: 0, zIndex: 35, pointerEvents: "none",
+                  background: "radial-gradient(ellipse 100% 60% at 50% 50%, rgba(34,197,94,0.18), transparent 70%)",
+                }}
+              />
+            )}
+          </AnimatePresence>
           {/* Top bar — عصري زجاجي (قلوب · شريط تقدّم · إغلاق) */}
           <div style={{
             display:"flex", alignItems:"center", gap:12, padding:"9px 14px", marginBottom:12,
