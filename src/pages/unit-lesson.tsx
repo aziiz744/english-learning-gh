@@ -874,39 +874,39 @@ function TranslateQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswe
   return (
     <div>
       {/* التعليمة */}
-      <div style={{ textAlign:"center", marginBottom:22 }}>
-        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:6 }}>🔄 الترجمة</div>
+      <div style={{ textAlign:"center", marginBottom:14 }}>
+        <div style={{ fontSize:13, fontWeight:800, color, marginBottom:5 }}>🔄 الترجمة</div>
         {isNewWord(ex.correctAnswer ?? "") && (
-          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#f59e0b18", border:"1.5px solid #f59e0b55", borderRadius:14, padding:"3px 12px", marginBottom:8 }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#f59e0b18", border:"1.5px solid #f59e0b55", borderRadius:14, padding:"3px 12px", marginBottom:6 }}>
             <span style={{ fontSize:12, fontWeight:800, color:"#d97706" }}>✦ كلمة جديدة</span>
           </div>
         )}
-        <div style={{ fontSize:13, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:12, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة للكلمة التالية</div>
-        <div style={{ fontSize:24, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.5 }}>{ex.arabic}</div>
+        <div style={{ fontSize:12, fontWeight:700, color:"hsl(var(--muted-foreground))", marginBottom:8, direction:"rtl" }}>اختر الترجمة الإنجليزية الصحيحة</div>
+        <div style={{ fontSize:23, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", lineHeight:1.4 }}>{ex.arabic}</div>
       </div>
-      <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
+      <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:12 }}>
         {(ex.options??[]).map(o=>{
           const isPicked = o===picked;
           let bg = "hsl(var(--card))", border = "2px solid hsl(var(--border))", shadow = "0 3px 0 hsl(var(--border))";
           if (isPicked && !confirmed) { bg=`${color}14`; border=`2px solid ${color}`; shadow=`0 3px 0 ${color}`; }
           return (
             <motion.button key={o} whileTap={{scale:0.98}} onClick={()=>choose(o)} disabled={confirmed}
-              style={{ padding:"15px 18px", borderRadius:14, fontSize:16, fontWeight:700, cursor:confirmed?"default":"pointer",
+              style={{ padding:"12px 18px", borderRadius:13, fontSize:15, fontWeight:700, cursor:confirmed?"default":"pointer",
                 textAlign:"left", direction:"ltr", background:bg, border, boxShadow:shadow,
-                display:"flex", alignItems:"center", justifyContent:"space-between", minHeight:54,
+                display:"flex", alignItems:"center", justifyContent:"space-between", minHeight:46,
                 color:"hsl(var(--foreground))" }}>
               <span>{o}</span>
               <span onClick={e=>{e.stopPropagation();speak(o, 0.85, ex.id);}}
-                style={{ fontSize:18, opacity:0.5, cursor:"pointer" }}>🔊</span>
+                style={{ fontSize:17, opacity:0.5, cursor:"pointer" }}>🔊</span>
             </motion.button>
           );
         })}
       </div>
       {!confirmed && (
         <button onClick={confirm} disabled={!picked}
-          style={{ width:"100%", padding:15, marginTop:8,
+          style={{ width:"100%", padding:13, marginTop:4,
             background:picked?color:"hsl(var(--muted))", color:picked?"white":"hsl(var(--muted-foreground))",
-            border:"none", borderRadius:14, fontWeight:800, fontSize:16, cursor:picked?"pointer":"default",
+            border:"none", borderRadius:13, fontWeight:800, fontSize:15, cursor:picked?"pointer":"default",
             boxShadow:picked?`0 4px 0 ${color}99`:"none", transition:"all 0.2s" }}>
           تحقّق
         </button>
@@ -2169,13 +2169,13 @@ export default function UnitLesson() {
         {phase === "playing" && <>
           {/* Top bar — عصري زجاجي (قلوب · شريط تقدّم · إغلاق) */}
           <div style={{
-            display:"flex", alignItems:"center", gap:12, padding:"10px 14px", marginBottom:18,
-            position:"sticky", top:10, zIndex:20, flexShrink:0,
+            display:"flex", alignItems:"center", gap:12, padding:"9px 14px", marginBottom:12,
+            flexShrink:0,
             background:"hsl(var(--sidebar) / 0.78)",
             backdropFilter:"blur(24px) saturate(180%)",
             WebkitBackdropFilter:"blur(24px) saturate(180%)",
             border:"1px solid hsl(var(--sidebar-border) / 0.5)",
-            borderRadius:20,
+            borderRadius:18,
             boxShadow:"0 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.05) inset",
           }}>
             {/* القلوب — يسار */}
@@ -2203,8 +2203,8 @@ export default function UnitLesson() {
             </div>
           )}
 
-          {/* Main content area — يتمركز، يتمرّر داخلياً فقط لو لزم (نادر) */}
-          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", overflowY:"auto", overflowX:"hidden", minHeight:0 }} className="hide-scrollbar">
+          {/* Main content area — من الأعلى، يتمرّر نظيف لو طال، ما يتقصّ */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"flex-start", overflowY:"auto", overflowX:"hidden", minHeight:0, paddingTop:4 }} className="hide-scrollbar">
             {/* Question — يبقى ظاهر حتى بعد الإجابة */}
             <AnimatePresence mode="wait" initial={false}>
               {ex && (
