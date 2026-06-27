@@ -10,6 +10,7 @@ import { useSound, unlockAudio } from "@/hooks/useSound";
 import { DrinkArt, PICTURE_WORDS, emojiFor } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
 import { addReviewItem } from "@/lib/review-library";
+import { VocabIntro, extractVocab, type VocabCard } from "@/components/vocab-intro";
 import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
 import { Confetti } from "@/components/confetti";
@@ -1684,6 +1685,9 @@ export default function UnitLesson() {
   // نصيحة القواعد — تظهر مرة عند بداية الدرس الأول في الوحدة
   const grammarTip = id ? grammarTipForLesson(id) : null;
   const [showGrammarTip, setShowGrammarTip] = useState(false);
+  // شاشة "تعلّم قبل الاختبار" — بطاقات الكلمات الجديدة
+  const [vocabCards, setVocabCards] = useState<VocabCard[]>([]);
+  const [showVocabIntro, setShowVocabIntro] = useState(false);
   useEffect(() => {
     // اعرضها فقط في الدرس الأول من الوحدة (ينتهي بـ -1) وليس في القفز
     if (id && /-1$/.test(id) && grammarTip && !isJumpMode) setShowGrammarTip(true);
@@ -1837,6 +1841,15 @@ export default function UnitLesson() {
         return copy;
       });
     setQueue(shuffled);
+    // استخرج كلمات الدرس الجديدة واعرض شاشة التعلّم (للدروس العادية فقط)
+    const isPlainLesson = !isJumpMode && !meta.isJump && !meta.isChallenge && !meta.isReview && !meta.isPractice;
+    if (isPlainLesson && tier === 0) {
+      const cards = extractVocab(raw);
+      if (cards.length >= 3) {
+        setVocabCards(cards);
+        setShowVocabIntro(true);
+      }
+    }
     setDoneCount(0);
     setTotalCount(0);
     setScore(0);
@@ -2150,6 +2163,19 @@ export default function UnitLesson() {
                 فهمت، لنبدأ! 🚀
               </button>
             </motion.div>
+          </motion.div>
+        )}
+
+        {/* ── شاشة "تعلّم قبل الاختبار" — بطاقات الكلمات ── */}
+        {showVocabIntro && !showGrammarTip && phase === "playing" && vocabCards.length > 0 && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}}
+            style={{ position:"fixed", inset:0, background:"hsl(var(--background))", zIndex:80, display:"flex", alignItems:"center", justifyContent:"center", padding:"24px 8px" }}>
+            <VocabIntro
+              cards={vocabCards}
+              color={meta.color}
+              onDone={() => setShowVocabIntro(false)}
+              onSkip={() => setShowVocabIntro(false)}
+            />
           </motion.div>
         )}
 
