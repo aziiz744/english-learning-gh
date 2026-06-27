@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 import { getUnitGuidePhrases } from "@/lib/lesson-exercises";
 import { getDailyProgress, setDailyGoal, GOAL_OPTIONS } from "@/lib/daily-goal";
+import { GoalPicker } from "@/components/goal-picker";
+import { hasGoal, getGoal, isUnitRecommended } from "@/lib/goals";
 
 interface UnitLesson {
   id: string;
@@ -1475,6 +1477,9 @@ export default function Roadmap() {
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  // شاشة اختيار الهدف — تظهر أول مرّة فقط
+  const [showGoalPicker, setShowGoalPicker] = useState(() => !hasGoal());
+  const [currentGoal, setCurrentGoal] = useState(() => getGoal());
 
   // ── القسم المعروض (يجب تعريفه قبل allLessons لأنه يعتمد على chapter) ──
   const [sectionUnlocked, setSectionUnlocked] = useState(1); // 1 = القسم الأول فقط، 2 = فُتح الثاني
@@ -1598,6 +1603,11 @@ export default function Roadmap() {
 
   return (
     <>
+      {/* ── شاشة اختيار الهدف (أول مرّة) ── */}
+      {showGoalPicker && (
+        <GoalPicker onDone={() => { setShowGoalPicker(false); setCurrentGoal(getGoal()); }} />
+      )}
+
       {/* ── رسالة مزامنة التقدّم (للمتعلّم المتقدّم) ── */}
       <AnimatePresence>
         {showSyncMsg && (
@@ -1870,6 +1880,27 @@ export default function Roadmap() {
                         background: `linear-gradient(to left, transparent, ${unit.color}80)`,
                       }}/>
                     </motion.div>
+                    {/* شارة "موصى لك" حسب هدف المتعلّم */}
+                    {currentGoal && isUnitRecommended(unit.sectionTitle) && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                        style={{
+                          display: "flex", justifyContent: "center", marginTop: -18, marginBottom: 24,
+                        }}>
+                        <div style={{
+                          display: "inline-flex", alignItems: "center", gap: 5,
+                          background: `${currentGoal.color}18`,
+                          border: `1.5px solid ${currentGoal.color}50`,
+                          color: currentGoal.color,
+                          fontSize: 11, fontWeight: 800,
+                          padding: "4px 13px", borderRadius: 14,
+                          boxShadow: `0 2px 8px ${currentGoal.color}25`,
+                        }}>
+                          <span>{currentGoal.emoji}</span>
+                          <span>موصى لهدفك</span>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
                 )}
 

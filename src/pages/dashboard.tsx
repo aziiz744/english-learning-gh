@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useGetStats, useGetAchievements } from "@/lib/api-hooks";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -5,6 +6,7 @@ import { Award, Zap, BookOpen, Target, ChevronLeft, MapPin, Flame, Star, Library
 import { Link } from "wouter";
 import { getVocabSummary } from "@/lib/vocab-stats";
 import { getSkillStats, getWeakestSkill } from "@/lib/skill-tracker";
+import { getGoal, GOALS, setGoal } from "@/lib/goals";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
@@ -26,6 +28,8 @@ export default function Dashboard() {
   const { data: achievements, isLoading: achievementsLoading } = useGetAchievements();
   const skillStats = getSkillStats();
   const weakest = getWeakestSkill();
+  const [goal, setGoalState] = useState(() => getGoal());
+  const [showGoalEdit, setShowGoalEdit] = useState(false);
 
   const recentAchievements = achievements?.filter(a => a.isEarned).slice(0, 3) || [];
 
@@ -228,6 +232,58 @@ export default function Dashboard() {
             </div>
           </>
         ) : null}
+
+        {/* ── كرت هدف التعلّم ── */}
+        {goal && (
+          <div className="mb-8">
+            <div style={{
+              background: `linear-gradient(135deg, ${goal.color}, ${goal.color}cc)`,
+              borderRadius: 18, padding: "18px 20px",
+              display: "flex", alignItems: "center", gap: 14,
+            }}>
+              <div style={{ fontSize: 40 }}>{goal.emoji}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 12, fontWeight: 600, marginBottom: 2 }}>
+                  هدفك الحالي
+                </div>
+                <div style={{ color: "#fff", fontSize: 18, fontWeight: 900 }}>
+                  {goal.title}
+                </div>
+              </div>
+              <button
+                onClick={() => setShowGoalEdit(v => !v)}
+                style={{
+                  background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 12,
+                  color: "#fff", fontSize: 13, fontWeight: 700, padding: "8px 14px", cursor: "pointer",
+                }}>
+                تغيير
+              </button>
+            </div>
+
+            {/* خيارات تغيير الهدف */}
+            {showGoalEdit && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+                style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8, overflow: "hidden" }}>
+                {GOALS.filter(g => g.id !== goal.id).map(g => (
+                  <button
+                    key={g.id}
+                    onClick={() => { setGoal(g.id); setGoalState(g); setShowGoalEdit(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      padding: "12px 16px", borderRadius: 14, cursor: "pointer",
+                      background: "hsl(var(--card))", border: "2px solid hsl(var(--border))",
+                      textAlign: "right",
+                    }}>
+                    <span style={{ fontSize: 24 }}>{g.emoji}</span>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: "hsl(var(--foreground))", flex: 1, direction: "rtl" }}>
+                      {g.title}
+                    </span>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        )}
 
         {/* ── تحليل نقاط القوة والضعف ── */}
         {skillStats.length > 0 && (

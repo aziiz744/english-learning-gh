@@ -16,25 +16,34 @@ const KEY = "skillStats";
 // ── خريطة عنوان الوحدة → مهارة مصنّفة ──
 function classifySkill(unitTitle: string): { skill: string; emoji: string } {
   const t = unitTitle || "";
-  if (t.includes("مضارع المستمر")) return { skill: "المضارع المستمر", emoji: "🔄" };
-  if (t.includes("المضارع") || t.includes("يكون")) return { skill: "زمن المضارع", emoji: "⏱️" };
+  // ── القواعد النحوية أولاً (الأكثر تحديداً قبل الأعم) ──
   if (t.includes("النفي")) return { skill: "النفي", emoji: "🚫" };
   if (t.includes("أسئلة") || t.includes("سؤال")) return { skill: "تكوين الأسئلة", emoji: "❓" };
-  if (t.includes("صفات") || t.includes("وصف")) return { skill: "الصفات والوصف", emoji: "🎨" };
+  if (t.includes("المضارع المستمر")) return { skill: "المضارع المستمر", emoji: "🔄" };
+  if (t.includes("اختصارات")) return { skill: "الاختصارات", emoji: "✂️" };
+  if (t.includes("المضارع") || t.includes("من يكون")) return { skill: "زمن المضارع", emoji: "⏱️" };
+  if (t.includes("صفات") || t.includes("الصفات")) return { skill: "الصفات والوصف", emoji: "🎨" };
   if (t.includes("جمع") || t.includes("التكسير")) return { skill: "الجمع", emoji: "🔢" };
   if (t.includes("أدوات التعريف")) return { skill: "أدوات التعريف", emoji: "📌" };
-  if (t.includes("الوقت") || t.includes("روتين")) return { skill: "الوقت والروتين", emoji: "🕐" };
-  if (t.includes("اختصارات")) return { skill: "الاختصارات", emoji: "✂️" };
-  if (t.includes("الأمر")) return { skill: "أفعال الأمر", emoji: "👉" };
+  if (t.includes("أفعال الأمر") || t.includes("الأمر")) return { skill: "أفعال الأمر", emoji: "👉" };
   if (t.includes("ظروف")) return { skill: "الظروف", emoji: "📊" };
-  // مفردات حسب الموضوع
+  if (t.includes("تعابير الوقت")) return { skill: "تعابير الوقت", emoji: "🕐" };
+  // ── المفردات حسب الموضوع ──
   if (t.includes("مشروبات") || t.includes("طعام")) return { skill: "مفردات الطعام", emoji: "🍽️" };
   if (t.includes("مطار") || t.includes("فندق") || t.includes("مدينة")) return { skill: "مفردات السفر", emoji: "✈️" };
-  if (t.includes("ملابس") || t.includes("تسوّق")) return { skill: "مفردات التسوّق", emoji: "🛍️" };
-  if (t.includes("عائلة") || t.includes("نفسك")) return { skill: "التعريف والعائلة", emoji: "👨‍👩‍👧" };
+  if (t.includes("ملابس") || t.includes("تسوّق") || t.includes("التسوق")) return { skill: "مفردات التسوّق", emoji: "🛍️" };
+  if (t.includes("عائلة") || t.includes("عائلت") || t.includes("نفسك")) return { skill: "التعريف والعائلة", emoji: "👨‍👩‍👧" };
   if (t.includes("عمل")) return { skill: "مفردات العمل", emoji: "💼" };
   if (t.includes("طقس") || t.includes("طبيعة")) return { skill: "مفردات الطقس", emoji: "🌤️" };
-  if (t.includes("أعراض") || t.includes("مدرسة") || t.includes("رياض")) return { skill: "مفردات عامة", emoji: "📚" };
+  if (t.includes("رياض")) return { skill: "مفردات الرياضة", emoji: "⚽" };
+  if (t.includes("أعراض")) return { skill: "مفردات صحية", emoji: "🩺" };
+  if (t.includes("روتين")) return { skill: "الروتين اليومي", emoji: "🔁" };
+  if (t.includes("حيوان")) return { skill: "مفردات الحيوانات", emoji: "🐾" };
+  if (t.includes("منزل")) return { skill: "مفردات المنزل", emoji: "🏠" };
+  if (t.includes("مدرسة") || t.includes("الصف")) return { skill: "مفردات المدرسة", emoji: "🏫" };
+  if (t.includes("ممتلكات") || t.includes("المفقودة")) return { skill: "مفردات الممتلكات", emoji: "📦" };
+  if (t.includes("سلامة")) return { skill: "مفردات السلامة", emoji: "⚠️" };
+  if (t.includes("من أين") || t.includes("مهن")) return { skill: "التعريف بالنفس", emoji: "🗣️" };
   return { skill: "مفردات عامة", emoji: "📚" };
 }
 
