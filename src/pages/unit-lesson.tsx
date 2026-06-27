@@ -1724,8 +1724,8 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
                   راجع أخطاءك ({mistakes.length})
                 </span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 200, overflowY: "auto" }}>
-                {mistakes.map((m, i) => (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {mistakes.slice(0, 3).map((m, i) => (
                   <div key={i} style={{
                     background: "hsl(var(--muted) / 0.4)", borderRadius: 12, padding: "10px 12px",
                     border: "1px solid hsl(var(--border))", direction: "rtl",
@@ -1740,6 +1740,15 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
                     </div>
                   </div>
                 ))}
+                {mistakes.length > 3 && (
+                  <div style={{
+                    background: "hsl(var(--muted) / 0.25)", borderRadius: 12, padding: "10px 12px",
+                    border: "1px dashed hsl(var(--border))", direction: "rtl", textAlign: "center",
+                    fontSize: 13, color: "hsl(var(--muted-foreground))", fontWeight: 600,
+                  }}>
+                    + {mistakes.length - 3} كلمات أخرى محفوظة في 📚 مكتبة المراجعة
+                  </div>
+                )}
               </div>
               {/* زر التدرّب على الأخطاء */}
               <button
@@ -2038,10 +2047,21 @@ export default function UnitLesson() {
       let typed = 0, spoke = 0;
       const maxTyped = tier >= 2 ? 2 : 1;  // كم سؤال كتابة
       const maxSpoke = 1;                   // سؤال نطق واحد
+      // الكلمة "سهلة الكتابة": قصيرة + كلمة واحدة + حروف بسيطة (بدون تهجئة معقّدة)
+      const isEasyToType = (ans: string): boolean => {
+        const w = ans.trim();
+        if (w.includes(" ")) return false;          // كلمة واحدة فقط
+        const maxLen = tier >= 2 ? 9 : 6;           // tier 1: ≤6 أحرف، tier 2+: ≤9
+        if (w.length > maxLen) return false;
+        // تجنّب الكلمات ذات التهجئة الصعبة للمبتدئ
+        const hardPatterns = /(ough|eigh|tch|psy|ph|silent|que$|gh)/i;
+        if (tier < 2 && hardPatterns.test(w)) return false;
+        return true;
+      };
       raw = raw.map(ex => {
-        // حوّل ترجمة (عربي→إنجليزي) لكتابة — الطالب يكتب بدل ما يختار
+        // حوّل ترجمة (عربي→إنجليزي) لكتابة — فقط لو الكلمة سهلة
         if (ex.type === "translate" && ex.arabic && ex.correctAnswer &&
-            typed < maxTyped && ex.correctAnswer.split(" ").length <= 6) {
+            typed < maxTyped && isEasyToType(ex.correctAnswer)) {
           typed++;
           return { ...ex, type: "type_answer" as const };
         }
