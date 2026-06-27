@@ -14,6 +14,7 @@ import { VocabIntro, extractVocab, type VocabCard } from "@/components/vocab-int
 import { DialogueView } from "@/components/dialogue-view";
 import { getDialogueByTitle, type Dialogue } from "@/lib/dialogues";
 import { recordAttempt } from "@/lib/skill-tracker";
+import { updateChallengeProgress } from "@/lib/daily-challenge";
 import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
 import { Confetti } from "@/components/confetti";
@@ -2185,6 +2186,12 @@ export default function UnitLesson() {
       setMascotFor("correct");
       setScore(s => s + 1);
       setXpEarned(x => x + (ex.xp ?? 10));
+      // حدّث تقدّم التحدّي اليومي (XP + كلمات)
+      if (!practiceMode && !isJumpMode) {
+        updateChallengeProgress("xp", ex.xp ?? 10);
+        // كلمة واحدة لكل سؤال صحيح (أدقّ من عدّ كل كلمات الجملة)
+        updateChallengeProgress("words", 1);
+      }
       if (!practiceMode) addDailyXp(ex.xp ?? 10); // أضف للهدف اليومي
       setFeedback({ ok: true, explanation: ex.explanation, correctAnswer: ex.correctAnswer });
     } else {
@@ -2286,6 +2293,13 @@ export default function UnitLesson() {
         const saveSub = Math.max(completedSub, maxSubReached);
         setMaxSubReached(saveSub);
         const bonusXp = isReview ? xpEarned + 20 : xpEarned;
+
+        // حدّث تقدّم التحدّي اليومي (درس مكتمل + درس مثالي)
+        if (!isJumpMode) {
+          updateChallengeProgress("lessons", 1);
+          const finalPct = Math.round((score / Math.max(totalCount, 1)) * 100);
+          if (finalPct === 100) updateChallengeProgress("perfect", 1);
+        }
 
         if (user) {
           supabase.from("unit_progress").upsert({

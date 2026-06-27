@@ -8,6 +8,7 @@ import { getUnitGuidePhrases } from "@/lib/lesson-exercises";
 import { getDailyProgress, setDailyGoal, GOAL_OPTIONS } from "@/lib/daily-goal";
 import { GoalPicker } from "@/components/goal-picker";
 import { hasGoal, getGoal, isUnitRecommended } from "@/lib/goals";
+import { DailyChallengeCard } from "@/components/daily-challenge-card";
 
 interface UnitLesson {
   id: string;
@@ -1785,6 +1786,9 @@ export default function Roadmap() {
 
         {/* بطاقة الهدف اليومي */}
         <DailyGoalCard color="#16B6C6" />
+
+        {/* كرت التحدّي اليومي */}
+        <DailyChallengeCard color="#16B6C6" />
 
         {/* Page title */}
         <div className="text-center my-6">
