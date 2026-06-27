@@ -357,10 +357,21 @@
 
 /* ═══════════ تحسينات الآيفون (Safe Area + اللمس) ═══════════ */
 
-/* إزالة وميض اللمس الأزرق (كل الأجهزة) */
-html, body {
+/* إزالة وميض اللمس الأزرق + خلفية متوهّجة تملأ منطقة الساعة (fullscreen متّصل) */
+html {
   -webkit-tap-highlight-color: transparent;
   background-color: hsl(222 22% 9%);
+  background-image:
+    radial-gradient(ellipse 110% 55% at 50% -8%, hsl(185 80% 43% / 0.28), transparent 60%),
+    radial-gradient(ellipse 80% 45% at 95% 5%, hsl(160 70% 45% / 0.15), transparent 55%),
+    radial-gradient(ellipse 85% 55% at 5% 95%, hsl(200 75% 42% / 0.12), transparent 55%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100%;
+}
+body {
+  -webkit-tap-highlight-color: transparent;
+  background-color: transparent;
 }
 
 /* تمرير سلس ومنع السحب المطّاطي — على الأجهزة اللمسية فقط (لا يؤثّر على سكرول الماوس) */
