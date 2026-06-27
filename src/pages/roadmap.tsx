@@ -914,37 +914,8 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         filter: "blur(11px)", zIndex: 0,
       }}/>
 
-      {/* Pulse ring for current — متمركزة على الوجه العلوي للدائرة 3D */}
-      {isCurrent && (
-        <>
-          <motion.div style={{
-            position: "absolute",
-            top: pad, left: pad,
-            width: SIZE, height: SIZE,
-            borderRadius: "50%",
-            border: `3px solid ${color}`,
-            zIndex: 1,
-            transformOrigin: "center center",
-            pointerEvents: "none",
-          }}
-            animate={{ scale: [1, 1.45], opacity: [0.55, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8, ease: "easeOut" }}
-          />
-          <motion.div style={{
-            position: "absolute",
-            top: pad, left: pad,
-            width: SIZE, height: SIZE,
-            borderRadius: "50%",
-            border: `2px solid ${color}`,
-            zIndex: 1,
-            transformOrigin: "center center",
-            pointerEvents: "none",
-          }}
-            animate={{ scale: [1, 1.45], opacity: [0.4, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8, ease: "easeOut", delay: 0.9 }}
-          />
-        </>
-      )}
+      {/* Pulse ring مرسومة داخل SVG لتتمحور تماماً على الدائرة 3D — أُضيفت أسفل */}
+
 
       <svg width={SIZE + pad*2} height={SIZE + depth + pad} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
         <defs>
@@ -1000,6 +971,20 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
 
         {/* ── الوجه العلوي ── */}
         <circle cx={r + pad} cy={r + pad} r={r - 2} fill={`url(#${gId})`}/>
+
+        {/* ── حلقة النبض — متمحورة تماماً على الوجه العلوي للدائرة 3D ── */}
+        {isCurrent && (
+          <motion.circle
+            cx={r + pad} cy={r + pad}
+            r={r - 1}
+            fill="none"
+            stroke={color}
+            strokeWidth={2.5}
+            style={{ transformOrigin: `${r + pad}px ${r + pad}px` }}
+            animate={{ scale: [1, 1.32, 1], opacity: [0.7, 0.15, 0.7] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          />
+        )}
 
         {/* لمعة علوية ناعمة */}
         <ellipse cx={(r + pad) - r*0.36} cy={(r + pad) - r*0.5} rx={r * 0.4} ry={r * 0.26}
