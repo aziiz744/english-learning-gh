@@ -11,6 +11,8 @@ import { DrinkArt, PICTURE_WORDS, emojiFor } from "@/components/drink-art";
 import { translateWord } from "@/lib/word-glossary";
 import { addReviewItem } from "@/lib/review-library";
 import { VocabIntro, extractVocab, type VocabCard } from "@/components/vocab-intro";
+import { DialogueView } from "@/components/dialogue-view";
+import { getDialogueByTitle, type Dialogue } from "@/lib/dialogues";
 import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
 import { Confetti } from "@/components/confetti";
@@ -1900,6 +1902,9 @@ export default function UnitLesson() {
   // شاشة "تعلّم قبل الاختبار" — بطاقات الكلمات الجديدة
   const [vocabCards, setVocabCards] = useState<VocabCard[]>([]);
   const [showVocabIntro, setShowVocabIntro] = useState(false);
+  // شاشة الحوار الواقعي
+  const [dialogue, setDialogue] = useState<Dialogue | null>(null);
+  const [showDialogue, setShowDialogue] = useState(false);
   useEffect(() => {
     // اعرضها فقط في الدرس الأول من الوحدة (ينتهي بـ -1) وليس في القفز
     if (id && /-1$/.test(id) && grammarTip && !isJumpMode) setShowGrammarTip(true);
@@ -2097,6 +2102,11 @@ export default function UnitLesson() {
       if (cards.length >= 3) {
         setVocabCards(cards);
         setShowVocabIntro(true);
+      }
+      // حمّل الحوار الواقعي — يظهر في الدرس الأول من الوحدة فقط
+      if (id && /-1$/.test(id) && meta.unitTitle) {
+        const dlg = getDialogueByTitle(meta.unitTitle);
+        if (dlg) { setDialogue(dlg); setShowDialogue(true); }
       }
     }
     setDoneCount(0);
@@ -2425,6 +2435,22 @@ export default function UnitLesson() {
               onDone={() => setShowVocabIntro(false)}
               onSkip={() => setShowVocabIntro(false)}
             />
+          </motion.div>
+        )}
+
+        {/* ── شاشة الحوار الواقعي — بعد الكلمات، قبل التمارين ── */}
+        {showDialogue && !showVocabIntro && !showGrammarTip && phase === "playing" && dialogue && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}}
+            style={{ position:"fixed", inset:0, background:"hsl(var(--background))", zIndex:80, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", padding:"24px 8px", overflowY:"auto" }}>
+            <DialogueView
+              dialogue={dialogue}
+              color={meta.color}
+              onDone={() => setShowDialogue(false)}
+            />
+            <button onClick={() => setShowDialogue(false)}
+              style={{ marginTop:12, background:"none", border:"none", color:"hsl(var(--muted-foreground))", fontSize:14, textDecoration:"underline", cursor:"pointer" }}>
+              تخطّي الحوار
+            </button>
           </motion.div>
         )}
 
