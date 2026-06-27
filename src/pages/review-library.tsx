@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { getReviewItems, masterReviewItem, clearReviewLibrary, type ReviewItem } from "@/lib/review-library";
+import { SpacedReview } from "@/components/spaced-review";
+import { getSrsStats } from "@/lib/srs";
 import owlRead from "@/assets/owl/owl-read.png";
 import owlCelebrate from "@/assets/owl/owl-celebrate.png";
 
@@ -144,9 +146,12 @@ export default function ReviewLibrary() {
   const [, setLocation] = useLocation();
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [quizMode, setQuizMode] = useState(false);
+  const [spacedMode, setSpacedMode] = useState(false);
+  const [srsStats, setSrsStats] = useState({ total: 0, due: 0, learning: 0, mature: 0 });
 
   useEffect(() => {
     setItems(getReviewItems().sort((a, b) => b.missCount - a.missCount || b.addedAt - a.addedAt));
+    setSrsStats(getSrsStats());
   }, []);
 
   const refreshItems = () => {
@@ -164,6 +169,18 @@ export default function ReviewLibrary() {
       setItems([]);
     }
   };
+
+  // وضع المراجعة المتباعدة الذكية
+  if (spacedMode) {
+    return (
+      <div style={{ minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 0" }}>
+        <SpacedReview
+          color="#16B6C6"
+          onClose={() => { setSpacedMode(false); setSrsStats(getSrsStats()); }}
+        />
+      </div>
+    );
+  }
 
   // وضع التمرين
   if (quizMode && items.length >= 4) {
@@ -192,6 +209,49 @@ export default function ReviewLibrary() {
             كل الكلمات والجمل التي أخطأت فيها — راجعها لتتقنها
           </p>
         </div>
+
+        {/* ── كرت المراجعة المتباعدة الذكية ── */}
+        {srsStats.total > 0 && (
+          <div style={{ padding: "0 12px", marginBottom: 16 }}>
+            <div style={{
+              background: srsStats.due > 0
+                ? "linear-gradient(135deg, #16B6C6, #0e8a96)"
+                : "hsl(var(--card))",
+              border: srsStats.due > 0 ? "none" : "2px solid hsl(var(--border))",
+              borderRadius: 18, padding: "18px 20px",
+              boxShadow: srsStats.due > 0 ? "0 6px 20px rgba(22,182,198,0.3)" : "none",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: srsStats.due > 0 ? 14 : 0 }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: srsStats.due > 0 ? "#fff" : "hsl(var(--foreground))" }}>
+                    🧠 المراجعة الذكية
+                  </div>
+                  <div style={{ fontSize: 13, color: srsStats.due > 0 ? "rgba(255,255,255,0.85)" : "hsl(var(--muted-foreground))", marginTop: 2 }}>
+                    {srsStats.due > 0
+                      ? `${srsStats.due} كلمة حان وقت مراجعتها`
+                      : "كل كلماتك مُراجَعة ✅"}
+                  </div>
+                </div>
+                <div style={{ textAlign: "center", display: "flex", gap: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: srsStats.due > 0 ? "#fff" : "hsl(var(--foreground))" }}>{srsStats.mature}</div>
+                    <div style={{ fontSize: 10, color: srsStats.due > 0 ? "rgba(255,255,255,0.8)" : "hsl(var(--muted-foreground))" }}>راسخة</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: srsStats.due > 0 ? "#fff" : "hsl(var(--foreground))" }}>{srsStats.total}</div>
+                    <div style={{ fontSize: 10, color: srsStats.due > 0 ? "rgba(255,255,255,0.8)" : "hsl(var(--muted-foreground))" }}>الكل</div>
+                  </div>
+                </div>
+              </div>
+              {srsStats.due > 0 && (
+                <button onClick={() => setSpacedMode(true)}
+                  style={{ width: "100%", padding: "13px", background: "#fff", color: "#0e8a96", border: "none", borderRadius: 12, fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
+                  ابدأ المراجعة 🚀
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {items.length === 0 ? (
           // حالة فارغة

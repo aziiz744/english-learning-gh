@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WORD_GLOSSARY } from "@/lib/word-glossary";
+import { trackWord } from "@/lib/srs";
 import type { ExObj } from "@/lib/lesson-banks/types";
 
 // ════════════════════════════════════════════════════════════════
@@ -74,6 +75,11 @@ export function VocabIntro({
 }) {
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(0); // اتجاه السحب للأنيميشن
+
+  // سجّل كل الكلمات في نظام المراجعة المتباعدة (مرّة عند الفتح)
+  useMemo(() => {
+    cards.forEach(c => trackWord({ en: c.en, ar: c.ar, emoji: c.emoji }));
+  }, []);
 
   const card = cards[idx];
   const isLast = idx === cards.length - 1;
