@@ -1842,20 +1842,15 @@ export default function Roadmap() {
                   <div ref={el => { sectionRefs.current[unit.id] = el; }}>
                     <motion.div
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                      style={{ position: "relative", display: "flex", alignItems: "center", margin: "16px 8px 32px" }}
+                      style={{ position: "relative", display: "flex", alignItems: "center", gap: 12, margin: "16px 8px 32px" }}
                     >
-                      {/* Full line behind */}
+                      {/* خط يسار */}
                       <div style={{
-                        position: "absolute", left: 0, right: 0, top: "50%",
-                        height: 1.5, background: `linear-gradient(to right, transparent, ${unit.color}80, transparent)`,
-                        transform: "translateY(-50%)",
+                        flex: 1, height: 1.5,
+                        background: `linear-gradient(to right, transparent, ${unit.color}80)`,
                       }}/>
-                      {/* Text with background so it sits ON TOP of line */}
-                      <div style={{ flex: 1 }}/>
+                      {/* العنوان — بدون مستطيل خلفية */}
                       <span style={{
-                        position: "relative",
-                        background: "hsl(var(--background))",
-                        padding: "0 12px",
                         color: unit.color, fontSize: 14, fontWeight: 900,
                         whiteSpace: "nowrap",
                         textShadow: `0 0 20px ${unit.color}80`,
@@ -1863,7 +1858,11 @@ export default function Roadmap() {
                       }}>
                         {unit.sectionTitle}
                       </span>
-                      <div style={{ flex: 1 }}/>
+                      {/* خط يمين */}
+                      <div style={{
+                        flex: 1, height: 1.5,
+                        background: `linear-gradient(to left, transparent, ${unit.color}80)`,
+                      }}/>
                     </motion.div>
                   </div>
                 )}
