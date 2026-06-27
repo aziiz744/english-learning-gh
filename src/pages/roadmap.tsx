@@ -914,15 +914,36 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
         filter: "blur(11px)", zIndex: 0,
       }}/>
 
-      {/* Pulse ring for current */}
+      {/* Pulse ring for current — متمركزة على الوجه العلوي للدائرة 3D */}
       {isCurrent && (
-        <motion.div style={{
-          position: "absolute", top: pad, left: pad, width: SIZE, height: SIZE,
-          borderRadius: "50%", border: `2.5px solid ${color}`, zIndex: 2,
-        }}
-          animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
-          transition={{ repeat: Infinity, duration: 2.2 }}
-        />
+        <>
+          <motion.div style={{
+            position: "absolute",
+            top: pad, left: pad,
+            width: SIZE, height: SIZE,
+            borderRadius: "50%",
+            border: `3px solid ${color}`,
+            zIndex: 1,
+            transformOrigin: "center center",
+            pointerEvents: "none",
+          }}
+            animate={{ scale: [1, 1.45], opacity: [0.55, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: "easeOut" }}
+          />
+          <motion.div style={{
+            position: "absolute",
+            top: pad, left: pad,
+            width: SIZE, height: SIZE,
+            borderRadius: "50%",
+            border: `2px solid ${color}`,
+            zIndex: 1,
+            transformOrigin: "center center",
+            pointerEvents: "none",
+          }}
+            animate={{ scale: [1, 1.45], opacity: [0.4, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: "easeOut", delay: 0.9 }}
+          />
+        </>
       )}
 
       <svg width={SIZE + pad*2} height={SIZE + depth + pad} style={{ position: "absolute", top: 0, left: 0, zIndex: 3, overflow:"visible" }}>
