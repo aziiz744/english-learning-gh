@@ -13,6 +13,7 @@ import { addReviewItem } from "@/lib/review-library";
 import { VocabIntro, extractVocab, type VocabCard } from "@/components/vocab-intro";
 import { DialogueView } from "@/components/dialogue-view";
 import { getDialogueByTitle, type Dialogue } from "@/lib/dialogues";
+import { recordAttempt } from "@/lib/skill-tracker";
 import { addDailyXp } from "@/lib/daily-goal";
 import { hapticSuccess, hapticError } from "@/lib/native";
 import { Confetti } from "@/components/confetti";
@@ -2156,6 +2157,10 @@ export default function UnitLesson() {
   const handleAnswer = (ok: boolean, answer: string) => {
     const ex = queue[0];
     setTotalCount(t => t + 1);
+    // سجّل المحاولة في متتبّع نقاط الضعف (للدروس العادية فقط)
+    if (!practiceMode && !isJumpMode && meta?.unitTitle) {
+      recordAttempt(meta.unitTitle, ok);
+    }
     // علّم كلمات الإجابة الصحيحة كـ"مرئية" (تنتقل من جديدة لمعروفة بعد تعلّمها)
     if (ex.correctAnswer) {
       ex.correctAnswer.split(" ").forEach(w => markWordSeen(w));

@@ -1,9 +1,10 @@
 import { useGetStats, useGetAchievements } from "@/lib/api-hooks";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Award, Zap, BookOpen, Target, ChevronLeft, MapPin, Flame, Star, Library, GraduationCap } from "lucide-react";
+import { Award, Zap, BookOpen, Target, ChevronLeft, MapPin, Flame, Star, Library, GraduationCap, Trophy } from "lucide-react";
 import { Link } from "wouter";
 import { getVocabSummary } from "@/lib/vocab-stats";
+import { getSkillStats, getWeakestSkill } from "@/lib/skill-tracker";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
@@ -23,6 +24,8 @@ export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useGetStats();
   const vocab = getVocabSummary();
   const { data: achievements, isLoading: achievementsLoading } = useGetAchievements();
+  const skillStats = getSkillStats();
+  const weakest = getWeakestSkill();
 
   const recentAchievements = achievements?.filter(a => a.isEarned).slice(0, 3) || [];
 
@@ -225,6 +228,63 @@ export default function Dashboard() {
             </div>
           </>
         ) : null}
+
+        {/* ── تحليل نقاط القوة والضعف ── */}
+        {skillStats.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Target className="h-5 w-5 text-cyan-400" />
+              تحليل مهاراتك
+            </h2>
+
+            {/* تنبيه أضعف مهارة */}
+            {weakest && (
+              <div style={{
+                background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                borderRadius: 16, padding: "16px 18px", marginBottom: 16,
+                display: "flex", alignItems: "center", gap: 14,
+              }}>
+                <div style={{ fontSize: 36 }}>{weakest.emoji}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: "#fff", fontWeight: 800, fontSize: 15, marginBottom: 2 }}>
+                    ركّز على: {weakest.skill}
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 13 }}>
+                    إتقانك {weakest.mastery}% — تدرّب أكثر على هذه المهارة لتقويتها
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* قائمة المهارات مع نسب الإتقان */}
+            <Card>
+              <CardContent className="p-4 space-y-3">
+                {skillStats.slice(0, 8).map((s) => {
+                  const barColor = s.mastery >= 80 ? "#22c55e" : s.mastery >= 60 ? "#f59e0b" : "#ef4444";
+                  return (
+                    <div key={s.skill}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <span style={{ fontSize: 18 }}>{s.emoji}</span>
+                          <span className="text-sm font-semibold">{s.skill}</span>
+                        </div>
+                        <span className="text-sm font-bold" style={{ color: barColor }}>{s.mastery}%</span>
+                      </div>
+                      <div style={{ height: 8, background: "hsl(var(--muted))", borderRadius: 4, overflow: "hidden" }}>
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${s.mastery}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          style={{ height: "100%", background: barColor, borderRadius: 4 }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div>
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
