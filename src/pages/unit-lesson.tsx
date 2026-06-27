@@ -1659,6 +1659,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
 }) {
   const pct = Math.round((score/total)*100);
   const stars = pct>=90?3:pct>=70?2:1;
+  const [showAllMistakes, setShowAllMistakes] = useState(false);
 
   return (
     <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{type:"spring",stiffness:160,damping:20}}
@@ -1728,7 +1729,7 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
                 </span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {mistakes.slice(0, 3).map((m, i) => (
+                {mistakes.slice(0, showAllMistakes ? mistakes.length : 1).map((m, i) => (
                   <div key={i} style={{
                     background: "hsl(var(--muted) / 0.4)", borderRadius: 12, padding: "10px 12px",
                     border: "1px solid hsl(var(--border))", direction: "rtl",
@@ -1743,14 +1744,18 @@ function CompletionScreen({ score, total, xpEarned, hearts, isPro, subLesson, is
                     </div>
                   </div>
                 ))}
-                {mistakes.length > 3 && (
-                  <div style={{
-                    background: "hsl(var(--muted) / 0.25)", borderRadius: 12, padding: "10px 12px",
-                    border: "1px dashed hsl(var(--border))", direction: "rtl", textAlign: "center",
-                    fontSize: 13, color: "hsl(var(--muted-foreground))", fontWeight: 600,
-                  }}>
-                    + {mistakes.length - 3} كلمات أخرى محفوظة في 📚 مكتبة المراجعة
-                  </div>
+                {mistakes.length > 1 && (
+                  <button
+                    onClick={() => setShowAllMistakes(v => !v)}
+                    style={{
+                      background: "hsl(var(--muted) / 0.25)", borderRadius: 12, padding: "10px 12px",
+                      border: "1px dashed hsl(var(--border))", direction: "rtl", textAlign: "center",
+                      fontSize: 13, color: "hsl(var(--muted-foreground))", fontWeight: 700, cursor: "pointer", width: "100%",
+                    }}>
+                    {showAllMistakes
+                      ? "▲ إخفاء"
+                      : `▼ عرض ${mistakes.length - 1} أخطاء أخرى`}
+                  </button>
                 )}
               </div>
               {/* زر التدرّب على الأخطاء */}
