@@ -743,7 +743,7 @@ function CrownIcon({ color, locked }: { color: string; locked: boolean }) {
   const gId = `crown-${color.replace("#","")}-${locked?"l":"u"}`;
 
   return (
-    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
+    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginTop: -pad }}>
       {!locked && (
         <div style={{
           position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
@@ -903,7 +903,7 @@ function StationCircle({ type, progress, color, isCurrent, isFirstOfSection, isJ
   const gId = `sg-${SIZE}-${color.replace("#","")}-${isGold?"g":isActive?"a":"i"}`;
 
   return (
-    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginLeft: -pad, marginTop: -pad }}>
+    <div style={{ position: "relative", width: SIZE + pad*2, height: SIZE + depth + 6 + pad, marginTop: -pad }}>
 
       {/* Soft colored glow beneath */}
       <div style={{
