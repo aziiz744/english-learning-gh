@@ -19,7 +19,7 @@
 
 export type ExObj = {
   id: string;
-  type: "word_order" | "translate" | "listen_select" | "picture_match" | "fill_blank" | "matching";
+  type: "word_order" | "translate" | "listen_select" | "picture_match" | "fill_blank" | "matching" | "type_answer" | "speak";
   sentence?: string;
   arabic?: string;
   options?: string[];

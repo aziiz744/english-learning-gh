@@ -756,6 +756,209 @@ function WordChip({ word, color, isNew, onSpeak }: { word: string; color: string
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// TypeAnswerQ — تمرين الكتابة (إنتاج كتابي): الطالب يكتب الترجمة بنفسه
+// ════════════════════════════════════════════════════════════════
+function normalizeAns(s: string): string {
+  return s.toLowerCase().trim()
+    .replace(/[.,!?;:'"]/g, "")
+    .replace(/\s+/g, " ");
+}
+function TypeAnswerQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+  const [value, setValue] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const submit = () => {
+    if (submitted || !value.trim()) return;
+    setSubmitted(true);
+    const ok = normalizeAns(value) === normalizeAns(ex.correctAnswer);
+    onAnswer(ok, value.trim());
+  };
+
+  return (
+    <div>
+      <div style={{ textAlign:"center", marginBottom:20 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>✍️ اكتب بنفسك</span>
+        </div>
+        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", marginBottom:4 }}>
+          اكتب الترجمة بالإنجليزية
+        </div>
+        <div style={{ fontSize:12.5, color:"hsl(var(--muted-foreground))", direction:"rtl" }}>
+          بدون خيارات — حاول تستحضر الكلمات من ذاكرتك
+        </div>
+      </div>
+
+      {/* الجملة العربية المطلوب ترجمتها */}
+      <div style={{ background:`${color}10`, border:`2px solid ${color}35`, borderRadius:16, padding:"18px 20px", marginBottom:20, textAlign:"center", direction:"rtl" }}>
+        <div style={{ fontSize:20, fontWeight:800, color:"hsl(var(--foreground))" }}>{ex.arabic ?? ex.sentence}</div>
+      </div>
+
+      {/* حقل الكتابة */}
+      <input
+        type="text"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter") submit(); }}
+        disabled={submitted}
+        autoFocus
+        dir="ltr"
+        placeholder="Type in English..."
+        style={{
+          width:"100%", padding:"16px 18px", fontSize:18, fontWeight:600,
+          background:"hsl(var(--card))", border:`2px solid ${color}50`,
+          borderRadius:14, color:"hsl(var(--foreground))", outline:"none",
+          textAlign:"left", marginBottom:20,
+        }}
+      />
+
+      {!submitted && (
+        <button onClick={submit} disabled={!value.trim()}
+          style={{
+            width:"100%", padding:"15px", borderRadius:16,
+            background: value.trim() ? color : "hsl(var(--muted))",
+            color: value.trim() ? "#fff" : "hsl(var(--muted-foreground))",
+            border:"none", fontWeight:800, fontSize:16,
+            cursor: value.trim() ? "pointer" : "default",
+            boxShadow: value.trim() ? `0 4px 0 ${color}99` : "none",
+          }}>
+          تحقّق ✓
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// SpeakQ — تمرين النطق (إنتاج نطقي): الطالب ينطق الجملة، التطبيق يتحقّق
+// يستخدم Web Speech API (التعرّف الصوتي المجاني في المتصفّح)
+// ════════════════════════════════════════════════════════════════
+function SpeakQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
+  const target = ex.correctAnswer || ex.sentence || "";
+  const [listening, setListening] = useState(false);
+  const [heard, setHeard] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [supported, setSupported] = useState(true);
+  const recRef = useRef<any>(null);
+
+  useEffect(() => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { setSupported(false); return; }
+  }, []);
+
+  const norm = (s: string) => s.toLowerCase().trim().replace(/[.,!?;:'"]/g, "").replace(/\s+/g, " ");
+
+  const score = (said: string): number => {
+    const a = norm(said).split(" ");
+    const b = norm(target).split(" ");
+    const setB = new Set(b);
+    const hit = a.filter(w => setB.has(w)).length;
+    return b.length ? hit / b.length : 0;
+  };
+
+  const start = () => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { setSupported(false); return; }
+    const rec = new SR();
+    rec.lang = "en-US";
+    rec.interimResults = false;
+    rec.maxAlternatives = 3;
+    rec.onresult = (e: any) => {
+      const said = e.results[0][0].transcript;
+      setHeard(said);
+      setListening(false);
+      setSubmitted(true);
+      const ratio = score(said);
+      onAnswer(ratio >= 0.6, said); // 60%+ من الكلمات صحيحة = نجح
+    };
+    rec.onerror = () => { setListening(false); };
+    rec.onend = () => { setListening(false); };
+    recRef.current = rec;
+    setListening(true);
+    setHeard("");
+    rec.start();
+  };
+
+  // لو الجهاز ما يدعم التعرّف الصوتي — اسمح بالتخطّي
+  if (!supported) {
+    return (
+      <div style={{ textAlign:"center", padding:"20px 0" }}>
+        <div style={{ fontSize:48, marginBottom:12 }}>🎤</div>
+        <div style={{ fontSize:17, fontWeight:800, color:"hsl(var(--foreground))", marginBottom:8, direction:"rtl" }}>
+          جهازك لا يدعم التعرّف الصوتي
+        </div>
+        <div style={{ fontSize:13, color:"hsl(var(--muted-foreground))", marginBottom:20, direction:"rtl" }}>
+          جرّب متصفّح Chrome، أو تابع للسؤال التالي
+        </div>
+        <button onClick={() => onAnswer(true, "(تخطّي)")}
+          style={{ padding:"13px 30px", borderRadius:14, background:color, color:"#fff", border:"none", fontWeight:800, fontSize:15, cursor:"pointer" }}>
+          تخطّي ←
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ textAlign:"center", marginBottom:20 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, marginBottom:8 }}>
+          <span style={{ fontSize:13, fontWeight:800, color }}>🎤 انطقها</span>
+        </div>
+        <div style={{ fontSize:19, fontWeight:900, color:"hsl(var(--foreground))", direction:"rtl", marginBottom:4 }}>
+          انطق الجملة بصوت واضح
+        </div>
+        <div style={{ fontSize:12.5, color:"hsl(var(--muted-foreground))", direction:"rtl" }}>
+          اضغط الميكروفون وقل الجملة بالإنجليزية
+        </div>
+      </div>
+
+      {/* الجملة المطلوب نطقها */}
+      <div style={{ background:`${color}10`, border:`2px solid ${color}35`, borderRadius:16, padding:"18px 20px", marginBottom:8, textAlign:"center" }}>
+        <div style={{ fontSize:22, fontWeight:800, color:"hsl(var(--foreground))", direction:"ltr" }}>{target}</div>
+      </div>
+      {/* زر سماع النطق الصحيح */}
+      <div style={{ textAlign:"center", marginBottom:24 }}>
+        <button onClick={() => speak(target, 0.85, ex.id)}
+          style={{ background:"none", border:"none", color, fontSize:14, fontWeight:700, cursor:"pointer" }}>
+          🔊 استمع للنطق الصحيح
+        </button>
+      </div>
+
+      {/* زر الميكروفون */}
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14 }}>
+        <motion.button
+          onClick={start}
+          disabled={submitted || listening}
+          animate={listening ? { scale:[1, 1.12, 1] } : {}}
+          transition={listening ? { repeat:Infinity, duration:1 } : {}}
+          style={{
+            width:96, height:96, borderRadius:"50%",
+            background: listening ? "#ef4444" : color,
+            border:"none", cursor: submitted ? "default" : "pointer",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            boxShadow: `0 8px 28px ${listening ? "#ef444450" : color+"50"}`,
+          }}>
+          <span style={{ fontSize:42 }}>🎤</span>
+        </motion.button>
+        <div style={{ fontSize:14, fontWeight:700, color: listening ? "#ef4444" : "hsl(var(--muted-foreground))" }}>
+          {listening ? "أستمع إليك..." : submitted ? "" : "اضغط وتكلّم"}
+        </div>
+        {heard && (
+          <div style={{ fontSize:14, color:"hsl(var(--muted-foreground))", direction:"ltr", textAlign:"center" }}>
+            سمعت: "<span style={{ fontWeight:700, color:"hsl(var(--foreground))" }}>{heard}</span>"
+          </div>
+        )}
+        {!submitted && (
+          <button onClick={() => onAnswer(true, "(تخطّي)")}
+            style={{ marginTop:4, background:"none", border:"none", color:"hsl(var(--muted-foreground))", fontSize:13, textDecoration:"underline", cursor:"pointer" }}>
+            تخطّي هذا السؤال
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function WordOrderQ({ ex, color, onAnswer }: { ex: ExObj; color: string; onAnswer: (ok:boolean, answer:string) => void }) {
   const [wordBank] = useState(() => {
     const words = ex.sentence!.split(" ").map((w, i) => ({ w, i }));
@@ -1827,6 +2030,32 @@ export default function UnitLesson() {
       console.error("loadExercises error:", err);
       raw = [];
     }
+
+    // ── تحويل بعض التمارين لإنتاج حقيقي (كتابة/نطق) في الدروس المتقدّمة ──
+    // tier 0-1: بدون تغيير (الطالب لسّه يتعرّف). tier 2-3: نضيف إنتاج.
+    const isPlain = !isJumpMode && !meta.isJump && !meta.isChallenge && !meta.isReview && !meta.isPractice;
+    if (isPlain && tier >= 1) {
+      let typed = 0, spoke = 0;
+      const maxTyped = tier >= 2 ? 2 : 1;  // كم سؤال كتابة
+      const maxSpoke = 1;                   // سؤال نطق واحد
+      raw = raw.map(ex => {
+        // حوّل ترجمة (عربي→إنجليزي) لكتابة — الطالب يكتب بدل ما يختار
+        if (ex.type === "translate" && ex.arabic && ex.correctAnswer &&
+            typed < maxTyped && ex.correctAnswer.split(" ").length <= 6) {
+          typed++;
+          return { ...ex, type: "type_answer" as const };
+        }
+        // حوّل ترتيب كلمات (جملة قصيرة) لنطق
+        if (ex.type === "word_order" && ex.correctAnswer &&
+            spoke < maxSpoke && ex.correctAnswer.split(" ").length >= 3 &&
+            ex.correctAnswer.split(" ").length <= 7) {
+          spoke++;
+          return { ...ex, type: "speak" as const };
+        }
+        return ex;
+      });
+    }
+
     // اخلط ترتيب الأسئلة + اخلط الخيارات داخل كل سؤال
     const shuffled = [...raw]
       .sort(() => Math.random() - 0.5)
@@ -2266,6 +2495,8 @@ export default function UnitLesson() {
                   {ex.type==="listen_select" && <ListenQ     ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="picture_match" && <PictureQ    ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="fill_blank"    && <FillBlankQ  ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="type_answer"   && <TypeAnswerQ ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
+                  {ex.type==="speak"         && <SpeakQ      ex={ex} color={meta.color} onAnswer={handleAnswer}/>}
                   {ex.type==="matching"      && <MatchingQ   ex={ex} color={meta.color} onAnswer={handleAnswer} onMatchError={(en, ar) => {
                     if (!practiceMode) addReviewItem({ correct: en, question: ar, unitTitle: meta.unitTitle ?? "" });
                   }}/>}
