@@ -306,21 +306,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen text-foreground" dir="rtl"
       style={{
         background: "hsl(var(--background))",
+        position: "relative",
       }}>
 
-      {/* طبقة الخلفية المتوهّجة الثابتة — تملأ كل الشاشة بما فيها منطقة الساعة (fullscreen) */}
+      {/* طبقة الخلفية المتوهّجة الثابتة — تملأ كل الشاشة بما فيها منطقة الساعة (fullscreen متّصل) */}
       <div style={{
         position: "fixed",
         top: 0, left: 0, right: 0, bottom: 0,
-        zIndex: -1,
+        zIndex: 0,
         background: `
-          radial-gradient(ellipse 90% 45% at 50% -5%, hsl(185 80% 43% / 0.22), transparent 55%),
-          radial-gradient(ellipse 70% 40% at 95% 8%, hsl(160 70% 45% / 0.12), transparent 50%),
-          radial-gradient(ellipse 80% 50% at 5% 95%, hsl(200 75% 42% / 0.10), transparent 55%),
+          radial-gradient(ellipse 110% 55% at 50% -8%, hsl(185 80% 43% / 0.28), transparent 60%),
+          radial-gradient(ellipse 80% 45% at 95% 5%, hsl(160 70% 45% / 0.15), transparent 55%),
+          radial-gradient(ellipse 85% 55% at 5% 95%, hsl(200 75% 42% / 0.12), transparent 55%),
           hsl(var(--background))
         `,
         pointerEvents: "none",
       }}/>
+
+      {/* غلاف المحتوى — فوق طبقة الخلفية */}
+      <div style={{ position: "relative", zIndex: 1 }}>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex w-64 border-l border-sidebar-border bg-sidebar flex-col fixed inset-y-0 right-0 z-40">
@@ -518,6 +522,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)}
         location={location} user={user} stats={stats}
         login={login} logout={logout} />
+      </div>
     </div>
   );
 }
