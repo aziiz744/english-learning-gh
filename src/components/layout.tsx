@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import {
   Route, Trophy, Flame, Zap,
   Shield, LogIn, LogOut, User, X,
-  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock, Library,
+  Sparkles, BookMarked, MoreHorizontal, ChevronRight, Activity, Lock, Library, TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetStats, type UserStats } from "@/lib/api-hooks";
@@ -23,6 +23,7 @@ const BOTTOM_NAV = [
 // ── Sidebar / drawer: full list ──
 const navigation = [
   { name: "خارطة التعلم",   href: "/",            icon: Route },
+  { name: "لوحة تقدّمي",     href: "/dashboard",   icon: TrendingUp },
   { name: "الإنجازات",      href: "/achievements",icon: Trophy },
   { name: "مكتبة المراجعة", href: "/review",      icon: Library },
   { name: "المسابقات",      href: "/competitions",icon: Zap },
@@ -190,6 +191,7 @@ function MoreSheet({ open, onClose, location, user, stats, login, logout }: {
   login: () => void; logout: () => void;
 }) {
   const moreItems = [
+    { name: "لوحة تقدّمي", href: "/dashboard", icon: TrendingUp },
     { name: "الإنجازات",  href: "/achievements", icon: Trophy },
     { name: "القراءة",    href: "/reading",       icon: BookMarked },
     { name: "عضوية Pro",  href: "/pro",           icon: Sparkles },
