@@ -1983,10 +1983,11 @@ export default function Roadmap() {
 
                         {/* Jump tooltip above jump station */}
                         {isJumpStation && lessonProgress < 4 && !isPopupOpen && (
+                          <div style={{ position: "absolute", top: -52, left: "50%", transform: "translateX(-50%)", pointerEvents: "none", zIndex: 10 }}>
                           <motion.div
                             animate={{ y: [0, -5, 0] }}
                             transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-                            style={{ position: "absolute", top: -52, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none", zIndex: 10 }}>
+                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <div style={{
                               background: "hsl(var(--card))",
                               border: `1.5px solid ${unit.color}60`,
@@ -2000,14 +2001,16 @@ export default function Roadmap() {
                             </div>
                             <div style={{ width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:`7px solid hsl(var(--border))` }}/>
                           </motion.div>
+                          </div>
                         )}
 
-                        {/* "ابدأ" badge */}
+                        {/* "ابدأ" badge — متمركز فوق الدائرة */}
                         {isCurrent && !isPopupOpen && !isJumpStation && (
+                          <div style={{ position: "absolute", top: -46, left: "50%", transform: "translateX(-50%)", pointerEvents: "none" }}>
                           <motion.div
                             animate={{ y: [0, -6, 0] }}
                             transition={{ repeat: Infinity, duration: 1.3, ease: "easeInOut" }}
-                            style={{ position: "absolute", top: -46, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
+                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <div style={{
                               background: unit.color, color: "#fff",
                               fontSize: 13, fontWeight: 800,
@@ -2022,6 +2025,7 @@ export default function Roadmap() {
                               borderTop: `7px solid ${unit.color}`,
                             }}/>
                           </motion.div>
+                          </div>
                         )}
 
                         {/* Station */}
